@@ -24,3 +24,19 @@
 /* Scale charts to their available column width, preserving the canvas ratio. */
 #id-right .dolgraph { max-width: 100%; box-sizing: border-box; }
 #id-right .dolgraph canvas { max-width: 100%; height: auto !important; }
+
+/* Wizard tasks stay separate from optional diagnostics and navigation. */
+.norway-wizard { max-width: 64rem; }
+.norway-wizard details { margin: 1rem 0; border: 1px solid #ccc; border-radius: .35rem; padding: .8rem 1rem; }
+.norway-wizard summary { cursor: pointer; font-weight: bold; }
+.norway-wizard .norway-wizard-intro { font-size: 1.1em; }
+.norway-wizard-tasks { padding-left: 1.8rem; }
+.norway-wizard-tasks > li { padding: .2rem .8rem 1rem; margin-bottom: .8rem; border-bottom: 1px solid #ddd; }
+.norway-wizard-tasks h4 { margin: .5rem 0; font-size: 1em; }
+.norway-wizard-open { display: inline-block; padding: .65rem .8rem; border: 1px solid currentColor; border-radius: .3rem; max-width: 100%; box-sizing: border-box; }
+.norway-wizard-tab { font-weight: normal; }
+.norway-wizard-before { border-left: .25rem solid #888; padding: .1rem 1rem; margin: 1.2rem 0; background: rgba(128,128,128,.06); }
+.norway-wizard-optional li { margin: .8rem 0; }
+.norway-wizard-optional p { margin: .3rem 0; }
+.norway-wizard-nav { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 .75rem; }
+.norway-wizard-nav .butAction { margin: 0; white-space: normal; }
