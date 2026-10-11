@@ -29,6 +29,8 @@ function request($path, $post = null)
 try {
     $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
     if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
+    $vat=request('/custom/norway/admin/vat.php');
+    if (strpos($vat,'VAT account mapping check')!==false || strpos($vat,'Kontroll av MVA-kontokoblinger')!==false) { throw new RuntimeException('VAT report exposed before login'); }
     $periods=request('/custom/norway/admin/periods.php');
     if (strpos($periods,'Fiscal period setup check')!==false || strpos($periods,'Kontroll av regnskapsperioder')!==false) { throw new RuntimeException('Period report exposed before login'); }
     $documents=request('/custom/norway/admin/documents.php');
@@ -95,6 +97,10 @@ try {
     }
     $periods=request('/custom/norway/admin/periods.php?date=2023-02-29&lang=en_US');
     if (strpos($periods,'Enter a valid date')===false) { throw new RuntimeException('Invalid period check date accepted'); }
+    foreach (array('nb_NO','en_US') as $vatLang) {
+        $vat=request('/custom/norway/admin/vat.php?lang='.$vatLang);
+        if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($vat,'NorwayVatSetup')!==false || strpos($vat,'<form')!==false || strpos($vat,'dict.php?id=10')===false) { throw new RuntimeException('VAT report missing, untranslated or writable'); }
+    }
     $company=request('/admin/company.php?lang=nb_NO');
     foreach (array('Organisasjonsnummer','Organisasjonsform','MVA-nummer (ved registrering)','ENK — Enkeltpersonforetak','AS — Aksjeselskap','value="173001"','value="173002"') as $required) {
         if (strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),$required)===false) { throw new RuntimeException('Norwegian company field/form missing: '.$required); }

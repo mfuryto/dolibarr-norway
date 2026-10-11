@@ -89,6 +89,8 @@ try {
         }
     }
     verify($secure, 'Session cookie is not Secure behind HTTPS proxy');
+    $vat=page('/custom/norway/admin/vat.php');
+    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($vat,'NorwayVatSetup')===false && strpos($vat,'<form')===false && strpos($vat,'dict.php?id=10')!==false,'VAT report missing or writable');
     $periods=page('/custom/norway/admin/periods.php?date=2024-02-29');
     verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($periods,'NorwayPeriods')===false && strpos($periods,'method="post"')===false && strpos($periods,'fiscalyear.php')!==false,'Period report missing or writable');
     $documents=page('/custom/norway/admin/documents.php');

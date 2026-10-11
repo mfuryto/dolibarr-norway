@@ -19,3 +19,5 @@ Fra 0.17.0 lenker steg 5 til separat [bekreftet bankkobling](bank-defaults.md) f
 Fra 0.18.0 lenker steg 7 til [kontroll av dokumentoppsett](document-setup.md). Ingen numre reserveres og ingen dokumenter endres.
 
 Fra 0.19.0 lenker steg 9 til [kontroll av regnskapsperioder](period-setup.md). Ingen perioder åpnes/lukkes.
+
+Fra 0.20.0 lenker steg 3 til [kontroll av MVA-kontokoblinger](vat-setup.md). Ingen avgiftsoppsett eller bilag endres.

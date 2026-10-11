@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.19.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.20.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -39,6 +39,8 @@ Opprett personlige brukere og avgrens rettigheter for administrasjon, fakturaval
 Velg behandling for hver aktuell type salg og kjøp: norsk avgiftspliktig omsetning, fritak, unntak, salg før registrering, utenlandssalg og kjøp med omvendt avgiftsplikt. Disse kan ikke slås sammen til én generell «0 %»-regel. Fradragsrett og eventuell delvis fradragsrett må vurderes separat fra satsen. Se [avgiftssatser](https://www.skatteetaten.no/satser/merverdiavgift) og [fjernleverbare tjenester kjøpt fra utlandet](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-3/M-3-30/M-3-30.3/).
 
 **Delvis levert:** modulen kontrollerer satsdekning og hindrer enkelte feil ved fakturavalidering. En kontroll som etterlyser 15 eller 12 prosent betyr ikke at programvaresalg skal bruke disse satsene. Kjernens gamle norske satser må ikke brukes ukritisk.
+
+Fra 0.20.0 viser [MVA-kontokontrollen](vat-setup.md) aktive norske satsrader, egne satskontoer og standardkontoer som reserve. Den kontrollerer kontoenes tilgjengelighet, ikke avgiftsbehandling eller rapporteringskoder.
 
 **Gjenstår:** historiske registreringsperioder, komplett avgiftskode-/kontomapping, fradragsbehandling og sporbar norsk MVA-rapport. Ikke endre gamle bilag ved å omskrive dagens satser. En grønn satskontroll er ikke aksept av MVA-oppsettet.
 
