@@ -20,7 +20,7 @@ Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Prog
 
 ## Samlet oppsettveiledning og veiviser
 
-[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Fra 0.12.0 finnes en skrivebeskyttet veiviser med elleve steg, aktuelle kontroller og lenker til innstillinger. Fra 0.13.0 finnes separat bekreftet utfylling av tom kunde-/leverandørstandard i nytt bokføringsoppsett. Fra 0.14.0 kan manglende journaltyper opprettes etter egen forhåndsvisning og bekreftelse. Fra 0.15.0 er norske foretaksfelt og et avgrenset register av organisasjonsformer levert uten endring av foretaksvalgene. Bankkoblinger, øvrige valg og fremdriftslagring gjenstår. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
+[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Fra 0.12.0 finnes en skrivebeskyttet veiviser med elleve steg, aktuelle kontroller og lenker til innstillinger. Fra 0.13.0 finnes separat bekreftet utfylling av tom kunde-/leverandørstandard i nytt bokføringsoppsett. Fra 0.14.0 kan manglende journaltyper opprettes etter egen forhåndsvisning og bekreftelse. Fra 0.15.0 er norske foretaksfelt og et avgrenset register av organisasjonsformer levert uten endring av foretaksvalgene. Fra 0.17.0 kan manglende bankkoblinger fylles etter bekreftelse i et avgrenset nytt oppsett med én ordinær NOK-bankkonto. Øvrige valg og fremdriftslagring gjenstår. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
 
 ## Prioritert rekkefølge
 
@@ -60,3 +60,5 @@ Relevant kode- og integrasjonstest, dokumentert støttet omfang og kjente begren
 Se [dekningsanalysen](coverage-analysis.md), [kilderegisteret](sources.md) og [test og drift](test-and-operations.md). Ingen tidsestimat fastsettes før de større avgifts- og integrasjonsavklaringene er gjort.
 
 Fra 0.16.0 fylles et tomt MVA-nummer fra gyldig norsk organisasjonsnummer ved ordinær lagring når «MVA brukes» er valgt. Eksisterende MVA-nummer og registreringsstatus endres ikke. Se [foretaksoppsett](company-setup.md).
+
+Bankkoblingens avgrensning og vern er beskrevet i [bekreftet bankkobling](bank-defaults.md). Bank- og reskontroavstemming gjenstår.
