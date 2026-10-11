@@ -54,3 +54,5 @@ jobs:
           fetch-depth: 0
       - name: Run fresh Dolibarr installation and integration tests
         run: bash scripts/ci-integration.sh
+      - name: Verify VPS installation and persistent configuration
+        run: bash scripts/ci-installation.sh
