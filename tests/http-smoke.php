@@ -60,6 +60,11 @@ try {
     if (strpos($body, 'SAF-T 1.40') === false || strpos($body, 'EHF/Peppol') === false) {
         throw new RuntimeException('Unfinished accounting requirements missing');
     }
+    $body = request('/custom/norway/admin/invoice.php?id=0');
+    if (strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') === false
+        && strpos($body, 'Invoice could not be read in the active entity.') === false) {
+        throw new RuntimeException('Invalid invoice ID accepted');
+    }
     $body = request('/custom/norway/admin/audit.php?date_start=2026-01-01&date_end=2026-12-31');
     if ((strpos($body, 'Bilagskontroll') === false && strpos($body, 'Voucher checks') === false)
         || strpos($body, 'Could not read the ledger') !== false || strpos($body, 'Kunne ikke lese hovedboken') !== false) {

@@ -69,3 +69,31 @@ Fordringer er beløp kundene skylder foretaket. Avstemming av reskontro mot
 hovedbok og betalinger er et eget videre arbeidsområde. «Kontroll» betyr her
 validering av regnskapsdata. Full norsk kontoplan, fakturakrav, MVA, EHF og SAF-T
 må fortsatt kvalifiseres før norsk produksjonsregnskap.
+
+## Fakturakontroll
+
+Norsk modul → Fakturakontroll er tilgjengelig for administrator med lesetilgang
+til fakturaer. Velg blant de 20 sist opprettede fakturaene, eller oppgi
+faktura-ID fra `facid` i fakturalenken. Kontrollen leser kun
+aktivt foretak og viser om selgers navn, adresse og organisasjonsnummer med
+korrekt kontrollsiffer, kundeidentitet, fakturadato, betalingsfrist, NOK og
+linjebeskrivelser er utfylt. Kontrollsiffer bekrefter ikke registrering i et register.
+Kundens navn og adresse eller organisasjonsnummer godtas også for utenlandske kunder.
+En kreditnotas kildefaktura må finnes, være validert, tilhøre samme kunde/foretak
+og ikke selv være en kreditnota. Manglende betalingsfrist på kreditnota merkes
+for gjennomgang.
+
+Kontrollen endrer ingen data, genererer ingen PDF og stopper ikke utsending.
+Den leser dagens foretaks-/kundedata, som kan avvike fra historiske PDF-er.
+«Utfylt» betyr bare at feltet har innhold; det er ingen fullstendighetsgodkjenning.
+Maskinell nummerering og hull i nummerserien, leveringstidspunkt/-sted,
+MVA-registrering, riktig avgiftsbehandling og MVA-merking, beløp og de faktiske
+norske/engelske PDF-ene må gjennomgås separat. Nåværende nummereringsoppsett
+og historiske fakturanumre endres ikke. Standard integrasjonstest bruker nå
+kjernens automatiske nummerering uten påtvungne referanser og kontrollerer to
+fortløpende salgsfakturaer samt unike faktura-/kreditnotareferanser. Dette er
+ikke en full nummerserieanalyse eller en sperre mot manuell nummerering via API.
+
+Kravgrunnlag kontrollert 2026-10-11:
+[Altinn: Faktura (salgsdokumentasjon)](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/faktura-salgsdokumentasjon/).
+En PDF er fortsatt ikke EHF. EHF/Peppol og full norsk MVA-behandling gjenstår.
