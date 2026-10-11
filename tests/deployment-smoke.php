@@ -33,6 +33,11 @@ if (getenv('NORWAY_TEST_JOURNALS') === '1') {
     verify($banks && (int)$db->fetch_object($banks)->n===0,'Journal fixture requires no bank accounts');
     verify((bool)$db->query('DELETE FROM '.$db->prefix().'accounting_journal WHERE entity='.(int)$conf->entity),'Journal fixture reset failed');
 }
+if (getenv('NORWAY_TEST_REGISTRATION')==='1') {
+    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY')==='1','Synthetic registration guard missing');
+    require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+    verify(dolibarr_set_const($db,'MAIN_INFO_SIREN','123456785','chaine',0,'Synthetic identity',(int)$conf->entity)>0,'Registration fixture identity failed');
+}
 $cookie = tempnam(sys_get_temp_dir(), 'norway-deploy-http-');
 $curl = curl_init();
 $proxyCookies = array();
@@ -89,6 +94,8 @@ try {
         }
     }
     verify($secure, 'Session cookie is not Secure behind HTTPS proxy');
+    $registration=page('/custom/norway/admin/registration.php');
+    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($registration,'NorwayRegistration')===false,'Registration page missing or untranslated');
     $vat=page('/custom/norway/admin/vat.php');
     verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($vat,'NorwayVatSetup')===false && strpos($vat,'<form')===false && strpos($vat,'dict.php?id=10')!==false,'VAT report missing or writable');
     $periods=page('/custom/norway/admin/periods.php?date=2024-02-29');
@@ -155,6 +162,21 @@ try {
             forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>'invalid','preview_nonce'=>$bankNonce[1]));
             verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Bank mapping CSRF guard missing');
         } finally { verify((bool)$db->query('DELETE FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture),'Bank fixture cleanup failed'); }
+    }
+    if (getenv('NORWAY_TEST_REGISTRATION')==='1') {
+        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php');
+        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$registration,$registrationToken)===1,'Registration preview missing');
+        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php',array('action'=>'previewregistration','token'=>html_entity_decode($registrationToken[1]),'start'=>'2024-02-29'));
+        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$registration,$registrationToken)===1 && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$registration,$registrationNonce)===1,'Registration confirmation missing');
+        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>html_entity_decode($registrationToken[1]),'preview_nonce'=>$registrationNonce[1],'confirmed'=>'1'));
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Registration save did not redirect');
+        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php?date=2024-02-28');
+        verify(strpos($registration,'2024-02-29')!==false && (strpos(html_entity_decode($registration,ENT_QUOTES,'UTF-8'),'før lagret virkningsdato')!==false || strpos($registration,'precedes the recorded effective date')!==false),'Recorded registration date/comparison missing');
+        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>html_entity_decode($registrationToken[1]),'preview_nonce'=>$registrationNonce[1],'confirmed'=>'1'));
+        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php');
+        verify(strpos($registration,'kunne ikke bekreftes')!==false || strpos($registration,'could not be confirmed')!==false,'Registration replay accepted');
+        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>'invalid','confirmed'=>'1'));
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Registration CSRF rejection missing');
     }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {

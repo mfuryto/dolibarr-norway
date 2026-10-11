@@ -5,6 +5,7 @@ if (!$user->admin || !isModEnabled('norway') || !$user->hasRight('facture', 'lir
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
+require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
 llxHeader('', $langs->trans('NorwayInvoiceCheck'));
@@ -48,6 +49,11 @@ if (GETPOSTISSET('id')) {
             print '<tr><td>'.$langs->trans('NorwayInvoice'.$key).'</td><td>'.$langs->trans('NorwayInvoice'.$status).'</td></tr>';
         }
         print '</table></div>';
+        try {
+            $registration=NorwayVatRegistration::read($db,$conf->entity,$mysoc->idprof1);
+            $result=NorwayVatRegistration::compare($registration,dol_print_date($invoice->date,'%Y-%m-%d'));
+            print '<div class="warning">'.$langs->trans('NorwayRegistration'.$result).'</div>';
+        } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayRegistrationFailed').'</div>'; }
     }
 }
 print '</div>';

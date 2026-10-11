@@ -48,6 +48,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/document-setup.php
 "${compose[@]}" exec -T web php /opt/norway-tests/period-setup.php
 "${compose[@]}" exec -T web php /opt/norway-tests/vat-setup.php
+"${compose[@]}" exec -T web php /opt/norway-tests/vat-registration.php
 "${compose[@]}" exec -T web php /opt/norway-tests/registry.php
 "${compose[@]}" exec -T web php /opt/norway-tests/eur-pricing.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-workflow.php

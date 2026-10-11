@@ -68,3 +68,5 @@ Fra 0.18.0 samler [dokumentoppsettkontrollen](document-setup.md) valgt nummereri
 Fra 0.19.0 viser [periodediagnostikken](period-setup.md) perioder, datodekning, overlapp, standardvalg og kjernens periodeinnstilling uten endringer. Full kvalifisering av periodelåsing og retting gjenstår.
 
 Fra 0.20.0 viser [MVA-kontokontrollen](vat-setup.md) aktive norske satsrader, eksplisitte kontoer, reservekontoer og strukturell kontostatus. Avgiftsbehandling, bokført metadata, rapporteringsmapping og MVA-melding gjenstår.
+
+Fra 0.21.0 kan én [MVA-virkningsdato lagres eksplisitt](vat-registration.md), knyttet til foretaksidentitet og bekreftelsestid. Datovarsel i fakturakontrollen endrer ingen bilag eller MVA-status. Rettbar historikk, flere registreringsperioder, avgiftsbehandling og MVA-melding gjenstår.
