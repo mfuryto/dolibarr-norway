@@ -6,9 +6,24 @@ if (PHP_SAPI !== 'cli') {
 require '/var/www/html/master.inc.php';
 // This file is piped to PHP during updates. STD* constants are not available in
 // every PHP stdin invocation; php://stderr works for both files and stdin.
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/core/modules/modNorway.class.php';
+$modulePayloadMatches = is_dir('/opt/norway-module');
+if ($modulePayloadMatches) {
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator('/opt/norway-module', FilesystemIterator::SKIP_DOTS)) as $file) {
+        if (!$file->isFile()) { continue; }
+        $relative = substr($file->getPathname(), strlen('/opt/norway-module/'));
+        $active = DOL_DOCUMENT_ROOT.'/custom/norway/'.$relative;
+        if (!is_file($active) || hash_file('sha256', $active) !== hash_file('sha256', $file->getPathname())) {
+            $modulePayloadMatches = false;
+            break;
+        }
+    }
+}
 $checks = array(
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
+    'norway_module_version' => (new modNorway($db))->version === '0.2.2',
+    'norway_module_payload' => $modulePayloadMatches,
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),
     'invoice_module' => isModEnabled('facture'),

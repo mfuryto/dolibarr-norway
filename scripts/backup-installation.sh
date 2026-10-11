@@ -33,6 +33,7 @@ trap resume EXIT
 "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb-dump -uroot --single-transaction --routines --events --triggers accounting' | gzip > "$backup_dir/database.sql.gz"
 docker cp "$web_id:/var/www/documents/." - | gzip > "$backup_dir/documents.tar.gz"
 docker cp "$web_id:/var/www/html/conf/." - | gzip > "$backup_dir/conf.tar.gz"
+docker cp "$web_id:/var/www/html/custom/." - | gzip > "$backup_dir/custom.tar.gz"
 cp deploy/.env "$backup_dir/installation.env"
 docker inspect -f '{{.Image}}' "$web_id" > "$backup_dir/web-image-id"
 if [[ -f .deployed-revision ]]; then
@@ -44,6 +45,6 @@ fi
 image_id=$(cat "$backup_dir/web-image-id")
 docker image save "$image_id" | gzip > "$backup_dir/web-image.tar.gz"
 cp deploy/compose.yaml "$backup_dir/compose.yaml"
-(cd "$backup_dir" && sha256sum database.sql.gz documents.tar.gz conf.tar.gz installation.env web-image.tar.gz compose.yaml revision web-image-id > SHA256SUMS)
+(cd "$backup_dir" && sha256sum database.sql.gz documents.tar.gz conf.tar.gz custom.tar.gz installation.env web-image.tar.gz compose.yaml revision web-image-id > SHA256SUMS)
 touch "$backup_dir/COMPLETE"
 printf 'Backup completed: %s\n' "$backup_dir"

@@ -93,7 +93,9 @@ kontoplan, kontokoblinger og fakturanummerering må avklares separat.
 ## Data, oppdatering og backup
 
 Dette bruker et eget Compose-prosjekt `dolibarr-norway-accounting` og persistente mapper
-`data/database`, `data/documents` og `data/config` under prosjektroten. Modulfilene følger Docker-imaget.
+`data/database`, `data/documents` og `data/config` under prosjektroten. Modulfilene følger Docker-imaget og kopieres fra en separat image-kopi før web starter.
+Kjernens `custom`-volum kan ellers beholde gamle modulversjoner ved containerbytte.
+Andre eksterne moduler i dette volumet bevares og inngår i backup.
 Ikke bland miljøet med prosjektets `compose.test.yaml`, som er syntetisk utviklingstest.
 
 Normal stopp og start bevarer data:
@@ -136,7 +138,7 @@ fortsatt på staging; stabilt teknisk omfang leveres via PR til main. Teknisk
 stabil drift er ikke godkjenning av norsk MVA, SAF-T eller EHF.
 
 `bash scripts/update-installation.sh` tar først privat backup av databasen,
-dokumentene, konfigurasjonen, miljøfilen og det kjørende Docker-imaget. Web
+dokumentene, konfigurasjonen, hele `custom`-volumet, miljøfilen og det kjørende Docker-imaget. Web
 stoppes under snapshot og startes igjen etterpå. Andre skribenter eller
 integrasjoner mot databasen må også være stoppet. Backup lagres som standard i
 `backups` under prosjektets rot, med begrensede rettigheter.

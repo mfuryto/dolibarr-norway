@@ -40,6 +40,7 @@ p = Path(sys.argv[1])
 bind_config = p.read_text().replace("    ports: ['127.0.0.1:8088:80']\n", '')
 (p.parent/'compose.bind.yaml').write_text(bind_config)
 legacy = bind_config.replace('../data/database:', 'db:').replace('../data/documents:', 'documents:').replace('../data/config:', 'conf:')
+legacy = legacy.replace('  web:\n', '  web:\n    entrypoint: [docker-run.sh]\n    command: [apache2-foreground]\n')
 p.write_text(legacy + '\nvolumes:\n  db:\n  documents:\n  conf:\n')
 PY
 "${compose[@]}" config --quiet
@@ -65,6 +66,19 @@ cd "$install_root"
 export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
+# Reproduce an old image's reused custom volume without the new entrypoint.
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.2.2/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
+"${compose[@]}" exec -T web php <<'PHPTEST'
+<?php
+require '/var/www/html/master.inc.php';
+if (getenv('DOLI_COMPANY_NAME') !== 'SYNTHETIC INSTALLATION ONLY') { exit(1); }
+$names = "'BANK_DISABLE_CHECK_DEPOSIT','MAIN_MULTILANGS','MAIN_MODULE_NORWAY_HOOKS'";
+if (!$db->query('DELETE FROM '.MAIN_DB_PREFIX.'const WHERE entity=1 AND name IN ('.$names.')')) {
+    throw new RuntimeException('Legacy configuration fixture failed');
+}
+$db->close();
+PHPTEST
 cp deploy/compose.bind.yaml deploy/compose.yaml
 rm deploy/compose.bind.yaml
 git init --quiet -b main
@@ -74,6 +88,7 @@ git add .
 git commit --quiet -m 'Synthetic installation snapshot'
 bash scripts/update-installation.sh
 python3 scripts/migrate-storage.py
+"${compose[@]}" exec -T web sh -c 'cmp -s /opt/norway-module/core/modules/modNorway.class.php /var/www/html/custom/norway/core/modules/modNorway.class.php; test "$(cat /var/www/html/custom/synthetic-other-module/retained)" = SYNTHETIC'
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
 "${compose[@]}" ps -q web | xargs docker inspect | python3 -c '
 import json,sys
@@ -88,15 +103,19 @@ test "$(cat .deployed-revision)" = "$(git rev-parse HEAD)"
 backup_dir=$(find "$NORWAY_BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d)
 test -f "$backup_dir/COMPLETE"
 (cd "$backup_dir" && sha256sum -c SHA256SUMS)
+"${compose[@]}" exec -T web rm -f /var/www/html/custom/synthetic-other-module/retained
+web_id=$("${compose[@]}" ps -q web)
 "${compose[@]}" stop web
 "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb -uroot accounting -e "DROP TABLE llx_const"'
 gzip -dc "$backup_dir/database.sql.gz" | "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb -uroot accounting'
 "${compose[@]}" run --rm --no-deps --entrypoint sh web -c 'rm -f /var/www/documents/norway-backup-marker'
 gzip -dc "$backup_dir/documents.tar.gz" | "${compose[@]}" run --rm -T --no-deps --entrypoint tar web -xf - -C /var/www/documents
+gzip -dc "$backup_dir/custom.tar.gz" | docker cp - "$web_id:/var/www/html/custom"
 gzip -dc "$backup_dir/conf.tar.gz" | "${compose[@]}" run --rm -T --no-deps --entrypoint tar web -xf - -C /var/www/html/conf
 "${compose[@]}" start web
 wait_ready
 "${compose[@]}" exec -T web grep -qx 'synthetic backup marker' /var/www/documents/norway-backup-marker
+"${compose[@]}" exec -T web php < scripts/configure-sales.php
 "${compose[@]}" exec -T web php < scripts/verify-installation.php
 # Run the negative path from the host; production PHP disables subprocess APIs.
 if "${compose[@]}" exec -T -e DOLI_INSTANCE_UNIQUE_ID=SYNTHETIC-INTENTIONAL-MISMATCH web php < scripts/verify-installation.php \
@@ -121,4 +140,5 @@ print('PASS stdin verification reports failed checks without fatal errors or cre
 PYCODE
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/deployment-smoke.php
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
-printf 'PASS backup checksums, database and document/config recovery\n'
+"${compose[@]}" exec -T web sh -c 'test "$(cat /var/www/html/custom/synthetic-other-module/retained)" = SYNTHETIC'
+printf 'PASS backup checksums, database, documents, config and custom recovery\n'

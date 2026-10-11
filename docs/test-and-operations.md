@@ -195,3 +195,22 @@ PDF-testleseren bruker strømmenes deklarerte bytelengde. En regex som fjernet
 valgfri CR før linjeskift kunne fjerne en gyldig komprimert sjekksumbyte og gi
 sporadisk feil om manglende valutaetikett. En deterministisk regresjonsfixture
 med komprimert strøm som slutter i CR beskytter mot dette.
+
+## Oppdatering av modul i kjernens custom-volum
+
+Det offisielle imaget deklarerer `/var/www/html/custom` som volum. Compose
+bevarer normalt dette ved containerbytte, og gamle modulfilene kan dermed
+overstyre filer som er kopiert inn i det nye imaget. Fra 0.2.2 ligger en egen
+modulkopi også i `/opt/norway-module`, utenfor volumet. Oppstart kopierer disse
+filene til Norway-modulen før den opprinnelige entrypointen starter Dolibarr.
+Andre moduler og øvrige filer beholdes. Ingen anonymvolumer fornyes eller slettes.
+
+Sluttkontrollen krever riktig modulversjon og SHA-256-samsvar for alle leverte
+modulfiler. Backup inkluderer nå `custom.tar.gz` i tillegg til database, dokumenter
+og konfigurasjon. CI etterligner en gammel entrypoint med modul 0.1.0 i gjenbrukt
+volum, og krever at oppdateringen bruker ny modul og beholder en annen modul.
+Gjenoppretting av custom inngår også i testen.
+
+[Dolibarr 24.0.2](https://github.com/Dolibarr/dolibarr/tree/7e927764767343334aaa067ca5ec054cfea0a26b) er utgitt som kildekode, men den offisielle Docker-taggen var
+ikke tilgjengelig ved kontroll 2026-10-11. Driftsimaget forblir 24.0.1 med låst
+digest inntil en egen versjonsoppgradering er kvalifisert.
