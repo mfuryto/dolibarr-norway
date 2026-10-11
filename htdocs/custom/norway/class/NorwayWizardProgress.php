@@ -4,6 +4,19 @@
 class NorwayWizardProgress
 {
     public static function states() { return array('NotStarted', 'InProgress', 'Waiting', 'Reviewed', 'NotApplicable'); }
+    /** Suggest navigation only: stale identity first, then recent open work, then untouched steps. */
+    public static function suggestedStep($progress)
+    {
+        $first = 0; $recent = 0;
+        for ($step = 1; $step <= 11; $step++) {
+            if (!isset($progress[$step]) || !in_array($progress[$step]['state'] ?? null, self::states(), true)) { throw new InvalidArgumentException('Progress'); }
+            if (!empty($progress[$step]['stale'])) { return $step; }
+            if (!$first && $progress[$step]['state'] === 'NotStarted') { $first = $step; }
+            if (in_array($progress[$step]['state'], array('InProgress', 'Waiting'), true)
+                && (!$recent || strcmp($progress[$step]['updated'], $progress[$recent]['updated']) > 0)) { $recent = $step; }
+        }
+        return $recent ?: $first;
+    }
     private static function key($step)
     {
         if (!is_int($step) || $step < 1 || $step > 11) { throw new InvalidArgumentException('Step'); }

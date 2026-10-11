@@ -80,3 +80,5 @@ Fra 0.24.0 kan administrator lagre arbeidsstatus per veivisersteg. Oversikten vi
 Fra 0.24.1 bruker veiviserens steg 6 «Varer og tjenester» og generelle leveransebeskrivelser på norsk og engelsk. Dette er en tekstpresisering, uten endret funksjonelt eller regnskapsfaglig støttet omfang.
 
 Fra 0.24.2 omtaler veiviseren leveranser generelt, og fakturakontrollen bruker varer/tjenester fremfor programvare. Organisasjonsformer omtales som valg, uten å kvalifisere særregler. Dette endrer ikke dokumentert støttet regnskapsomfang eller uferdige funksjoner.
+
+Fra 0.25.0 foreslår veiviseren hvor arbeidet kan fortsette ut fra eksisterende arbeidsstatus. Direkte valg av steg beholdes, og navigasjon endrer ingen markeringer eller innstillinger.

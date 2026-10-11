@@ -491,3 +491,6 @@ NorwayWizardStateWaiting=Awaiting clarification
 NorwayWizardStateReviewed=Reviewed by administrator
 NorwayWizardStateNotApplicable=Not applicable
 NorwayWizardStateStale=Review again
+NorwayWizardResume=Continue setup
+NorwayWizardResumeHelp=This step is suggested from saved work status. You can choose another step in the overview.
+NorwayWizardResumeNone=All steps are marked reviewed or not applicable. Use the overview to revisit any step. This does not mean the accounts are approved.
