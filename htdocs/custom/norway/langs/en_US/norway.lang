@@ -82,3 +82,6 @@ NorwayInvoicePresent=Present
 NorwayInvoiceMissing=Missing or invalid
 NorwayInvoiceReview=Review required
 NorwayInvoiceRecent=The 20 most recently created invoices
+NorwayOrganisationLabel=Organisation no.
+NorwayVATEnabled=VAT is enabled in company settings. Confirm registration before charging VAT; this is not a registry check.
+NorwayVATDisabled=VAT is not enabled in company settings. New PDFs show the organisation number without MVA in the module’s sender line.

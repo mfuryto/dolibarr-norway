@@ -82,3 +82,6 @@ NorwayInvoicePresent=Utfylt
 NorwayInvoiceMissing=Mangler eller ugyldig
 NorwayInvoiceReview=Må gjennomgås
 NorwayInvoiceRecent=De 20 sist opprettede fakturaene
+NorwayOrganisationLabel=Org.nr.
+NorwayVATEnabled=MVA er aktivert i foretaksoppsettet. Bekreft registreringen før MVA-fakturering; dette er ikke en registerkontroll.
+NorwayVATDisabled=MVA er ikke aktivert i foretaksoppsettet. Nye PDF-er får organisasjonsnummer uten MVA i modulens avsenderlinje.

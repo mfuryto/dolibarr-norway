@@ -3,6 +3,7 @@
 class ActionsNorway
 {
     public $results = array();
+    public $resprints = '';
 
     public function __construct($db) {}
 
@@ -16,6 +17,27 @@ class ActionsNorway
             }));
             $this->results['bank_account'] = $bank;
         }
+        return 0;
+    }
+
+    public function pdf_build_address($parameters, &$object, &$action, $hookmanager)
+    {
+        global $conf;
+        $this->resprints = '';
+        $source = $parameters['sourcecompany'] ?? null;
+        if (($parameters['mode'] ?? '') !== 'source' || !is_object($source)
+            || ($source->country_code ?? '') !== 'NO'
+            || !in_array($object->element ?? '', array('facture', 'propal'), true)
+            || (int) ($object->entity ?? 0) !== (int) $conf->entity) { return 0; }
+        require_once __DIR__.'/NorwayReadiness.php';
+        if (!NorwayReadiness::validOrganisationNumber($source->idprof1 ?? '')) { return 0; }
+        $number = preg_replace('/[ \t]/', '', $source->idprof1);
+        $number = substr($number, 0, 3).' '.substr($number, 3, 3).' '.substr($number, 6, 3);
+        $outputlangs = $parameters['outputlangs'];
+        $outputlangs->load('norway@norway');
+        $this->resprints = $outputlangs->convToOutputCharset($outputlangs->transnoentities('NorwayOrganisationLabel').': '.$number
+            .((int) ($source->tva_assuj ?? 0) === 1 ? ' MVA' : ''));
+        // Append to the standard address through the core hook; no party fields change.
         return 0;
     }
 

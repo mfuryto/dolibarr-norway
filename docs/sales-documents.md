@@ -97,3 +97,30 @@ ikke en full nummerserieanalyse eller en sperre mot manuell nummerering via API.
 Kravgrunnlag kontrollert 2026-10-11:
 [Altinn: Faktura (salgsdokumentasjon)](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/faktura-salgsdokumentasjon/).
 En PDF er fortsatt ikke EHF. EHF/Peppol og full norsk MVA-behandling gjenstår.
+
+## Organisasjonsnummer og MVA i PDF (0.3.1)
+
+Nye tilbud, fakturaer og kreditnotaer får en egen organisasjonsnummerlinje
+øverst i avsenderadressen. Med norsk foretak, korrekt kontrollsiffer og MVA
+aktivert (`tva_assuj=1`) vises `Org.nr.: 123 456 785 MVA` på norsk og
+`Organisation no.: 123 456 785 MVA` på engelsk. Nummeret er et kunstig eksempel.
+Uten aktivert MVA vises nummeret uten suffikset i modulens linje. Ugyldig eller
+manglende nummer kompletteres ikke med oppdiktet innhold; foretaksoppsettet
+viser allerede avviket. Avsenderfeltene i databasen endres ikke.
+
+Kontroller foretaksopplysningene under Dolibarr → Oppsett → Foretak/organisasjon:
+navn, adresse, land Norge, organisasjonsnummer og faktisk MVA-status. Norsk
+moduloppsett viser nå om MVA er aktivert i Dolibarr. Modulen verken registrerer
+foretaket eller slår opp MVA-status i offentlige registre, og aktiverer ikke MVA
+ved oppdatering. En intern MVA-innstilling er ikke bevis for registrering.
+[Altinn om MVA](https://info.altinn.no/starte-og-drive/skatt-og-avgift/avgift/merverdiavgift)
+beskriver når MVA-merking skal brukes.
+
+Tilpasningen bruker standard PDF-hook og bevarer kjernens adresse og bunntekst.
+Den er prøvd med `sponge` (faktura/kreditnota) og `azur` (tilbud), på norsk og
+engelsk, med MVA aktivert/deaktivert. Kundeadresser og andre foretaks dokumenter
+berøres ikke. Eksisterende PDF-er regenereres ikke. Ved manuell regenerering
+brukes dagens foretaksstatus; ikke regenerer historiske dokumenter ukritisk.
+Andre manuelt utfylte felt, som MVA-nummer eller bunntekst, kan fremdeles vise
+MVA og må holdes korrekte av administrator. Avgiftssatser, avgiftsbehandling,
+MVA-rapport, registreringsdato og overgangshistorikk er separate arbeidsområder.
