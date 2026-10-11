@@ -12,7 +12,7 @@ Oppretting av nye journaler kan brukes også når foretaket har historikk, fordi
 
 En opprettet bankjournal kobles ikke automatisk til en bankkonto. Fortsett til steg 5 og velg bankjournal på det aktuelle bankkontokortet. Salgs-/kjøpsjournalene brukes gjennom kjernens journaloverføring; listen over journaltyper bekrefter ikke at bilagene er riktig bokført. Kasse, flere bankkonti, særskilte journaler og egne koder må vurderes i installasjonen.
 
-Ved ukjent resultat: åpne forhåndsvisningen på nytt og kontroller registeret før nytt forsøk. Ingen samlet produksjonsgodkjenning innføres. Regnskapsfaglig kontomapping, MVA, EHF, SAF-T og veiviserfremdrift er fortsatt egne leveranser.
+Ved ukjent resultat: åpne forhåndsvisningen på nytt og kontroller registeret før nytt forsøk. Ingen samlet produksjonsgodkjenning innføres. Regnskapsfaglig kontomapping, MVA, EHF og SAF-T er fortsatt egne leveranser. Veiviserens manuelle arbeidsstatus er levert separat i 0.24.0.
 
 ## Verifikasjon
 

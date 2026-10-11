@@ -10,7 +10,7 @@ Kontroller forhåndsvisningen og ha fersk backup før du bekrefter. Ingenting la
 
 Ved ukjent resultat eller tilkoblingsfeil: åpne siden på nytt og kontroller lagrede verdier før nytt forsøk. En fersk forhåndsvisning etter vellykket utfylling viser bevarte valg og ingen ny lagringsknapp. Når utfylling er sperret av historikk eller kontoplan, brukes lenken til manuelle standardkontoer etter vurdering av virkningen; funksjonen tilbyr ingen overstyringsknapp.
 
-Det finnes ingen samlet regnskapsmessig produksjonsgodkjenning. Eksisterende valg som bevares er ikke automatisk riktige. Fullt endringsspor for regnskapet, øvrige standardkontoer og lagring av veiviserfremdrift er fortsatt videre arbeid.
+Det finnes ingen samlet regnskapsmessig produksjonsgodkjenning. Eksisterende valg som bevares er ikke automatisk riktige. Fullt endringsspor for regnskapet, øvrige standardkontoer er fortsatt videre arbeid. Veiviserens manuelle arbeidsstatus er levert separat i 0.24.0.
 
 ## Verifikasjon
 

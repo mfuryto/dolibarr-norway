@@ -20,7 +20,7 @@ Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Prog
 
 ## Samlet oppsettveiledning og veiviser
 
-[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Fra 0.12.0 finnes en skrivebeskyttet veiviser med elleve steg, aktuelle kontroller og lenker til innstillinger. Fra 0.13.0 finnes separat bekreftet utfylling av tom kunde-/leverandørstandard i nytt bokføringsoppsett. Fra 0.14.0 kan manglende journaltyper opprettes etter egen forhåndsvisning og bekreftelse. Fra 0.15.0 er norske foretaksfelt og et avgrenset register av organisasjonsformer levert uten endring av foretaksvalgene. Fra 0.17.0 kan manglende bankkoblinger fylles etter bekreftelse i et avgrenset nytt oppsett med én ordinær NOK-bankkonto. Øvrige valg og fremdriftslagring gjenstår. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
+[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Fra 0.12.0 finnes en skrivebeskyttet veiviser med elleve steg, aktuelle kontroller og lenker til innstillinger. Fra 0.13.0 finnes separat bekreftet utfylling av tom kunde-/leverandørstandard i nytt bokføringsoppsett. Fra 0.14.0 kan manglende journaltyper opprettes etter egen forhåndsvisning og bekreftelse. Fra 0.15.0 er norske foretaksfelt og et avgrenset register av organisasjonsformer levert uten endring av foretaksvalgene. Fra 0.17.0 kan manglende bankkoblinger fylles etter bekreftelse i et avgrenset nytt oppsett med én ordinær NOK-bankkonto. Øvrige foretaksvalg gjenstår; manuell arbeidsstatus er levert i 0.24.0. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
 
 ## Prioritert rekkefølge
 
@@ -74,3 +74,5 @@ Fra 0.21.0 kan én [MVA-virkningsdato lagres eksplisitt](vat-registration.md), k
 Fra 0.22.0 viser [fakturaens MVA-beløp](invoice-amounts.md) lagrede linjebeløp og sammenligner netto/MVA med fakturatotalene. Null MVA krever begrunnelsesgjennomgang. Kontroll av avgiftsbehandling, hovedbok og MVA-melding gjenstår.
 
 Fra 0.23.0 har veiviseren en fast oppgaverekkefølge, forklarte knapper som åpner ny fane, og separate seksjoner for lagrede innstillinger, tilleggskontroller og avgrensninger. Navigasjonen lagrer fortsatt ikke fremdrift eller innstillinger.
+
+Fra 0.24.0 kan administrator lagre arbeidsstatus per veivisersteg. Oversikten viser status for alle steg, avgrenset til aktivt foretak. Endret organisasjonsnummer krever ny gjennomgang. Markeringene endrer ikke oppsett, dokumenter eller kontrollresultater og gir ingen produksjonsaksept.

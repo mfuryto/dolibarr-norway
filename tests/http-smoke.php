@@ -80,11 +80,28 @@ try {
                 || strpos($wizard, 'NorwayWizardLimit') !== false
                 || strpos($wizard, 'Could not read accounting setup') !== false
                 || strpos($wizard, 'Kunne ikke lese bokføringsoppsettet') !== false
-                || strpos($wizard, '<form') !== false) {
+                || substr_count($wizard, 'value="saveprogress"') !== 1
+                || substr_count($wizard, '<form') !== 1) {
                 throw new RuntimeException('Wizard step missing, untranslated, failed or writable');
             }
         }
     }
+    $wizard=request('/custom/norway/admin/wizard.php?step=1&lang=en_US');
+    if (!preg_match('/option value="([A-Za-z]+)" selected/', $wizard, $originalState)
+        || !preg_match('/name="token" value="([^"]+)"/', $wizard, $workToken)
+        || !preg_match('/name="progress_nonce" value="([^"]+)"/', $wizard, $workNonce)) { throw new RuntimeException('Work status form missing'); }
+    $workPost=array('action'=>'saveprogress','step'=>1,'workstate'=>'Waiting','token'=>html_entity_decode($workToken[1]),'progress_nonce'=>$workNonce[1]);
+    $wizard=request('/custom/norway/admin/wizard.php', $workPost);
+    if (strpos($wizard,'value="Waiting" selected')===false || strpos($wizard,'Work status saved.')===false) { throw new RuntimeException('Work status did not persist'); }
+    $wizard=request('/custom/norway/admin/wizard.php', $workPost);
+    if (strpos($wizard,'Could not save work status.')===false) { throw new RuntimeException('Replayed work status nonce accepted'); }
+    $wizard=request('/custom/norway/admin/wizard.php', array('action'=>'saveprogress','step'=>1,'workstate'=>'Reviewed','token'=>'invalid'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Work status CSRF rejection missing'); }
+    $wizard=request('/custom/norway/admin/wizard.php?step=1');
+    preg_match('/name="token" value="([^"]+)"/', $wizard, $workToken);
+    preg_match('/name="progress_nonce" value="([^"]+)"/', $wizard, $workNonce);
+    $wizard=request('/custom/norway/admin/wizard.php', array('action'=>'saveprogress','step'=>1,'workstate'=>$originalState[1],'token'=>html_entity_decode($workToken[1]),'progress_nonce'=>$workNonce[1]));
+    if (strpos($wizard,'value="'.$originalState[1].'" selected')===false) { throw new RuntimeException('Work status fixture restore failed'); }
     foreach (array(-2 => 1, 99 => 11) as $inputStep => $expectedStep) {
         $wizard = request('/custom/norway/admin/wizard.php?step='.$inputStep);
         if (strpos($wizard, $expectedStep.' / 11') === false) { throw new RuntimeException('Invalid wizard step not bounded'); }
