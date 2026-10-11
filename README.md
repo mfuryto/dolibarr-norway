@@ -13,7 +13,7 @@ Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 - [Omfang, milepæler og akseptansekriterier](docs/delivery-plan.md)
 - [Testmiljø, installasjon og drift](docs/test-and-operations.md)
 - [Kilderegister](docs/sources.md)
-- [Opprinnelig prosjektbestilling](docs/project-brief.txt)
+- [Generelle prosjektkrav](docs/project-brief.txt)
 
 ## Serverinstallasjon
 

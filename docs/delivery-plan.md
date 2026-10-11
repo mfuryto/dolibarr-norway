@@ -1,6 +1,6 @@
 # Første omfang og leveranseplan
 
-Oppdatert 2026-10-11 etter brukerens svar. Estimatene er arbeidsdager for én
+Oppdatert 2026-10-11 for den generelle testprofilen. Estimatene er arbeidsdager for én
 utvikler, med kvalifisert regnskapsfaglig gjennomgang tilgjengelig. De er
 planleggingsintervaller, ikke tilbud eller løfte om juridisk etterlevelse.
 
@@ -9,13 +9,12 @@ planleggingsintervaller, ikke tilbud eller løfte om juridisk etterlevelse.
 Første leveranse er **teknisk pilot**: ett syntetisk ENK, NOK som hovedbokvaluta,
 norske testtransaksjoner før/etter MVA-registrering, faktura, del-/helkredit,
 betaling og innenlandske innkjøp. Den avgrenser risiko og bygger testgrunnlag;
-den erstatter ikke brukerens internasjonale produksjonsbehov.
+den erstatter ikke alle internasjonale produksjonsbehov.
 
-Brukerens første produksjonsomfang må også omfatte kvalifisert EHF for aktuelle
-offentlige kunder, EUR-fakturering og -oppgjør, relevante utenlandskjøp og salg,
-samt norsk MVA-behandling for hvert faktisk scenario. Brukeren har avklart at salget foreløpig bare gjelder programvare.
-Leveringsmodell (lisens/nedlasting/SaaS), leveringssted og land er fortsatt åpne. Oppstart må
-vente på at de aktuelle arbeidsflytene har bestått.
+Et utvidet produksjonsomfang kan kreve EHF for offentlige kunder,
+EUR-fakturering og -oppgjør, utenlandskjøp/-salg og norsk MVA-behandling for hvert
+scenario. Leveringsmodell, leveringssted og land må avklares per installasjon.
+Aktuelle arbeidsflyter må bestå testene før de inngår i støttet omfang.
 
 ## Milepæler
 

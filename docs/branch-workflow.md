@@ -68,7 +68,7 @@ rapportering og skillet mellom repositorysikkerhet og sikker produksjonsdrift.
 
 ## Drift og videre utvikling
 
-Serverens installasjon ligger i `/opt/dolibarr-norway`. Standard Compose er
+Installasjonskatalogen velges av administratoren. Standard Compose er
 vedvarende drift; utviklingstester velges med `compose.test.yaml`. Oppdateringer
 leveres som én blokk med kontrollert revisjon, privat backup, helsesjekk og
 bevaring av data. Fremtidige skjemaendringer krever migrering og restore-prøve.

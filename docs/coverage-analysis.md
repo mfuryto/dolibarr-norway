@@ -20,19 +20,17 @@ modulmal, eksportkataloger og Skatteetatens XSD 1.40. Standard kjøring og modul
 livssyklus er testet i Docker. Faktura→bokføring, PDF, avslutning, EHF og SAF-T er
 ikke ferdig funksjonstestet. Funn fra fraværssøk er avgrenset til undersøkt kode.
 
-## Brukerens bekreftede mål
+## Omfang og installasjonsspesifikke avklaringer
 
-Ett ENK, ingen planlagte ansatte, primært offentlige kunder, kjøp og salg over
-landegrensene, valuta inkludert EUR. Fylkren har ennå ingen kunder. Dette er et
-større produksjonsomfang enn et rent norsk NOK-pilotløp. Brukeren har senere avklart at salget foreløpig bare gjelder programvare.
-Eksakte land, leveringsmodell (lisens/nedlasting/SaaS), kundetype og behov for
-EHF-mottak er fortsatt ukjent.
+Første testprofil dekker ett syntetisk foretak, NOK som basisvaluta og norske
+transaksjoner før og etter MVA-registrering. Programvaresalg, utenlandshandel,
+EUR og offentlige kunder er relevante utvidede scenarioer. Støtte må verifiseres
+for konkrete leveringsmodeller og transaksjoner før produksjonsbruk.
 
-Brukeren forventer MVA-registrering ved oppstart av norsk fakturering. Faktisk
-registerstatus og virkningstidspunkt er **ikke bekreftet**. Det må undersøkes for
-det gjenopplivede foretaket; ikke automatisk behandles som nyregistrert eller
-uregistrert. Registrering og eventuell forhåndsregistrering følger egne vilkår,
-ikke bare første faktura (S8). Før/etter registrering er separate testprofiler.
+Hver installasjon må avklare faktisk MVA-registerstatus og virkningsdato,
+land, vare-/tjenestetype, leveringsmodell, kundetype, ansatte og EHF-behov.
+Registrering og eventuell forhåndsregistrering følger egne vilkår og kan ikke
+utledes av første faktura (S8). Før/etter registrering er separate testprofiler.
 
 ## Dekningsmatrise
 
@@ -136,8 +134,8 @@ bør relevante utgivere spørres om norsk støtte, API, lisens og vedlikehold.
 - Skatteetatens skjema/kodelister brukes som spesifikasjon og ekstern
   valideringsreferanse. Standardkontolisten har særskilt opphavsrett og
   begrensning til SAF-T-mapping (S11); den distribueres ikke som kontoplan.
-- Lisensportalen er senere integrasjon. Ingen lesing eller endring av det
-  separate private repoet er nødvendig for denne leveransen.
+- Lisensportalen er senere integrasjon. Ingen lesing eller endring av et
+  separat integrasjonsrepo er nødvendig for denne leveransen.
 
 ## Avgjørelser før produksjon
 

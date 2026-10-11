@@ -20,7 +20,7 @@ from pathlib import Path
 root = Path(sys.argv[1])
 base = ['docker', 'compose', '--env-file', str(root/'deploy/.env'), '-p', 'configuration-check']
 # Generate settings before comparing; stdout contains no credentials.
-subprocess.run(['python3', str(root/'scripts/init-install-env.py'), '--company-name', 'SYNTHETIC INSTALLATION ONLY'], check=True)
+subprocess.run(['python3', str(root/'scripts/init-install-env.py'), '--company-name', 'SYNTHETIC INSTALLATION ONLY', '--url', 'https://accounting.example.com'], check=True)
 def config(file):
     return json.loads(subprocess.check_output(base + ['-f', str(root/file), 'config', '--format', 'json']))
 if config('compose.yaml') != config('deploy/compose.yaml'):

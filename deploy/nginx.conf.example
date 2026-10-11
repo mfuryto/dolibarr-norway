@@ -3,7 +3,7 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name regnskap.thunold-olsen.no;
+    server_name accounting.example.com;
     client_max_body_size 24m;
     add_header X-Content-Type-Options nosniff always;
 

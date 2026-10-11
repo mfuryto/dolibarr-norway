@@ -1,16 +1,13 @@
-Kopier følgende inn i det nye prosjektet:
-
----
+Prosjektkrav (generalisert)
 
 Vi skal utvikle en **norsk lokaliseringsmodul for Dolibarr**, i dette repositoryet. Modulen skal installeres som en ekstern modul, med minst mulig endring i Dolibarr-kjernen.
 
 **Bakgrunn og mål**
 
-Jeg gjenoppliver et eksisterende ENK og fører regnskapet selv. Foretaket har vært uten aktivitet i flere år. Jeg bruker Akaunting, men ønsker å bytte fordi programmet har innført begrensninger på antall foretak og brukere.
-
-Jeg ønsker én samlet økonomiløsning uten obligatorisk abonnement. Dolibarr skal kunne håndtere kunder, produkter/tjenester, priser, tilbud, ordre, faktura, kreditnota, betaling, bokføring og MVA-grunnlag.
-
-Fylkren er mitt første programvareprodukt. Det har ingen kunder ennå. Foretakets faktiske MVA-registerstatus må avklares; løsningen må støtte både tiden før og etter registrering.
+Prosjektet skal gi en gjenbrukbar norsk lokaliseringsmodul for Dolibarr.
+Løsningen skal støtte kunder, produkter/tjenester, tilbud, ordre, faktura,
+kreditnota, betaling, bokføring og etterprøvbart MVA-grunnlag.
+MVA-registerstatus og øvrige foretaksopplysninger avklares per installasjon.
 
 **Arkitektur**
 
@@ -21,10 +18,8 @@ Fylkren er mitt første programvareprodukt. Det har ingen kunder ennå. Foretake
 - Generelle feilrettinger bør kunne foreslås tilbake til Dolibarr.
 - Ingen reelle regnskapsdata, bilag, personopplysninger eller hemmeligheter skal inn i Git.
 
-En separat lisensportal finnes i det private repositoryet:
-https://github.com/mfuryto/thunold-olsen-licensing
-
-Portalen håndterer Instance ID, nodeantall, lisensgyldighet, signering og sikker levering. Fremtidig integrasjon skal la Dolibarr eie den kommersielle og regnskapsmessige flyten, mens portalen eier lisensutstedelsen. Integrasjonen er en senere leveranse.
+En eventuell integrasjon mot lisensutstedelse er en senere, separat leveranse.
+Ingen installasjonsspesifikke systemer eller adresser inngår i prosjektkravene.
 
 **Funn fra innledende undersøkelse**
 
@@ -68,7 +63,7 @@ Gjennomgå repositoryet og lag en konkret teknisk dekningsanalyse før større i
 - Undersøk eksisterende norske moduler og relevant gjenbruk.
 - Skill mellom standardfunksjoner, nødvendig oppsett, modulutvikling og uavklarte krav.
 - Undersøk om Dolibarr lagrer alle opplysninger som norsk SAF-T og MVA-grunnlag trenger. Identifiser eventuelle datagap tidlig.
-- Foreslå et avgrenset første omfang for ENK-et.
+- Foreslå et avgrenset første omfang for et syntetisk foretak.
 - Opprett deretter et installerbart modulgrunnlag, isolert testmiljø og syntetiske testdata.
 
 Testene skal kontrollere mer enn skjemaformat: debet/kredit, åpnings- og sluttsaldoer, avgiftsgrunnlag, kreditnotaer, betalinger og sporbarhet må avstemmes mot regnskapet.
@@ -85,5 +80,3 @@ Bruk gjeldende primærkilder og noter dato og versjon for vurderingene:
 - [Portugisisk SAF-T-modul](https://www.dolistore.com/product.php?id=1981&l=en)
 
 Tidligere tidsanslag var foreløpige og skal erstattes med estimater basert på kildekontroll og fastsatt omfang. Modulen skal ikke omtales som ferdig for norsk regnskap før støttede arbeidsflyter og kontroller er dokumentert og testet.
-
----
