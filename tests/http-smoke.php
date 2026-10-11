@@ -73,6 +73,22 @@ try {
             && strpos(html_entity_decode($preview, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'Konflikt – eksisterende konto bevares') === false)) {
         throw new RuntimeException('Chart preview failed or label HTML not escaped');
     }
+    if (strpos($preview, 'value="importchart"') !== false) { throw new RuntimeException('Conflicting preview offers import'); }
+    if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)) { throw new RuntimeException('Preview token missing'); }
+    $number = (string) random_int(89000000, 89999999);
+    $preview = request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => html_entity_decode($previewToken[1]),
+        'chart_csv' => "account_number;label\n".$number.';Synthetic HTTP import'));
+    if (!preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/', $preview, $nonce)
+        || !preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)) { throw new RuntimeException('Import confirmation missing'); }
+    $preview = request('/custom/norway/admin/chart.php', array('action' => 'importchart', 'token' => html_entity_decode($previewToken[1]), 'preview_nonce' => $nonce[1]));
+    if (strpos($preview, 'Created 1 new accounts') === false && strpos($preview, 'Opprettet 1 nye kontoer') === false) {
+        throw new RuntimeException('Confirmed HTTP import failed');
+    }
+    if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)) { throw new RuntimeException('Import result token missing'); }
+    $preview = request('/custom/norway/admin/chart.php', array('action' => 'importchart', 'token' => html_entity_decode($previewToken[1]), 'preview_nonce' => $nonce[1]));
+    if (strpos($preview, 'Preview expired, changed') === false && strpos($preview, 'Forhåndsvisningen er utløpt, endret') === false) {
+        throw new RuntimeException('Consumed preview can be replayed');
+    }
     if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)) { throw new RuntimeException('Preview token missing'); }
     $preview = request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => html_entity_decode($previewToken[1]), 'chart_csv' => 'invalid'));
     if (strpos($preview, 'Invalid CSV, duplicate') === false && strpos($preview, 'Ugyldig CSV, duplikat') === false) {
@@ -80,6 +96,8 @@ try {
     }
     request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => 'invalid', 'chart_csv' => 'invalid'));
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart preview CSRF rejection missing'); }
+    request('/custom/norway/admin/chart.php', array('action' => 'importchart', 'token' => 'invalid', 'preview_nonce' => 'invalid'));
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart import CSRF rejection missing'); }
     $registry = request('/custom/norway/admin/registry.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || !preg_match('/name="token"[^>]*value="([^"]+)"/', $registry, $registryToken)

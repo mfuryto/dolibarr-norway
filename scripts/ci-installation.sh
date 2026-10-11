@@ -67,7 +67,7 @@ export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.7.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.8.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
 "${compose[@]}" exec -T web php <<'PHPTEST'
 <?php
@@ -107,6 +107,12 @@ backup_dir=$(find "$NORWAY_BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d)
 test -f "$backup_dir/COMPLETE"
 (cd "$backup_dir" && sha256sum -c SHA256SUMS)
 "${compose[@]}" exec -T web rm -f /var/www/html/custom/synthetic-other-module/retained
+"${compose[@]}" exec -T web php <<'PHPCHART'
+<?php
+require '/var/www/html/master.inc.php';
+if (getenv('DOLI_COMPANY_NAME') !== 'SYNTHETIC INSTALLATION ONLY') { exit(1); }
+if (!$db->query("UPDATE ".$db->prefix()."accounting_account SET label='SYNTHETIC-CORRUPTED' WHERE fk_pcg_version='SYN-BACKUP' AND account_number='8891'")) { exit(1); }
+PHPCHART
 web_id=$("${compose[@]}" ps -q web)
 "${compose[@]}" stop web
 "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb -uroot accounting -e "DROP TABLE llx_const"'

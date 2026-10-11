@@ -45,5 +45,6 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/eur-pricing.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-workflow.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-preview.php
+"${compose[@]}" exec -T web php /opt/norway-tests/chart-import.php
 "${compose[@]}" exec -T web php /opt/norway-tests/ledger-audit.php
 "${compose[@]}" exec -T web php /opt/norway-tests/http-smoke.php
