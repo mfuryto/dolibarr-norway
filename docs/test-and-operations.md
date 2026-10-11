@@ -127,3 +127,13 @@ for eldre installasjoner; image-ID og selve imaget bevares likevel.
 Negative tester bekrefter at manglende miljøfil, staging-gren, skitten checkout
 og parallell oppdatering avvises før Docker kjøres. Dette er teknisk driftsprøve,
 ikke økonomisk produksjonsaksept eller full restore-prøve av faktisk server.
+
+## Migrering til prosjektlokale datamapper
+
+Installasjonstesten starter med navngitte volumer og oppdaterer til bind-monterte
+`data/database`, `data/documents` og `data/config`. En syntetisk DB-verdi og et
+syntetisk vedlegg må bevares både ved migrering og ved senere restore. Testen
+kontrollerer monteringsstedene og at ny migreringskjøring er idempotent.
+Blandet lagring og utviklingsdatabase avvises før stopp eller kopiering.
+Originalvolumer beholdes i drift; CI fjerner bare sitt eget isolerte testprosjekt.
+Datamappene og standard backupmappe er ekskludert fra Git og Docker-byggekontekst.

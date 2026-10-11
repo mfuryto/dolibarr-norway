@@ -9,7 +9,7 @@ services:
       MARIADB_USER: accounting
       MARIADB_PASSWORD: ${DB_PASSWORD:?Generate deploy/.env first}
     volumes:
-      - db:/var/lib/mysql
+      - ../data/database:/var/lib/mysql
     healthcheck:
       test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
       interval: 5s
@@ -48,8 +48,8 @@ services:
       PHP_INI_POST_MAX_SIZE: 24M
     ports: ['127.0.0.1:8088:80']
     volumes:
-      - documents:/var/www/documents
-      - conf:/var/www/html/conf
+      - ../data/documents:/var/www/documents
+      - ../data/config:/var/www/html/conf
     networks: [database, frontend]
     healthcheck:
       test: [CMD, curl, --fail, --silent, --output, /dev/null, --header, 'X-Forwarded-Proto: https', 'http://127.0.0.1/index.php']
@@ -60,10 +60,6 @@ services:
     logging:
       driver: local
       options: {max-size: 10m, max-file: '3'}
-volumes:
-  db:
-  documents:
-  conf:
 networks:
   database:
     internal: true

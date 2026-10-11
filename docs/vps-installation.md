@@ -92,8 +92,8 @@ kontoplan, kontokoblinger og fakturanummerering må avklares separat.
 
 ## Data, oppdatering og backup
 
-Dette bruker et eget Compose-prosjekt `dolibarr-norway-accounting` og egne volumer
-for database, dokumenter og Dolibarr-konfigurasjon. Modulfilene følger Docker-imaget.
+Dette bruker et eget Compose-prosjekt `dolibarr-norway-accounting` og persistente mapper
+`data/database`, `data/documents` og `data/config` under prosjektroten. Modulfilene følger Docker-imaget.
 Ikke bland miljøet med prosjektets `compose.test.yaml`, som er syntetisk utviklingstest.
 
 Normal stopp og start bevarer data:
@@ -112,7 +112,7 @@ Staging er utvikling. Noter `git rev-parse HEAD` ved installasjon og oppdater
 bare bevisst til en kontrollert revisjon; ikke sett opp automatisk `git pull`
 og omstart. Main inneholder det promoterte tekniske driftsgrunnlaget; norsk regnskapsdekning er fortsatt uferdig. Modulen
 støtter bare Dolibarr 24.0.1; oppgrader ikke kjernen uavhengig av kompatibilitetstest.
-Ved godkjent moduloppdatering bygges imaget på nytt; vedlegg/DB/conf blir i volumene.
+Ved godkjent moduloppdatering bygges imaget på nytt; vedlegg/DB/conf blir i datamappene.
 
 ## Kilder
 
@@ -127,8 +127,8 @@ Dolibarr 24.0.1. TLS og DNS konfigureres av den enkelte administrator.
 
 Serveren bruker `deploy/compose.yaml`, databasen `accounting` og prosjektet
 `dolibarr-norway-accounting`. Standard `compose.yaml` beskriver samme drift;
-`compose.test.yaml` er kun eksplisitt utviklingstest. Eksisterende driftsvolumer
-og prosjektnavn beholdes. Ingen automatisk flytting av data fra testmiljøet.
+`compose.test.yaml` er kun eksplisitt utviklingstest. Prosjektnavnet beholdes. Eksisterende navngitte driftsvolumer migreres
+til prosjektets datamapper før containerne erstattes. Originalvolumene slettes ikke. Ingen automatisk flytting av data fra testmiljøet.
 
 Hver leveranse oppgir en kontrollert revisjon og én kommandoblokk for serveren.
 Ikke oppdater drift automatisk fra en bevegelig staging-gren. Utvikling skjer
@@ -139,7 +139,7 @@ stabil drift er ikke godkjenning av norsk MVA, SAF-T eller EHF.
 dokumentene, konfigurasjonen, miljøfilen og det kjørende Docker-imaget. Web
 stoppes under snapshot og startes igjen etterpå. Andre skribenter eller
 integrasjoner mot databasen må også være stoppet. Backup lagres som standard i
-`../dolibarr-backups` relativt til prosjektets rot, med begrensede rettigheter.
+`backups` under prosjektets rot, med begrensede rettigheter.
 Brukeren som kjører oppdateringen må kunne skrive der. `NORWAY_BACKUP_DIR` kan velge annen privat katalog. Backups slettes ikke
 automatisk; de inneholder hemmeligheter og må kopieres kryptert til separat
 lagring med en avtalt oppbevaringsrutine.
@@ -161,10 +161,29 @@ må dokumentere kompatibilitet og restore før de tas inn i en leveranse.
 Gjenoppretting gjøres først i et separat miljø: kontroller `COMPLETE` og
 `sha256sum -c SHA256SUMS`, last `web-image.tar.gz` med `docker image load`, og bruk
 lagret Compose-oppsett med det konkrete image-ID-et (erstatt `build` med `image`).
-Bruk eget prosjektnavn, egne tomme volumer og en annen localhost-port. Gjenopprett
+Bruk eget prosjektnavn, egne tomme datamapper og en annen localhost-port. Gjenopprett
 miljøfilen privat, med samme instansnøkkel. Start bare DB, importer
 `database.sql.gz` til `accounting`, og pakk dokument-/konfigurasjonsarkivene ut i
-sine respektive volumer før web startes. Kontroller versjon, bilag, vedlegg,
+sine respektive datamapper før web startes. Kontroller versjon, bilag, vedlegg,
 reskontro og saldoer før eventuell bytting av proxy. CI prøver backup,
 kontrollsummer og gjenoppretting av syntetisk DB/dokument/config; full økonomisk
 restore-aksept for reelle data krever fortsatt en separat driftsprøve.
+
+
+### Lokal persistent lagring
+
+Alle installasjonens aktive persistente data lagres som standard under
+prosjektroten: `data/database` (MariaDB), `data/documents` (vedlegg og låsefil),
+`data/config` (Dolibarr-konfigurasjon), `deploy/.env` (hemmeligheter) og `backups`
+(sikkerhetskopier). Data og backup er utelatt fra Git og Docker-byggekonteksten.
+Docker-imager, containere og logger forvaltes fortsatt av Docker utenfor prosjektet.
+
+Oppdateringsskriptet tar backup før det kopierer eksisterende navngitte volumer.
+Både web og database stoppes under kopieringen. Filinnhold sammenlignes, eierskap
+bevares, og originalvolumene beholdes. Ikke-tomme målmapper eller ukjent lagring
+stopper automatisk migrering. Ved kopieringsfeil startes de opprinnelige containerne
+igjen; delvise kopier må gjennomgås før nytt forsøk. Ikke bruk manuell `up` for å
+oppgradere fra det gamle volumoppsettet, da det kan starte en tom installasjon.
+Nye installasjoner bruker datamappene direkte. En komplett sikkerhetskopi må
+fortsatt kopieres til separat lagring; prosjektmappen alene beskytter ikke mot
+server- eller diskfeil.
