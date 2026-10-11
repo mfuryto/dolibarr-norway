@@ -1,77 +1,56 @@
-# Første omfang og leveranseplan
+# Videre utviklingsplan
 
-Oppdatert 2026-10-11 for den generelle testprofilen. Estimatene er arbeidsdager for én
-utvikler, med kvalifisert regnskapsfaglig gjennomgang tilgjengelig. De er
-planleggingsintervaller, ikke tilbud eller løfte om juridisk etterlevelse.
+Oppdatert 2026-10-11. Dette er arbeidsrekkefølgen, ikke en påstand om at norsk produksjonsregnskap er ferdig. Hver leveranse utvikles på staging, testes isolert og promoteres gjennom PR til main. Drift oppdateres med backup og kontrollert revisjon. Bare main og staging brukes.
 
-## Avgrenset første leveranse
+## Avklart omfang
 
-Første leveranse er **teknisk pilot**: ett syntetisk ENK, NOK som hovedbokvaluta,
-norske testtransaksjoner før/etter MVA-registrering, faktura, del-/helkredit,
-betaling og innenlandske innkjøp. Den avgrenser risiko og bygger testgrunnlag;
-den erstatter ikke alle internasjonale produksjonsbehov.
+Ett foretak, ENK uten ansatte i første omfang. Programvare er første salgsområde, med offentlige kunder og mulig utenlandskjøp/-salg. Salgsdokumenter og krav føres i NOK. EUR er bare veiledende prisvisning. Norsk og engelsk støttes på tilbud og faktura. Sjekker og sjekkinnskudd skal ikke brukes. Lisensintegrasjon kommer senere som en valgfri generell adapter.
 
-Et utvidet produksjonsomfang kan kreve EHF for offentlige kunder,
-utenlandskjøp/-salg og norsk MVA-behandling for hvert
-scenario. Leveringsmodell, leveringssted og land må avklares per installasjon.
-Aktuelle arbeidsflyter må bestå testene før de inngår i støttet omfang.
+Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Programvarens leveringsmodell, land og kundetype må avklares før utenlandske avgiftsscenarioer kvalifiseres. Ingen automatisk antakelse om registrering ved første faktura.
 
-## Milepæler
+## Det som allerede er levert
 
-| Trinn | Leveranse og ferdigkriterium | Foreløpig innsats |
+- Vedvarende Docker-drift, oppdatering med privat backup, installasjonskontroll og testet gjenoppretting. Standard drift og syntetiske testmiljøer er adskilt.
+- Ekstern modul uten endring av Dolibarr-kjernen; støttet og låst testversjon er 24.0.1. Ny kjerneversjon krever egen kompatibilitetstest og tilgjengelig offisielt image.
+- NOK-begrensning, norsk/engelsk PDF, organisasjonsnummer/MVA-identitet og fjerning av sjekkfunksjoner.
+- Grunnleggende fakturakontroll ved validering, kildefaktura for kreditnota og syntetiske tester av nummerering, betaling, hovedbok og PDF.
+- Skrivebeskyttet bilagskontroll av balanse og kundedokumentkoblinger. Denne avstemmer ikke reskontro eller MVA.
+- Manuelt registeroppslag for dagens MVA-status. Ingen automatiske innstillingsendringer eller historisk registreringsbekreftelse.
+- CSS-tilpasninger prøvd på Eldy-tema og representative sider/skjermbredder.
+
+## Prioritert rekkefølge
+
+| Trinn | Arbeid | Når deltrinnet er ferdig |
 |---|---|---|
-| 0 | Dekningsanalyse, modulgrunnlag, Docker og syntetiske avstemminger (denne leveransen) | Grunnlag levert; videre analyse under følger |
-| 1 | Avklare status/land/varer-tjenester, saldoer og feltmatrise mot 1.40; demonstrere faktura→hovedbok i NOK | 3–6 dager |
-| 2 | Avgrenset kontoplan, næringsmapping, norske koder/gyldighet og registreringsprofiler; test repeterbar import | 5–9 dager |
-| 3 | Bokført avgiftsmetadata, sporbar MVA-rapport, korreksjon, periodekontroll og norske PDF-krav | 8–15 dager |
-| 4 | SAF-T 1.40, komplette saldoer/reskontro, validering og negative tester | 10–18 dager |
-| 5 | Utenlandskjøp/-salg i NOK og alle avklarte avgiftsbehandlinger | 8–16 dager etter scenarioavklaring |
-| 6 | EHF/Peppol-kvalifisering, mottakeraksept og driftsprøve | 4–8 dager pluss leverandør-/tilgangspunktventing |
-| 7 | Regnskapsfaglig kontroll, restore-prøve og begrenset produksjonsaksept | 4–7 dager |
+| 1a – levert i 0.6.0 | Skrivebeskyttet kontroll av valgt kontoplan, aktive kontoer, standardkontokoblinger og journaler | Viser mangler/inaktive kontoer uten å endre oppsett; tester foretak- og kontoplanavgrensning, databasefeil og webtilgang |
+| 1b | Avgrenset norsk kontoplan med versjonert mapping og forhåndsvisning av import | Repeterbar import uten dubletter, endring av brukte kontoer eller historikk; konfliktkontroll, backup og gjenopprettingsprøve |
+| 2 | Registreringsperioder og norske avgiftsbehandlinger; bokført avgiftsmetadata og sporbar MVA-rapport | Grunnlag og avgift avstemmes mot hovedbok; før/etter registrering, korreksjoner og fradrag er testet; manglende mapping vises som feil |
+| 3 | Fordringer, leverandørgjeld og bankavstemming | Inngående saldo + bevegelser = utgående saldo; reskontro stemmer med kontrollkontoer; delbetaling, kreditering, refusjon og gebyrer er prøvd |
+| 4 | Programvare og avklarte utenlandsscenarioer i NOK | Land, kundetype og leveringsmodell er dokumentert; relevante kjøp/salg og eventuell omvendt avgiftsplikt er faglig vurdert og testet |
+| 5a | EHF/Peppol for offentlige kunder | Løsning og tilgangspunkt er kvalifisert for norsk profil; referanser og kreditnota er validert og akseptert av testmottaker |
+| 5b | Norsk SAF-T-eksport mot fast offisielt skjema og kodelister | Kontoer, avgift, motparter, saldoer og totalsummer er komplette og avstemt; XSD og egne innholdskontroller består |
+| 6 | Periodelåsing, endringsspor, oppbevaring og produksjonsaksept | Rettigheter og retting er prøvd; backup gir samme saldoer og dokumenter på separat instans; støttede scenarioer er regnskapsfaglig gjennomgått |
 
-Trinn 1–7: foreløpig 42–79 arbeidsdager, uten full Akaunting-migrering,
-ny bankintegrasjon, automatisk innsending eller lisensportal. Reestimer etter
-trinn 1; særlig utenlandsomfang og EHF-avtale kan endre både tid og kostnader.
+EHF-avklaring kan gjøres parallelt med tidligere trinn, fordi tilgangspunkt og mottakertest kan ta tid. Implementering av SAF-T bygger på kontoplan, avgiftsmetadata og komplette saldoer. EHF og SAF-T er separate leveranser og kan ikke erstatte hverandre.
 
-## Akseptansetester før produksjon
+## Første del gjennomført; neste leveranse
 
-- Kontoplan kan installeres om igjen uten duplikater eller endring av brukte
-  kontoer. Alle eksporterte kontoer har riktig, versjonert næringsmapping.
-- Før registrering: salg uten oppkrevd MVA; innkjøp bokføres med riktig
-  brutto kostnad når fradrag ikke foreligger. Overgangsdato og eventuell
-  tilbakegående behandling må være regnskapsfaglig avklart og egne tester.
-- Etter registrering: norske fakturaer med korrekte satser/koder, rabatter,
-  blandede avgiftsbehandlinger, avrunding, full/delvis kreditering og refusjon.
-- Hver journalpost balanserer. Inngående saldo + bevegelser = utgående saldo
-  per konto og motpart, også ved delperiode og årsskifte. Reskontro =
-  kontrollkontoer; betaling = bank, med særskilte gebyr-/kursdifferanser.
-- MVA-rapport viser grunnlag/avgift per behandling og lenke til bilag/linje;
-  summer avstemmes mot hovedbok. Manglende bilag, mapping eller ubalanse
-  stopper eksport med forklarbar feil; ingen lydløs utelatelse.
-- Salgsdokumenter og krav er i NOK. EUR brukes kun som veiledende pris,
-  ikke som fakturavaluta. Gebyrer og avvik ved bankens veksling avstemmes
-  separat. Utenlandske innkjøp og relevant omvendt avgiftsplikt/eksport
-  trenger egne avklarte og testede scenarioer før de støttes.
-- PDF viser relevante norske fakturaopplysninger, maskinell nummerserie,
-  leveringssted/-tid og kildefaktura på kreditnota. Historiske dokumenter
-  endres ikke ved nytt oppsett. EHF aksepteres av valgt offentlig mottaker.
-- SAF-T 1.40 validerer mot fast offisielt skjema og innholdskontroller:
-  linjer, konto-/avgiftsmapping, motparter, perioder, totalsummer, saldoer,
-  sporbarhet og dublett-/entity-kontroller. Tom periode og årsskifte testes.
-- Låste perioder og validerte bilag kan ikke endres av vanlige brukere.
-  Retting skjer med sporbare nye poster; kontroller også adminrutiner,
-  import og gjenåpning. Hvilke bokføringsspesifikasjoner som dekkes av
-  hvilke rapporter dokumenteres eksplisitt.
-- Backup av database, dokumenter og konfigurasjon gjenopprettes på separat
-  instans og gir samme saldoer/rapporter/dokumenthash. Oppbevaring og
-  tilgang må være dokumentert. Sletting av testvolumer er ingen driftsrutine.
+Kontrollsiden i trinn 1a viser valgt kontoplan, aktive/alle kontoer, åtte standardkontoer for kunde, leverandør, produkt/tjeneste kjøp/salg og inngående/utgående MVA, samt aktive salgs-, kjøps-, bank- og diversejournaler. Den skiller manglende, inaktiv, tvetydig og ikke angitt kobling.
 
-Modulen kan ikke omtales som ferdig for norsk regnskap før støttede scenarier,
-begrensninger og bevis er publisert og godkjent for faktisk produksjonsomfang.
+Standardkontoer er reservekoblinger. Fravær beviser ikke at all bokføring er umulig, fordi produkt-/kunde-/linjekoblinger kan finnes. En tilgjengelig konto bekrefter heller ikke riktig norsk kontonummer eller avgiftsbehandling. Ingen samlet grønn «produksjonsklar»-status innføres. Neste implementering er trinn 1b: kontoplan og mapping med importforhåndsvisning.
 
-## Oppdatert salgsomfang
+## Avklaringer som gjenstår
 
-NOK er eneste støttede salgsvaluta; EUR er bare et veiledende prisanslag.
-Fakturakontroll i modul 0.3.0 viser utfylte felt og kreditnotakobling, med
-obligatorisk separat gjennomgang av nummerrekke, levering, MVA og PDF.
-Dette er et deltrinn og avslutter ikke milepæl 3 eller produksjonsaksept.
+- MVA-registreringens faktiske virkningsdato og eventuell behandling før registrering.
+- Om programvaren leveres som nedlasting, lisens, abonnement/SaaS eller andre tjenester, og hvilke land/kundetyper som brukes.
+- Eventuelle inngående saldoer og åpne poster fra tidligere regnskapssystem; migrering er et eget avstemmingsarbeid.
+- Offentlige mottakeres EHF-/ordrereferanser og valg av tilgangspunkt.
+- Regnskapsfaglig gjennomgang av kontoplan, mapping, avgiftsbehandling og konkret produksjonsomfang.
+
+Disse avklaringene stopper ikke skrivebeskyttede kontroller eller utvikling med syntetiske data. De må foreligge før avhengige scenarioer godkjennes for bruk.
+
+## Fast ferdigkriterium per leveranse
+
+Relevant kode- og integrasjonstest, dokumentert støttet omfang og kjente begrensninger, ingen reelle bilag eller hemmeligheter i Git, godkjente CI-kontroller og PR fra staging til main. Skjemaendringer krever versjonert migrering, backup og restore-prøve. Nye funksjoner skal bevare eksisterende bilag, passord, lagring og instansnøkkel.
+
+Se [dekningsanalysen](coverage-analysis.md), [kilderegisteret](sources.md) og [test og drift](test-and-operations.md). Ingen tidsestimat fastsettes før de større avgifts- og integrasjonsavklaringene er gjort.
