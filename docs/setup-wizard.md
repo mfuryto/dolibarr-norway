@@ -1,29 +1,73 @@
 # Norsk oppsettsveiviser
 
-Fra modul 0.12.0: Åpne Norway-moduloppsettet og velg **Norsk oppsettsveiviser**. Administrator med aktiv Norway-modul kreves. Siden er skrivebeskyttet og bruker aktivt foretak. Den gjør ingen eksterne oppslag ved åpning og bruker ikke produksjonsdata som testdata.
+Åpne Norway-moduloppsettet → **Norsk oppsettsveiviser**. Administrator med aktiv
+Norway-modul kreves. Veiviseren bruker aktivt foretak og gjør ingen eksterne oppslag
+ved åpning.
 
-Elleve steg følger [samlet norsk oppsettveiledning](norwegian-setup-guide.md): virksomhet/avgrensning; foretak/tilgang; MVA; kontoplan/journaler; bank; motparter/programvare; salgsdokumenter; offentlig/utland; saldoer/perioder; rapportering/oppbevaring; gjennomgang før bruk. Alle tekster finnes på norsk bokmål og engelsk. Oversikten lar administratoren hoppe mellom stegene, og forrige/neste endrer bare siden som vises.
+## Slik bruker du den
 
-Fra 0.23.0 har hvert steg en kort innledning, nummererte oppgaver og «Før du går videre». Oppgaver forklarer hvor du skal gjøre endringen, hva du skal fylle inn og når oppgaven gjelder. Innstillingsknapper åpner en ny fane; lagring skjer der, og veiviseren beholder plassen i den opprinnelige fanen. Manuelle steg sier uttrykkelig at de avklares utenfor systemet.
+Elleve steg følger [samlet norsk oppsettveiledning](norwegian-setup-guide.md).
+Hvert steg viser en kort innledning, nummererte oppgaver og «Før du går videre».
+Knapper åpner innstillingssiden i en ny fane: gjør og lagre endringene der, og gå
+tilbake til veiviseren. Manuelle oppgaver uten knapp avklares utenfor systemet.
 
-Lagrede innstillinger vises under «Vis dagens innstillinger (kun lesing)», ikke som utfyllingsfelt. Tilleggskontroller og avanserte innstillinger er samlet i en egen, lukket seksjon med forklaring per lenke. Begrensninger har en egen seksjon. Teknisk navngitte standardkontoer har forståelige etiketter i veiviseren. Ingen innstillinger eller regnskapsdata endres ved åpning eller navigasjon. Foretakssteget leser eksisterende navn-/adresse-/nummer-/land-/valutakontroller. MVA-steget viser nåværende innstilling uten å behandle den som historisk registreringsbevis. Konto-/journalsteget bruker den eksisterende oppsettskontrollen. Banksteget bruker samme foretak-/planavgrensede bankkontroll som oppsettssiden. Fakturasteget viser NOK og dokumentenes språkinnstilling uten å godkjenne nummerering eller PDF-innhold.
+Lagrede innstillinger ligger under «Vis dagens innstillinger (kun lesing)».
+Dette er ikke utfyllingsfelt. Tilleggskontroller og avanserte innstillinger ligger
+separat med forklaring per lenke. Begrensninger har en egen seksjon.
 
-Det finnes ingen ferdigknapp eller samlet produksjonsklar-status. Manuelle valg, ikke relevant, ansvarlig, begrunnelse og kontrollbevis må foreløpig dokumenteres separat. Veiviseren lagrer ikke fremdrift, standardkontoer eller andre innstillinger. Den viser lenker til oppsettsider der administratoren selv kan gjøre endringer. Fra 0.13.0 lenker kontoplansteget til [bekreftet utfylling av kunde-/leverandørkonto](default-accounts.md). Lagringen skjer på en separat bekreftelsesside; veivisernavigasjonen lagrer fortsatt ikke valg eller fremdrift. Fra 0.14.0 lenker samme steg også til [bekreftet oppretting av manglende journaltyper](journal-setup.md). Bankkobling velges fortsatt separat. Andre kontoforslag og fremdriftslagring gjenstår; uimplementerte MVA-/EHF-/SAF-T-funksjoner kan ikke kvitteres bort.
+Fra 0.24.0 kan du velge **Din arbeidsstatus** nederst i hvert steg og trykke
+**Lagre arbeidsstatus**:
+
+- Ikke startet
+- Pågår
+- Avventer avklaring
+- Gjennomgått av administrator
+- Ikke relevant
+
+Åpne «Vis alle elleve steg og arbeidsstatus» for å finne frem igjen. Status vises
+også øverst i det aktuelle steget, bevares etter ny innlogging og deles mellom
+administratorer i samme foretak. Forrige/neste bytter side uten å lagre status.
+Alle steg kan fortsatt åpnes uansett arbeidsstatus.
+
+«Gjennomgått» er administratorens egen, redigerbare markering. Det er ingen
+ferdigknapp, samlet grønn status eller produksjonsgodkjenning. Ingen innstillinger,
+bilag eller kontrollresultater endres. Begrunnelser, kontrollbevis og faglig
+ansvar må fortsatt dokumenteres separat. MVA, EHF og SAF-T som ikke er levert,
+blir ikke ferdige ved å markere et steg som gjennomgått eller ikke relevant.
+
+## Lagring og avgrensning
+
+Ett versjonert JSON-objekt per steg lagres i kjernens eksisterende konstanttabell,
+kun i aktivt foretak. Det inneholder steg, arbeidsstatus, organisasjonsnummer,
+bruker-ID og UTC-tid for siste lagring. Ingen fritekst eller dokumentvedlegg lagres.
+Det er ingen nye tabeller eller skjemaendringer. Vanlig databasebackup inkluderer
+markeringene. Dette er siste arbeidsstatus, ikke et uforanderlig revisjonsspor.
+
+Hvis organisasjonsnummeret endres, vises «Må gjennomgås på nytt». Gammel status
+blir ikke tolket som gjeldende for den nye identiteten. Ny gjennomgang og eksplisitt
+lagring knytter markeringen til den aktuelle identiteten. Andre oppsettsendringer
+oppdages ikke automatisk; vurder selv om arbeidsstatus må endres.
+
+Lagring krever administrator, POST, CSRF-token og en engangsbekreftelse bundet til
+steg, foretak, bruker og identitet. Endret status etter sideåpning avvises under
+transaksjonslås. Last siden på nytt hvis en annen fane eller administrator har
+endret den. Lesefeil gir synlig feil og sperrer statuslagring, mens oppgavene
+fortsatt kan leses. Markeringer arves ikke fra andre foretak eller globale valg.
+
+## Oppsettsider og kontroller
+
+- Steg 2: [foretaksfelt og automatisk tomt MVA-nummer](company-setup.md).
+- Steg 3: [første MVA-virkningsdato](vat-registration.md) og [MVA-kontokontroll](vat-setup.md).
+- Steg 4: [norsk kontoplan](norwegian-chart.md), [kunde-/leverandørstandard](default-accounts.md), øvrige standardkontoer og [journaler](journal-setup.md).
+- Steg 5: [bekreftet bankkobling](bank-defaults.md) i avgrenset nytt NOK-oppsett.
+- Steg 7: [dokumentoppsett](document-setup.md) og [fakturaens MVA-beløp](invoice-amounts.md).
+- Steg 9: [periodediagnostikk](period-setup.md) og separat bilagskontroll.
 
 ## Verifikasjon
 
-Autentisert HTTP-test åpner alle elleve steg på nb_NO og en_US, kontrollerer navigasjon, lesefeil og manglende oversetting samt avgrensing av ugyldige stegnumre. Uautentisert bruker får ikke veiviserinnhold. Eksisterende databasetester dekker kontrollklassene og isolering mellom foretak/planer. Nettleserprøven inkluderer alle elleve steg med lukkede og åpne detaljseksjoner ved fire skjermbredder; den er ingen regnskapsfaglig aksept. Det er ingen nye tabeller eller migreringer.
-
-Fra 0.15.0 forklarer steg 2 forskjellen på organisasjonsnummer, MVA-nummer og organisasjonsform. Foretaksoppsettet har tydelige norske feltnavn og norske organisasjonsformer, uten automatisk valg. Se [foretaksoppsett](company-setup.md).
-
-Fra 0.17.0 lenker steg 5 til separat [bekreftet bankkobling](bank-defaults.md) for ett avgrenset nytt NOK-oppsett. Veiviseren i seg selv er fortsatt skrivebeskyttet.
-
-Fra 0.18.0 lenker steg 7 til [kontroll av dokumentoppsett](document-setup.md). Ingen numre reserveres og ingen dokumenter endres.
-
-Fra 0.19.0 lenker steg 9 til [kontroll av regnskapsperioder](period-setup.md). Ingen perioder åpnes/lukkes.
-
-Fra 0.20.0 lenker steg 3 til [kontroll av MVA-kontokoblinger](vat-setup.md). Ingen avgiftsoppsett eller bilag endres.
-
-Fra 0.21.0 lenker steg 3 til [bekreftet første MVA-virkningsdato](vat-registration.md). Veiviseren i seg selv lagrer fortsatt ingen valg.
-
-Fra 0.22.0 viser fakturakontrollen i steg 7 også [lagrede MVA-beløp](invoice-amounts.md), linjesummer og eventuelle avvik mot fakturatotalene. Dette er lesekontroll, uten godkjenning av avgiftsbehandling.
+Autentisert HTTP-test åpner alle elleve steg på norsk og engelsk, prøver lagring,
+gjenåpning, nonce-gjenbruk og CSRF-avvisning. Databasetester dekker statusvalg,
+foretak/steg, administratortilgang, endret identitet, ugyldige data og gamle
+lagringsforsøk. Backup-/gjenopprettingsprøven kontrollerer en syntetisk arbeidsstatus.
+Nettleserprøven inkluderer alle steg med åpne og lukkede detaljer ved fire
+skjermbredder. Testene er ingen regnskapsfaglig aksept.

@@ -9,6 +9,7 @@ require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRegistration.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayWizardProgress.php';
 $registration=NorwayVatRegistration::read($db,$conf->entity,'123456785');
 if ($registration['status']!=='Recorded' || $registration['start']!=='2024-02-29') { throw new RuntimeException('Confirmed registration date lost'); }
 foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400') as $key=>$value) {
@@ -41,6 +42,12 @@ if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     file_put_contents('php://stderr', "Synthetic database/document content was not preserved.\n");
     exit(1);
 }
+$work = NorwayWizardProgress::read($db, $conf->entity, 1, '123456785');
+if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
+    NorwayWizardProgress::save($db, $conf->entity, 1, 'Waiting', '123456785', $work['fingerprint'], $user);
+    $work = NorwayWizardProgress::read($db, $conf->entity, 1, '123456785');
+}
+if ($work['state'] !== 'Waiting' || $work['stale']) { throw new RuntimeException('Wizard work status lost'); }
 $result = $db->query("SELECT label,active FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='SYN-BACKUP' AND account_number='8891'");
 $account = $result ? $db->fetch_object($result) : false;
 if (!$account || $account->label !== 'Synthetic imported backup account' || (int) $account->active !== 1) {
