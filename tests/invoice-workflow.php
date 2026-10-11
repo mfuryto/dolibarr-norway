@@ -41,7 +41,7 @@ $run = bin2hex(random_bytes(4));
 require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 $bank = new Account($db);
 $bank->ref = 'SYN-'.$run;
-$bank->label = 'SYNTHETIC BANK ONLY';
+$bank->label = 'SYNTHETIC BANK ONLY '.$run;
 $bank->country_id = 173;
 $bank->currency_code = 'NOK';
 $bank->courant = 1;
@@ -163,8 +163,11 @@ function assertPdfLanguage($path, $title)
     $pdf = file_get_contents($path);
     insist(strpos($pdf, '%PDF-') === 0, 'Not a PDF');
     $parts = array();
-    preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $streams);
-    foreach ($streams[1] as $stream) {
+    // Read the declared byte length. Treating a trailing compressed CR byte as
+    // part of the newline delimiter can corrupt zlib data nondeterministically.
+    preg_match_all('/\/Length\s+([0-9]+)\s*>>\s*stream(?:\r\n|\n|\r)/', $pdf, $streams, PREG_OFFSET_CAPTURE);
+    foreach ($streams[0] as $i => $header) {
+        $stream = substr($pdf, $header[1] + strlen($header[0]), (int) $streams[1][$i][0]);
         $decoded = @gzuncompress($stream);
         $parts[] = $decoded !== false ? $decoded : $stream;
     }
@@ -175,6 +178,18 @@ function assertPdfLanguage($path, $title)
     }
     throw new RuntimeException('Expected PDF text missing: '.$title);
 }
+// Deterministic regression: a valid zlib stream whose final checksum byte is CR.
+$fixture = tempnam(sys_get_temp_dir(), 'norway-pdf-stream-');
+try {
+    $compressed = '';
+    for ($i = 0; $i < 256; $i++) {
+        $compressed = gzcompress('Norske kroner '.str_repeat('a', $i));
+        if (substr($compressed, -1) === "\r") { break; }
+    }
+    insist(substr($compressed, -1) === "\r", 'Compressed stream regression fixture not produced');
+    file_put_contents($fixture, "%PDF-1.7\n<</Filter /FlateDecode /Length ".strlen($compressed).">> stream\n".$compressed."\nendstream\n");
+    assertPdfLanguage($fixture, 'Norske kroner');
+} finally { unlink($fixture); }
 try {
     $body = http('/index.php');
     http('/index.php', array('token' => token($body), 'actionlogin' => 'login', 'loginfunction' => 'loginfunction',

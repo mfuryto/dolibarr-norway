@@ -190,3 +190,8 @@ avstemmes. Testen krever at bankgruppen finnes, og avviser både sjekkinnskudds-
 tekst og lenker. En egen hook-test krever at sjekkraden fjernes mens bankkonto,
 direktebelastning og bankoverføring beholdes. Moduloppgradering prøves fra den
 eldre hook-registreringen med bare `main` til `main` og `index`.
+
+PDF-testleseren bruker strømmenes deklarerte bytelengde. En regex som fjernet
+valgfri CR før linjeskift kunne fjerne en gyldig komprimert sjekksumbyte og gi
+sporadisk feil om manglende valutaetikett. En deterministisk regresjonsfixture
+med komprimert strøm som slutter i CR beskytter mot dette.
