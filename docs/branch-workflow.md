@@ -65,3 +65,13 @@ manuelt på staging med kompatibilitetstesting; tags og digests endres bevisst.
 
 Main er beholdt uendret ved herding og grenopprydding. Se SECURITY.md for
 rapportering og skillet mellom repositorysikkerhet og sikker produksjonsdrift.
+
+## Drift og videre utvikling
+
+Serverens installasjon ligger i `/opt/dolibarr-norway`. Standard Compose er
+vedvarende drift; utviklingstester velges med `compose.test.yaml`. Oppdateringer
+leveres som én blokk med kontrollert revisjon, privat backup, helsesjekk og
+bevaring av data. Fremtidige skjemaendringer krever migrering og restore-prøve.
+Ingen syntetiske bilag skal inn i driftsinstallasjonen. Stabil driftsinfrastruktur
+kan promoteres uavhengig av uferdig norsk regnskapsfunksjonalitet, med tydelig
+beskrivelse av støttet omfang og gjenværende begrensninger.

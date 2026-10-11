@@ -15,17 +15,26 @@ Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 - [Kilderegister](docs/sources.md)
 - [Opprinnelig prosjektbestilling](docs/project-brief.txt)
 
-## Prøv modulgrunnlaget
+## Serverinstallasjon
+
+Driftsoppsettet bruker databasen `accounting`, vedvarende data og ingen
+syntetiske bilag. Standardfilen `compose.yaml` og `deploy/compose.yaml` beskriver
+samme driftsprosjekt; bruk alltid `--env-file deploy/.env`. Utviklingstestene
+krever eksplisitt `-f compose.test.yaml` og har egne volumer.
+
+Se [serveroppdatering og backup](docs/vps-installation.md).
+
+## Utviklingstester
 
 Krever Docker Compose og Python 3. Fra repoets rot:
 
 ```sh
 python3 scripts/init-test-env.py
 python3 -m unittest discover -s tests -v
-docker compose up -d
+docker compose -f compose.test.yaml up -d
 # Vent til web-loggen sier at installasjonen er ferdig:
-docker compose logs --tail 20 web
-docker compose exec -T web php /opt/norway-tests/integration.php
+docker compose -f compose.test.yaml logs --tail 20 web
+docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/integration.php
 python3 scripts/package.py
 ```
 

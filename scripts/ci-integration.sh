@@ -8,7 +8,7 @@ cleanup() {
     rm -rf -- "$ci_root"
 }
 trap cleanup EXIT
-cp compose.yaml "$ci_root/compose.yaml"
+cp compose.test.yaml "$ci_root/compose.yaml"
 cp -R htdocs tests scripts "$ci_root/"
 # Tests use HTTP inside the web container; no host port needed.
 python3 - "$ci_root/compose.yaml" <<'PYCODE'

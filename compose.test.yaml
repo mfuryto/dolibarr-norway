@@ -1,0 +1,49 @@
+name: dolibarr-norway-test
+services:
+  db:
+    image: mariadb:10.11@sha256:7db29378d4fdab73f8123bbc2b48905c90d1a4b00cf848b028f1e81e623257f2
+    environment:
+      MARIADB_ROOT_PASSWORD: ${TEST_DB_ROOT_PASSWORD:?Run scripts/init-test-env.py first}
+      MARIADB_DATABASE: norway_test
+      MARIADB_USER: norway_test
+      MARIADB_PASSWORD: ${TEST_DB_PASSWORD:?Run scripts/init-test-env.py first}
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [test]
+  web:
+    image: dolibarr/dolibarr:24.0.1@sha256:638727a1a035515b8f1e9c7694ee25315c4b79d618d4f19878efda977b20d49f
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DOLI_INSTALL_AUTO: '1'
+      DOLI_INIT_DEMO: '0'
+      DOLI_DB_HOST: db
+      DOLI_DB_NAME: norway_test
+      DOLI_DB_USER: norway_test
+      DOLI_DB_PASSWORD: ${TEST_DB_PASSWORD:?Run scripts/init-test-env.py first}
+      DOLI_ADMIN_LOGIN: testadmin
+      DOLI_ADMIN_PASSWORD: ${TEST_ADMIN_PASSWORD:?Run scripts/init-test-env.py first}
+      DOLI_URL_ROOT: http://localhost:8087
+      DOLI_COMPANY_NAME: SYNTHETIC NORWAY TEST ONLY
+      DOLI_CRON: '0'
+      NORWAY_SYNTHETIC_TEST: '1'
+      PHP_INI_DATE_TIMEZONE: Europe/Oslo
+    ports: ['127.0.0.1:8087:80']
+    volumes:
+      - documents:/var/www/documents
+      - ./htdocs/custom/norway:/var/www/html/custom/norway:ro
+      - ./tests:/opt/norway-tests:ro
+    networks: [test, frontend]
+volumes:
+  db:
+  documents:
+networks:
+  test:
+    internal: true
+  frontend: {}

@@ -19,3 +19,9 @@
 - Bevar ekstern modularkitektur under htdocs/custom; ikke endre kjernen.
 - Bruk nøytrale prosjektnavn i grener, commit-metadata og dokumentasjon.
 - Les docs/branch-workflow.md og SECURITY.md. Ikke omgå serververnet.
+- Brukerens driftsinstallasjon ligger i /opt/dolibarr-norway på separat VPS.
+  Lever sluttmeldinger om oppdateringer som én kjørbar oppdateringsblokk.
+- Standard Compose gjelder vedvarende drift. Tester bruker compose.test.yaml.
+  Bevar prosjektnavn, volumer, passord og instansnøkkel ved videre utvikling.
+- Skill teknisk driftsstabilitet fra regnskapsfaglig produksjonsaksept.
+  Skjemaendringer krever versjonert migrering, backup og gjenopprettingstest.

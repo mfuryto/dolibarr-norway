@@ -5,7 +5,7 @@ planlagte produksjonsrutiner; det er ikke bevis på ferdig produksjonsdrift.
 
 ## Lokalt testmiljø
 
-`compose.yaml` låser Dolibarr 24.0.1 og MariaDB 10.11 til konkrete image-digests.
+`compose.test.yaml` låser Dolibarr 24.0.1 og MariaDB 10.11 til konkrete image-digests.
 Testet PHP-versjon: **8.2.34**. Databasen har ingen publisert port og ligger på
 internt nettverk. Web har egen nettverkstilkobling og er bundet til
 `127.0.0.1:8087`. Ingen cron, lisensportal eller eksterne integrasjoner aktiveres.
@@ -15,12 +15,12 @@ kan nå internett. Dette er ikke et herdet produksjonsoppsett.
 ```sh
 python3 scripts/init-test-env.py
 python3 -m unittest discover -s tests -v
-docker compose config --quiet
-docker compose up -d
-docker compose logs --tail 20 web
+docker compose -f compose.test.yaml config --quiet
+docker compose -f compose.test.yaml up -d
+docker compose -f compose.test.yaml logs --tail 20 web
 # Etter at førstegangsinstallasjonen er ferdig:
-docker compose exec -T web php /opt/norway-tests/integration.php
-docker compose exec -T web php /opt/norway-tests/http-smoke.php
+docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/integration.php
+docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/http-smoke.php
 ```
 
 Miljøfilen `.env` opprettes med tilfeldige testpassord og filmodus 0600.
@@ -28,7 +28,7 @@ Skriptet nekter å overskrive en eksisterende fil. Filen er ignorert av Git.
 Åpne http://localhost:8087; brukernavn `testadmin`, passord fra
 `TEST_ADMIN_PASSWORD` i den lokale `.env`-filen. Ikke del eller sjekk inn filen.
 Installasjonen og dokumentene ligger i navngitte Docker-volumer. Stoppe uten
-å slette data: `docker compose stop`. Starte igjen: `docker compose start`.
+å slette data: `docker compose -f compose.test.yaml stop`. Starte igjen: `docker compose -f compose.test.yaml start`.
 
 Integrasjonstesten skriver syntetiske importbilag via Dolibarrs
 `BookKeeping::create()`, aktiverer/deaktiverer/reaktiverer modulen, avstemmer
@@ -37,7 +37,7 @@ linjer kan spores til testdokumentet. Den nekter kjøring uten egne testmarkøre
 DB-navnet `norway_test` og syntetisk foretaksnavn. Testbilag har `SYN-`-referanser.
 Gjenta på en ny testdatabase; samme seed avvises for å unngå dobbel bokføring.
 For bevisst nullstilling av **bare dette syntetiske miljøet** kan
-`docker compose down --volumes` brukes; dette sletter testdata og er ikke en
+`docker compose -f compose.test.yaml down --volumes` brukes; dette sletter testdata og er ikke en
 backup-/oppgraderingsrutine. Start på nytt og kjør testene etter nullstilling.
 
 ## Hva testene beviser
@@ -111,3 +111,19 @@ Numeriske test-ID-er er kunstige og representerer ikke bekreftede foretak.
 HTTP-testen kontrollerer at administrator får kontrolltabellen uten SQL-feil,
 og at uferdig SAF-T/EHF fortsatt vises. CI kjører disse i den isolerte
 Dolibarr-installasjonen. Ingen regnskapsdata endres av kontrollsiden.
+
+## Vedvarende drift og oppdatering
+
+Standard Compose gjelder drift; utviklingstestene krever `compose.test.yaml`.
+CI sammenligner fullt oppløst standardoppsett med `deploy/compose.yaml` uten å
+skrive hemmeligheter til logg. Serveroppdateringen testes fra en ren main-checkout,
+med privat backup og helse-/versjonskontroll. Backupens kontrollsummer kontrolleres;
+konfigurasjonstabellen fjernes og gjenopprettes fra SQL-dumpen, og en slettet
+dokumentmarkør gjenopprettes sammen med conf før innlogging/instansnøkkel prøves.
+Det konkrete kjørende web-imaget arkiveres også. En backup merkes COMPLETE først
+når arkiver og kontrollsummer er skrevet. Første backup kan ha ukjent kildecommit
+for eldre installasjoner; image-ID og selve imaget bevares likevel.
+
+Negative tester bekrefter at manglende miljøfil, staging-gren, skitten checkout
+og parallell oppdatering avvises før Docker kjøres. Dette er teknisk driftsprøve,
+ikke økonomisk produksjonsaksept eller full restore-prøve av faktisk server.

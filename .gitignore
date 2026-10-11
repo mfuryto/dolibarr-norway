@@ -10,3 +10,6 @@ __pycache__/
 *.sql.gz
 *.dump
 *.log
+
+/.deployed-revision
+/.installation-update.lock

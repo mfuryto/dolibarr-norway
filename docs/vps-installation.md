@@ -28,7 +28,7 @@ Compose binder backend til localhost og eksponerer ikke databasen.
 Kjør som bruker med Docker-tilgang, i en katalog du eier:
 
 ```sh
-git clone --branch staging https://github.com/mfuryto/dolibarr-norway.git
+git clone --branch main https://github.com/mfuryto/dolibarr-norway.git
 cd dolibarr-norway
 git config core.hooksPath .githooks
 python3 scripts/init-install-env.py --company-name 'DITT REGISTRERTE FORETAKSNAVN'
@@ -91,7 +91,7 @@ kontoplan, kontokoblinger og fakturanummerering må avklares separat.
 
 Dette bruker et eget Compose-prosjekt `dolibarr-norway-accounting` og egne volumer
 for database, dokumenter og Dolibarr-konfigurasjon. Modulfilene følger Docker-imaget.
-Ikke bland miljøet med prosjektets `compose.yaml`, som er syntetisk utviklingstest.
+Ikke bland miljøet med prosjektets `compose.test.yaml`, som er syntetisk utviklingstest.
 
 Normal stopp og start bevarer data:
 
@@ -107,7 +107,7 @@ Ved restore må hele settet og korrekt kilde-/containerrevisjon brukes sammen.
 
 Staging er utvikling. Noter `git rev-parse HEAD` ved installasjon og oppdater
 bare bevisst til en kontrollert revisjon; ikke sett opp automatisk `git pull`
-og omstart. Main brukes først når et stabilt omfang er promotert dit. Modulen
+og omstart. Main inneholder det promoterte tekniske driftsgrunnlaget; norsk regnskapsdekning er fortsatt uferdig. Modulen
 støtter bare Dolibarr 24.0.1; oppgrader ikke kjernen uavhengig av kompatibilitetstest.
 Ved godkjent moduloppdatering bygges imaget på nytt; vedlegg/DB/conf blir i volumene.
 
@@ -119,3 +119,49 @@ Ved godkjent moduloppdatering bygges imaget på nytt; vedlegg/DB/conf blir i vol
 og [Certbot med Nginx](https://eff-certbot.readthedocs.io/en/stable/using.html#nginx).
 Init-hook og HTTPS-deteksjon er kontrollert mot den låste containeren og
 Dolibarr 24.0.1. TLS og DNS på brukerens faktiske VPS er ikke satt opp i denne leveransen.
+
+## Oppdatering fra /opt/dolibarr-norway
+
+Serveren bruker `deploy/compose.yaml`, databasen `accounting` og prosjektet
+`dolibarr-norway-accounting`. Standard `compose.yaml` beskriver samme drift;
+`compose.test.yaml` er kun eksplisitt utviklingstest. Eksisterende driftsvolumer
+og prosjektnavn beholdes. Ingen automatisk flytting av data fra testmiljøet.
+
+Hver leveranse oppgir en kontrollert revisjon og én kommandoblokk for serveren.
+Ikke oppdater drift automatisk fra en bevegelig staging-gren. Utvikling skjer
+fortsatt på staging; stabilt teknisk omfang leveres via PR til main. Teknisk
+stabil drift er ikke godkjenning av norsk MVA, SAF-T eller EHF.
+
+`bash scripts/update-installation.sh` tar først privat backup av databasen,
+dokumentene, konfigurasjonen, miljøfilen og det kjørende Docker-imaget. Web
+stoppes under snapshot og startes igjen etterpå. Andre skribenter eller
+integrasjoner mot databasen må også være stoppet. Backup lagres som standard i
+`/opt/dolibarr-backups` med begrensede rettigheter; serverbrukeren må kunne skrive
+der. `NORWAY_BACKUP_DIR` kan velge annen privat katalog. Backups slettes ikke
+automatisk; de inneholder hemmeligheter og må kopieres kryptert til separat
+lagring med en avtalt oppbevaringsrutine.
+
+Skriptet bygger deretter web-imaget, erstatter nødvendige containere, venter på
+helsesjekk og utfører skrivebeskyttet kontroll av modulene, versjonen,
+installasjonslåsen og instansnøkkelen. Endrede administratorpassord håndteres
+uten automatisk innlogging. Bare én oppdatering kan kjøre om gangen.
+Det bruker aldri `down --volumes` og oppdaterer ikke DB- eller administratorpassord.
+Det er et kort driftsavbrudd, ikke en garanti om null nedetid.
+
+Ved feil stopper oppdateringen med feilkode. Bevar backupen og undersøk feilen;
+ikke kjør oppdateringen om igjen ukritisk. Automatisk tilbakerulling av DB er
+ikke aktivert, fordi det kan slette nye posteringer. Fremtidige datamigreringer
+må dokumentere kompatibilitet og restore før de tas inn i en leveranse.
+
+### Gjenoppretting
+
+Gjenoppretting gjøres først i et separat miljø: kontroller `COMPLETE` og
+`sha256sum -c SHA256SUMS`, last `web-image.tar.gz` med `docker image load`, og bruk
+lagret Compose-oppsett med det konkrete image-ID-et (erstatt `build` med `image`).
+Bruk eget prosjektnavn, egne tomme volumer og en annen localhost-port. Gjenopprett
+miljøfilen privat, med samme instansnøkkel. Start bare DB, importer
+`database.sql.gz` til `accounting`, og pakk dokument-/konfigurasjonsarkivene ut i
+sine respektive volumer før web startes. Kontroller versjon, bilag, vedlegg,
+reskontro og saldoer før eventuell bytting av proxy. CI prøver backup,
+kontrollsummer og gjenoppretting av syntetisk DB/dokument/config; full økonomisk
+restore-aksept for reelle data krever fortsatt en separat driftsprøve.
