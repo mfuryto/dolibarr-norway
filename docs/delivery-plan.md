@@ -18,6 +18,10 @@ Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Prog
 - Manuelt registeroppslag for dagens MVA-status. Ingen automatiske innstillingsendringer eller historisk registreringsbekreftelse.
 - CSS-tilpasninger prøvd på Eldy-tema og representative sider/skjermbredder.
 
+## Samlet oppsettveiledning og veiviser
+
+[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Den er kravgrunnlag for en kommende veiviser, ikke en implementert veiviser. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
+
 ## Prioritert rekkefølge
 
 | Trinn | Arbeid | Når deltrinnet er ferdig |

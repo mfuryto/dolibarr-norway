@@ -6,6 +6,7 @@ Målet er en ekstern modul under `htdocs/custom/norway` uten endringer i kjernen
 Første testmål er Dolibarr **24.0.1**, låst til kilde og containerdigest.
 Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 
+- [Start her: samlet veiledning for norsk oppsett](docs/norwegian-setup-guide.md)
 - [Installere med norsk modul på VPS og eget domene](docs/vps-installation.md)
 - [Tilbud og faktura på norsk/engelsk i NOK, veiledende EUR-pris og bilagskontroll](docs/sales-documents.md)
 - [Sikkerhet og privat sårbarhetsrapportering](SECURITY.md)
