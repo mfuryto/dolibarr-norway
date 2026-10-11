@@ -37,7 +37,7 @@ jobs:
           python3 scripts/package.py
           python3 - <<'PYCODE'
           from zipfile import ZipFile
-          with ZipFile('dist/module_norway-0.5.0.zip') as archive:
+          with ZipFile('dist/module_norway-0.6.0.zip') as archive:
               assert archive.testzip() is None
               assert all(name.startswith('norway/') for name in archive.namelist())
               assert 'norway/LICENSE' in archive.namelist()

@@ -7,10 +7,10 @@ bekreftelse på norsk etterlevelse. Kildereferanser S1–S12 finnes i
 
 ## Versjonsvalg og metode
 
-Velg **Dolibarr 24.0.1**, siste stabile GitHub-utgivelse ved kontrollen, publisert
+Støttet testversjon er **Dolibarr 24.0.1**, publisert
 2026-09-07 (S1). Kildecommit `b7958385f00a92219f76a4dfea67dae93df97a25`.
 Ikke bruk den bevegelige grenen `24.0` eller `develop` som støtteavtale.
-Modul 0.1.0 avviser aktivering på andre versjoner inntil regresjonstesting er gjort.
+Gjeldende modul avviser aktivering på andre versjoner inntil regresjonstesting er gjort.
 Kjernen har PHP 7.2 som historisk minimum; vårt grunnlag krever PHP 8.2 og
 containerens faktiske PHP-versjon registreres ved test. MariaDB 10.11 brukes.
 
@@ -190,3 +190,7 @@ avstemt av denne kontrollen.
 Lisensintegrasjoner er en senere, valgfri adapter uten leverandørspesifikke
 navn, adresser eller avhengigheter i regnskapsmodulen. Ingen integrasjonskode
 eller lisenskrav inngår i denne leveransen.
+
+## Status etter modul 0.6.0
+
+Manuell kontroll av dagens MVA-registerstatus er levert i 0.5.0; registreringshistorikk og virkningsdato gjenstår. Modul 0.6.0 legger til skrivebeskyttet kontroll av kontoplan, standardkontoer og journaler, uten import eller mapping. Den oppdaterte arbeidsrekkefølgen og resterende avklaringer står i [leveranseplanen](delivery-plan.md). Tidligere kildefunn ovenfor er analysegrunnlag, ikke status for alle senere leveranser.

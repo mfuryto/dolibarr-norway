@@ -27,6 +27,11 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $accounting = request('/custom/norway/admin/accounting.php');
+    if (strpos($accounting, 'Chart and accounting setup check') !== false
+        || strpos($accounting, 'Kontroll av kontoplan og bokføringsoppsett') !== false) {
+        throw new RuntimeException('Accounting setup visible before authentication');
+    }
     $body = request('/custom/norway/admin/setup.php');
     if (strpos($body, 'Not ready for production accounting.') !== false
         || strpos($body, 'Ikke klart for produksjonsregnskap.') !== false
@@ -44,6 +49,17 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    $accounting = request('/custom/norway/admin/accounting.php');
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
+        || (strpos($accounting, 'Chart and accounting setup check') === false
+            && strpos($accounting, 'Kontroll av kontoplan og bokføringsoppsett') === false)
+        || strpos($accounting, '3000') === false
+        || strpos($accounting, 'accountancy/admin/defaultaccounts.php') === false
+        || strpos($accounting, '/norway/css/layout-0.4.0.css') === false
+        || strpos($accounting, 'Could not read accounting setup') !== false
+        || strpos($accounting, 'Kunne ikke lese bokføringsoppsettet') !== false) {
+        throw new RuntimeException('Accounting setup report missing or failed');
+    }
     $registry = request('/custom/norway/admin/registry.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || !preg_match('/name="token"[^>]*value="([^"]+)"/', $registry, $registryToken)
