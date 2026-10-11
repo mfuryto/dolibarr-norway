@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.16.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.17.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -64,6 +64,8 @@ Fra 0.14.0 kan [manglende journaltyper opprettes etter bekreftelse](journal-setu
 ## 5. Bank og betaling
 
 **Manuelt:** Åpne bank-/kasselisten, opprett eller rediger faktisk bankkonto, fyll inn betalingsopplysningene og velg NOK, bokføringskonto og aktiv bankjournal. Kontroller opplysningene på en forhåndsvisning av fakturaen. KID og bankintegrasjon må vurderes og konfigureres særskilt; de følger ikke automatisk med kontoplanen.
+
+Fra 0.17.0 finnes [bekreftet utfylling av manglende bankkoblinger](bank-defaults.md) for én ny ordinær NOK-bankkonto uten historikk. Eksisterende koblinger beholdes; øvrige oppsett gjennomgås manuelt.
 
 Bankdelen i Norway-kontrollen viser åpne konti og konto-/journal-/valutakoblinger. Feil journaltype, manglende kobling og delte bokføringskontoer fremgår. Lukkede konti og historiske bevegelser undersøkes ikke.
 

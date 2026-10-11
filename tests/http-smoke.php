@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
+    if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
     $journals = request('/custom/norway/admin/journals.php');
     if (strpos($journals, 'value="createjournals"') !== false) { throw new RuntimeException('Journal confirmation visible before login'); }
     $defaults = request('/custom/norway/admin/defaults.php');
@@ -83,6 +85,10 @@ try {
     foreach (array('Organisasjonsnummer','Organisasjonsform','MVA-nummer (ved registrering)','ENK — Enkeltpersonforetak','AS — Aksjeselskap','value="173001"','value="173002"') as $required) {
         if (strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),$required)===false) { throw new RuntimeException('Norwegian company field/form missing: '.$required); }
     }
+    $bankDefaults=request('/custom/norway/admin/bankdefaults.php');
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($bankDefaults,'NorwayBankDefaultsReason')!==false || strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping missing or offers write with accounting history'); }
+    request('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>'invalid'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Bank mapping CSRF guard missing'); }
     $accounting = request('/custom/norway/admin/accounting.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || (strpos($accounting, 'Chart and accounting setup check') === false

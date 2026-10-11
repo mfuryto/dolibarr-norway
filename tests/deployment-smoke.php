@@ -33,7 +33,6 @@ if (getenv('NORWAY_TEST_JOURNALS') === '1') {
     verify($banks && (int)$db->fetch_object($banks)->n===0,'Journal fixture requires no bank accounts');
     verify((bool)$db->query('DELETE FROM '.$db->prefix().'accounting_journal WHERE entity='.(int)$conf->entity),'Journal fixture reset failed');
 }
-$db->close();
 $cookie = tempnam(sys_get_temp_dir(), 'norway-deploy-http-');
 $curl = curl_init();
 $proxyCookies = array();
@@ -128,8 +127,32 @@ try {
         $journals=page('/custom/norway/admin/journals.php');
         verify(strpos($journals,'Opprettingen kunne ikke bekreftes')!==false || strpos($journals,'Creation could not be confirmed')!==false,'Journal confirmation replay accepted');
     }
+    if (getenv('NORWAY_TEST_BANK_DEFAULTS') === '1') {
+        verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY')==='1','Synthetic bank defaults guard missing');
+        $r=$db->query('SELECT COUNT(*) AS n FROM '.$db->prefix().'bank_account');
+        verify($r && (int)$db->fetch_object($r)->n===0,'Bank fixture requires no bank accounts');
+        verify((bool)$db->query("INSERT INTO ".$db->prefix()."bank_account (ref,label,entity,clos,courant,fk_pays,currency_code) VALUES ('SYN-BANK','Synthetic bank setup',".(int)$conf->entity.",0,1,173,'NOK')"),'Bank fixture creation failed');
+        $fixture=(int)$db->last_insert_id($db->prefix().'bank_account');
+        try {
+            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
+            verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$bank,$bankToken)===1 && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$bank,$bankNonce)===1,'Bank mapping confirmation missing');
+            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>html_entity_decode($bankToken[1]),'preview_nonce'=>$bankNonce[1]));
+            verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Bank mapping save did not redirect');
+            $r=$db->query('SELECT account_number,fk_accountancy_journal FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture);
+            $row=$r ? $db->fetch_object($r) : null;
+            verify($row && $row->account_number==='1920' && (int)$row->fk_accountancy_journal>0,'Confirmed bank mapping not stored');
+            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
+            verify(strpos($bank,'value="savebankdefaults"')===false,'Completed bank mapping offers repeated write');
+            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>html_entity_decode($bankToken[1]),'preview_nonce'=>$bankNonce[1]));
+            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
+            verify(strpos($bank,'Lagringen kunne ikke bekreftes')!==false || strpos($bank,'Saving could not be confirmed')!==false,'Bank mapping replay accepted');
+            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>'invalid','preview_nonce'=>$bankNonce[1]));
+            verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Bank mapping CSRF guard missing');
+        } finally { verify((bool)$db->query('DELETE FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture),'Bank fixture cleanup failed'); }
+    }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {
+    $db->close();
     curl_close($curl);
     unlink($cookie);
 }

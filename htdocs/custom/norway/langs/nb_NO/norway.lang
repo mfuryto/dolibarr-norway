@@ -257,3 +257,22 @@ NorwayCompanyFieldsHelp=Åpne Firma/organisasjon og lagre Norge som land først.
 
 NorwayVatAutoInvalid=MVA-nummer kunne ikke fylles. Oppgi gyldig norsk organisasjonsnummer før du lagrer med «MVA brukes» og tomt MVA-felt.
 NorwayVatAutoHelp=Når «MVA brukes» er valgt, fylles et tomt MVA-nummer fra gyldig norsk organisasjonsnummer ved lagring. Du trenger ikke skrive nummeret på nytt. Eksisterende MVA-nummer beholdes. Bruk MVA-valget først når registreringen er bekreftet; virkningsdato må vurderes separat.
+
+NorwayBankDefaultsKeep=Behold eksisterende valg
+NorwayBankDefaultsFill=Fyll tomt valg etter bekreftelse
+NorwayBankDefaultsBlocked=Utfylling sperret. Kontroller valgt norsk plan, aktive kontoer med uendret navn og eventuell faktura-/hovedbokhistorikk. Bruk manuell gjennomgang når oppsettet allerede er i bruk.
+NorwayBankDefaultsFailed=Lagringen kunne ikke bekreftes. Lag ny forhåndsvisning og kontroller lagrede verdier før nytt forsøk.
+NorwayBankDefaultsConfirm=Bekreft utfylling av tomme valg
+NorwayBankDefaultsNothing=Ingen tomme valg å fylle. Eksisterende valg er bevart; dette bekrefter ikke at alle kontokoblinger er riktige.
+NorwayBankDefaultsEffective=Gjeldende verdi i installasjonen
+NorwayBankDefaults=Koble ny bankkonto til bokføring
+NorwayBankDefaultsScope=Kun manglende bokføringskonto og journal for én ny ordinær NOK-bankkonto. Eksisterende valg beholdes. Ingen bankkonto, saldo, betaling eller bilag opprettes. Flere valg og historikk krever manuell gjennomgang.
+NorwayBankDefaultsReasonReady=Kontroller kontoen og forslagene nedenfor før bekreftelse.
+NorwayBankDefaultsReasonSingle=Oppsettet krever nøyaktig én åpen bankkonto. Opprett faktisk bankkonto først, eller bruk manuell kobling ved flere konti.
+NorwayBankDefaultsReasonType=Kun ordinær bankkonto i NOK støttes her. Kasse, sparekonto og andre valutaer gjennomgås manuelt.
+NorwayBankDefaultsReasonHistory=Bevegelser, bokførte poster eller validerte fakturaer finnes. Koblinger må gjennomgås manuelt.
+NorwayBankDefaultsReasonChart=Velg den medfølgende aktive norske kontoplanen først.
+NorwayBankDefaultsConfirmScope=Bekreft at dette er riktig bankkonto. Bare tom bokføringskonto/journal fylles. Konto 1920 og journalen må passe virksomheten. Eksisterende valg endres ikke.
+
+NorwayBankDefaultsReasonMappings=Eksisterende konto-/journalkobling må gjennomgås manuelt før tomme valg fylles.
+NorwayBankDefaultsSaved=Lagret %s bankkoblinger. Eksisterende valg er bevart.

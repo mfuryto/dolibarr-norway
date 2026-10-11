@@ -257,3 +257,22 @@ NorwayCompanyFieldsHelp=Open Company/organisation and save Norway as the country
 
 NorwayVatAutoInvalid=Could not fill VAT number. Provide a valid Norwegian organisation number before saving with VAT used and an empty VAT field.
 NorwayVatAutoHelp=With VAT used selected, an empty VAT number is filled from a valid Norwegian organisation number on save. No duplicate entry is needed. Existing VAT numbers are preserved. Enable VAT only once registration is confirmed; assess its effective date separately.
+
+NorwayBankDefaultsKeep=Preserve existing choice
+NorwayBankDefaultsFill=Fill empty choice after confirmation
+NorwayBankDefaultsBlocked=Filling blocked. Check the selected Norwegian chart, active accounts with unchanged names, and invoice/ledger history. Review manually when the setup is already in use.
+NorwayBankDefaultsFailed=Saving could not be confirmed. Create a new preview and check stored values before retrying.
+NorwayBankDefaultsConfirm=Confirm filling empty choices
+NorwayBankDefaultsNothing=No empty choices to fill. Existing choices are preserved; this does not verify that all mappings are correct.
+NorwayBankDefaultsEffective=Effective installation value
+NorwayBankDefaults=Map a new bank account to accounting
+NorwayBankDefaultsScope=Only missing ledger account and journal for one new ordinary NOK bank account. Existing choices are retained. No bank account, balance, payment or entry is created. Multiple choices and history require manual review.
+NorwayBankDefaultsReasonReady=Review the account and suggestions below before confirmation.
+NorwayBankDefaultsReasonSingle=Exactly one open bank account is required. Create the actual bank account first, or map multiple accounts manually.
+NorwayBankDefaultsReasonType=Only an ordinary NOK bank account is supported here. Review cash, savings and other currencies manually.
+NorwayBankDefaultsReasonHistory=Bank movements, ledger entries or validated invoices exist. Review mappings manually.
+NorwayBankDefaultsReasonChart=Select the bundled active Norwegian chart first.
+NorwayBankDefaultsConfirmScope=Confirm this is the correct bank account. Only empty ledger/journal mappings are filled. Account 1920 and the journal must suit the business. Existing choices are retained.
+
+NorwayBankDefaultsReasonMappings=Review existing ledger/journal mappings manually before filling empty choices.
+NorwayBankDefaultsSaved=Saved %s bank mappings. Existing choices are preserved.
