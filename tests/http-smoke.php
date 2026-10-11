@@ -44,6 +44,24 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    $registry = request('/custom/norway/admin/registry.php');
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
+        || !preg_match('/name="token"[^>]*value="([^"]+)"/', $registry, $registryToken)
+        || strpos($registry, 'lookupregistry') === false) {
+        throw new RuntimeException('Registry form missing');
+    }
+    $registry = request('/custom/norway/admin/registry.php', array('action' => 'lookupregistry', 'token' => html_entity_decode($registryToken[1])));
+    if (strpos($registry, 'Set a valid Norwegian organisation number') === false
+        && strpos($registry, 'Oppgi et gyldig norsk organisasjonsnummer') === false) {
+        throw new RuntimeException('Registry invalid company must fail before network');
+    }
+    $registry = request('/custom/norway/admin/registry.php', array('action' => 'lookupregistry', 'token' => 'invalid'));
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403
+        || strpos($registry, 'Set a valid Norwegian organisation number') !== false
+        || strpos($registry, 'Oppgi et gyldig norsk organisasjonsnummer') !== false
+        || strpos($registry, 'lookupregistry') !== false) {
+        throw new RuntimeException('Registry CSRF rejection missing');
+    }
     $body = request('/custom/norway/admin/setup.php');
     if (strpos($body, 'Not ready for production accounting.') === false
         && strpos($body, 'Ikke klart for produksjonsregnskap.') === false) {
