@@ -18,7 +18,7 @@ $links = array(
     6 => array('/societe/list.php' => 'NorwayWizardPartners', '/product/list.php' => 'NorwayWizardProducts'),
     7 => array('/custom/norway/admin/documents.php' => 'NorwayDocuments', '/admin/invoice.php' => 'NorwayWizardInvoiceSettings', '/admin/propal.php' => 'NorwayWizardProposalSettings', '/custom/norway/admin/invoice.php' => 'NorwayInvoiceCheck'),
     8 => array('/custom/norway/admin/pricing.php' => 'NorwayPricing'),
-    9 => array('/accountancy/admin/fiscalyear.php' => 'NorwayWizardPeriods', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
+    9 => array('/custom/norway/admin/periods.php' => 'NorwayPeriods', '/accountancy/admin/fiscalyear.php' => 'NorwayWizardPeriods', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
     10 => array('/custom/norway/admin/setup.php' => 'NorwaySetup'),
     11 => array('/custom/norway/admin/accounting.php' => 'NorwayAccountingSetup', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
 );

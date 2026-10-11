@@ -21,6 +21,7 @@ const {chromium}=require('playwright');
   '/custom/norway/admin/defaults.php',
   '/custom/norway/admin/bankdefaults.php',
   '/custom/norway/admin/documents.php',
+  '/custom/norway/admin/periods.php',
   '/custom/norway/admin/journals.php',
   '/admin/company.php',
   '/custom/norway/admin/chart.php',

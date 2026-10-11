@@ -17,3 +17,5 @@ Fra 0.15.0 forklarer steg 2 forskjellen på organisasjonsnummer, MVA-nummer og o
 Fra 0.17.0 lenker steg 5 til separat [bekreftet bankkobling](bank-defaults.md) for ett avgrenset nytt NOK-oppsett. Veiviseren i seg selv er fortsatt skrivebeskyttet.
 
 Fra 0.18.0 lenker steg 7 til [kontroll av dokumentoppsett](document-setup.md). Ingen numre reserveres og ingen dokumenter endres.
+
+Fra 0.19.0 lenker steg 9 til [kontroll av regnskapsperioder](period-setup.md). Ingen perioder åpnes/lukkes.

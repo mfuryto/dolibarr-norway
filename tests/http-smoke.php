@@ -29,6 +29,8 @@ function request($path, $post = null)
 try {
     $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
     if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
+    $periods=request('/custom/norway/admin/periods.php');
+    if (strpos($periods,'Fiscal period setup check')!==false || strpos($periods,'Kontroll av regnskapsperioder')!==false) { throw new RuntimeException('Period report exposed before login'); }
     $documents=request('/custom/norway/admin/documents.php');
     if (strpos($documents,'Invoice and proposal setup check')!==false || strpos($documents,'Kontroll av faktura- og tilbudsoppsett')!==false) { throw new RuntimeException('Document setup exposed before login'); }
     $journals = request('/custom/norway/admin/journals.php');
@@ -87,6 +89,12 @@ try {
         $documents=request('/custom/norway/admin/documents.php?lang='.$documentLang);
         if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($documents,'sponge')===false || strpos($documents,'NorwayDocuments')!==false || strpos($documents,'<form')!==false || strpos($documents,'admin/propal.php')===false) { throw new RuntimeException('Document setup missing, untranslated or writable'); }
     }
+    foreach (array('nb_NO','en_US') as $periodLang) {
+        $periods=request('/custom/norway/admin/periods.php?date=2024-02-29&lang='.$periodLang);
+        if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($periods,'2024-02-29')===false || strpos($periods,'NorwayPeriods')!==false || strpos($periods,'method="post"')!==false || strpos($periods,'fiscalyear.php')===false) { throw new RuntimeException('Period report missing, untranslated or writable'); }
+    }
+    $periods=request('/custom/norway/admin/periods.php?date=2023-02-29&lang=en_US');
+    if (strpos($periods,'Enter a valid date')===false) { throw new RuntimeException('Invalid period check date accepted'); }
     $company=request('/admin/company.php?lang=nb_NO');
     foreach (array('Organisasjonsnummer','Organisasjonsform','MVA-nummer (ved registrering)','ENK — Enkeltpersonforetak','AS — Aksjeselskap','value="173001"','value="173002"') as $required) {
         if (strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),$required)===false) { throw new RuntimeException('Norwegian company field/form missing: '.$required); }
