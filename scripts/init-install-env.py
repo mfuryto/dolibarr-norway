@@ -13,7 +13,7 @@ def create_config(company, url, admin, output):
         raise ValueError('Company name must be nonempty and contain no quotes or shell interpolation characters.')
     parsed = urlsplit(url)
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.port or parsed.path not in ('', '/') or parsed.query or parsed.fragment or not re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?', parsed.hostname):
-        raise ValueError('Public URL must be an HTTPS origin, for example https://regnskap.thunold-olsen.no.')
+        raise ValueError('Public URL must be an HTTPS origin, for example https://accounting.example.com.')
     if not re.fullmatch(r'[A-Za-z0-9_-]{3,32}', admin):
         raise ValueError('Admin login must be 3-32 letters, digits, underscores or hyphens.')
     values = {'PUBLIC_URL': url.rstrip('/'), 'COMPANY_NAME': company, 'ADMIN_LOGIN': admin}
@@ -28,8 +28,8 @@ def create_config(company, url, admin, output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--company-name', required=True)
-    parser.add_argument('--url', default='https://regnskap.thunold-olsen.no')
-    parser.add_argument('--admin-login', default='regnskapadmin')
+    parser.add_argument('--url', required=True)
+    parser.add_argument('--admin-login', default='admin')
     args = parser.parse_args()
     create_config(args.company_name, args.url, args.admin_login,
                   Path(__file__).resolve().parents[1] / 'deploy/.env')

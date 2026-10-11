@@ -1,6 +1,8 @@
 import importlib.util
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 
 spec = importlib.util.spec_from_file_location('install_env', Path(__file__).resolve().parents[1] / 'scripts/init-install-env.py')
@@ -31,3 +33,10 @@ class InstallConfigurationTests(unittest.TestCase):
                 with self.subTest(url=url), self.assertRaises(ValueError):
                     module.create_config(company, url, admin, p)
                 self.assertFalse(p.exists())
+
+    def test_public_url_is_required_on_command_line(self):
+        script = Path(__file__).resolve().parents[1] / 'scripts/init-install-env.py'
+        result = subprocess.run([sys.executable, str(script), '--company-name', 'SYNTHETIC ONLY'],
+                                text=True, capture_output=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('--url', result.stderr)

@@ -1,4 +1,4 @@
-# Installere på VPS: regnskap.thunold-olsen.no
+# Installere Dolibarr med norsk modul
 
 Kontrollert 2026-10-11. Oppsettet installerer **Dolibarr 24.0.1, MariaDB og den
 norske modulens grunnlag** sammen. Ingen separat nedlasting av Dolibarr eller
@@ -31,14 +31,17 @@ Kjør som bruker med Docker-tilgang, i en katalog du eier:
 git clone --branch main https://github.com/mfuryto/dolibarr-norway.git
 cd dolibarr-norway
 git config core.hooksPath .githooks
-python3 scripts/init-install-env.py --company-name 'DITT REGISTRERTE FORETAKSNAVN'
+python3 scripts/init-install-env.py \
+  --company-name 'DITT REGISTRERTE FORETAKSNAVN' \
+  --url 'https://accounting.example.com'
 ```
 
 Bruk det faktiske foretaksnavnet. Installeringsskriptet oppretter `deploy/.env`
 med tilfeldige passord og en varig instansnøkkel, med filmodus 0600. Det nekter
 å overskrive eksisterende innstillinger. Passord skrives ikke i terminalen.
-Standard administrator heter `regnskapadmin`; annen innlogging kan velges med
-`--admin-login`. URL kan velges med `--url https://ditt.domene`.
+Standard administrator heter `admin`; annen innlogging kan velges med
+`--admin-login`. URL må oppgis med `--url`. `accounting.example.com` er kun et eksempel;
+bruk installasjonens faktiske domene. Eksisterende innstillinger endres ikke.
 
 Filen skal aldri i Git eller deles i chat. Ta privat sikkerhetskopi av den.
 `INSTANCE_KEY` må bevares ved reinstallasjon/restore: den brukes av Dolibarrs
@@ -51,11 +54,11 @@ Hvis Nginx allerede håndteres av et kontrollpanel, tilpass dette gjennom panele
 På Debian/Ubuntu med Nginx og Certbot installert er et eksempel:
 
 ```sh
-sudo cp deploy/nginx-regnskap.conf /etc/nginx/sites-available/regnskap.thunold-olsen.no
-sudo ln -s /etc/nginx/sites-available/regnskap.thunold-olsen.no /etc/nginx/sites-enabled/regnskap.thunold-olsen.no
+sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/accounting.example.com
+sudo ln -s /etc/nginx/sites-available/accounting.example.com /etc/nginx/sites-enabled/accounting.example.com
 sudo nginx -t
 sudo systemctl reload nginx
-sudo certbot --nginx --redirect -d regnskap.thunold-olsen.no
+sudo certbot --nginx --redirect -d accounting.example.com
 sudo certbot renew --dry-run
 ```
 
@@ -78,7 +81,7 @@ docker compose --env-file deploy/.env -f deploy/compose.yaml ps
 
 Første oppstart oppretter databasen og aktiverer modulen. Vent til web er klar;
 se etter bekreftelsen om norsk modul, NOK og nb_NO i loggen. Oppstart kan ta noen
-minutter. Åpne **https://regnskap.thunold-olsen.no**. Logg inn som `regnskapadmin`
+minutter. Åpne **https://accounting.example.com**. Logg inn som `admin`
 med `ADMIN_PASSWORD` fra den private `deploy/.env`-filen (les filen lokalt på serveren).
 Ingen syntetiske regnskapsbilag eller testbruker legges inn.
 
@@ -118,9 +121,9 @@ Ved godkjent moduloppdatering bygges imaget på nytt; vedlegg/DB/conf blir i vol
 [Nginx proxy-headere](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_header)
 og [Certbot med Nginx](https://eff-certbot.readthedocs.io/en/stable/using.html#nginx).
 Init-hook og HTTPS-deteksjon er kontrollert mot den låste containeren og
-Dolibarr 24.0.1. TLS og DNS på brukerens faktiske VPS er ikke satt opp i denne leveransen.
+Dolibarr 24.0.1. TLS og DNS konfigureres av den enkelte administrator.
 
-## Oppdatering fra /opt/dolibarr-norway
+## Oppdatering av en eksisterende installasjon
 
 Serveren bruker `deploy/compose.yaml`, databasen `accounting` og prosjektet
 `dolibarr-norway-accounting`. Standard `compose.yaml` beskriver samme drift;
@@ -136,8 +139,8 @@ stabil drift er ikke godkjenning av norsk MVA, SAF-T eller EHF.
 dokumentene, konfigurasjonen, miljøfilen og det kjørende Docker-imaget. Web
 stoppes under snapshot og startes igjen etterpå. Andre skribenter eller
 integrasjoner mot databasen må også være stoppet. Backup lagres som standard i
-`/opt/dolibarr-backups` med begrensede rettigheter; serverbrukeren må kunne skrive
-der. `NORWAY_BACKUP_DIR` kan velge annen privat katalog. Backups slettes ikke
+`../dolibarr-backups` relativt til prosjektets rot, med begrensede rettigheter.
+Brukeren som kjører oppdateringen må kunne skrive der. `NORWAY_BACKUP_DIR` kan velge annen privat katalog. Backups slettes ikke
 automatisk; de inneholder hemmeligheter og må kopieres kryptert til separat
 lagring med en avtalt oppbevaringsrutine.
 

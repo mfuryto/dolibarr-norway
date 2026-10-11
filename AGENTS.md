@@ -13,14 +13,15 @@
   Staging tillater vanlig push, men force-push og sletting er sperret.
 - Bruk `git config core.hooksPath .githooks` i en faktisk Git-checkout.
   Lokal hook sperrer main-push og oppretting av andre grener på remote.
-- Gjenbruk Fylkrens prinsipper: relevante tester/dokumentasjon, syntetiske
+- Følg prosjektets utviklingsprinsipper: relevante tester/dokumentasjon, syntetiske
   data, låste avhengigheter/images og minst mulige CI-rettigheter.
 - Ingen reelle bilag, personopplysninger, passord eller eksportfiler i Git.
 - Bevar ekstern modularkitektur under htdocs/custom; ikke endre kjernen.
 - Bruk nøytrale prosjektnavn i grener, commit-metadata og dokumentasjon.
 - Les docs/branch-workflow.md og SECURITY.md. Ikke omgå serververnet.
-- Brukerens driftsinstallasjon ligger i /opt/dolibarr-norway på separat VPS.
-  Lever sluttmeldinger om oppdateringer som én kjørbar oppdateringsblokk.
+- Hold all dokumentasjon og alle eksempler generelle og gjenbrukbare.
+  Ikke lagre brukeres domener, servernavn, installasjonsstier eller selskapsnavn.
+- Lever sluttmeldinger om oppdateringer som én kjørbar oppdateringsblokk.
 - Standard Compose gjelder vedvarende drift. Tester bruker compose.test.yaml.
   Bevar prosjektnavn, volumer, passord og instansnøkkel ved videre utvikling.
 - Skill teknisk driftsstabilitet fra regnskapsfaglig produksjonsaksept.
