@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.13.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.14.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -57,7 +57,7 @@ Velg behandling for hver aktuell type salg og kjøp: norsk avgiftspliktig omsetn
 | Bank | 1920 Bankinnskudd | Velges på faktisk bankkonto; flere bankkonti kan kreve andre kontoer |
 | Kjøp, feilkonto og overføring | Ingen automatisk anbefaling | Avhenger av kostnad og transaksjon |
 
-Kontroller aktive journaler med kode og riktig type: salg (2), kjøp (3), bank/kasse (4), diverse (1). Kodene kan beholdes hvis oppsettet er egnet; de er ikke myndighetenes avgiftskoder. Kontoens eksistens bekrefter ikke riktig klassifisering. Kontokategorier og SAF-T-/næringsmapping settes ikke av kontoplanimporten.
+Fra 0.14.0 kan [manglende journaltyper opprettes etter bekreftelse](journal-setup.md), med bevaring av eksisterende journaler og bilag. Kontroller aktive journaler med kode og riktig type: salg (2), kjøp (3), bank/kasse (4), diverse (1). Kodene kan beholdes hvis oppsettet er egnet; de er ikke myndighetenes avgiftskoder. Kontoens eksistens bekrefter ikke riktig klassifisering. Kontokategorier og SAF-T-/næringsmapping settes ikke av kontoplanimporten.
 
 **Levert:** kontroll og kontoforslag, samt separat [bekreftet utfylling](default-accounts.md) av tom kunde-/leverandørstandard i et nytt bokføringsoppsett. Eksisterende valg og historikk bevares. **Gjenstår:** lagring av øvrige grunnkoblinger og komplett rapporteringsmapping. Oppdatering fyller ingen kontoforslag automatisk. Se [detaljert kontooppsett](accounting-setup.md).
 

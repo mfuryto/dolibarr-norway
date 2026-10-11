@@ -11,6 +11,11 @@ require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
 foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400') as $key=>$value) {
     if (getDolGlobalString($key)!==$value) { throw new RuntimeException('Confirmed default lost: '.$key); }
 }
+foreach (array('SALG'=>2,'KJOP'=>3,'BANK'=>4,'DIV'=>1) as $code=>$nature) {
+    $journal=$db->query("SELECT nature,active FROM ".$db->prefix()."accounting_journal WHERE entity=".(int)$conf->entity." AND code='".$code."'");
+    $journal=$journal ? $db->fetch_object($journal) : null;
+    if (!$journal || (int)$journal->nature!==$nature || (int)$journal->active!==1) { throw new RuntimeException('Confirmed journal lost: '.$code); }
+}
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     $previousChart = getDolGlobalString('CHARTOFACCOUNTS');
     if ($user->fetch('', getenv('DOLI_ADMIN_LOGIN')) <= 0 || !$user->admin
