@@ -9,23 +9,36 @@ $langs->loadLangs(array('norway@norway', 'accountancy'));
 header('Cache-Control: no-store');
 $step = max(1, min(11, GETPOSTINT('step') ?: 1));
 $base = dol_buildpath('/norway/admin/wizard.php', 1);
-$links = array(
-    1 => array('/custom/norway/admin/registry.php' => 'NorwayRegistry'),
-    2 => array('/admin/company.php' => 'NorwayCompanySettings', '/user/list.php' => 'NorwayWizardUsers'),
-    3 => array('/custom/norway/admin/registration.php' => 'NorwayRegistration', '/custom/norway/admin/vat.php' => 'NorwayVatSetup', '/custom/norway/admin/registry.php' => 'NorwayRegistry', '/custom/norway/admin/setup.php' => 'NorwaySetup'),
-    4 => array('/custom/norway/admin/defaults.php' => 'NorwayDefaults', '/custom/norway/admin/journals.php' => 'NorwayJournals', '/custom/norway/admin/profile.php' => 'NorwayProfile', '/accountancy/admin/defaultaccounts.php' => 'NorwayAccountingDefaultSettings', '/accountancy/admin/journals_list.php' => 'NorwayAccountingJournalSettings', '/custom/norway/admin/accounting.php' => 'NorwayAccountingSetup'),
-    5 => array('/custom/norway/admin/bankdefaults.php' => 'NorwayBankDefaults', '/compta/bank/list.php' => 'NorwayBankSetupOpen'),
-    6 => array('/societe/list.php' => 'NorwayWizardPartners', '/product/list.php' => 'NorwayWizardProducts'),
-    7 => array('/custom/norway/admin/documents.php' => 'NorwayDocuments', '/admin/invoice.php' => 'NorwayWizardInvoiceSettings', '/admin/propal.php' => 'NorwayWizardProposalSettings', '/custom/norway/admin/invoice.php' => 'NorwayInvoiceCheck'),
-    8 => array('/custom/norway/admin/pricing.php' => 'NorwayPricing'),
-    9 => array('/custom/norway/admin/periods.php' => 'NorwayPeriods', '/accountancy/admin/fiscalyear.php' => 'NorwayWizardPeriods', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
-    10 => array('/custom/norway/admin/setup.php' => 'NorwaySetup'),
-    11 => array('/custom/norway/admin/accounting.php' => 'NorwayAccountingSetup', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
+// Ordered tasks are distinct from optional read-only diagnostics.
+$tasks = array(
+    1 => array('Scope'=>null),
+    2 => array('Company'=>'/admin/company.php', 'Users'=>'/user/list.php'),
+    3 => array('VATCompany'=>'/admin/company.php', 'Registration'=>'/custom/norway/admin/registration.php'),
+    4 => array('Chart'=>'/custom/norway/admin/profile.php', 'Defaults'=>'/custom/norway/admin/defaults.php', 'OtherAccounts'=>'/accountancy/admin/defaultaccounts.php', 'Journals'=>'/custom/norway/admin/journals.php'),
+    5 => array('Bank'=>'/compta/bank/list.php', 'BankLink'=>'/custom/norway/admin/bankdefaults.php'),
+    6 => array('Partners'=>'/societe/list.php', 'Products'=>'/product/list.php'),
+    7 => array('Invoice'=>'/admin/invoice.php', 'Proposal'=>'/admin/propal.php', 'PDF'=>null),
+    8 => array('Public'=>null, 'Foreign'=>null),
+    9 => array('Balances'=>null, 'Periods'=>'/accountancy/admin/fiscalyear.php'),
+    10 => array('Reporting'=>null, 'Backup'=>null),
+    11 => array('Review'=>null),
+);
+$optional = array(
+    1=>array('Registry'=>'/custom/norway/admin/registry.php'),
+    2=>array(),
+    3=>array('Registry'=>'/custom/norway/admin/registry.php', 'VATCheck'=>'/custom/norway/admin/vat.php'),
+    4=>array('JournalSettings'=>'/accountancy/admin/journals_list.php', 'AccountingCheck'=>'/custom/norway/admin/accounting.php'),
+    5=>array(), 6=>array(),
+    7=>array('DocumentCheck'=>'/custom/norway/admin/documents.php', 'InvoiceCheck'=>'/custom/norway/admin/invoice.php'),
+    8=>array('Pricing'=>'/custom/norway/admin/pricing.php'),
+    9=>array('PeriodCheck'=>'/custom/norway/admin/periods.php', 'Audit'=>'/custom/norway/admin/audit.php'),
+    10=>array('Coverage'=>'/custom/norway/admin/setup.php'),
+    11=>array('AccountingCheck'=>'/custom/norway/admin/accounting.php', 'Audit'=>'/custom/norway/admin/audit.php', 'Coverage'=>'/custom/norway/admin/setup.php'),
 );
 llxHeader('', $langs->trans('NorwayWizard'));
-print '<div class="norway-page">';
+print '<div class="norway-page norway-wizard">';
 print load_fiche_titre($langs->trans('NorwayWizard'), '', 'accountancy');
-print '<div class="warning">'.$langs->trans('NorwayWizardScope').'</div>';
+print '<p>'.$langs->trans('NorwayWizardScope').'</p>';
 print '<details><summary>'.$langs->trans('NorwayWizardOverview').'</summary><ol>';
 for ($i = 1; $i <= 11; $i++) {
     print '<li><a href="'.$base.'?step='.$i.'"'.($i === $step ? ' aria-current="step"' : '').'>'
@@ -33,9 +46,21 @@ for ($i = 1; $i <= 11; $i++) {
 }
 print '</ol></details>';
 print '<h2>'.dol_escape_htmltag($step.' / 11 — '.$langs->trans('NorwayWizardTitle'.$step)).'</h2>';
-print '<p>'.$langs->trans('NorwayWizardBody'.$step).'</p>';
-if ($step === 2) { print '<div class="info">'.$langs->trans('NorwayCompanyFieldsHelp').'<br>'.$langs->trans('NorwayVatAutoHelp').'</div>'; }
-print '<div class="info">'.$langs->trans('NorwayWizardLimit'.$step).'</div>';
+print '<p class="norway-wizard-intro">'.$langs->trans('NorwayWizardBody'.$step).'</p>';
+print '<section aria-labelledby="norway-tasks"><h3 id="norway-tasks">'.$langs->trans('NorwayWizardTasks').'</h3>';
+print '<p>'.$langs->trans(count(array_filter($tasks[$step])) ? 'NorwayWizardOpenHelp' : 'NorwayWizardManualHelp').'</p><ol class="norway-wizard-tasks">';
+foreach ($tasks[$step] as $key=>$path) {
+    print '<li><h4>'.$langs->trans('NorwayWizardTask'.$key).'</h4><p>'.$langs->trans('NorwayWizardTask'.$key.'Help').'</p>';
+    if ($path !== null) {
+        print '<a class="norway-wizard-open" target="_blank" rel="noopener noreferrer" href="'.DOL_URL_ROOT.$path.'">'.$langs->trans('NorwayWizardOpen').' '.$langs->trans('NorwayWizardTask'.$key).'<span class="norway-wizard-tab"> — '.$langs->trans('NorwayWizardNewTab').'</span></a>';
+    }
+    print '</li>';
+}
+print '</ol></section>';
+print '<section class="norway-wizard-before" aria-labelledby="norway-before"><h3 id="norway-before">'.$langs->trans('NorwayWizardBefore').'</h3><p>'.$langs->trans('NorwayWizardBefore'.$step).'</p></section>';
+if ($step === 2) {
+    print '<details><summary>'.$langs->trans('NorwayWizardCompanyHelp').'</summary><p>'.$langs->trans('NorwayCompanyFieldsHelp').'</p><p>'.$langs->trans('NorwayVatAutoHelp').'</p></details>';
+}
 try {
     $checks = array();
     if ($step === 2) {
@@ -51,12 +76,12 @@ try {
         $settings = array();
         foreach (NorwayAccountingSetup::defaults() as $key) { $settings[$key] = getDolGlobalString($key); }
         foreach ((new NorwayAccountingSetup($db, $conf->entity))->report(getDolGlobalInt('CHARTOFACCOUNTS'), $settings) as $check) {
-            $label = strpos($check['key'], 'ACCOUNTING_') === 0 ? $check['key'] : 'NorwayAccounting'.$check['key'];
+            $label = strpos($check['key'], 'ACCOUNTING_') === 0 ? 'NorwayWizardAccount'.$check['key'] : 'NorwayAccounting'.$check['key'];
             $checks[] = array($langs->trans($label).' — '.$check['value'], $langs->trans('NorwayAccountingStatus'.$check['status']));
         }
     } elseif ($step === 5) {
         $banks = (new NorwayBankSetup($db, $conf->entity))->report(getDolGlobalInt('CHARTOFACCOUNTS'));
-        if (!$banks) { print '<div class="warning">'.$langs->trans('NorwayBankSetupEmpty').'</div>'; }
+        if (!$banks) { $checks[] = array($langs->trans('NorwayWizardTaskBank'), $langs->trans('NorwayBankSetupEmpty')); }
         foreach ($banks as $bank) {
             $label = $bank['ref'].' — '.$bank['label'];
             foreach (array('account_status' => 'Ledger', 'journal_status' => 'Journal', 'currency_status' => 'Currency') as $key => $field) {
@@ -69,25 +94,29 @@ try {
         $checks[] = array($langs->trans('NorwayWizardDocumentLanguages'), $langs->trans(getDolGlobalInt('MAIN_MULTILANGS') === 1 ? 'NorwayCheckOK' : 'NorwayCheckMissing'));
     }
     if ($checks) {
-        print '<h3>'.$langs->trans('NorwayWizardCurrent').'</h3>';
+        print '<details><summary>'.$langs->trans('NorwayWizardCurrent').'</summary><p>'.$langs->trans('NorwayWizardCurrentHelp').'</p>';
         print '<div class="div-table-responsive"><table class="noborder centpercent">';
         foreach ($checks as $check) {
             print '<tr><td>'.dol_escape_htmltag((string) $check[0]).'</td><td>'.dol_escape_htmltag((string) $check[1]).'</td></tr>';
         }
-        print '</table></div>';
+        print '</table></div></details>';
     }
 } catch (RuntimeException $error) {
     print '<div class="error">'.$langs->trans('NorwayAccountingReadError').'</div>';
 }
-print '<h3>'.$langs->trans('NorwayWizardSettings').'</h3><ul>';
-foreach ($links[$step] as $path => $label) {
-    print '<li><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></li>';
+if ($optional[$step]) {
+    print '<details><summary>'.$langs->trans('NorwayWizardOptional').'</summary><p>'.$langs->trans('NorwayWizardOptionalHelp').'</p><ul class="norway-wizard-optional">';
+    foreach ($optional[$step] as $key=>$path) {
+        print '<li><a target="_blank" rel="noopener noreferrer" href="'.DOL_URL_ROOT.$path.'">'.$langs->trans('NorwayWizardExtra'.$key).' — '.$langs->trans('NorwayWizardNewTab').'</a><p>'.$langs->trans('NorwayWizardExtra'.$key.'Help').'</p></li>';
+    }
+    print '</ul></details>';
 }
-print '</ul><p>';
+print '<details><summary>'.$langs->trans('NorwayWizardLimits').'</summary><p>'.$langs->trans('NorwayWizardLimit'.$step).'</p></details>';
+print '<nav class="norway-wizard-nav" aria-label="'.$langs->trans('NorwayWizardNavigation').'">';
 if ($step > 1) { print '<a class="butAction" href="'.$base.'?step='.($step - 1).'">'.$langs->trans('NorwayWizardPrevious').'</a> '; }
 if ($step < 11) { print '<a class="butAction" href="'.$base.'?step='.($step + 1).'">'.$langs->trans('NorwayWizardNext').'</a>'; }
-print '</p><p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/norwegian-setup-guide.md">'
+print '</nav><p>'.$langs->trans('NorwayWizardNoSave').'</p><p><a target="_blank" rel="noopener noreferrer" href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/norwegian-setup-guide.md">'
     .$langs->trans('NorwayWizardGuide').'</a></p>';
-print '<p>'.$langs->trans('NorwayWizardNoSave').'</p></div>';
+print '</div>';
 llxFooter();
 $db->close();

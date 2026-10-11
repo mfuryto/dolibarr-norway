@@ -76,7 +76,7 @@ try {
                 || strpos($wizard, $wizardStep.' / 11') === false
                 || strpos($wizard, 'aria-current="step"') === false
                 || strpos($wizard, 'norwegian-setup-guide.md') === false
-                || strpos($wizard, 'NorwayWizardBody') !== false
+                || strpos($wizard, 'NorwayWizard') !== false
                 || strpos($wizard, 'NorwayWizardLimit') !== false
                 || strpos($wizard, 'Could not read accounting setup') !== false
                 || strpos($wizard, 'Kunne ikke lese bokføringsoppsettet') !== false
