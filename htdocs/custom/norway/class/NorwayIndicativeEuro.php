@@ -38,7 +38,7 @@ class NorwayIndicativeEuro
         $body = '';
         curl_setopt_array($curl, array(CURLOPT_CONNECTTIMEOUT => 3, CURLOPT_TIMEOUT => 8,
             CURLOPT_FOLLOWLOCATION => false, CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => 'dolibarr-norway/0.6.0',
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => 'dolibarr-norway/0.7.0',
             CURLOPT_WRITEFUNCTION => static function ($handle, $chunk) use (&$body) {
                 if (strlen($body) + strlen($chunk) > 262144) { return 0; }
                 $body .= $chunk; return strlen($chunk);

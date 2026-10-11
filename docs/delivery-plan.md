@@ -23,7 +23,7 @@ Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Prog
 | Trinn | Arbeid | Når deltrinnet er ferdig |
 |---|---|---|
 | 1a – levert i 0.6.0 | Skrivebeskyttet kontroll av valgt kontoplan, aktive kontoer, standardkontokoblinger og journaler | Viser mangler/inaktive kontoer uten å endre oppsett; tester foretak- og kontoplanavgrensning, databasefeil og webtilgang |
-| 1b | Avgrenset norsk kontoplan med versjonert mapping og forhåndsvisning av import | Repeterbar import uten dubletter, endring av brukte kontoer eller historikk; konfliktkontroll, backup og gjenopprettingsprøve |
+| 1b – forhåndsvisning levert i 0.7.0; import/mapping gjenstår | Avgrenset norsk kontoplan med versjonert mapping og forhåndsvisning av import | Repeterbar import uten dubletter, endring av brukte kontoer eller historikk; konfliktkontroll, backup og gjenopprettingsprøve |
 | 2 | Registreringsperioder og norske avgiftsbehandlinger; bokført avgiftsmetadata og sporbar MVA-rapport | Grunnlag og avgift avstemmes mot hovedbok; før/etter registrering, korreksjoner og fradrag er testet; manglende mapping vises som feil |
 | 3 | Fordringer, leverandørgjeld og bankavstemming | Inngående saldo + bevegelser = utgående saldo; reskontro stemmer med kontrollkontoer; delbetaling, kreditering, refusjon og gebyrer er prøvd |
 | 4 | Programvare og avklarte utenlandsscenarioer i NOK | Land, kundetype og leveringsmodell er dokumentert; relevante kjøp/salg og eventuell omvendt avgiftsplikt er faglig vurdert og testet |
@@ -37,7 +37,7 @@ EHF-avklaring kan gjøres parallelt med tidligere trinn, fordi tilgangspunkt og 
 
 Kontrollsiden i trinn 1a viser valgt kontoplan, aktive/alle kontoer, åtte standardkontoer for kunde, leverandør, produkt/tjeneste kjøp/salg og inngående/utgående MVA, samt aktive salgs-, kjøps-, bank- og diversejournaler. Den skiller manglende, inaktiv, tvetydig og ikke angitt kobling.
 
-Standardkontoer er reservekoblinger. Fravær beviser ikke at all bokføring er umulig, fordi produkt-/kunde-/linjekoblinger kan finnes. En tilgjengelig konto bekrefter heller ikke riktig norsk kontonummer eller avgiftsbehandling. Ingen samlet grønn «produksjonsklar»-status innføres. Neste implementering er trinn 1b: kontoplan og mapping med importforhåndsvisning.
+Standardkontoer er reservekoblinger. Fravær beviser ikke at all bokføring er umulig, fordi produkt-/kunde-/linjekoblinger kan finnes. En tilgjengelig konto bekrefter heller ikke riktig norsk kontonummer eller avgiftsbehandling. Ingen samlet grønn «produksjonsklar»-status innføres. Trinn 1b har nå [CSV-forhåndsvisning](chart-preview.md) med konflikt- og hovedbokbrukskontroll. Selve importen, faglig kontoutvalg og versjonert mapping gjenstår.
 
 ## Avklaringer som gjenstår
 
