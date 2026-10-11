@@ -228,3 +228,15 @@ NorwayWizardTitle11=Review before use
 NorwayWizardBody11=Document decisions, reasons, owner, date and evidence for each step. Distinguish unresolved from not applicable. Test each applicable chain using synthetic data in a separate environment: document, posting, payment/credit note, reconciliation and reporting/export. Review supported scope and gaps with the accounting lead.
 NorwayWizardLimit11=This is the final guidance page, not a completion button. No overall green status is calculated. Unfinished VAT, EHF, SAF-T and history support are delivery gaps that cannot be approved by clicking next.
 NorwayWizardDocumentLanguages=Language selection on sales documents
+
+NorwayDefaults=Save customer and supplier accounts
+NorwayDefaultsScope=Fills only empty customer (1500) and supplier (2400) defaults in an unused accounting setup with the shipped Norwegian chart. Existing and inherited choices, including different account numbers, are preserved. Validated customer/supplier invoices or ledger history block filling. Sales, purchase and VAT accounts, journals, banks and entries are not changed.
+NorwayDefaultsEffective=Effective installation value
+NorwayDefaultsFill=Fill empty choice after confirmation
+NorwayDefaultsKeep=Preserve existing choice
+NorwayDefaultsBlocked=Filling blocked. Check the selected Norwegian chart, active accounts with unchanged names, and invoice/ledger history. Review manually when the setup is already in use.
+NorwayDefaultsConfirmScope=Review the proposals and have a recent backup before confirmation. Confirmation applies to this preview for ten minutes. Settings are checked again when saving.
+NorwayDefaultsConfirm=Confirm filling empty choices
+NorwayDefaultsSaved=Saved %s account defaults. Existing choices were preserved.
+NorwayDefaultsFailed=Saving could not be confirmed. Create a new preview and check stored values before retrying.
+NorwayDefaultsNothing=No empty choices to fill. Existing choices are preserved; this does not verify that all mappings are correct.

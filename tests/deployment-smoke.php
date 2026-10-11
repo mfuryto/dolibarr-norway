@@ -1,6 +1,6 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Read-only verification; no test users or accounting data are created.
+// Read-only unless the guarded synthetic defaults test is explicitly requested.
 if (PHP_SAPI !== 'cli') {
     exit(1);
 }
@@ -84,6 +84,24 @@ try {
     $profile = page('/custom/norway/admin/profile.php');
     verify(strpos($profile, 'NORWAY-NO-1') !== false && strpos($profile, 'value="installprofile"') !== false,
         'Norwegian chart preview or confirmation missing');
+    if (getenv('NORWAY_TEST_DEFAULTS') === '1') {
+        verify(getenv('DOLI_COMPANY_NAME') === 'SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY') === '1', 'Synthetic defaults guard missing');
+        $defaults = page('/custom/norway/admin/defaults.php');
+        verify(preg_match('/name="token"[^>]*value="([^"]+)"/', $defaults, $defaultsToken) === 1
+            && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/', $defaults, $defaultsNonce) === 1, 'Defaults confirmation missing');
+        forwardProxyCookies();
+        page('/custom/norway/admin/defaults.php', array('action'=>'savedefaults', 'token'=>html_entity_decode($defaultsToken[1]), 'preview_nonce'=>$defaultsNonce[1]));
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302, 'Defaults save did not redirect');
+        forwardProxyCookies();
+        $defaults = page('/custom/norway/admin/defaults.php');
+        verify(strpos($defaults,'value="savedefaults"')===false
+            && (strpos($defaults,'Lagret 2 standardkontovalg')!==false || strpos($defaults,'Saved 2 account defaults')!==false), 'Confirmed defaults save failed');
+        forwardProxyCookies();
+        page('/custom/norway/admin/defaults.php', array('action'=>'savedefaults','token'=>html_entity_decode($defaultsToken[1]), 'preview_nonce'=>$defaultsNonce[1]));
+        forwardProxyCookies();
+        $defaults = page('/custom/norway/admin/defaults.php');
+        verify(strpos($defaults,'Lagringen kunne ikke bekreftes')!==false || strpos($defaults,'Saving could not be confirmed')!==false, 'Defaults confirmation replay accepted');
+    }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {
     curl_close($curl);

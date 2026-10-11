@@ -68,7 +68,8 @@ try {
 } catch (RuntimeException $error) {
     print '<div class="error">'.$langs->trans('NorwayAccountingReadError').'</div>';
 }
-foreach (array('/accountancy/admin/accountmodel.php' => 'NorwayAccountingChartSettings',
+foreach (array('/custom/norway/admin/defaults.php' => 'NorwayDefaults',
+    '/accountancy/admin/accountmodel.php' => 'NorwayAccountingChartSettings',
     '/accountancy/admin/defaultaccounts.php' => 'NorwayAccountingDefaultSettings',
     '/accountancy/admin/journals_list.php' => 'NorwayAccountingJournalSettings',
     '/custom/norway/admin/setup.php' => 'NorwaySetup') as $path => $label) {

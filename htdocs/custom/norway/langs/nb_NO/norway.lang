@@ -228,3 +228,15 @@ NorwayWizardTitle11=Gjennomgang før bruk
 NorwayWizardBody11=Dokumenter valg, begrunnelse, ansvarlig, dato og kontrollbevis per steg. Skill uavklart fra ikke relevant. Prøv hele aktuelle kjeden med syntetiske data i separat miljø: dokument, bokføring, betaling/kreditnota, avstemming og rapport/eksport. Gjennomgå støttet omfang og mangler med regnskapsfaglig ansvarlig.
 NorwayWizardLimit11=Dette er siste veiledningsside, ikke en ferdigknapp. Ingen samlet grønn status beregnes. Uferdig MVA, EHF, SAF-T og historikk er leveransegap som ikke kan godkjennes ved å klikke videre.
 NorwayWizardDocumentLanguages=Språkvalg på salgsdokumenter
+
+NorwayDefaults=Lagre kunde- og leverandørkonto
+NorwayDefaultsScope=Fyller bare tomme standardvalg for kunde (1500) og leverandør (2400) i et nytt bokføringsoppsett med den medfølgende norske kontoplanen. Eksisterende og arvede valg bevares, også andre kontonumre. Validerte kunde-/leverandørfakturaer eller hovedbokhistorikk sperrer utfylling. Salgs-, kjøps- og MVA-kontoer, journaler, bank og bilag endres ikke.
+NorwayDefaultsEffective=Gjeldende verdi i installasjonen
+NorwayDefaultsFill=Fyll tomt valg etter bekreftelse
+NorwayDefaultsKeep=Behold eksisterende valg
+NorwayDefaultsBlocked=Utfylling sperret. Kontroller valgt norsk plan, aktive kontoer med uendret navn og eventuell faktura-/hovedbokhistorikk. Bruk manuell gjennomgang når oppsettet allerede er i bruk.
+NorwayDefaultsConfirmScope=Kontroller forslagene og ha en fersk sikkerhetskopi før bekreftelse. Bekreftelsen gjelder denne forhåndsvisningen i ti minutter. Oppsettet kontrolleres på nytt ved lagring.
+NorwayDefaultsConfirm=Bekreft utfylling av tomme valg
+NorwayDefaultsSaved=Lagret %s standardkontovalg. Eksisterende valg er bevart.
+NorwayDefaultsFailed=Lagringen kunne ikke bekreftes. Lag ny forhåndsvisning og kontroller lagrede verdier før nytt forsøk.
+NorwayDefaultsNothing=Ingen tomme valg å fylle. Eksisterende valg er bevart; dette bekrefter ikke at alle kontokoblinger er riktige.

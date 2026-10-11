@@ -18,6 +18,7 @@ const {chromium}=require('playwright');
   for(const path of ['/index.php','/compta/bank/list.php','/compta/bank/bankentries_list.php?id=1','/compta/bank/transfer.php','/compta/bank/bilan.php','/compta/bank/graph.php?account=1','/compta/bank/card.php?action=create','/societe/list.php','/compta/facture/list.php','/custom/norway/admin/setup.php',
   '/custom/norway/admin/accounting.php',
   '/custom/norway/admin/wizard.php?step=4',
+  '/custom/norway/admin/defaults.php',
   '/custom/norway/admin/chart.php',
   '/custom/norway/admin/profile.php',
   '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){

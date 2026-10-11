@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $defaults = request('/custom/norway/admin/defaults.php');
+    if (strpos($defaults, 'value="savedefaults"') !== false) { throw new RuntimeException('Defaults confirmation visible before login'); }
     $wizard = request('/custom/norway/admin/wizard.php');
     if (strpos($wizard, 'Norwegian setup wizard') !== false || strpos($wizard, 'Norsk oppsettsveiviser') !== false) {
         throw new RuntimeException('Wizard visible before authentication');
@@ -125,6 +127,14 @@ try {
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart preview CSRF rejection missing'); }
     request('/custom/norway/admin/chart.php', array('action' => 'importchart', 'token' => 'invalid', 'preview_nonce' => 'invalid'));
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart import CSRF rejection missing'); }
+    $defaults = request('/custom/norway/admin/defaults.php');
+    if (strpos($defaults, 'value="savedefaults"') !== false
+        || (strpos($defaults, 'Filling blocked') === false && strpos($defaults, 'Utfylling sperret') === false
+            && strpos($defaults, 'No empty choices') === false && strpos($defaults, 'Ingen tomme valg') === false)) {
+        throw new RuntimeException('Defaults offers unsafe replacement or failed to render');
+    }
+    request('/custom/norway/admin/defaults.php', array('action'=>'savedefaults','token'=>'invalid'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Defaults CSRF guard missing'); }
     $profile = request('/custom/norway/admin/profile.php');
     if (strpos($profile, 'installprofile') !== false
         || (strpos($profile, 'The Norwegian chart cannot be installed now') === false
