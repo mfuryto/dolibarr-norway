@@ -67,7 +67,7 @@ export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.3.1/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.4.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
 "${compose[@]}" exec -T web php <<'PHPTEST'
 <?php
@@ -76,6 +76,9 @@ if (getenv('DOLI_COMPANY_NAME') !== 'SYNTHETIC INSTALLATION ONLY') { exit(1); }
 $names = "'BANK_DISABLE_CHECK_DEPOSIT','MAIN_MULTILANGS','MAIN_MODULE_NORWAY_HOOKS'";
 if (!$db->query('DELETE FROM '.MAIN_DB_PREFIX.'const WHERE entity=1 AND name IN ('.$names.')')) {
     throw new RuntimeException('Legacy configuration fixture failed');
+}
+if (!$db->query("UPDATE ".MAIN_DB_PREFIX."const SET value='[\"/norway/css/legacy.css\"]' WHERE entity=1 AND name='MAIN_MODULE_NORWAY_CSS'")) {
+    throw new RuntimeException('Legacy layout registration fixture failed');
 }
 $db->close();
 PHPTEST

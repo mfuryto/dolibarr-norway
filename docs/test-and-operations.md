@@ -235,3 +235,32 @@ MVA-felter i avsenderobjektet skal være uendret etter generering. Negative
 hook-tester dekker ugyldig kontrollsiffer, mottakeradresse, annen kildetype,
 utenlandsk avsender og annet foretak. Oppdateringskontrollen krever nå
 registrert `pdfgeneration`-hook også ved oppgradering av aktivert modul.
+
+### Fakturavalidering og layout 0.4.0
+
+Integrasjonstesten prøver ekte validering med feil selgerkontrollsiffer,
+MVA deaktivert, manglende kundeidentitet og tom linjebeskrivelse. Hvert avslag
+skal ha riktig feilårsak og bevare utkastets lagrede status og referanse.
+Etter korrigering skal samme utkast kunne valideres. Pure feltkontroller prøver
+også null-MVA-faktura før registrering, produktetikett og koblet historisk
+MVA-kreditnota etter deaktivert MVA. Dette godkjenner ikke avgiftsbehandlingen
+på kreditnotaen. Installasjonskontrollen krever ny CSS-registrering, og HTTP-testen
+kontrollerer at stilen lastes.
+
+Manuell Chromium-kontroll i syntetisk lokal installasjon sammenligner dokument-
+og skjermbredde ved 390, 768, 1024 og 1440 piksler: forside, bankoversikt,
+ny bankkonto, bankposteringer, overføring, bankrapport, bankgraf, kunder,
+fakturaliste og modulens fire kontroll-/hjelpesider (52 kombinasjoner).
+Den bekrefter også at stilfilen faktisk lastes fra modulregistreringen, uten
+innsprøyting i nettleseren. Testen bygger på Eldy og testdata; alle mulige
+skjemaer, lange egne tekster, nettlesere, zoomnivåer og eksterne temaer er ikke
+kvalifisert. Dette er en nettleserkontroll utenom de påkrevde CI-jobbene.
+
+Nettlesertesten er lagret i `tests/browser-layout.cjs`. Den krever Playwright
+1.58.2 med Chromium, en lokal syntetisk installasjon, testadministrator og
+syntetisk bankkonto med ID 1. Sett `NORWAY_SYNTHETIC_TEST=1` og
+`TEST_ADMIN_PASSWORD` i prosessmiljøet. `NORWAY_LAYOUT_BASE_URL` kan overstyre
+lokal testadresse. Eksterne verter avvises. Testen leser sider og skriver ingen
+regnskapsdata. Den kontrollerer HTTP 200, registrert stilfil, dokumentbredde og
+innhold utenfor skjermen; brede tabellers interne rulling er tillatt. Nettleser-
+avhengigheten er et utviklingsverktøy og installeres ikke i driftscontaineren.

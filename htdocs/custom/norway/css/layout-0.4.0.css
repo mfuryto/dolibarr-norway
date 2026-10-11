@@ -1,0 +1,26 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* Keep wide content inside its column without hiding it. */
+#id-container { display: flex; width: 100%; }
+#id-left { flex: 0 0 auto; }
+#id-right { flex: 1 1 0%; min-width: 0; width: auto; }
+#id-right .div-table-responsive, #id-right .div-table-responsive-no-min { max-width: 100%; min-width: 0; }
+@media (max-width: 800px) {
+  #id-right .table-fiche-title > tbody > tr { display: flex; flex-wrap: wrap; gap: .5rem; }
+  #id-right .table-fiche-title > tbody > tr > td { display: block; width: auto; max-width: 100%; min-width: 0; }
+  #id-right .table-fiche-title .pagination { white-space: normal; }
+}
+#id-right .tableforfieldcreate { table-layout: fixed; }
+#id-right .tableforfieldcreate td { overflow-wrap: anywhere; }
+#id-right .tableforfieldcreate input:not([type=checkbox]):not([type=radio]),
+#id-right .tableforfieldcreate select,
+#id-right .tableforfieldcreate textarea,
+#id-right .tableforfieldcreate .select2-container { max-width: 100%; box-sizing: border-box; }
+#id-right .box .boxtable { table-layout: fixed; }
+#id-right .box .boxtable td, #id-right .box .boxtable th { overflow-wrap: anywhere; }
+
+.norway-page { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.norway-page form, .norway-page form label { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.norway-page form input { max-width: 100%; box-sizing: border-box; }
+/* Scale charts to their available column width, preserving the canvas ratio. */
+#id-right .dolgraph { max-width: 100%; box-sizing: border-box; }
+#id-right .dolgraph canvas { max-width: 100%; height: auto !important; }

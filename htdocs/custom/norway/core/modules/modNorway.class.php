@@ -14,12 +14,12 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.3.1';
+        $this->version = '0.4.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
         $this->picto = 'accountancy';
-        $this->module_parts = array('moduleforexternal' => 0, 'triggers' => 1, 'hooks' => array('main', 'index', 'pdfgeneration'));
+        $this->module_parts = array('moduleforexternal' => 0, 'triggers' => 1, 'css' => array('/norway/css/layout-0.4.0.css'), 'hooks' => array('main', 'index', 'pdfgeneration'));
         $this->config_page_url = array('setup.php@norway');
         $this->langfiles = array('norway@norway');
         $this->phpmin = array(8, 2);
@@ -37,7 +37,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.3.1 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.4.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwayPolicy.php';
@@ -48,6 +48,11 @@ class modNorway extends DolibarrModules
         if (dolibarr_set_const($this->db, 'MAIN_MODULE_NORWAY_HOOKS', json_encode($this->module_parts['hooks']),
             'chaine', 0, '', $GLOBALS['conf']->entity) <= 0) {
             $this->error = 'Could not refresh Norwegian dashboard hooks';
+            return -1;
+        }
+        if (dolibarr_set_const($this->db, 'MAIN_MODULE_NORWAY_CSS', json_encode($this->module_parts['css']),
+            'chaine', 0, '', $GLOBALS['conf']->entity) <= 0) {
+            $this->error = 'Could not refresh Norwegian layout styles';
             return -1;
         }
         return $this->_init(array(), $options);

@@ -6,6 +6,7 @@ require_once __DIR__.'/../class/NorwayIndicativeEuro.php';
 $langs->load('norway@norway');
 $nok = GETPOST('nok', 'alphanohtml');
 llxHeader('', $langs->trans('NorwayPricing'));
+print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayPricing'), '', 'accountancy');
 print '<p>'.$langs->trans('NorwayPricingScope').'</p>';
 print '<form method="get"><label>'.$langs->trans('NorwayPricingNok').' <input type="number" name="nok" min="0" max="1000000000" step="0.01" required value="'.dol_escape_htmltag($nok).'"></label> ';
@@ -23,4 +24,5 @@ if ($nok !== '') {
         print '<div class="warning">'.$langs->trans('NorwayPricingUnavailable').'</div>';
     }
 }
+print '</div>';
 llxFooter(); $db->close();

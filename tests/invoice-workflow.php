@@ -60,6 +60,10 @@ setting('ACCOUNTANCY_FISCAL_PERIOD_MODE', 'blockedonclosed');
 $mysoc->country_id = 173;
 $mysoc->country_code = 'NO';
 $mysoc->tva_assuj = 1;
+$mysoc->idprof1 = '123456785';
+$mysoc->address = 'Synthetic address';
+$mysoc->zip = '0000';
+$mysoc->town = 'Synthetic';
 sql("INSERT INTO ".$db->prefix()."accounting_system (fk_country,pcg_version,label,active) VALUES (173,'SYN-".$run."','Synthetic test chart, not a production chart',1)");
 $chart = $db->last_insert_id($db->prefix().'accounting_system');
 setting('CHARTOFACCOUNTS', $chart);
@@ -82,6 +86,7 @@ $journal = $db->last_insert_id($db->prefix().'accounting_journal');
 $customer = new Societe($db);
 $customer->name = 'SYNTHETIC CUSTOMER ONLY';
 $customer->client = 1;
+$customer->idprof1 = '123456785';
 $customer->code_client = 'SYN-'.$run;
 $customer->code_compta = 'SYN-RESK';
 $customer->country_id = 173;
@@ -98,6 +103,30 @@ foreach (array(array('SYN-SALE-25', 1000, 25, 0), array('SYN-SALE-0', 600, 0, 0)
     if ($invoice->type === 2) { $invoice->fk_facture_source = $invoices[0]->id; }
     insist($invoice->create($user) > 0, 'Invoice creation failed: '.$invoice->error);
     insist($invoice->addline('Synthetic software licence', $fixture[1], 1, $fixture[2], 0, 0, 0, 0, '', '', $accounts['3000'], 0, 0, 'HT', 0, 1) > 0, 'Invoice line failed: '.$invoice->error);
+    if (!$invoices) {
+        $expectRejected = static function ($expectedKey) use ($invoice, $user, $db, $langs) {
+            $before = $db->fetch_object(sql('SELECT ref,fk_statut FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.(int) $invoice->id));
+            insist($invoice->validate($user) < 0, 'Invalid invoice validation succeeded: '.$expectedKey);
+            insist(strpos(html_entity_decode($invoice->error, ENT_QUOTES, 'UTF-8'), html_entity_decode($langs->trans('NorwayInvoice'.$expectedKey), ENT_QUOTES, 'UTF-8')) !== false, 'Wrong validation rejection reason: '.$expectedKey);
+            $after = $db->fetch_object(sql('SELECT ref,fk_statut FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.(int) $invoice->id));
+            insist((int) $after->fk_statut === 0 && $after->ref === $before->ref, 'Rejected invoice changed status/reference');
+            insist($invoice->fetch($invoice->id) > 0, 'Rejected invoice could not reload');
+        };
+        $mysoc->idprof1 = '123456786';
+        $expectRejected('SellerOrganisation');
+        $mysoc->idprof1 = '123456785';
+        $mysoc->tva_assuj = 0;
+        $expectRejected('UnregisteredVAT');
+        $mysoc->tva_assuj = 1;
+        sql("UPDATE ".MAIN_DB_PREFIX."societe SET siren='',address='' WHERE rowid=".(int) $customer->id);
+        $expectRejected('Customer');
+        sql("UPDATE ".MAIN_DB_PREFIX."societe SET siren='123456785' WHERE rowid=".(int) $customer->id);
+        sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET description='',label='' WHERE fk_facture=".(int) $invoice->id);
+        $expectRejected('Descriptions');
+        sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET description='Synthetic software licence' WHERE fk_facture=".(int) $invoice->id);
+        insist($invoice->fetch($invoice->id) > 0, 'Invoice reload after corrections failed');
+        print "PASS rejected invoice validation rolls back status/reference and corrected draft can proceed\n";
+    }
     insist($invoice->validate($user) > 0, 'Invoice validation failed: '.$invoice->error);
     insist($invoice->fetch($invoice->id) > 0, 'Invoice reload failed');
     $invoices[] = $invoice;

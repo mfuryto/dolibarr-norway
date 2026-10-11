@@ -22,7 +22,7 @@ if ($modulePayloadMatches) {
 $checks = array(
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.3.1',
+    'norway_module_version' => (new modNorway($db))->version === '0.4.0',
     'norway_module_payload' => $modulePayloadMatches,
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),
@@ -32,6 +32,7 @@ $checks = array(
     'cheque_deposits_disabled' => getDolGlobalInt('BANK_DISABLE_CHECK_DEPOSIT') === 1,
     'norway_dashboard_hook' => in_array('index', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_pdf_hook' => in_array('pdfgeneration', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
+    'norway_layout_css' => in_array('/norway/css/layout-0.4.0.css', (array) ($conf->modules_parts['css']['norway'] ?? array()), true),
     'document_languages_enabled' => getDolGlobalInt('MAIN_MULTILANGS') === 1,
     'installer_locked' => file_exists('/var/www/documents/install.lock'),
     'instance_key_match' => getenv('DOLI_INSTANCE_UNIQUE_ID') !== false
