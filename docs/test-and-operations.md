@@ -214,3 +214,14 @@ Gjenoppretting av custom inngår også i testen.
 [Dolibarr 24.0.2](https://github.com/Dolibarr/dolibarr/tree/7e927764767343334aaa067ca5ec054cfea0a26b) er utgitt som kildekode, men den offisielle Docker-taggen var
 ikke tilgjengelig ved kontroll 2026-10-11. Driftsimaget forblir 24.0.1 med låst
 digest inntil en egen versjonsoppgradering er kvalifisert.
+
+### Fakturakontroll 0.3.0
+
+Integrasjonstesten bruker automatisk nummerering av fakturaer og kreditnota,
+to fortløpende salgsnumre, ekte kreditnotakobling og norsk/engelsk kontrollside.
+Negativ HTTP-test flytter kun en syntetisk testfaktura midlertidig til annet
+foretak, kontrollerer avvisning og gjenoppretter den i finally før videre tester.
+Feltkontroller dekker feil organisasjonskontrollsiffer, tom HTML-beskrivelse,
+utenlandsk kundeidentifikator og ugyldig kreditnotakobling (kunde, foretak,
+status, dokumenttype og ID). Rapporten må alltid kreve separat gjennomgang av
+nummerering, levering, MVA og faktisk PDF. Ingen opplysninger skrives av kontrollen.

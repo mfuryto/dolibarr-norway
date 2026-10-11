@@ -98,10 +98,22 @@ foreach (array(array('SYN-SALE-25', 1000, 25, 0), array('SYN-SALE-0', 600, 0, 0)
     if ($invoice->type === 2) { $invoice->fk_facture_source = $invoices[0]->id; }
     insist($invoice->create($user) > 0, 'Invoice creation failed: '.$invoice->error);
     insist($invoice->addline('Synthetic software licence', $fixture[1], 1, $fixture[2], 0, 0, 0, 0, '', '', $accounts['3000'], 0, 0, 'HT', 0, 1) > 0, 'Invoice line failed: '.$invoice->error);
-    insist($invoice->validate($user, $fixture[0].'-'.$run) > 0, 'Invoice validation failed: '.$invoice->error);
+    insist($invoice->validate($user) > 0, 'Invoice validation failed: '.$invoice->error);
     insist($invoice->fetch($invoice->id) > 0, 'Invoice reload failed');
     $invoices[] = $invoice;
 }
+// Exercise automatic core numbering rather than forced test references.
+insist(preg_match('/^(.*?)([0-9]+)$/D', $invoices[0]->ref, $first) === 1
+    && preg_match('/^(.*?)([0-9]+)$/D', $invoices[1]->ref, $second) === 1,
+    'Automatic references must end with a sequence');
+insist($first[1] === $second[1] && (int) $second[2] === (int) $first[2] + 1,
+    'Consecutive sales invoices did not receive consecutive automatic numbers');
+insist(count(array_unique(array_map(static function ($invoice) { return $invoice->ref; }, $invoices))) === count($invoices),
+    'Duplicate invoice or credit note reference');
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayInvoiceCheck.php';
+insist(NorwayInvoiceCheck::evaluate($invoices[2], $mysoc, $customer, $invoices[0])['CreditSource'] === 'Present',
+    'Real core credit note source not recognised');
+print "PASS automatic consecutive invoice numbering and unique credit note reference\n";
 // A forged cheque payment must roll back; an ordinary transfer must still work.
 require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 $cheque = $db->fetch_object(sql("SELECT id,active FROM ".$db->prefix()."c_paiement WHERE code='CHQ' AND entity=".(int) $conf->entity));
@@ -194,6 +206,30 @@ try {
     $body = http('/index.php');
     http('/index.php', array('token' => token($body), 'actionlogin' => 'login', 'loginfunction' => 'loginfunction',
         'username' => 'testadmin', 'password' => getenv('DOLI_ADMIN_PASSWORD')));
+    foreach (array('nb_NO', 'en_US') as $language) {
+        $body = http('/custom/norway/admin/invoice.php?id='.$invoices[0]->id.'&lang='.$language);
+        insist(strpos($body, '/compta/facture/card.php?facid='.$invoices[0]->id) !== false,
+            'Invoice check page could not load a real invoice');
+        $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
+        insist(strpos($text, 'Må gjennomgås') !== false || strpos($text, 'Review required') !== false,
+            'Invoice check omitted mandatory manual review');
+    }
+    $body = http('/custom/norway/admin/invoice.php');
+    insist(strpos($body, '/norway/admin/invoice.php?id='.$invoices[0]->id) !== false,
+        'Recent invoice selector missing');
+    // Prove entity isolation through HTTP; restore this synthetic invoice afterwards.
+    sql('UPDATE '.MAIN_DB_PREFIX.'facture SET entity=99999 WHERE rowid='.(int) $invoices[0]->id);
+    try {
+        $body = http('/custom/norway/admin/invoice.php?id='.$invoices[0]->id);
+        insist(strpos($body, '/compta/facture/card.php?facid='.$invoices[0]->id) === false,
+            'Invoice check exposed an invoice belonging to another entity');
+        insist(strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') !== false
+            || strpos($body, 'Invoice could not be read in the active entity.') !== false,
+            'Wrong-entity invoice was not rejected');
+    } finally {
+        sql('UPDATE '.MAIN_DB_PREFIX.'facture SET entity='.(int) $conf->entity.' WHERE rowid='.(int) $invoices[0]->id);
+    }
+    print "PASS authenticated bilingual invoice checks and entity isolation\n";
     $params = array('id_journal' => $journal, 'date_startday' => 1, 'date_startmonth' => 1, 'date_startyear' => 2026,
         'date_endday' => 31, 'date_endmonth' => 12, 'date_endyear' => 2026, 'in_bookkeeping' => 'notyet');
     $path = '/accountancy/journal/sellsjournal.php?'.http_build_query($params);

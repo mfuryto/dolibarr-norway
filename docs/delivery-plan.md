@@ -12,7 +12,7 @@ betaling og innenlandske innkjøp. Den avgrenser risiko og bygger testgrunnlag;
 den erstatter ikke alle internasjonale produksjonsbehov.
 
 Et utvidet produksjonsomfang kan kreve EHF for offentlige kunder,
-EUR-fakturering og -oppgjør, utenlandskjøp/-salg og norsk MVA-behandling for hvert
+utenlandskjøp/-salg og norsk MVA-behandling for hvert
 scenario. Leveringsmodell, leveringssted og land må avklares per installasjon.
 Aktuelle arbeidsflyter må bestå testene før de inngår i støttet omfang.
 
@@ -21,11 +21,11 @@ Aktuelle arbeidsflyter må bestå testene før de inngår i støttet omfang.
 | Trinn | Leveranse og ferdigkriterium | Foreløpig innsats |
 |---|---|---|
 | 0 | Dekningsanalyse, modulgrunnlag, Docker og syntetiske avstemminger (denne leveransen) | Grunnlag levert; videre analyse under følger |
-| 1 | Avklare status/land/varer-tjenester, saldoer og feltmatrise mot 1.40; demonstrere faktura→hovedbok inkl. EUR | 3–6 dager |
+| 1 | Avklare status/land/varer-tjenester, saldoer og feltmatrise mot 1.40; demonstrere faktura→hovedbok i NOK | 3–6 dager |
 | 2 | Avgrenset kontoplan, næringsmapping, norske koder/gyldighet og registreringsprofiler; test repeterbar import | 5–9 dager |
 | 3 | Bokført avgiftsmetadata, sporbar MVA-rapport, korreksjon, periodekontroll og norske PDF-krav | 8–15 dager |
 | 4 | SAF-T 1.40, komplette saldoer/reskontro, validering og negative tester | 10–18 dager |
-| 5 | Utenlandskjøp/-salg, EUR-kurs, agio/disagio og alle avklarte avgiftsbehandlinger | 8–16 dager etter scenarioavklaring |
+| 5 | Utenlandskjøp/-salg i NOK og alle avklarte avgiftsbehandlinger | 8–16 dager etter scenarioavklaring |
 | 6 | EHF/Peppol-kvalifisering, mottakeraksept og driftsprøve | 4–8 dager pluss leverandør-/tilgangspunktventing |
 | 7 | Regnskapsfaglig kontroll, restore-prøve og begrenset produksjonsaksept | 4–7 dager |
 
@@ -48,9 +48,10 @@ trinn 1; særlig utenlandsomfang og EHF-avtale kan endre både tid og kostnader.
 - MVA-rapport viser grunnlag/avgift per behandling og lenke til bilag/linje;
   summer avstemmes mot hovedbok. Manglende bilag, mapping eller ubalanse
   stopper eksport med forklarbar feil; ingen lydløs utelatelse.
-- EUR-salg og -innkjøp har kjent kurskilde/dato og NOK-MVA. EUR-betaling til
-  annen kurs gir korrekt agio/disagio. Relevant omvendt avgiftsplikt,
-  innførsel og eksport testes etter bekreftet land-/produktmatrise.
+- Salgsdokumenter og krav er i NOK. EUR brukes kun som veiledende pris,
+  ikke som fakturavaluta. Gebyrer og avvik ved bankens veksling avstemmes
+  separat. Utenlandske innkjøp og relevant omvendt avgiftsplikt/eksport
+  trenger egne avklarte og testede scenarioer før de støttes.
 - PDF viser relevante norske fakturaopplysninger, maskinell nummerserie,
   leveringssted/-tid og kildefaktura på kreditnota. Historiske dokumenter
   endres ikke ved nytt oppsett. EHF aksepteres av valgt offentlig mottaker.
@@ -67,3 +68,10 @@ trinn 1; særlig utenlandsomfang og EHF-avtale kan endre både tid og kostnader.
 
 Modulen kan ikke omtales som ferdig for norsk regnskap før støttede scenarier,
 begrensninger og bevis er publisert og godkjent for faktisk produksjonsomfang.
+
+## Oppdatert salgsomfang
+
+NOK er eneste støttede salgsvaluta; EUR er bare et veiledende prisanslag.
+Fakturakontroll i modul 0.3.0 viser utfylte felt og kreditnotakobling, med
+obligatorisk separat gjennomgang av nummerrekke, levering, MVA og PDF.
+Dette er et deltrinn og avslutter ikke milepæl 3 eller produksjonsaksept.

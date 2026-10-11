@@ -45,5 +45,6 @@ if (!$result) {
 }
 print '<p><a href="'.dol_buildpath('/norway/admin/audit.php', 1).'">'.$langs->trans('NorwayAudit').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/pricing.php', 1).'">'.$langs->trans('NorwayPricing').'</a></p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/invoice.php', 1).'">'.$langs->trans('NorwayInvoiceCheck').'</a></p>';
 llxFooter();
 $db->close();
