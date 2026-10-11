@@ -18,7 +18,8 @@ class NorwayAccountingSetup
         return array('ACCOUNTING_ACCOUNT_CUSTOMER', 'ACCOUNTING_ACCOUNT_SUPPLIER',
             'ACCOUNTING_PRODUCT_SOLD_ACCOUNT', 'ACCOUNTING_SERVICE_SOLD_ACCOUNT',
             'ACCOUNTING_PRODUCT_BUY_ACCOUNT', 'ACCOUNTING_SERVICE_BUY_ACCOUNT',
-            'ACCOUNTING_VAT_SOLD_ACCOUNT', 'ACCOUNTING_VAT_BUY_ACCOUNT');
+            'ACCOUNTING_VAT_SOLD_ACCOUNT', 'ACCOUNTING_VAT_BUY_ACCOUNT',
+            'ACCOUNTING_ACCOUNT_SUSPENSE', 'ACCOUNTING_ACCOUNT_TRANSFER_CASH');
     }
 
     private function rows($sql)
@@ -28,6 +29,34 @@ class NorwayAccountingSetup
         $rows = array();
         while ($row = $this->db->fetch_object($result)) { $rows[] = $row; }
         return $rows;
+    }
+
+    /** Suggestions are restricted to the shipped profile and never save settings. */
+    public function suggestions($chartId, $settings)
+    {
+        require_once __DIR__.'/NorwayChartProfile.php';
+        $prefix = $this->db->prefix();
+        $charts = $this->rows("SELECT s.pcg_version,s.active,c.code AS country FROM ".$prefix."accounting_system s"
+            ." LEFT JOIN ".$prefix."c_country c ON c.rowid=s.fk_country WHERE s.rowid=".(int) $chartId);
+        if (!$charts || $charts[0]->pcg_version !== NorwayChartProfile::VERSION
+            || (int) $charts[0]->active !== 1 || $charts[0]->country !== 'NO') { return array(); }
+        $labels = array_column(NorwayChartPreview::parse(NorwayChartProfile::csv()), 'label', 'number');
+        $suggestions = array();
+        foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER' => '1500', 'ACCOUNTING_ACCOUNT_SUPPLIER' => '2400',
+            'ACCOUNTING_SERVICE_SOLD_ACCOUNT' => '3020', 'ACCOUNTING_VAT_SOLD_ACCOUNT' => '2700',
+            'ACCOUNTING_VAT_BUY_ACCOUNT' => '2710') as $key => $number) {
+            $accounts = $this->rows("SELECT label,active FROM ".$prefix."accounting_account WHERE entity=".$this->entity
+                ." AND fk_pcg_version='".$this->db->escape(NorwayChartProfile::VERSION)."'"
+                ." AND account_number='".$number."'".$this->db->plimit(2));
+            $current = trim((string) ($settings[$key] ?? ''));
+            $status = !$accounts ? 'Missing' : (count($accounts) > 1 ? 'Ambiguous'
+                : ((int) $accounts[0]->active !== 1 ? 'Inactive'
+                : ($accounts[0]->label !== $labels[$number] ? 'Review'
+                : ($current === $number ? 'Available' : 'Review'))));
+            $suggestions[] = array('key' => $key, 'current' => $current, 'number' => $number,
+                'label' => $labels[$number], 'status' => $status);
+        }
+        return $suggestions;
     }
 
     public function report($chartId, $settings)
