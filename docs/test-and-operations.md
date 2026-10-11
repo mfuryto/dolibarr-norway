@@ -101,3 +101,13 @@ gjennomført i denne leveransen.**
 Ved oppgradering: lag backup, prøv ny versjon på kopi, kjør funksjons-/eksport-
 og migreringstester og dokumenter reverseringsplan før endring av driftsinstans.
 Modulens nøyaktige versjonskontroll utvides først etter bestått regresjonstest.
+
+## Kontrollside for foretaksoppsett
+
+`tests/readiness.php` tester kontrollsiffer (inkludert 0 og ugyldig 10),
+feil lengde/innhold, tomt foretaksoppsett, satser bare for salg, inaktive
+kjøpssatser, separate kjøps-/salgssatser og aktive/inaktive historiske satser.
+Numeriske test-ID-er er kunstige og representerer ikke bekreftede foretak.
+HTTP-testen kontrollerer at administrator får kontrolltabellen uten SQL-feil,
+og at uferdig SAF-T/EHF fortsatt vises. CI kjører disse i den isolerte
+Dolibarr-installasjonen. Ingen regnskapsdata endres av kontrollsiden.

@@ -24,8 +24,9 @@ ikke ferdig funksjonstestet. Funn fra fraværssøk er avgrenset til undersøkt k
 
 Ett ENK, ingen planlagte ansatte, primært offentlige kunder, kjøp og salg over
 landegrensene, valuta inkludert EUR. Fylkren har ennå ingen kunder. Dette er et
-større produksjonsomfang enn et rent norsk NOK-pilotløp. Eksakte land, vare/tjeneste,
-leveringsmodell, kundetype og behov for EHF-mottak er fortsatt ukjent.
+større produksjonsomfang enn et rent norsk NOK-pilotløp. Brukeren har senere avklart at salget foreløpig bare gjelder programvare.
+Eksakte land, leveringsmodell (lisens/nedlasting/SaaS), kundetype og behov for
+EHF-mottak er fortsatt ukjent.
 
 Brukeren forventer MVA-registrering ved oppstart av norsk fakturering. Faktisk
 registerstatus og virkningstidspunkt er **ikke bekreftet**. Det må undersøkes for
@@ -146,3 +147,27 @@ offentlige mottakeres EHF-/ordrereferansekrav og oppbevarings-/driftsansvar er
 åpne. Direkte MVA-/skatteinnsending, bankintegrasjon og lisensutstedelse er
 fortsatt utenfor første leveranse. Lavt bilagstall brukes ikke som SAF-T-fritak
 når regnskapet føres elektronisk (S12).
+
+## Implementert neste del: kontroll av foretaksoppsett
+
+Modulens innstillingsside har nå en skrivebeskyttet kontroll av foretaksnavn,
+organisasjonsnummerets format/kontrollsiffer, land NO, basisvaluta NOK og utfylt
+adresse. Nummerkontrollen følger Brønnøysundregistrenes vekter/modulus 11;
+den gjør ikke registeroppslag og bekrefter verken at foretaket finnes eller
+at det er MVA-registrert.
+
+MVA-kontrollen leser bare norske `c_tva`-rader for aktiv entity. Den kontrollerer
+aktive satser 25, 15 og 12 for både kjøp og salg, og varsler aktive gamle satser
+8/14. Den endrer ingen satser, kontokoblinger eller historiske bilag. Dette er
+en kontroll av oppsettets dekning, ikke krav om at foretaket skal bruke alle
+satser eller at satsene er gyldige for et gitt bilag. Gyldighetsperioder,
+fradragsrett, avgiftskoder og registreringshistorikk er fortsatt datagap.
+
+Kontoplan/mapping, MVA-registerstatus/-dato, bokført avgiftsgrunnlag/rapport,
+SAF-T, EHF og valuta/utenlandshandel vises eksplisitt som uferdig eller
+uverifisert. Ingen samlet «produksjonsklar»-status beregnes. Kontrollen
+stopper med en synlig feil ved mislykket databaseforespørsel.
+
+Kilder kontrollert 2026-10-11:
+[Brønnøysundregistrenes kontrollsiffer](https://www.brreg.no/om-oss/registrene-vare/om-enhetsregisteret/organisasjonsnummeret/)
+og [Skatteetatens satser](https://www.skatteetaten.no/satser/merverdiavgift?pageid=1500).

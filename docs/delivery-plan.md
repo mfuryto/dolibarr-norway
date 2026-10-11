@@ -13,8 +13,8 @@ den erstatter ikke brukerens internasjonale produksjonsbehov.
 
 Brukerens første produksjonsomfang må også omfatte kvalifisert EHF for aktuelle
 offentlige kunder, EUR-fakturering og -oppgjør, relevante utenlandskjøp og salg,
-samt norsk MVA-behandling for hvert faktisk scenario. Vare-/tjenestetype,
-leveringssted og land kan ikke utledes av ordet «programvare». Oppstart må
+samt norsk MVA-behandling for hvert faktisk scenario. Brukeren har avklart at salget foreløpig bare gjelder programvare.
+Leveringsmodell (lisens/nedlasting/SaaS), leveringssted og land er fortsatt åpne. Oppstart må
 vente på at de aktuelle arbeidsflytene har bestått.
 
 ## Milepæler

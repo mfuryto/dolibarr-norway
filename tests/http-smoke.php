@@ -28,7 +28,10 @@ function request($path, $post = null)
 }
 try {
     $body = request('/custom/norway/admin/setup.php');
-    if (strpos($body, 'Not ready for production accounting.') !== false) {
+    if (strpos($body, 'Not ready for production accounting.') !== false
+        || strpos($body, 'Ikke klart for produksjonsregnskap.') !== false
+        || strpos($body, 'Company configuration checks') !== false
+        || strpos($body, 'Kontroll av foretaksoppsett') !== false) {
         throw new RuntimeException('Status visible before authentication');
     }
     if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $body, $match)) {
@@ -46,7 +49,18 @@ try {
         && strpos($body, 'Ikke klart for produksjonsregnskap.') === false) {
         throw new RuntimeException('Authenticated status page missing');
     }
-    print "PASS login and authenticated module status page\n";
+    if (strpos($body, 'Company configuration checks') === false
+        && strpos($body, 'Kontroll av foretaksoppsett') === false) {
+        throw new RuntimeException('Configuration checks missing');
+    }
+    if (strpos($body, 'Could not read VAT configuration') !== false
+        || strpos($body, 'Kunne ikke lese MVA-oppsettet') !== false) {
+        throw new RuntimeException('VAT configuration query failed');
+    }
+    if (strpos($body, 'SAF-T 1.40') === false || strpos($body, 'EHF/Peppol') === false) {
+        throw new RuntimeException('Unfinished accounting requirements missing');
+    }
+    print "PASS login and authenticated module status and configuration checks\n";
 } finally {
     curl_close($curl);
     unlink($cookie);
