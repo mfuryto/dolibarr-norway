@@ -74,6 +74,13 @@ try {
     if (strpos($body, '/compta/paiement/cheque/') !== false) {
         throw new RuntimeException('Cheque dashboard or menu still visible');
     }
+    $body = request('/index.php?lang=nb_NO');
+    $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
+    if (strpos($body, 'bg-infobox-bank_account') === false) { throw new RuntimeException('Bank dashboard absent; cheque assertion would be vacuous'); }
+    if (stripos($text, 'sjekkinnskudd') !== false || stripos($text, 'sjekkinskudd') !== false
+        || stripos($body, 'BankChecksToReceipt') !== false || strpos($body, '/compta/paiement/cheque/') !== false) {
+        throw new RuntimeException('Cheque deposit still visible in populated bank dashboard');
+    }
     foreach (array('index.php', 'list.php', 'card.php?action=create2') as $page) {
         request('/compta/paiement/cheque/'.$page);
         if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Direct cheque page accessible'); }

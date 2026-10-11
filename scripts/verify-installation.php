@@ -4,13 +4,29 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 require '/var/www/html/master.inc.php';
-if (DOL_VERSION !== '24.0.1' || !isModEnabled('norway') || !isModEnabled('accounting')
-    || !isModEnabled('propal') || !isModEnabled('facture') || isModEnabled('multicurrency')
-    || $conf->currency !== 'NOK' || getDolGlobalInt('BANK_DISABLE_CHECK_DEPOSIT') !== 1
-    || getDolGlobalInt('MAIN_MULTILANGS') !== 1
-    || !file_exists('/var/www/documents/install.lock')
-    || $conf->file->instance_unique_id !== getenv('DOLI_INSTANCE_UNIQUE_ID')) {
-    fwrite(STDERR, "Installation verification failed; retain backup and inspect configuration.\n");
+// This file is piped to PHP during updates. STD* constants are not available in
+// every PHP stdin invocation; php://stderr works for both files and stdin.
+$checks = array(
+    'core_version' => DOL_VERSION === '24.0.1',
+    'norway_module' => isModEnabled('norway'),
+    'accounting_module' => isModEnabled('accounting'),
+    'proposal_module' => isModEnabled('propal'),
+    'invoice_module' => isModEnabled('facture'),
+    'multicurrency_disabled' => !isModEnabled('multicurrency'),
+    'base_currency_nok' => $conf->currency === 'NOK',
+    'cheque_deposits_disabled' => getDolGlobalInt('BANK_DISABLE_CHECK_DEPOSIT') === 1,
+    'norway_dashboard_hook' => in_array('index', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
+    'document_languages_enabled' => getDolGlobalInt('MAIN_MULTILANGS') === 1,
+    'installer_locked' => file_exists('/var/www/documents/install.lock'),
+    'instance_key_match' => getenv('DOLI_INSTANCE_UNIQUE_ID') !== false
+        && getenv('DOLI_INSTANCE_UNIQUE_ID') !== ''
+        && $conf->file->instance_unique_id === getenv('DOLI_INSTANCE_UNIQUE_ID'),
+);
+$failed = array_keys(array_filter($checks, static function ($passed) { return !$passed; }));
+if ($failed) {
+    // Only check names are logged: no configuration values or credentials.
+    file_put_contents('php://stderr', "Installation verification failed; retain backup.\nFAIL ".implode("\nFAIL ", $failed)."\n");
+    $db->close();
     exit(1);
 }
 print "PASS core version, enabled modules, instance key and installer lock\n";

@@ -98,6 +98,27 @@ gzip -dc "$backup_dir/conf.tar.gz" | "${compose[@]}" run --rm -T --no-deps --ent
 wait_ready
 "${compose[@]}" exec -T web grep -qx 'synthetic backup marker' /var/www/documents/norway-backup-marker
 "${compose[@]}" exec -T web php < scripts/verify-installation.php
+# Run the negative path from the host; production PHP disables subprocess APIs.
+if "${compose[@]}" exec -T -e DOLI_INSTANCE_UNIQUE_ID=SYNTHETIC-INTENTIONAL-MISMATCH web php < scripts/verify-installation.php \
+    > "$install_root/verification-failure.stdout" 2> "$install_root/verification-failure.stderr"; then
+    echo 'Verification unexpectedly accepted a mismatched instance key.' >&2
+    exit 1
+else
+    verification_status=$?
+fi
+[[ "$verification_status" == 1 ]]
+python3 - "$install_root" <<'PYCODE'
+from pathlib import Path
+import sys
+root = Path(sys.argv[1])
+output = (root/'verification-failure.stdout').read_text()
+error = (root/'verification-failure.stderr').read_text()
+assert 'FAIL instance_key_match\n' in error
+assert 'Undefined constant' not in error and 'Fatal error' not in error
+assert 'SYNTHETIC-INTENTIONAL-MISMATCH' not in error + output
+assert 'PASS core version' not in output
+print('PASS stdin verification reports failed checks without fatal errors or credential values')
+PYCODE
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/deployment-smoke.php
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
 printf 'PASS backup checksums, database and document/config recovery\n'

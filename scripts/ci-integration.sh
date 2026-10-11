@@ -34,6 +34,7 @@ if [[ "$ready" != 1 ]]; then
     exit 1
 fi
 "${compose[@]}" exec -T web sh -c 'find /var/www/html/custom/norway /opt/norway-tests -name "*.php" -exec php -l {} \;'
+"${compose[@]}" exec -T web php /opt/norway-tests/home-dashboard.php
 "${compose[@]}" exec -T web php /opt/norway-tests/readiness.php
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-currency.php
 "${compose[@]}" exec -T web php /opt/norway-tests/integration.php

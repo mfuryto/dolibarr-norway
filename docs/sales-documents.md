@@ -49,7 +49,8 @@ av gamle salgsdokumenter i annen valuta krever en separat, vurdert migreringsfly
 ## Ingen sjekker
 
 «Ventende sjekkinnskudd» er fysiske banksjekker, ikke utestående fakturaer.
-Modulen skjuler kjernens sjekkoversikt og menyer, sperrer direkte tilgang til
+Modulen fjerner sjekkinnskuddsraden fra Bankkonto-gruppen på forsiden via
+kjernens dashboard-hook, skjuler sjekkoversikt og menyer, sperrer direkte tilgang til
 sjekkinnskuddssidene og deaktiverer CHQ i aktivt foretaks betalingsordbok.
 Nye kunde-/leverandørbetalinger og salgsdokumenter med CHQ avvises gjennom
 kjernens triggere, også ved direkte API-bruk. Historiske betalingsrader bevares.
