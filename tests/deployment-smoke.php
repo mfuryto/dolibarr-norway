@@ -80,6 +80,9 @@ try {
     $body = page('/custom/norway/admin/setup.php');
     verify(strpos($body, 'Ikke klart for produksjonsregnskap.') !== false
         || strpos($body, 'Not ready for production accounting.') !== false, 'Authenticated module page missing');
+    $company=page('/admin/company.php');
+    verify(strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),'ENK — Enkeltpersonforetak')!==false
+        && strpos($company,'Organisasjonsnummer')!==false && strpos($company,'Organisasjonsform')!==false,'Norwegian company fields or legal forms missing');
     $secure = false;
     foreach ($proxyCookies as $name => $cookieData) {
         if (strpos($name, 'DOLSESSID_') === 0 && $cookieData[1]) {

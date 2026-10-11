@@ -251,3 +251,5 @@ NorwayJournalsConfirm=Confirm creation of missing journals
 NorwayJournalsSaved=Created %s journals. Existing journals and entries were preserved.
 NorwayJournalsFailed=Creation could not be confirmed. Create a new preview and check the journal register before retrying.
 NorwayJournalsNothing=All four journal types have active coded journals. This does not verify bank mappings or correct posting.
+
+NorwayCompanyFieldsHelp=Open Company/organisation and save Norway as the country first. Under company identifiers: the organisation number is nine digits without NO or MVA. Legal form is the registered form, such as ENK or AS; select it yourself. The VAT number is a separate field for registered businesses and does not replace the organisation number. Do not add VAT registration wording before registration is confirmed. The VAT-liable setting and registration effective date require separate assessment. Updating does not select a legal form or change numbers or VAT status.

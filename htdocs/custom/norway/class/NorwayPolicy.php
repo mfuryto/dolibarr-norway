@@ -6,6 +6,8 @@ class NorwayPolicy
     public static function apply($db, $conf)
     {
         require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+        require_once __DIR__.'/NorwayCompanySetup.php';
+        NorwayCompanySetup::install($db);
         if ($conf->currency !== 'NOK') {
             // Older foundation releases stored an informational NOK setting, while
             // core actually reads MAIN_MONNAIE. Correct only an unused installation.
@@ -34,7 +36,9 @@ class NorwayPolicy
             throw new RuntimeException('Could not disable cheque payment selection');
         }
         // Use the core translation override table, scoped to this entity and Norwegian.
-        foreach (array('MenuNewThirdParty' => 'Ny kunde/leverandør', 'NewThirdParty' => 'Ny kunde eller leverandør',
+        foreach (array('ProfId1NO' => 'Organisasjonsnummer', 'ProfId1ShortNO' => 'Org.nr.',
+            'VATIntra' => 'MVA-nummer (ved registrering)', 'JuridicalStatus' => 'Organisasjonsform',
+            'MenuNewThirdParty' => 'Ny kunde/leverandør', 'NewThirdParty' => 'Ny kunde eller leverandør',
             'Prospects' => 'Potensielle kunder', 'Prospect' => 'Potensiell kunde',
             'MenuNewProspect' => 'Ny potensiell kunde', 'ThirdPartyProspects' => 'Potensielle kunder',
             'ThirdPartyProspectsStats' => 'Potensielle kunder',

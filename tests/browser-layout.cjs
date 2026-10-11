@@ -20,6 +20,7 @@ const {chromium}=require('playwright');
   '/custom/norway/admin/wizard.php?step=4',
   '/custom/norway/admin/defaults.php',
   '/custom/norway/admin/journals.php',
+  '/admin/company.php',
   '/custom/norway/admin/chart.php',
   '/custom/norway/admin/profile.php',
   '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
