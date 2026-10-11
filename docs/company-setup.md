@@ -27,3 +27,13 @@ Eksisterende kode med samme land og navn beholdes. Inaktive alternativer forblir
 ## Verifikasjon
 
 Syntetiske tester kontrollerer 14 alternativer, uendret gjentakelse, inaktivt valg, kodekonflikt og bevaring av foretaksinnstillinger. Autentisert HTTP-test kontrollerer de faktiske feltnavnene og ENK-/AS-alternativene på kjernens foretaksoppsett. Fersk installasjon og gjenoppretting kontrollerer at alternativene er tilgjengelige. Ingen nye tabeller eller skjemaendringer innføres.
+
+## Automatisk MVA-nummer (fra 0.16.0)
+
+Velg **MVA brukes** når foretaket faktisk er registrert i Merverdiavgiftsregisteret. For Norge, et gyldig organisasjonsnummer og tomt MVA-felt fyller modulen automatisk organisasjonsnummerets ni sifre med `MVA` etter ved ordinær lagring, eksempelvis `974760673MVA`. Du trenger ikke skrive nummeret på nytt eller bekrefte et ekstra valg.
+
+Et eksisterende MVA-nummer beholdes. Andre land og foretak som ikke bruker MVA berøres ikke. Ugyldig organisasjonsnummer stopper lagringen når norsk MVA-nummer skal fylles automatisk. Feltet endres ikke ved visning eller moduloppdatering. Endret organisasjonsnummer synkroniserer ikke et eksisterende MVA-nummer automatisk; kontroller begge ved en slik endring.
+
+Dette registrerer ikke foretaket hos myndighetene og vurderer ikke virkningsdato eller historisk MVA. MVA-nummeret bygger på samme organisasjonsnummer, jf. [Brønnøysundregistrenes forklaring](https://www.brreg.no/om-oss/registrene-vare/om-enhetsregisteret/organisasjonsnummeret/).
+
+MVA-autoutfyllingen verifiseres også gjennom innlogging og faktisk lagring i kjernens formular: tomt felt fylles, eksisterende felt beholdes, ugyldig organisasjonsnummer avbryter, MVA av lar feltet være tomt og ugyldig CSRF-token lagrer ingen endring. Testen er sperret til en syntetisk engangsdatabase og gjenoppretter foretaksinnstillingene.

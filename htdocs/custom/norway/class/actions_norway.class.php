@@ -4,8 +4,36 @@ class ActionsNorway
 {
     public $results = array();
     public $resprints = '';
+    public $error = '';
 
     public function __construct($db) {}
+
+    private function companyPage()
+    {
+        global $user;
+        return !empty($user->admin) && substr(str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? ''), -18) === '/admin/company.php';
+    }
+
+    public function doActions($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db, $langs;
+        if (!$this->companyPage() || ($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
+            || !in_array($action, array('update', 'updateedit'), true) || GETPOST('cancel', 'alpha')
+            || GETPOST('optiontva', 'aZ09') !== '1' || trim(GETPOST('tva', 'alphanohtml')) !== '') { return 0; }
+        $country = getCountry(GETPOSTINT('country_id'), 'all', $db, $langs, 0);
+        if (($country['code'] ?? '') !== 'NO') { return 0; }
+        require_once __DIR__.'/NorwayReadiness.php';
+        $number = GETPOST('siren', 'alphanohtml');
+        if (!NorwayReadiness::validOrganisationNumber($number)) {
+            $langs->load('norway@norway');
+            $this->error = $langs->trans('NorwayVatAutoInvalid');
+            $action = ''; // Core does not stop its save handler for a negative hook result alone.
+            return -1;
+        }
+        // Core saves this value in its existing transaction; no independent database write.
+        $_POST['tva'] = preg_replace('/[ \t]/', '', $number).'MVA';
+        return 0;
+    }
 
     public function addOpenElementsDashboardGroup($parameters, &$object, &$action, $hookmanager)
     {

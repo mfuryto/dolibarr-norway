@@ -34,7 +34,7 @@ for ($i = 1; $i <= 11; $i++) {
 print '</ol></details>';
 print '<h2>'.dol_escape_htmltag($step.' / 11 — '.$langs->trans('NorwayWizardTitle'.$step)).'</h2>';
 print '<p>'.$langs->trans('NorwayWizardBody'.$step).'</p>';
-if ($step === 2) { print '<div class="info">'.$langs->trans('NorwayCompanyFieldsHelp').'</div>'; }
+if ($step === 2) { print '<div class="info">'.$langs->trans('NorwayCompanyFieldsHelp').'<br>'.$langs->trans('NorwayVatAutoHelp').'</div>'; }
 print '<div class="info">'.$langs->trans('NorwayWizardLimit'.$step).'</div>';
 try {
     $checks = array();

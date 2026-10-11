@@ -58,3 +58,5 @@ Disse avklaringene stopper ikke skrivebeskyttede kontroller eller utvikling med 
 Relevant kode- og integrasjonstest, dokumentert støttet omfang og kjente begrensninger, ingen reelle bilag eller hemmeligheter i Git, godkjente CI-kontroller og PR fra staging til main. Skjemaendringer krever versjonert migrering, backup og restore-prøve. Nye funksjoner skal bevare eksisterende bilag, passord, lagring og instansnøkkel.
 
 Se [dekningsanalysen](coverage-analysis.md), [kilderegisteret](sources.md) og [test og drift](test-and-operations.md). Ingen tidsestimat fastsettes før de større avgifts- og integrasjonsavklaringene er gjort.
+
+Fra 0.16.0 fylles et tomt MVA-nummer fra gyldig norsk organisasjonsnummer ved ordinær lagring når «MVA brukes» er valgt. Eksisterende MVA-nummer og registreringsstatus endres ikke. Se [foretaksoppsett](company-setup.md).
