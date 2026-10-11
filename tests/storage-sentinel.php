@@ -8,6 +8,9 @@ if (PHP_SAPI !== 'cli' || getenv('DOLI_DB_NAME') !== 'accounting'
 require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
+foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400') as $key=>$value) {
+    if (getDolGlobalString($key)!==$value) { throw new RuntimeException('Confirmed default lost: '.$key); }
+}
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     $previousChart = getDolGlobalString('CHARTOFACCOUNTS');
     if ($user->fetch('', getenv('DOLI_ADMIN_LOGIN')) <= 0 || !$user->admin
