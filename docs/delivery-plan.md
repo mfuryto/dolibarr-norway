@@ -20,7 +20,7 @@ Faktisk MVA-registerstatus og virkningsdato må bekreftes per installasjon. Prog
 
 ## Samlet oppsettveiledning og veiviser
 
-[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Den er kravgrunnlag for en kommende veiviser, ikke en implementert veiviser. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
+[Veiledningen for norsk oppsett](norwegian-setup-guide.md) samler rekkefølge, innstillinger, betingede norske forhold og leveransegap. Fra 0.12.0 finnes en skrivebeskyttet veiviser med elleve steg, aktuelle kontroller og lenker til innstillinger. Lagring av valg og fremdrift er ikke implementert. Veiviseren skal vise eksisterende valg, forklare kontoforslag og kreve forhåndsvisning/bekreftelse før lagring. Uklarhet, ikke relevant og uimplementert må vises hver for seg. Den skal ikke gi samlet produksjonsaksept.
 
 ## Prioritert rekkefølge
 

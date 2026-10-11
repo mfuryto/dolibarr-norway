@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.11.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Veiledningen er også kravgrunnlag for en kommende oppsettsveiviser; en slik veiviser er ennå ikke implementert.
+Kontrollert 2026-10-11 mot modul 0.12.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -113,4 +113,4 @@ Registrer for hvert punkt: valg/ikke relevant/må avklares, begrunnelse, ansvarl
 
 Før et konkret scenario tas i bruk må hele kjeden prøves med syntetiske data utenfor drift: dokument → bokføring → betaling/kreditnota → avstemming → relevant rapport/eksport. Uavklarte MVA-, EHF-, SAF-T- og historikkbehov er reelle leveransegap, ikke valg som brukeren kan løse ved å krysse av «ferdig».
 
-Neste veiviser skal følge denne rekkefølgen, vise gjeldende verdier, forklare forslag, lenke til relevante innstillinger og bevare eksisterende valg. Den må vise manglende funksjoner og støtte «ikke relevant» med begrunnelse. Automatiske endringer krever forhåndsvisning og bekreftelse; ingen automatisk grønn produksjonsstatus innføres. Videre utvikling følger [leveranseplanen](delivery-plan.md).
+Videre utvikling av veiviseren skal følge denne rekkefølgen, vise gjeldende verdier, forklare forslag, lenke til relevante innstillinger og bevare eksisterende valg. Den må vise manglende funksjoner og støtte «ikke relevant» med begrunnelse. Automatiske endringer krever forhåndsvisning og bekreftelse; ingen automatisk grønn produksjonsstatus innføres. Videre utvikling følger [leveranseplanen](delivery-plan.md).
