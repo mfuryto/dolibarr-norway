@@ -1,0 +1,70 @@
+name: dolibarr-norway-accounting
+services:
+  db:
+    image: mariadb:10.11@sha256:7db29378d4fdab73f8123bbc2b48905c90d1a4b00cf848b028f1e81e623257f2
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Generate deploy/.env first}
+      MARIADB_DATABASE: accounting
+      MARIADB_USER: accounting
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Generate deploy/.env first}
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [database]
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DOLI_INSTALL_AUTO: '1'
+      DOLI_INIT_DEMO: '0'
+      DOLI_PROD: '1'
+      DOLI_DB_HOST: db
+      DOLI_DB_NAME: accounting
+      DOLI_DB_USER: accounting
+      DOLI_DB_PASSWORD: ${DB_PASSWORD:?Generate deploy/.env first}
+      DOLI_ADMIN_LOGIN: ${ADMIN_LOGIN:?Generate deploy/.env first}
+      DOLI_ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Generate deploy/.env first}
+      DOLI_INSTANCE_UNIQUE_ID: ${INSTANCE_KEY:?Generate deploy/.env first}
+      DOLI_URL_ROOT: ${PUBLIC_URL:?Generate deploy/.env first}
+      DOLI_COMPANY_NAME: ${COMPANY_NAME:?Generate deploy/.env first}
+      DOLI_COMPANY_COUNTRYCODE: NO
+      DOLI_ENABLE_MODULES: Accounting,Norway
+      DOLI_CRON: '0'
+      PHP_INI_DATE_TIMEZONE: Europe/Oslo
+      PHP_INI_UPLOAD_MAX_FILESIZE: 20M
+      PHP_INI_POST_MAX_SIZE: 24M
+    ports: ['127.0.0.1:8088:80']
+    volumes:
+      - documents:/var/www/documents
+      - conf:/var/www/html/conf
+    networks: [database, frontend]
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, --output, /dev/null, --header, 'X-Forwarded-Proto: https', 'http://127.0.0.1/index.php']
+      start_period: 180s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+volumes:
+  db:
+  documents:
+  conf:
+networks:
+  database:
+    internal: true
+  frontend: {}

@@ -1,0 +1,23 @@
+#!/bin/sh
+# Main is updated through GitHub promotion PRs, never a local push.
+while read -r local_ref local_sha remote_ref remote_sha; do
+    case "$remote_ref" in
+        refs/heads/main)
+            echo "Push til main er sperret. Bruk staging -> main via PR etter beståtte tester." >&2
+            exit 1
+            ;;
+        refs/heads/staging)
+            case "$local_sha" in
+                0000000000000000000000000000000000000000)
+                    echo "Sletting av staging er sperret." >&2
+                    exit 1
+                    ;;
+            esac
+            ;;
+        refs/heads/*)
+            echo "Kun main og staging er tillatt på remote." >&2
+            exit 1
+            ;;
+    esac
+done
+exit 0

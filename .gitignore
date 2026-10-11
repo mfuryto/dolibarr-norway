@@ -1,0 +1,15 @@
+# Only synthetic data belongs in this repository.
+.env
+.env.*
+!.env.example
+/backups/
+/documents/
+/dist/
+/vendor/
+__pycache__/
+*.sql.gz
+*.dump
+*.log
+
+/.deployed-revision
+/.installation-update.lock
