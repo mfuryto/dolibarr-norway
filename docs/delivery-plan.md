@@ -66,3 +66,5 @@ Bankkoblingens avgrensning og vern er beskrevet i [bekreftet bankkobling](bank-d
 Fra 0.18.0 samler [dokumentoppsettkontrollen](document-setup.md) valgt nummerering, nummermasker, effektive PDF-modeller og språk. Den er skrivebeskyttet; konkret dokumenttest og gjennomgang av etablerte nummerserier gjenstår per installasjon.
 
 Fra 0.19.0 viser [periodediagnostikken](period-setup.md) perioder, datodekning, overlapp, standardvalg og kjernens periodeinnstilling uten endringer. Full kvalifisering av periodelåsing og retting gjenstår.
+
+Fra 0.20.0 viser [MVA-kontokontrollen](vat-setup.md) aktive norske satsrader, eksplisitte kontoer, reservekontoer og strukturell kontostatus. Avgiftsbehandling, bokført metadata, rapporteringsmapping og MVA-melding gjenstår.
