@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $preview = request('/custom/norway/admin/chart.php');
+    if (strpos($preview, 'name="chart_csv"') !== false) { throw new RuntimeException('Chart preview visible before authentication'); }
     $accounting = request('/custom/norway/admin/accounting.php');
     if (strpos($accounting, 'Chart and accounting setup check') !== false
         || strpos($accounting, 'Kontroll av kontoplan og bokføringsoppsett') !== false) {
@@ -60,6 +62,24 @@ try {
         || strpos($accounting, 'Kunne ikke lese bokføringsoppsettet') !== false) {
         throw new RuntimeException('Accounting setup report missing or failed');
     }
+    $preview = request('/custom/norway/admin/chart.php');
+    if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)
+        || strpos($preview, 'chart_csv') === false) { throw new RuntimeException('Chart preview form missing'); }
+    $preview = request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => html_entity_decode($previewToken[1]),
+        'chart_csv' => "account_number;label\n1500;Different label\n8888;Synthetic & label"));
+    if (strpos($preview, 'Different label') === false || strpos($preview, 'norway-chart-csv/1 / SYN-') === false
+        || strpos($preview, 'Synthetic &amp; label') === false
+        || (strpos(html_entity_decode($preview, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'Conflict – existing account preserved') === false
+            && strpos(html_entity_decode($preview, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'Konflikt – eksisterende konto bevares') === false)) {
+        throw new RuntimeException('Chart preview failed or label HTML not escaped');
+    }
+    if (!preg_match('/name="token"[^>]*value="([^"]+)"/', $preview, $previewToken)) { throw new RuntimeException('Preview token missing'); }
+    $preview = request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => html_entity_decode($previewToken[1]), 'chart_csv' => 'invalid'));
+    if (strpos($preview, 'Invalid CSV, duplicate') === false && strpos($preview, 'Ugyldig CSV, duplikat') === false) {
+        throw new RuntimeException('Invalid chart CSV not rejected');
+    }
+    request('/custom/norway/admin/chart.php', array('action' => 'previewchart', 'token' => 'invalid', 'chart_csv' => 'invalid'));
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart preview CSRF rejection missing'); }
     $registry = request('/custom/norway/admin/registry.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || !preg_match('/name="token"[^>]*value="([^"]+)"/', $registry, $registryToken)
