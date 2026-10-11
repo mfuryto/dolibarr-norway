@@ -131,7 +131,7 @@ NorwayAccountingJournalSettings=Open journal settings
 
 NorwayChartPreview=Chart import preview
 NorwayChartScope=Preview changes nothing. Confirmed import creates only new accounts; existing accounts, mappings and entries are preserved. Account labels are compared exactly. Ledger usage counts each number in the active entity, including previous charts. Product, third-party and line mappings are not inspected. This does not confirm Norwegian chart suitability or SAF-T mapping.
-NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semicolon, header account_number;label. One account per line, 4–8 digits without a leading zero, label 1–255 bytes. Maximum 500 accounts and 256 KiB. Select an active chart associated with Norway first.
+NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semicolon, header account_number;label. One account per line, 4–8 digits without a leading zero, label 1–255 bytes. Maximum 1000 accounts and 256 KiB. Select an active chart associated with Norway first.
 NorwayChartCSV=Paste CSV
 NorwayChartRun=Show preview
 NorwayChartNumber=Account number
@@ -154,3 +154,9 @@ NorwayChartBlocked=Import blocked: resolve conflicting, inactive or historical a
 NorwayChartImported=Created %s new accounts. Existing accounts and entries were preserved.
 NorwayChartChanged=Preview expired, changed or lacks valid confirmation. Create a new preview. No accounts were imported.
 NorwayChartImportFailed=Import could not be confirmed. Create a new preview and check stored accounts before retrying.
+
+NorwayProfile=Install Norwegian chart of accounts
+NorwayProfileScope=Norwegian chart with 745 accounts from Odoo l10n_no (LGPL-3), pinned to a documented revision. Confirmed installation creates and selects the chart for an empty accounting setup. An empty stock selection can be replaced only when the entity has no accounts or ledger history. Existing accounts or history are not replaced. No default accounts, tax codes or SAF-T mapping are set. Review suitability for your business; this is not a complete or professionally approved accounting solution.
+NorwayProfileConfirm=Install or complete Norwegian chart
+NorwayProfileInstalled=Norwegian chart selected. Created %s new accounts. Check default accounts, journals and VAT setup separately.
+NorwayProfileBlocked=The Norwegian chart cannot be installed now. Another chart, existing accounts/history, conflicts, changed preview or a technical failure requires review. No existing chart is replaced.

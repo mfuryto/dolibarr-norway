@@ -1,0 +1,20 @@
+{
+  "upstream": "https://github.com/odoo/odoo",
+  "commit": "2ff84495182bc2d6e87b616731f865677a12b213",
+  "branch": "19.0",
+  "path": "addons/l10n_no/data/template/account.account-no.csv",
+  "license": "LGPL-3.0",
+  "authors": [
+    "Odoo contributors",
+    "Rolv Råen",
+    "Bringsvor Consulting AS"
+  ],
+  "accounts": 745,
+  "transformation": "CSV code -> account_number, name@nb_NO -> label; UTF-8 semicolon CSV; no filtering",
+  "sha256": {
+    "odoo-no-original.csv": "32cc49b9aa195622a83367f867564fff0819bed608cffa398dfe0ddd9875161b",
+    "ODOO-LICENSE": "abc09dad5f84a76e1b0279237053cae16c03228ab27d8d467677054c2bd17eeb",
+    "odoo-no-manifest.txt": "35c825a395a0270b12091f126228886e27c787bfcfaa41af39a348473a4e4f1c",
+    "norwegian-chart-v1.csv": "14d293cd0aa22bffca53034171a058e2e7d7c076679109089b3a6e4aba69ac95"
+  }
+}

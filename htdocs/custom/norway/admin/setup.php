@@ -51,6 +51,7 @@ print '<p><a href="'.dol_buildpath('/norway/admin/invoice.php', 1).'">'.$langs->
 print '<p><a href="'.dol_buildpath('/norway/admin/registry.php', 1).'">'.$langs->trans('NorwayRegistry').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/accounting.php', 1).'">'.$langs->trans('NorwayAccountingSetup').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/chart.php', 1).'">'.$langs->trans('NorwayChartPreview').'</a></p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/profile.php', 1).'">'.$langs->trans('NorwayProfile').'</a></p>';
 print '</div>';
 llxFooter();
 $db->close();

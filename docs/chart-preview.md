@@ -6,9 +6,9 @@ Norway 0.8.0 utvider forhåndsvisningen fra 0.7.0 med bekreftet import. Administ
 
 `norway-chart-csv/1` er et versjonert inndataformat, ikke en norsk kontoplan eller SAF-T-mapping. CSV bruker UTF-8, valgfri BOM, semikolon og nøyaktig overskrift `account_number;label`. Kontonummer er 4–8 siffer uten innledende null. Navn trimmes i kantene og må være 1–255 byte. Navn med semikolon må stå i doble anførselstegn; doble anførselstegn inne i navnet skrives to ganger. Linjeskift inne i navn støttes ikke. Tomme linjer ignoreres.
 
-Maksimum er 500 kontoer og 256 KiB. Duplikate numre, feil format, kontrolltegn og overskredne grenser avviser hele forhåndsvisningen. Ingen delvis forhåndsvisning vises ved parser- eller databasefeil.
+Maksimum er 1000 kontoer og 256 KiB. Duplikate numre, feil format, kontrolltegn og overskredne grenser avviser hele forhåndsvisningen. Ingen delvis forhåndsvisning vises ved parser- eller databasefeil.
 
-Velg først en aktiv kontoplan knyttet til Norge. Automatisk oppretting av selve kontoplanregisteret, faglig gjennomgått norsk kontoutvalg og versjonert rapporteringsmapping gjenstår. Ikke bruk syntetiske eksempler som faglig kontoplan.
+Velg først en aktiv kontoplan knyttet til Norge. Modul 0.9.0 har separat [installering av norsk kontoplan](norwegian-chart.md). Versjonert avgifts-/rapporteringsmapping gjenstår. Ikke bruk syntetiske eksempler som faglig kontoplan.
 
 ## Resultater
 
@@ -38,4 +38,4 @@ Syntetiske parser-/databasetester dekker formatgrenser, duplikater, sitering, BO
 
 Backup-/restore-testen oppretter en syntetisk konto gjennom importen, tar backup, endrer navnet med vilje og kontrollerer at opprinnelig navn og aktiv status gjenopprettes. Ingen produksjonsdata brukes. Ingen databasemigrering kreves, siden kjernens eksisterende kontotabeller benyttes.
 
-Dette fullfører importmekanismen, ikke hele trinn 1b. Faglig kontoutvalg, oppretting av en norsk planprofil og versjonert SAF-T-/næringsmapping er videre arbeid. Ingen samlet produksjonsklar-status innføres.
+Dette fullfører importmekanismen, ikke hele trinn 1b. Norsk kontoplan og planprofil er levert separat i 0.9.0. Virksomhetens kontobruk og versjonert SAF-T-/næringsmapping er videre arbeid. Ingen samlet produksjonsklar-status innføres.

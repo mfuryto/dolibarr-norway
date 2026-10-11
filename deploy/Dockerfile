@@ -3,6 +3,7 @@ COPY htdocs/custom/norway/ /var/www/html/custom/norway/
 COPY LICENSE /var/www/html/custom/norway/LICENSE
 COPY htdocs/custom/norway/ /opt/norway-module/
 COPY LICENSE /opt/norway-module/LICENSE
+RUN test -s /opt/norway-module/data/norwegian-chart-v1.csv
 COPY --chmod=755 deploy/start-web.sh /usr/local/bin/norway-start-web.sh
 ENTRYPOINT ["/usr/local/bin/norway-start-web.sh"]
 CMD ["apache2-foreground"]

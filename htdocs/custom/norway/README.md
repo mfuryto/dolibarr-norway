@@ -1,4 +1,4 @@
-# Norway 0.8.0
+# Norway 0.9.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -10,7 +10,8 @@ EUR calculator is separate from accounting. Historical documents are retained.
 Deactivation leaves accounting data intact. Read-only setup diagnostics cover the selected chart, default accounts and journals.
 CSV chart preflight highlights existing, inactive, conflicting and historical accounts.
 Explicit confirmation can create missing accounts atomically, preserving existing accounts.
-Norwegian chart content and tax/reporting mapping remain future work.
+The pinned LGPL-3 Odoo Norwegian chart (745 accounts) can be explicitly installed.
+Tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
 A manual VAT registry lookup compares current status without changing settings.
 Activation does not install a chart,
 change VAT rates or produce SAF-T. Provisional module ID: 510173; check collisions
