@@ -253,3 +253,7 @@ NorwayJournalsFailed=Opprettingen kunne ikke bekreftes. Lag ny forhåndsvisning 
 NorwayJournalsNothing=Alle fire journaltyper finnes med aktive koder. Dette bekrefter ikke bankkoblinger eller korrekt bilagsoverføring.
 
 NorwayCompanyFieldsHelp=Åpne Firma/organisasjon og lagre Norge som land først. Under Foretaksidentifikasjon: Organisasjonsnummer er ni sifre uten NO eller MVA. Organisasjonsform er registrert form, eksempelvis ENK eller AS; velg riktig alternativ selv. MVA-nummer er et separat felt for registrerte foretak og erstatter ikke organisasjonsnummeret. Ikke legg inn MVA-merking før registrering er bekreftet. Feltet «MVA-pliktig» og registreringens virkningsdato må vurderes separat. Oppdatering velger ingen organisasjonsform og endrer ikke nummer eller MVA-status.
+
+
+NorwayVatAutoInvalid=MVA-nummer kunne ikke fylles. Oppgi gyldig norsk organisasjonsnummer før du lagrer med «MVA brukes» og tomt MVA-felt.
+NorwayVatAutoHelp=Når «MVA brukes» er valgt, fylles et tomt MVA-nummer fra gyldig norsk organisasjonsnummer ved lagring. Du trenger ikke skrive nummeret på nytt. Eksisterende MVA-nummer beholdes. Bruk MVA-valget først når registreringen er bekreftet; virkningsdato må vurderes separat.
