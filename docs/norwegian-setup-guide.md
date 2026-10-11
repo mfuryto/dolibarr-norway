@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.18.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.19.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -98,6 +98,8 @@ Fra 0.18.0 samler [kontroll av dokumentoppsett](document-setup.md) gjeldende num
 ## 9. Inngående saldoer, perioder og løpende rutiner
 
 **Manuelt:** Ved overgang avstemmes bank, åpne kundefordringer, leverandørgjeld, MVA, eiendeler, gjeld og egenkapital mot gammelt system på samme dato. Bevar kildedokumenter og revisjonsspor. Import av kontoer er ikke import av saldoer eller åpne poster. Oppsettveiledningen skal ikke foreslå syntetiske startbilag i drift.
+
+Fra 0.19.0 gir [kontroll av regnskapsperioder](period-setup.md) oversikt over datodekning, overlapp og eksisterende periodestatus. Den åpner/lukker ingen perioder.
 
 Avklar regnskapsår, bilagsdatoer, periodisering, godkjenning, periodelåsing og retting. Dokumenter rutiner for faktura, kjøp, betaling, gebyr, kreditnota, manuelle bilag og månedlig avstemming. For ENK skilles private bevegelser fra virksomhetens kostnader og eiertransaksjoner vurderes særskilt. Andre foretaksformer krever egne vurderinger.
 
