@@ -9,11 +9,12 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 if (DOL_VERSION !== '24.0.1') {
     throw new RuntimeException('Unsupported Dolibarr version for Norway module.');
 }
-foreach (array('MAIN_INFO_SOCIETE_DEVISE' => 'NOK', 'MAIN_LANG_DEFAULT' => 'nb_NO') as $key => $value) {
+foreach (array('MAIN_MONNAIE' => 'NOK', 'MAIN_INFO_SOCIETE_DEVISE' => 'NOK', 'MAIN_LANG_DEFAULT' => 'nb_NO') as $key => $value) {
     if (dolibarr_set_const($db, $key, $value, 'chaine', 0, '', $conf->entity) <= 0) {
         throw new RuntimeException('Could not initialise '.$key);
     }
 }
+$conf->setValues($db);
 $result = activateModule('modNorway');
 if (!empty($result['errors'])) {
     throw new RuntimeException(implode('; ', $result['errors']));

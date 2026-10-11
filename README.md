@@ -7,6 +7,7 @@ Første testmål er Dolibarr **24.0.1**, låst til kilde og containerdigest.
 Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 
 - [Installere med norsk modul på VPS og eget domene](docs/vps-installation.md)
+- [Tilbud og faktura på norsk/engelsk i NOK, veiledende EUR-pris og bilagskontroll](docs/sales-documents.md)
 - [Sikkerhet og privat sårbarhetsrapportering](SECURITY.md)
 - [Grenflyt: stabil main og utvikling på staging](docs/branch-workflow.md)
 - [Teknisk dekningsanalyse og datagap](docs/coverage-analysis.md)
@@ -40,7 +41,7 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.1.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.2.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
 bilag med avstemminger. Kontoplanimport, norsk MVA-rapport, SAF-T, EHF og

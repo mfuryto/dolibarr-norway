@@ -5,6 +5,9 @@ if (PHP_SAPI !== 'cli') {
 }
 require '/var/www/html/master.inc.php';
 if (DOL_VERSION !== '24.0.1' || !isModEnabled('norway') || !isModEnabled('accounting')
+    || !isModEnabled('propal') || !isModEnabled('facture') || isModEnabled('multicurrency')
+    || $conf->currency !== 'NOK' || getDolGlobalInt('BANK_DISABLE_CHECK_DEPOSIT') !== 1
+    || getDolGlobalInt('MAIN_MULTILANGS') !== 1
     || !file_exists('/var/www/documents/install.lock')
     || $conf->file->instance_unique_id !== getenv('DOLI_INSTANCE_UNIQUE_ID')) {
     fwrite(STDERR, "Installation verification failed; retain backup and inspect configuration.\n");

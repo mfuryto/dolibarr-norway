@@ -137,3 +137,34 @@ kontrollerer monteringsstedene og at ny migreringskjøring er idempotent.
 Blandet lagring og utviklingsdatabase avvises før stopp eller kopiering.
 Originalvolumer beholdes i drift; CI fjerner bare sitt eget isolerte testprosjekt.
 Datamappene og standard backupmappe er ekskludert fra Git og Docker-byggekontekst.
+
+
+## Faktura og tilbud gjennom standard arbeidsflyt
+
+`invoice-workflow.php` oppretter og validerer fakturaer med Dolibarrs klasser og
+overfører dem gjennom den faktiske HTTP-salgsjournalen med innlogging/CSRF.
+Det kontrollerer 25 prosent, nullsats, delkreditnota, NOK i
+hovedboken og at ny overføring ikke gir dubletter. Nullsats er ikke i seg selv
+en test av MVA-registerstatus. Fakturaer bruker påtvungne syntetiske referanser;
+produksjonens fakturanummerserie er ikke kvalifisert her. Tilbud bruker kjernens
+nummermodell. Egne syntetiske kontoer representerer ikke en ferdig norsk kontoplan.
+
+Tilbud og faktura genereres på begge språk i NOK. Testen kontrollerer
+oversatt tittel og valutaetikett i PDF-innholdsstrømmene, ikke bare metadata,
+samt kildebeløp. Full PDF-layout, NOK-avgiftsvisning og alle norske dokumentkrav
+krever videre kontroll. Ingen produksjonsdokumenter regenereres i disse testene.
+
+`ledger-audit.php` prøver balanse med åtte desimaler, fakturakobling, negativt
+ubalansert bilag med manglende kilde, foretaksskille, datovalidering og varsling
+ved avkortet liste. HTTP-testen prøver siden og feil på ugyldig periode.
+
+NOK-begrensning, avvisning/rollback av sjekkbetaling og fortsatt fungerende
+bankoverføring testes gjennom kjernens triggere. HTTP-testen prøver skjult
+sjekkmeny og 403 på direkte sjekkinnskuddssider. EUR-kalkulatoren testes med
+syntetiske API-svar for kursretning, helg, dato, enhet og ugyldige/gamle svar.
+CI er ikke avhengig av Norges Banks tilgjengelighet.
+
+Valutamigrering prøves i tomt syntetisk grunnoppsett med den tidligere
+informasjonsinnstillingen NOK og faktisk EUR i kjernen. Testen krever at
+`MAIN_MONNAIE` blir NOK. Et utfylt regnskap med annen basisvaluta skal avvises,
+og prøves separat gjennom fakturaarbeidsflyten.
