@@ -5,6 +5,17 @@ require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayWizardProgress.php';
 function progressCheck($ok, $message) { if (!$ok) { throw new RuntimeException($message); } }
 function rejected($callback) { try { $callback(); } catch (Throwable $error) { return; } throw new RuntimeException('Unsafe progress write accepted'); }
+$work = array_fill(1, 11, array('state'=>'NotStarted','updated'=>'','stale'=>false));
+progressCheck(NorwayWizardProgress::suggestedStep($work) === 1, 'New setup must start at step one');
+$work[1]['state']='Reviewed'; $work[2]['state']='NotApplicable';
+progressCheck(NorwayWizardProgress::suggestedStep($work) === 3, 'Reviewed/inapplicable steps suggested');
+$work[7]=array('state'=>'Waiting','updated'=>'2026-01-01T00:00:00+00:00','stale'=>false);
+$work[4]=array('state'=>'InProgress','updated'=>'2026-01-02T00:00:00+00:00','stale'=>false);
+progressCheck(NorwayWizardProgress::suggestedStep($work) === 4, 'Latest open work not resumed');
+$work[2]['stale']=true;
+progressCheck(NorwayWizardProgress::suggestedStep($work) === 2, 'Changed identity must take precedence');
+$work = array_fill(1, 11, array('state'=>'Reviewed','updated'=>'','stale'=>false));
+progressCheck(NorwayWizardProgress::suggestedStep($work) === 0, 'All reviewed must not suggest approval');
 $oldEntity=$conf->entity; $entity=987662; $conf->entity=$entity;
 progressCheck($user->fetch('', 'testadmin')>0 && $user->admin, 'Test admin missing');
 $db->begin();

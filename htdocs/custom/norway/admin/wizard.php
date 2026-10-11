@@ -29,6 +29,9 @@ $progress = array(); $progressError = false;
 try {
     for ($i = 1; $i <= 11; $i++) { $progress[$i] = NorwayWizardProgress::read($db, $conf->entity, $i, $mysoc->idprof1); }
 } catch (RuntimeException $error) { $progressError = true; }
+$suggested = !$progressError ? NorwayWizardProgress::suggestedStep($progress) : 0;
+if (!GETPOSTISSET('step') && !$progressError) { $step = $suggested ?: 11; }
+
 
 // Ordered tasks are distinct from optional read-only diagnostics.
 $tasks = array(
@@ -60,6 +63,11 @@ llxHeader('', $langs->trans('NorwayWizard'));
 print '<div class="norway-page norway-wizard">';
 print load_fiche_titre($langs->trans('NorwayWizard'), '', 'accountancy');
 print '<p>'.$langs->trans('NorwayWizardScope').'</p>';
+if (!$progressError && !GETPOSTISSET('step')) {
+    print '<p>'.$langs->trans($suggested ? 'NorwayWizardResumeHelp' : 'NorwayWizardResumeNone').'</p>';
+} elseif (!$progressError && $suggested && $suggested !== $step) {
+    print '<p>'.$langs->trans('NorwayWizardResume').': <a href="'.$base.'?step='.$suggested.'">'.dol_escape_htmltag($suggested.' / 11 — '.$langs->trans('NorwayWizardTitle'.$suggested)).'</a></p>';
+}
 print '<details><summary>'.$langs->trans('NorwayWizardOverview').'</summary><ol>';
 for ($i = 1; $i <= 11; $i++) {
     print '<li><a href="'.$base.'?step='.$i.'"'.($i === $step ? ' aria-current="step"' : '').'>'

@@ -24,6 +24,8 @@ Fra 0.24.0 kan du velge **Din arbeidsstatus** nederst i hvert steg og trykke
 - Gjennomgått av administrator
 - Ikke relevant
 
+Fra 0.25.0 åpner veiviseren et foreslått steg når du åpner den uten å velge steg. Steg som krever ny gjennomgang etter endret organisasjonsnummer prioriteres først. Ellers foreslås sist lagrede steg som pågår eller avventer avklaring, deretter første steg som ikke er startet. Hvis alle er gjennomgått eller ikke relevante, åpnes siste gjennomgangsside med tydelig beskjed om at dette ikke er en godkjenning. Et eksplisitt valgt steg beholdes alltid. Navigasjonen lagrer eller endrer ingen markeringer.
+
 Åpne «Vis alle elleve steg og arbeidsstatus» for å finne frem igjen. Status vises
 også øverst i det aktuelle steget, bevares etter ny innlogging og deles mellom
 administratorer i samme foretak. Forrige/neste bytter side uten å lagre status.

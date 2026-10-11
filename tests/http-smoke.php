@@ -93,6 +93,8 @@ try {
     $workPost=array('action'=>'saveprogress','step'=>1,'workstate'=>'Waiting','token'=>html_entity_decode($workToken[1]),'progress_nonce'=>$workNonce[1]);
     $wizard=request('/custom/norway/admin/wizard.php', $workPost);
     if (strpos($wizard,'value="Waiting" selected')===false || strpos($wizard,'Work status saved.')===false) { throw new RuntimeException('Work status did not persist'); }
+    $resume=request('/custom/norway/admin/wizard.php');
+    if (strpos($resume,'1 / 11')===false || strpos($resume,'This step is suggested from saved work status.')===false) { throw new RuntimeException('Saved work not resumed on entry'); }
     $wizard=request('/custom/norway/admin/wizard.php', $workPost);
     if (strpos($wizard,'Could not save work status.')===false) { throw new RuntimeException('Replayed work status nonce accepted'); }
     $wizard=request('/custom/norway/admin/wizard.php', array('action'=>'saveprogress','step'=>1,'workstate'=>'Reviewed','token'=>'invalid'));

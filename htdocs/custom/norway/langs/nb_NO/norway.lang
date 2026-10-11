@@ -491,3 +491,6 @@ NorwayWizardStateWaiting=Avventer avklaring
 NorwayWizardStateReviewed=Gjennomgått av administrator
 NorwayWizardStateNotApplicable=Ikke relevant
 NorwayWizardStateStale=Må gjennomgås på nytt
+NorwayWizardResume=Fortsett oppsettet
+NorwayWizardResumeHelp=Du er på foreslått steg ut fra lagret arbeidsstatus. Du kan velge et annet steg i oversikten.
+NorwayWizardResumeNone=Alle steg er markert som gjennomgått eller ikke relevant. Gå til stegoversikten hvis noe må åpnes igjen. Dette betyr ikke at regnskapet er godkjent.
