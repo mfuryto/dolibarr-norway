@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.20.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.21.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -41,6 +41,8 @@ Velg behandling for hver aktuell type salg og kjøp: norsk avgiftspliktig omsetn
 **Delvis levert:** modulen kontrollerer satsdekning og hindrer enkelte feil ved fakturavalidering. En kontroll som etterlyser 15 eller 12 prosent betyr ikke at programvaresalg skal bruke disse satsene. Kjernens gamle norske satser må ikke brukes ukritisk.
 
 Fra 0.20.0 viser [MVA-kontokontrollen](vat-setup.md) aktive norske satsrader, egne satskontoer og standardkontoer som reserve. Den kontrollerer kontoenes tilgjengelighet, ikke avgiftsbehandling eller rapporteringskoder.
+
+Fra 0.21.0 kan [én MVA-virkningsdato lagres etter eksplisitt bekreftelse](vat-registration.md). Den endrer ingen MVA-status eller bilag. Flere perioder og retting av registreringsgrunnlaget er ikke implementert.
 
 **Gjenstår:** historiske registreringsperioder, komplett avgiftskode-/kontomapping, fradragsbehandling og sporbar norsk MVA-rapport. Ikke endre gamle bilag ved å omskrive dagens satser. En grønn satskontroll er ikke aksept av MVA-oppsettet.
 

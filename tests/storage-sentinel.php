@@ -8,6 +8,9 @@ if (PHP_SAPI !== 'cli' || getenv('DOLI_DB_NAME') !== 'accounting'
 require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRegistration.php';
+$registration=NorwayVatRegistration::read($db,$conf->entity,'123456785');
+if ($registration['status']!=='Recorded' || $registration['start']!=='2024-02-29') { throw new RuntimeException('Confirmed registration date lost'); }
 foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400') as $key=>$value) {
     if (getDolGlobalString($key)!==$value) { throw new RuntimeException('Confirmed default lost: '.$key); }
 }
