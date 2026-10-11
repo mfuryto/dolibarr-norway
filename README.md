@@ -11,6 +11,7 @@ Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 - [Sikkerhet og privat sårbarhetsrapportering](SECURITY.md)
 - [Grenflyt: stabil main og utvikling på staging](docs/branch-workflow.md)
 - [Teknisk dekningsanalyse og datagap](docs/coverage-analysis.md)
+- [Installerbar norsk kontoplan med 745 kontoer](docs/norwegian-chart.md)
 - [Omfang, milepæler og akseptansekriterier](docs/delivery-plan.md)
 - [Testmiljø, installasjon og drift](docs/test-and-operations.md)
 - [Kilderegister](docs/sources.md)
@@ -41,10 +42,10 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.8.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.9.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
-bilag med avstemminger. Kontoplanimport, norsk MVA-rapport, SAF-T, EHF og
+bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og
 lisensportal er videre arbeid. Ingen reelle data eller hemmeligheter skal i Git.
 
 Lisens: GPL-3.0-or-later; se [LICENSE](LICENSE).
@@ -53,4 +54,4 @@ Skrivebeskyttet kontoplan-/bokføringskontroll: [oppsettkontroll](docs/accountin
 
 Manuell MVA-sammenligning med Brønnøysundregistrene: [registerkontroll](docs/registry.md).
 
-[Kontoplan fra CSV](docs/chart-preview.md) har skrivebeskyttet forhåndsvisning og bekreftet import av bare nye kontoer. Norsk planprofil og mapping gjenstår.
+[Kontoplan fra CSV](docs/chart-preview.md) har skrivebeskyttet forhåndsvisning og bekreftet import av bare nye kontoer. Norsk kontoplan kan installeres separat; avgifts- og rapporteringsmapping gjenstår.

@@ -4,6 +4,7 @@
 class NorwayChartPreview
 {
     public const FORMAT = 'norway-chart-csv/1';
+    public const MAX_ACCOUNTS = 1000;
 
     public static function parse($csv)
     {
@@ -16,7 +17,7 @@ class NorwayChartPreview
         $rows = array(); $seen = array();
         foreach ($lines as $line) {
             if ($line === '') { continue; }
-            if (count($rows) >= 500 || !preg_match('/^[1-9][0-9]{3,7};(?:"(?:[^"\r\n]|"")*"|[^;"\r\n]*)$/D', $line)) {
+            if (count($rows) >= self::MAX_ACCOUNTS || !preg_match('/^[1-9][0-9]{3,7};(?:"(?:[^"\r\n]|"")*"|[^;"\r\n]*)$/D', $line)) {
                 throw new InvalidArgumentException('CSV');
             }
             $fields = str_getcsv($line, ';', '"', '');

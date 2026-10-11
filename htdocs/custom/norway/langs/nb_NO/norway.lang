@@ -131,7 +131,7 @@ NorwayAccountingJournalSettings=Åpne journaloppsett
 
 NorwayChartPreview=Forhåndsvisning av kontoplanimport
 NorwayChartScope=Forhåndsvisningen endrer ingenting. Ved bekreftet import opprettes bare nye kontoer; eksisterende kontoer, koblinger og bilag bevares. Kontonavn sammenlignes nøyaktig. Hovedbokbruk telles per kontonummer i aktivt foretak, også fra tidligere kontoplaner. Produkt-, motparts- og linjekoblinger undersøkes ikke. Dette bekrefter ikke norsk kontoplan eller SAF-T-mapping.
-NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semikolon, overskrift account_number;label. Én konto per linje, kontonummer 4–8 siffer uten innledende null, navn 1–255 byte. Maks 500 kontoer og 256 KiB. Velg en aktiv kontoplan knyttet til Norge først.
+NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semikolon, overskrift account_number;label. Én konto per linje, kontonummer 4–8 siffer uten innledende null, navn 1–255 byte. Maks 1000 kontoer og 256 KiB. Velg en aktiv kontoplan knyttet til Norge først.
 NorwayChartCSV=Lim inn CSV
 NorwayChartRun=Vis forhåndsvisning
 NorwayChartNumber=Kontonummer
@@ -154,3 +154,9 @@ NorwayChartBlocked=Import sperret: avklar konflikter, inaktive eller historiske 
 NorwayChartImported=Opprettet %s nye kontoer. Eksisterende kontoer og bilag er bevart.
 NorwayChartChanged=Forhåndsvisningen er utløpt, endret eller mangler gyldig bekreftelse. Lag en ny forhåndsvisning. Ingen kontoer er importert.
 NorwayChartImportFailed=Importen kunne ikke bekreftes. Lag en ny forhåndsvisning og kontroller lagrede kontoer før nytt forsøk.
+
+NorwayProfile=Installer norsk kontoplan
+NorwayProfileScope=Norsk kontoplan med 745 kontoer fra Odoo l10n_no (LGPL-3), låst til dokumentert revisjon. Bekreftet installering oppretter og velger planen for et tomt bokføringsoppsett. Et tomt standardvalg kan erstattes når foretaket ikke har kontoer eller hovedbokhistorikk. Oppsett med eksisterende kontoer eller historikk erstattes ikke. Ingen standardkontoer, avgiftskoder eller SAF-T-mapping settes. Kontoutvalget må vurderes for virksomheten; dette er ikke en komplett eller regnskapsfaglig godkjent løsning.
+NorwayProfileConfirm=Installer eller kompletter kontoplanen
+NorwayProfileInstalled=Kontoplanen er valgt. Opprettet %s nye kontoer. Standardkontoer, journaler og MVA-oppsett må kontrolleres separat.
+NorwayProfileBlocked=Kontoplanen kan ikke installeres nå. Annen valgt plan, eksisterende kontoer/historikk, konflikt, endret forhåndsvisning eller teknisk feil krever avklaring. Ingen eksisterende kontoplan erstattes.

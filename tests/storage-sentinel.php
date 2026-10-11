@@ -35,5 +35,7 @@ $account = $result ? $db->fetch_object($result) : false;
 if (!$account || $account->label !== 'Synthetic imported backup account' || (int) $account->active !== 1) {
     throw new RuntimeException('Imported chart account was not preserved by backup/recovery');
 }
-print "PASS synthetic persistent content and imported chart account\n";
+$result = $db->query("SELECT COUNT(*) AS total FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='NORWAY-NO-1' AND active=1");
+if (!$result || (int) $db->fetch_object($result)->total !== 745) { throw new RuntimeException('Norwegian chart was not preserved'); }
+print "PASS synthetic persistent content, Norwegian chart and imported chart account\n";
 $db->close();

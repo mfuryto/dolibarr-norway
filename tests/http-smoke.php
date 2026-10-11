@@ -98,6 +98,14 @@ try {
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart preview CSRF rejection missing'); }
     request('/custom/norway/admin/chart.php', array('action' => 'importchart', 'token' => 'invalid', 'preview_nonce' => 'invalid'));
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Chart import CSRF rejection missing'); }
+    $profile = request('/custom/norway/admin/profile.php');
+    if (strpos($profile, 'installprofile') !== false
+        || (strpos($profile, 'The Norwegian chart cannot be installed now') === false
+            && strpos($profile, 'Kontoplanen kan ikke installeres nå') === false)) {
+        throw new RuntimeException('Profile offers to replace existing chart');
+    }
+    request('/custom/norway/admin/profile.php', array('action' => 'installprofile', 'token' => 'invalid'));
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 403) { throw new RuntimeException('Profile CSRF rejection missing'); }
     $registry = request('/custom/norway/admin/registry.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || !preg_match('/name="token"[^>]*value="([^"]+)"/', $registry, $registryToken)

@@ -11,3 +11,5 @@ vendor
 *.dump
 
 data
+!htdocs/custom/norway/data/
+!htdocs/custom/norway/data/**

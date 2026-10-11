@@ -81,6 +81,9 @@ try {
         }
     }
     verify($secure, 'Session cookie is not Secure behind HTTPS proxy');
+    $profile = page('/custom/norway/admin/profile.php');
+    verify(strpos($profile, 'NORWAY-NO-1') !== false && strpos($profile, 'value="installprofile"') !== false,
+        'Norwegian chart preview or confirmation missing');
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {
     curl_close($curl);

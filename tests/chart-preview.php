@@ -12,11 +12,11 @@ chartAssert($parsed[0]['label'] === 'Syntetisk; konto "A"', 'Quoted CSV or BOM f
 foreach (array('', $header, "account_number,label\n1500;Test", $header."1500;A\n1500;B", $header.'0150;A',
     $header.'1500;', $header.'1500;"Unclosed', $header.'1500;A;B', $header."1500;A\tB",
     $header.'1500;'.str_repeat('x',256), $header."1500;\xFF", str_repeat('x',262145),
-    $header.implode("\n", array_map(static function ($n) { return $n.';Synthetic'; }, range(1000,1500)))) as $bad) {
+    $header.implode("\n", array_map(static function ($n) { return $n.';Synthetic'; }, range(1000,2000)))) as $bad) {
     try { NorwayChartPreview::parse($bad); throw new LogicException('Invalid CSV accepted'); }
     catch (InvalidArgumentException $expected) {}
 }
-chartAssert(count(NorwayChartPreview::parse($header.implode("\n", array_map(static function ($n) { return $n.';Synthetic'; }, range(1000,1499))))) === 500, '500-row boundary failed');
+chartAssert(count(NorwayChartPreview::parse($header.implode("\n", array_map(static function ($n) { return $n.';Synthetic'; }, range(1000,1999))))) === 1000, '1000-row boundary failed');
 $prefix = $db->prefix(); $entity = (int) $conf->entity;
 $version = 'SYN-PRE-'.bin2hex(random_bytes(4));
 $db->begin();

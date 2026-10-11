@@ -33,6 +33,7 @@ foreach (array('/accountancy/admin/accountmodel.php' => 'NorwayAccountingChartSe
     print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>';
 }
 print '<p><a href="'.dol_buildpath('/norway/admin/chart.php', 1).'">'.$langs->trans('NorwayChartPreview').'</a></p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/profile.php', 1).'">'.$langs->trans('NorwayProfile').'</a></p>';
 print '</div>';
 llxFooter();
 $db->close();
