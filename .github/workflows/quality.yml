@@ -24,6 +24,9 @@ jobs:
         uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3, shared with Fylkren
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Scan Git history for secrets
+        run: bash scripts/scan-secrets.sh
       - name: Check promotion policy
         run: python3 scripts/check-pr-policy.py
       - name: Test accounting fixtures and branch guards
@@ -48,5 +51,6 @@ jobs:
         uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Run fresh Dolibarr installation and integration tests
         run: bash scripts/ci-integration.sh

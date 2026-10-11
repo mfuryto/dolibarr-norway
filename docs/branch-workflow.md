@@ -1,69 +1,67 @@
-# Stabil main og utvikling på staging
+# To grener: main og staging
 
-Opprettet 2026-10-11. Gjenbruker Fylkrens CI-prinsipper: tester på begge
-langlivede grener, CODEOWNERS, SHA-låst checkout, ingen lagrede checkout-credentials
-og CI med lesetilgang. Prosjektets teknologistakk og GPL-lisens beholdes.
+Oppdatert 2026-10-11 etter eierens valg. Repoet er offentlig og skal kun ha
+`main` og `staging`. Ingen feature-grener eller automatiske oppdateringsgrener. En aktiv GitHub-ruleset
+sperrer oppretting av alle andre grennavn, uten administratorunntak.
 
-## Grenflyt
+## Flyt
 
-`arbeidsgren → PR til staging → tester og aksept → PR fra staging til main`
+`utvikling på staging → CI og aksept → PR fra staging til main`
 
-- `main` er stabil kanal og fortsatt standardgren. Den oppdateres gjennom PR
-  fra staging. Ingen direkte push, force-push eller sletting.
-- `staging` er utviklings-/integrasjonsgren. Nye arbeidsgrener starter her.
-  Utviklings-PR-er rettes hit. Modulgrunnlaget integreres via PR mot staging.
-- En PR til main må komme fra staging i samme repo; CI avviser andre kilder.
-- Begge CI-jobber skal bestå på aktuell revisjon før stabilisering. Kontroller
-  også leveransens relevante manuelle akseptansekriterier og dokumenter
-  begrensninger. Grønn CI gjør ikke modulen klar for norsk produksjonsregnskap.
-- Bruk merge-commit ved promotering staging → main for å bevare slektskapet.
-  Synkroniser staging med main etterpå. Ikke slett staging etter merge.
-- Ingen automatisk produksjonsutrulling eller automatisk promotering til main.
+Utvikling committes og pushes direkte til staging etter relevante lokale tester.
+CI kjører på hver push. Før promotering skal begge kvalitetssjekkene bestå på
+aktuell revisjon, og leveransens støttede omfang og begrensninger dokumenteres.
+Staging kan inneholde uferdig arbeid; grønn CI alene er ikke norsk etterlevelse.
 
-## CI
+Main er fortsatt standardgren og stabil kanal. Bruk merge-commit ved promotering
+for å bevare slektskapet. Synkroniser staging med main etterpå uten force-push.
+Ingen automatisk promotering eller produksjonsutrulling. Ikke slett staging.
 
-`Quality` kjører ved push til main/staging, PR til disse grenene og manuell start.
-Sjekkene heter `Norway source and policy` og `Norway Dolibarr integration`.
-Den første tester grenpolicy, regnskaps-fixtures og modulpakken. Den andre
-installerer en fersk Dolibarr 24.0.1 med låste containere og kjører PHP-syntaks,
-modullivssyklus, hovedbokavstemming og HTTP-innlogging/statusside.
+## Håndhevet serververn
 
-Integrasjonsskriptet bruker eget midlertidig område og unikt Compose-prosjekt,
-og rydder bare egne containere/volumer. Det gjenbruker ikke utviklingsdatabasen
-eller dens passord. CI har ingen skrivetilgang til repoet og ingen egne secrets.
+| Kontroll | main | staging |
+|---|---|---|
+| PR kreves | Ja, fra staging; CI kontrollerer kilden | Nei, vanlig utviklingspush tillates |
+| Oppdaterte CI-resultater kreves før merge/push | Begge sjekkene må bestå før merge | CI kjører etter push, men sperrer ikke selve pushen |
+| Force-push og sletting | Sperret | Sperret |
+| Administratorer omfattes | Ja | Ja |
 
-## Faktisk vern og begrensninger
+De påkrevde main-sjekkene er `Norway source and policy` og
+`Norway Dolibarr integration`, knyttet til GitHub Actions-appen (15368).
+Samtaler må være løst. Ingen ekstra reviewer kreves fordi prosjektet har én
+identifisert eier; CODEOWNERS angir eierskapet uten å love uavhengig review.
+Oppsettene er lagret i `.github/main-protection.json` og
+`.github/staging-protection.json`.
 
-GitHub svarte HTTP 403 ved kontroll av regler/grenvern 2026-10-11:
-«Upgrade to GitHub Pro or make this repository public to enable this feature.»
-Repoet skal forbli privat. Serverstyrt grenvern kunne derfor ikke aktiveres på
-nåværende abonnement. Dette er en GitHub-planbegrensning, ikke en CI-feil.
-[GitHubs dokumentasjon](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
-beskriver hvilke abonnementer som støtter vern av private repoer.
-
-I mellomtiden gjelder arbeidsreglene i `AGENTS.md`. Installer lokal sperre i
-hver faktisk Git-checkout:
+Installer lokalt tilleggvern:
 
 ```sh
 git config core.hooksPath .githooks
 ```
 
-Hooken avviser enhver lokal push til main og sletting av staging. Den kan omgås
-og beskytter ikke endringer via GitHub, andre checkouter eller API. CODEOWNERS og
-CI stopper heller ikke merge uten serverregler. Main er derfor **ikke fullt
-serverbeskyttet** før abonnementsbegrensningen er løst og oppsettet verifisert.
+Hooken avviser lokal push til main, sletting av staging og push til andre
+remote-grener. Den kan omgås; GitHubs main-/staging-vern er serverhåndhevet.
 
-Ønsket oppsett ligger i `.github/main-protection.json`: PR kreves, alle samtaler
-må være løst, begge oppdaterte tester må bestå, administratorer omfattes, og
-force-push/sletting er forbudt. Ingen ekstra godkjenner kreves fordi repoet har
-én identifisert eier; CODEOWNERS synliggjør eierskap. Krav om en uavhengig
-reviewer kan legges til når en slik person finnes.
+## CI og sikkerhet
 
-Etter at privat grenvern er tilgjengelig, kjør fra repoets rot:
+CI kjører ved push til main/staging, relevante PR-er og manuell start.
+Kildejobben kontrollerer grenpolicy, hemmeligheter i hentet Git-historikk,
+regnskaps-fixtures og modulpakken. Integrasjonsjobben tester en fersk Dolibarr
+24.0.1 med låste containere, PHP-syntaks, modullivssyklus, hovedbok og webinnlogging.
+Testmiljøene har egne midlertidige data og gjenbruker ikke utviklingsdatabasen.
 
-```sh
-gh api --method PUT repos/mfuryto/dolibarr-norway/branches/main/protection --input .github/main-protection.json
-gh api repos/mfuryto/dolibarr-norway/branches/main/protection
-```
+Hemmelighetsskanning med push-beskyttelse, sårbarhetsvarsler og privat
+sårbarhetsrapportering er aktivert. Actions har lesetilgang som standard,
+kan ikke godkjenne PR-er og tillater kun GitHub-eide actions med SHA-låsing.
+CI kjører ikke `pull_request_target` med kode fra bidragsytere.
 
-Kontroller faktisk svar. Ikke anta at et lagret JSON-oppsett er aktivt vern.
+Gitleaks 8.30.1, med kontrollert arkivhash, fant ingen hemmeligheter i undersøkt
+historikk før offentliggjøring, inkludert erstattet PR. Samme kontroll kjøres i
+CI. Skanning er ikke garanti for at all sensitiv informasjon blir oppdaget.
+
+Automatiske oppdaterings-PR-er er deaktivert fordi de oppretter ekstra grener.
+Sikkerhetsvarsler er fortsatt aktive. Oppdateringer vurderes og implementeres
+manuelt på staging med kompatibilitetstesting; tags og digests endres bevisst.
+
+Main er beholdt uendret ved herding og grenopprydding. Se SECURITY.md for
+rapportering og skillet mellom repositorysikkerhet og sikker produksjonsdrift.

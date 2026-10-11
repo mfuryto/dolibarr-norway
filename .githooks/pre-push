@@ -14,6 +14,10 @@ while read -r local_ref local_sha remote_ref remote_sha; do
                     ;;
             esac
             ;;
+        refs/heads/*)
+            echo "Kun main og staging er tillatt på remote." >&2
+            exit 1
+            ;;
     esac
 done
 exit 0

@@ -18,8 +18,8 @@ class BranchPolicyTests(unittest.TestCase):
     def test_promotion_from_staging(self):
         policy.validate(event())
 
-    def test_feature_pr_to_staging(self):
-        policy.validate(event('feature', 'staging'))
+    def test_main_sync_to_staging(self):
+        policy.validate(event('main', 'staging'))
 
     def test_rejects_feature_or_foreign_staging_to_main(self):
         for e in (event('feature'), event(repo='other/repo')):
@@ -42,3 +42,13 @@ class BranchPolicyTests(unittest.TestCase):
                 input=f'refs/heads/staging {sha} refs/heads/staging {"2" * 40}\n',
                 text=True, capture_output=True)
             self.assertEqual(result.returncode, expected)
+
+    def test_rejects_additional_branches(self):
+        with self.assertRaises(ValueError):
+            policy.validate({'ref': 'refs/heads/feature/example'})
+        with self.assertRaises(ValueError):
+            policy.validate(event('feature', 'staging'))
+        result = subprocess.run(['sh', str(ROOT / '.githooks/pre-push')],
+            input=f'refs/heads/example {"1" * 40} refs/heads/example {"0" * 40}\n',
+            text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)

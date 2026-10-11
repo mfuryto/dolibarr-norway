@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Check that main promotion PRs originate from this repository's staging."""
+"""Only main/staging are allowed; main promotions originate from local staging."""
 import json
 import os
 from pathlib import Path
 
 
 def validate(event):
+    ref = event.get('ref', '')
+    if ref.startswith('refs/heads/') and ref not in ('refs/heads/main', 'refs/heads/staging'):
+        raise ValueError('Only main and staging branches are allowed.')
     pr = event.get('pull_request')
-    if not pr or pr['base']['ref'] != 'main':
+    if not pr:
         return
-    if pr['head']['ref'] != 'staging' or pr['head']['repo']['full_name'] != pr['base']['repo']['full_name']:
-        raise ValueError('PRs to main must originate from staging in the same repository.')
+    expected_head = {'main': 'staging', 'staging': 'main'}.get(pr['base']['ref'])
+    if not expected_head or pr['head']['ref'] != expected_head or pr['head']['repo']['full_name'] != pr['base']['repo']['full_name']:
+        raise ValueError('PRs must connect main and staging in the same repository.')
 
 
 if __name__ == '__main__':
