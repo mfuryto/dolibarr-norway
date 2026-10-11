@@ -14,7 +14,7 @@ if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     }
 } elseif (getDolGlobalString('NORWAY_MIGRATION_SENTINEL') !== 'synthetic-only'
     || file_get_contents('/var/www/documents/norway-backup-marker') !== "synthetic backup marker\n") {
-    fwrite(STDERR, "Synthetic database/document content was not preserved.\n");
+    file_put_contents('php://stderr', "Synthetic database/document content was not preserved.\n");
     exit(1);
 }
 print "PASS synthetic persistent content\n";

@@ -37,6 +37,20 @@ foreach (array('modSociete', 'modFacture', 'modPropale', 'modBanque') as $module
 $conf->setValues($db);
 $user->loadRights('', 1);
 $run = bin2hex(random_bytes(4));
+// Populate the bank dashboard so cheque assertions cannot pass on an empty box.
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+$bank = new Account($db);
+$bank->ref = 'SYN-'.$run;
+$bank->label = 'SYNTHETIC BANK ONLY';
+$bank->country_id = 173;
+$bank->currency_code = 'NOK';
+$bank->courant = 1;
+$bank->rappro = 1;
+$bank->date_solde = dol_mktime(12, 0, 0, 10, 1, 2026);
+$bank->balance = 0;
+insist($bank->create($user) > 0, 'Synthetic bank account creation failed: '.$bank->error);
+insist($bank->countAccountToReconcile() > 0, 'Bank dashboard fixture missing');
+
 setting('MAIN_INFO_SOCIETE_COUNTRY', '173:NO:Norway');
 setting('MAIN_MONNAIE', 'NOK');
 $conf->currency = 'NOK';

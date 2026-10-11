@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian NOK sales and cheque payment restrictions';
-        $this->version = '0.2.0';
+        $this->version = '0.2.1';
         $this->picto = 'accountancy';
     }
 

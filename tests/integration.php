@@ -4,7 +4,7 @@
 if (PHP_SAPI !== 'cli' || getenv('NORWAY_SYNTHETIC_TEST') !== '1'
     || getenv('DOLI_DB_NAME') !== 'norway_test'
     || getenv('DOLI_COMPANY_NAME') !== 'SYNTHETIC NORWAY TEST ONLY') {
-    fwrite(STDERR, "Refusing to run outside the dedicated synthetic test environment.\n");
+    file_put_contents('php://stderr', "Refusing to run outside the dedicated synthetic test environment.\n");
     exit(1);
 }
 require '/var/www/html/master.inc.php';
@@ -32,7 +32,10 @@ $conf->setValues($db);
 $result = activateModule('modNorway');
 check(empty($result['errors']), json_encode($result['errors']));
 $module = new modNorway($db);
+check(dolibarr_set_const($db, 'MAIN_MODULE_NORWAY_HOOKS', '["main"]', 'chaine', 0, '', $conf->entity) > 0, 'Legacy hook setup failed');
 check($module->init() > 0, $module->error);
+$hookRow = $db->fetch_object(query("SELECT value FROM ".$db->prefix()."const WHERE name='MAIN_MODULE_NORWAY_HOOKS' AND entity=".(int) $conf->entity));
+check(in_array('index', json_decode($hookRow->value, true), true), 'Existing module dashboard hook not refreshed');
 check($module->remove() > 0, 'Module deactivation failed');
 check($module->init() > 0, 'Module reactivation failed');
 

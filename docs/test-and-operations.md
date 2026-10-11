@@ -168,3 +168,25 @@ Valutamigrering prøves i tomt syntetisk grunnoppsett med den tidligere
 informasjonsinnstillingen NOK og faktisk EUR i kjernen. Testen krever at
 `MAIN_MONNAIE` blir NOK. Et utfylt regnskap med annen basisvaluta skal avvises,
 og prøves separat gjennom fakturaarbeidsflyten.
+
+## Feil i sluttkontrollen ved oppdatering
+
+Sluttkontrollen kjøres via standard input til PHP. Ved feil brukes
+`php://stderr`, og kontrollen skriver navn på alle punkter som feiler, uten
+konfigurasjonsverdier eller hemmeligheter. Oppdateringen avsluttes med feil og
+markeres ikke som ferdig. En tidligere `Undefined constant "STDERR"` maskerte
+den egentlige feilen; den betyr ikke at kontrollene kan hoppes over.
+
+`FAIL instance_key_match` betyr at den lagrede instansnøkkelen og containerens
+forventede nøkkel ikke stemmer, eller at forventet nøkkel mangler. Bevar backup
+og undersøk samsvaret mellom privat miljøfil og eksisterende konfigurasjon.
+Ikke regenerer nøkler eller slett konfigurasjonen som en automatisk løsning.
+Andre `FAIL`-navn identifiserer modul, basisvaluta, språkvalg eller installatørlås.
+CI fremprovoserer en nøkkelfeil i separat syntetisk prosess med samme PHP-stdin-
+kjøremåte og krever exitkode 1, konkret kontrollnavn og ingen hemmelige verdier.
+
+Forsidens Bankkonto-gruppe testes med en faktisk syntetisk bankkonto som kan
+avstemmes. Testen krever at bankgruppen finnes, og avviser både sjekkinnskudds-
+tekst og lenker. En egen hook-test krever at sjekkraden fjernes mens bankkonto,
+direktebelastning og bankoverføring beholdes. Moduloppgradering prøves fra den
+eldre hook-registreringen med bare `main` til `main` og `index`.
