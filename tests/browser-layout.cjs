@@ -17,6 +17,7 @@ const {chromium}=require('playwright');
   await page.setViewportSize({width,height:900});
   for(const path of ['/index.php','/compta/bank/list.php','/compta/bank/bankentries_list.php?id=1','/compta/bank/transfer.php','/compta/bank/bilan.php','/compta/bank/graph.php?account=1','/compta/bank/card.php?action=create','/societe/list.php','/compta/facture/list.php','/custom/norway/admin/setup.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
    const response = await page.goto(base+path); if(response.status()!==200)throw Error('Page status '+response.status()+': '+path);await page.waitForTimeout(150);
+   if(await page.locator('input[name=username]').count())throw Error('Synthetic authentication required: '+path);
    const result=await page.evaluate(()=>({vw:innerWidth,width:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('#id-right *')].filter(e=>{let r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('.div-table-responsive,.div-table-responsive-no-min')}).slice(0,8).map(e=>({tag:e.tagName,cls:e.className,right:Math.round(e.getBoundingClientRect().right)}))}));
    console.log(JSON.stringify({viewport:width,path,...result}));
    if(result.width>width+1||result.offenders.length)throw Error('Overflow remains: '+path+' at '+width);
