@@ -160,3 +160,7 @@ NorwayProfileScope=Norwegian chart with 745 accounts from Odoo l10n_no (LGPL-3),
 NorwayProfileConfirm=Install or complete Norwegian chart
 NorwayProfileInstalled=Norwegian chart selected. Created %s new accounts. Check default accounts, journals and VAT setup separately.
 NorwayProfileBlocked=The Norwegian chart cannot be installed now. Another chart, existing accounts/history, conflicts, changed preview or a technical failure requires review. No existing chart is replaced.
+
+NorwayAccountingSuggestions=Account suggestions for the Norwegian chart
+NorwayAccountingSuggested=Suggested account
+NorwayAccountingSuggestionsScope=Suggestions are not saved. 1500 and 2400 cover customer receivables and supplier payables. 3020 covers domestic service sales at the high VAT rate for VAT-registered businesses; it is not a general rule for foreign sales or sales without VAT. 2700 and 2710 cover the high rate; deduction entitlement, tax codes and VAT registration require separate assessment. Choose purchase accounts according to the expense. Assign 1920 to the actual bank account in bank settings. Transfer and suspense accounts require separate choices. Existing defaults, entries and journals are preserved. Product, customer/supplier and line mappings may override default accounts.

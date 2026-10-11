@@ -29,7 +29,7 @@ try {
         'ACCOUNTING_SERVICE_SOLD_ACCOUNT' => '3000', 'ACCOUNTING_VAT_SOLD_ACCOUNT' => '2700');
     $service = new NorwayAccountingSetup($db, $entity);
     $report = indexedSetup($service->report($chart, $settings));
-    insistSetup(count($report) === 14 && $report['Chart']['status'] === 'Available', 'Selected chart not found');
+    insistSetup(count($report) === 16 && $report['Chart']['status'] === 'Available', 'Selected chart not found');
     insistSetup($report['Accounts']['value'] === '1 / 2', 'Counts leaked across chart/entity');
     insistSetup($report['ACCOUNTING_ACCOUNT_CUSTOMER']['status'] === 'Available', 'Active account missed');
     insistSetup($report['ACCOUNTING_ACCOUNT_SUPPLIER']['status'] === 'Missing', 'Other entity account leaked');
@@ -40,6 +40,8 @@ try {
     foreach (array('PurchaseJournal', 'BankJournal', 'GeneralJournal') as $key) {
         insistSetup($report[$key]['status'] === 'Missing', 'Foreign/inactive/empty journal counted');
     }
+    insistSetup($service->suggestions($chart, $settings) === array(), 'Suggestions leaked to another chart');
+    insistSetup($report['ACCOUNTING_ACCOUNT_SUSPENSE']['status'] === 'Unset', 'Unset suspense default missed');
     $missing = indexedSetup($service->report(0, $settings));
     insistSetup($missing['Chart']['status'] === 'Missing' && $missing['ACCOUNTING_ACCOUNT_CUSTOMER']['status'] === 'Missing', 'Missing chart accepted');
     setupSql("UPDATE ".$prefix."accounting_system SET active=0 WHERE rowid=".(int) $chart);

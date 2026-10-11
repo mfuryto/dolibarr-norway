@@ -13,7 +13,8 @@ print '<p>'.$langs->trans('NorwayAccountingDefaultsScope').'</p>';
 try {
     $settings = array();
     foreach (NorwayAccountingSetup::defaults() as $key) { $settings[$key] = getDolGlobalString($key); }
-    $checks = (new NorwayAccountingSetup($db, $conf->entity))->report(getDolGlobalInt('CHARTOFACCOUNTS'), $settings);
+    $service = new NorwayAccountingSetup($db, $conf->entity);
+    $checks = $service->report(getDolGlobalInt('CHARTOFACCOUNTS'), $settings);
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr class="liste_titre">';
     foreach (array('Item', 'Value', 'Status') as $key) { print '<th>'.$langs->trans('NorwayAccounting'.$key).'</th>'; }
     print '</tr>';
@@ -23,6 +24,23 @@ try {
             .$langs->trans('NorwayAccountingStatus'.$check['status']).'</td></tr>';
     }
     print '</table></div>';
+    $suggestions = $service->suggestions(getDolGlobalInt('CHARTOFACCOUNTS'), $settings);
+    if ($suggestions) {
+        print '<h2>'.$langs->trans('NorwayAccountingSuggestions').'</h2>';
+        print '<p>'.$langs->trans('NorwayAccountingSuggestionsScope').'</p>';
+        print '<div class="div-table-responsive"><table class="noborder centpercent"><tr class="liste_titre">';
+        foreach (array('Item', 'Value', 'Suggested', 'Status') as $key) {
+            print '<th>'.$langs->trans('NorwayAccounting'.$key).'</th>';
+        }
+        print '</tr>';
+        foreach ($suggestions as $suggestion) {
+            print '<tr><td>'.$langs->trans($suggestion['key']).'</td><td>'.dol_escape_htmltag($suggestion['current'])
+                .'</td><td>'.dol_escape_htmltag($suggestion['number'].' — '.$suggestion['label']).'</td><td>'
+                .$langs->trans('NorwayAccountingStatus'.$suggestion['status']).'</td></tr>';
+        }
+        print '</table></div>';
+    }
+
 } catch (RuntimeException $error) {
     print '<div class="error">'.$langs->trans('NorwayAccountingReadError').'</div>';
 }
