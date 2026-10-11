@@ -1,0 +1,85 @@
+{
+  "synthetic": true,
+  "profile": "unregistered",
+  "currency": "NOK",
+  "period": [
+    "2026-01-01",
+    "2026-02-28"
+  ],
+  "documents": [
+    {
+      "id": "SYN-NR-INV",
+      "kind": "sale",
+      "date": "2026-01-10",
+      "net": 100000,
+      "vat": 0,
+      "gross": 100000,
+      "tax_code": "UNREGISTERED",
+      "lines": [
+        {
+          "account": "1500",
+          "debit": 100000,
+          "credit": 0
+        },
+        {
+          "account": "3000",
+          "debit": 0,
+          "credit": 100000
+        }
+      ]
+    },
+    {
+      "id": "SYN-NR-PAY",
+      "kind": "receipt",
+      "date": "2026-01-11",
+      "source": "SYN-NR-INV",
+      "amount": 100000,
+      "lines": [
+        {
+          "account": "1920",
+          "debit": 100000,
+          "credit": 0
+        },
+        {
+          "account": "1500",
+          "debit": 0,
+          "credit": 100000
+        }
+      ]
+    },
+    {
+      "id": "SYN-NR-BUY",
+      "kind": "purchase",
+      "date": "2026-01-12",
+      "net": 50000,
+      "vat": 12500,
+      "gross": 62500,
+      "tax_code": "NO_DEDUCTION",
+      "lines": [
+        {
+          "account": "6800",
+          "debit": 62500,
+          "credit": 0
+        },
+        {
+          "account": "2400",
+          "debit": 0,
+          "credit": 62500
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "opening": {},
+    "closing": {
+      "1500": 0,
+      "3000": -100000,
+      "1920": 100000,
+      "6800": 62500,
+      "2400": -62500
+    },
+    "vat_base": {},
+    "vat": {},
+    "vat_payable": 0
+  }
+}

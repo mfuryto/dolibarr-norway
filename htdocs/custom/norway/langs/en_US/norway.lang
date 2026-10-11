@@ -1,0 +1,7 @@
+ModuleNorwayName=Norwegian localisation
+ModuleNorwayDesc=Norwegian localisation foundation (under development)
+NorwayDescription=Norwegian localisation foundation (under development)
+NorwaySetup=Norwegian localisation status
+NorwayPrototypeWarning=Foundation only. Norwegian chart, VAT basis and SAF-T export are not implemented. Not ready for production accounting.
+NorwayVersionScope=Initial test target: Dolibarr 24.0.1. Activation does not change accounting configuration.
+NorwayNextSteps=Confirm VAT registration and transaction scope. Read the coverage analysis and acceptance criteria before configuration.

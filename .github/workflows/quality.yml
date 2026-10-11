@@ -1,0 +1,52 @@
+name: Quality
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-and-policy:
+    name: Norway source and policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3, shared with Fylkren
+        with:
+          persist-credentials: false
+      - name: Check promotion policy
+        run: python3 scripts/check-pr-policy.py
+      - name: Test accounting fixtures and branch guards
+        run: python3 -m unittest discover -s tests -v
+      - name: Check whitespace and build installable module
+        run: |
+          git diff --check
+          python3 scripts/package.py
+          python3 - <<'PYCODE'
+          from zipfile import ZipFile
+          with ZipFile('dist/module_norway-0.1.0.zip') as archive:
+              assert archive.testzip() is None
+              assert all(name.startswith('norway/') for name in archive.namelist())
+              assert 'norway/LICENSE' in archive.namelist()
+          PYCODE
+  dolibarr-integration:
+    name: Norway Dolibarr integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Run fresh Dolibarr installation and integration tests
+        run: bash scripts/ci-integration.sh
