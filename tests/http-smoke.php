@@ -57,6 +57,9 @@ try {
             && strpos($accounting, 'Kontroll av kontoplan og bokføringsoppsett') === false)
         || strpos($accounting, '3000') === false
         || strpos($accounting, 'accountancy/admin/defaultaccounts.php') === false
+        || strpos($accounting, 'compta/bank/list.php') === false
+        || (strpos($accounting, 'Bank and cash mapping checks') === false
+            && strpos($accounting, 'Kontroll av bank- og kassekoblinger') === false)
         || strpos($accounting, '/norway/css/layout-0.4.0.css') === false
         || strpos($accounting, 'Could not read accounting setup') !== false
         || strpos($accounting, 'Kunne ikke lese bokføringsoppsettet') !== false) {

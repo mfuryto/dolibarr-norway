@@ -35,7 +35,7 @@ EHF-avklaring kan gjøres parallelt med tidligere trinn, fordi tilgangspunkt og 
 
 ## Første del gjennomført; neste leveranse
 
-Kontrollsiden i trinn 1a viser valgt kontoplan, aktive/alle kontoer, åtte standardkontoer for kunde, leverandør, produkt/tjeneste kjøp/salg og inngående/utgående MVA, samt aktive salgs-, kjøps-, bank- og diversejournaler. Den skiller manglende, inaktiv, tvetydig og ikke angitt kobling.
+Kontrollsiden i trinn 1a viser valgt kontoplan, aktive/alle kontoer, ti standardkontoer for kunde, leverandør, produkt/tjeneste kjøp/salg og inngående/utgående MVA, samt aktive salgs-, kjøps-, bank- og diversejournaler. Fra 0.10.0 vises avgrensede kontoforslag, og fra 0.11.0 kontrolleres den faktiske bank-/kassekoblingen til konto, journal og valuta. Begge deler er skrivebeskyttet. Den skiller manglende, inaktiv, tvetydig og ikke angitt kobling.
 
 Standardkontoer er reservekoblinger. Fravær beviser ikke at all bokføring er umulig, fordi produkt-/kunde-/linjekoblinger kan finnes. En tilgjengelig konto bekrefter heller ikke riktig norsk kontonummer eller avgiftsbehandling. Ingen samlet grønn «produksjonsklar»-status innføres. Trinn 1b har nå [CSV-forhåndsvisning og bekreftet import](chart-preview.md) med konfliktkontroll, engangsbekreftelse, ny kontroll ved import og atomisk tilbakeføring. [Norsk kontoplan med 745 kontoer](norwegian-chart.md) fra låst, lisensiert Odoo-kilde kan nå installeres og velges eksplisitt. Virksomhetens kontobruk og versjonert SAF-T-/næringsmapping gjenstår.
 

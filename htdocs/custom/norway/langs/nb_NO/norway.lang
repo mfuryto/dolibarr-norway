@@ -164,3 +164,16 @@ NorwayProfileBlocked=Kontoplanen kan ikke installeres nå. Annen valgt plan, eks
 NorwayAccountingSuggestions=Kontoforslag for norsk kontoplan
 NorwayAccountingSuggested=Kontoforslag
 NorwayAccountingSuggestionsScope=Forslagene lagres ikke. 1500 og 2400 gjelder kunde- og leverandørfordringer/-gjeld. 3020 gjelder innenlandsk tjenestesalg med høy MVA-sats når virksomheten er MVA-registrert; ikke bruk dette som generell regel for salg til utlandet eller salg uten MVA. 2700 og 2710 gjelder høy sats; fradragsrett, avgiftskoder og avgiftsregistrering må vurderes separat. Kjøpskonto velges etter hva kostnaden gjelder. Konto 1920 settes på den faktiske bankkontoen i bankoppsettet. Mellomregning og feilkonto krever egne valg. Eksisterende standarder, bilag og journaler bevares. Produkt-, kunde-/leverandør- og linjekoblinger kan overstyre standardkontoene.
+
+NorwayBankSetup=Kontroll av bank- og kassekoblinger
+NorwayBankSetupScope=Viser åpne bank- og kassekonti for aktivt foretak. Bokføringskontoen må finnes og være aktiv i valgt kontoplan. Journalen må være aktiv, ha kode og type bank/kasse. NOK kontrolleres mot modulens salgsomfang. Deling av bokføringskonto mellom flere åpne konti vises for vurdering. Tilgjengelig betyr bare at koblingen finnes; det bekrefter ikke riktig kontotype, bankavstemming eller saldo. Lukkede konti og historiske bevegelser undersøkes ikke. Ingen oppsett eller betalinger endres.
+NorwayBankSetupEmpty=Ingen åpne bank- eller kassekonti funnet. Opprett en konto og velg bokføringskonto og bankjournal før betalinger skal bokføres.
+NorwayBankSetupAccount=Bank-/kassekonto
+NorwayBankSetupLedger=Bokføringskonto
+NorwayBankSetupJournal=Tilknyttet journal
+NorwayBankSetupCurrency=Valuta
+NorwayBankSetupShared=Delt bokføringskonto
+NorwayBankSetupSharedAvailable=Ikke delt
+NorwayBankSetupSharedReview=Brukes av flere – vurder
+NorwayBankSetupCash=Kasse
+NorwayBankSetupOpen=Åpne bank- og kassekontoer
