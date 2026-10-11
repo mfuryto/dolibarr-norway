@@ -79,6 +79,10 @@ try {
         $wizard = request('/custom/norway/admin/wizard.php?step='.$inputStep);
         if (strpos($wizard, $expectedStep.' / 11') === false) { throw new RuntimeException('Invalid wizard step not bounded'); }
     }
+    $company=request('/admin/company.php?lang=nb_NO');
+    foreach (array('Organisasjonsnummer','Organisasjonsform','MVA-nummer (ved registrering)','ENK — Enkeltpersonforetak','AS — Aksjeselskap','value="173001"','value="173002"') as $required) {
+        if (strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),$required)===false) { throw new RuntimeException('Norwegian company field/form missing: '.$required); }
+    }
     $accounting = request('/custom/norway/admin/accounting.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || (strpos($accounting, 'Chart and accounting setup check') === false

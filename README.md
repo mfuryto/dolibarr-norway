@@ -6,6 +6,7 @@ Målet er en ekstern modul under `htdocs/custom/norway` uten endringer i kjernen
 Første testmål er Dolibarr **24.0.1**, låst til kilde og containerdigest.
 Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 
+- [Foretaksfelt og norske organisasjonsformer](docs/company-setup.md)
 - [Bekreftet oppretting av manglende journaltyper](docs/journal-setup.md)
 - [Bekreftet utfylling av kunde- og leverandørkonto](docs/default-accounts.md)
 - [Norsk oppsettsveiviser inne i Dolibarr](docs/setup-wizard.md)
@@ -46,7 +47,7 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.14.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.15.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
 bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og

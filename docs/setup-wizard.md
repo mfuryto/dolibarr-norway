@@ -11,3 +11,5 @@ Det finnes ingen ferdigknapp eller samlet produksjonsklar-status. Manuelle valg,
 ## Verifikasjon
 
 Autentisert HTTP-test åpner alle elleve steg på nb_NO og en_US, kontrollerer navigasjon, lesefeil og manglende oversetting samt avgrensing av ugyldige stegnumre. Uautentisert bruker får ikke veiviserinnhold. Eksisterende databasetester dekker kontrollklassene og isolering mellom foretak/planer. Nettleserprøven inkluderer konto-/journalsteget ved fire skjermbredder; den er ingen regnskapsfaglig aksept. Det er ingen nye tabeller eller migreringer.
+
+Fra 0.15.0 forklarer steg 2 forskjellen på organisasjonsnummer, MVA-nummer og organisasjonsform. Foretaksoppsettet har tydelige norske feltnavn og norske organisasjonsformer, uten automatisk valg. Se [foretaksoppsett](company-setup.md).

@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.14.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.15.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -24,7 +24,7 @@ Uklarheter merkes «må avklares», ikke automatisk «ikke relevant». Lagre ikk
 
 ## 2. Foretaksopplysninger og tilgang
 
-**Manuelt:** Åpne Dolibarrs oppsett for firma/organisasjon. Fyll inn registrert navn, organisasjonsnummer, adresse, postnummer, sted, land Norge og kontaktopplysninger. Velg NOK som basisvaluta. Kontroller faktiske registreringer; en kontrollsifferkontroll bekrefter bare nummerformat.
+**Manuelt:** Åpne Dolibarrs oppsett for firma/organisasjon. Lagre Norge som land før landavhengige felt fylles inn. Se [feltforklaring og norske organisasjonsformer](company-setup.md). Fyll inn registrert navn, organisasjonsnummer, adresse, postnummer, sted, land Norge og kontaktopplysninger. Velg NOK som basisvaluta. Kontroller faktiske registreringer; en kontrollsifferkontroll bekrefter bare nummerformat.
 
 Åpne Norway → foretaks-/moduloppsett og gjennomgå kontrollresultatene. Registeroppslaget sammenligner dagens opplysninger med Brønnøysundregistrene, men endrer ikke MVA-innstillinger. Se [registerkontroll](registry.md).
 
