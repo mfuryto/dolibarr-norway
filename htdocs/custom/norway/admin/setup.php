@@ -26,7 +26,7 @@ if (!$result) {
     $checks = NorwayReadiness::evaluate(array(
         'name' => $mysoc->name, 'idprof1' => $mysoc->idprof1,
         'country_code' => $mysoc->country_code,
-        'currency' => getDolGlobalString('MAIN_INFO_SOCIETE_DEVISE'),
+        'currency' => $conf->currency,
         'address' => $mysoc->address, 'zip' => $mysoc->zip, 'town' => $mysoc->town,
     ), $rates);
     print '<h2>'.$langs->trans('NorwayChecks').'</h2>';
@@ -43,5 +43,7 @@ if (!$result) {
     print '</table></div>';
     print '<p><a href="'.DOL_URL_ROOT.'/admin/company.php">'.$langs->trans('NorwayCompanySettings').'</a></p>';
 }
+print '<p><a href="'.dol_buildpath('/norway/admin/audit.php', 1).'">'.$langs->trans('NorwayAudit').'</a></p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/pricing.php', 1).'">'.$langs->trans('NorwayPricing').'</a></p>';
 llxFooter();
 $db->close();

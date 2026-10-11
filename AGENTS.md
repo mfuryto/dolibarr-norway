@@ -26,3 +26,7 @@
   Bevar prosjektnavn, volumer, passord og instansnøkkel ved videre utvikling.
 - Skill teknisk driftsstabilitet fra regnskapsfaglig produksjonsaksept.
   Skjemaendringer krever versjonert migrering, backup og gjenopprettingstest.
+
+- Eventuelle lisensintegrasjoner skal være valgfrie, generelle adaptere uten
+  leverandørnavn, personlige systemreferanser eller avhengighet fra regnskapskjernen.
+- Bruk «kontroll» for validering av regnskapet; ikke omtale slike kontroller som sjekker.

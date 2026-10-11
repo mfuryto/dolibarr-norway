@@ -13,7 +13,7 @@ function verify($condition, $message)
 }
 verify(DOL_VERSION === '24.0.1', 'Unexpected core version');
 foreach (array('MAIN_MODULE_NORWAY' => '1', 'MAIN_MODULE_ACCOUNTING' => '1',
-              'MAIN_INFO_SOCIETE_DEVISE' => 'NOK', 'MAIN_LANG_DEFAULT' => 'nb_NO') as $key => $expected) {
+              'MAIN_MONNAIE' => 'NOK', 'MAIN_INFO_SOCIETE_DEVISE' => 'NOK', 'MAIN_LANG_DEFAULT' => 'nb_NO') as $key => $expected) {
     $result = $db->query("SELECT value FROM ".$db->prefix()."const WHERE name='".$db->escape($key)."' AND entity=".(int) $conf->entity);
     verify((bool) $result, 'Configuration query failed');
     $row = $db->fetch_object($result);

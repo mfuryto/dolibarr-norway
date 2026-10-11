@@ -27,6 +27,8 @@ function query($sql)
 }
 check(DOL_VERSION === '24.0.1', 'Unexpected Dolibarr version');
 check($user->fetch('', 'testadmin') > 0 && $user->admin, 'Test admin missing');
+check(dolibarr_set_const($db, 'MAIN_MONNAIE', 'NOK', 'chaine', 0, '', $conf->entity) > 0, 'Synthetic NOK setup failed');
+$conf->setValues($db);
 $result = activateModule('modNorway');
 check(empty($result['errors']), json_encode($result['errors']));
 $module = new modNorway($db);

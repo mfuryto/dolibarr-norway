@@ -17,8 +17,9 @@ containerens faktiske PHP-versjon registreres ved test. MariaDB 10.11 brukes.
 Repoet hadde bare README og GPLv3-lisens; ingen tidligere modul eller regnskapsdata.
 Kontrollen omfatter SQL-skjema, installasjonsdata, fakturaklasse, regnskapsklasse,
 modulmal, eksportkataloger og Skatteetatens XSD 1.40. Standard kjøring og modulens
-livssyklus er testet i Docker. Faktura→bokføring, PDF, avslutning, EHF og SAF-T er
-ikke ferdig funksjonstestet. Funn fra fraværssøk er avgrenset til undersøkt kode.
+livssyklus er testet i Docker. Faktura→salgsjournal→hovedbok, delkreditnota og norsk/engelsk PDF for
+tilbud og faktura er prøvd med syntetiske NOK-data. Avslutning, betaling,
+utenlandsk avgiftsbehandling, EHF og SAF-T er ikke ferdig funksjonstestet. Funn fra fraværssøk er avgrenset til undersøkt kode.
 
 ## Omfang og installasjonsspesifikke avklaringer
 
@@ -140,7 +141,7 @@ bør relevante utgivere spørres om norsk støtte, API, lisens og vedlikehold.
 ## Avgjørelser før produksjon
 
 MVA-registerstatus/dato, historiske saldoer og uoppgjorte poster fra inaktiv
-periode, faktisk land-/transaksjonsliste, EUR-kursrutine, fradragsrett,
+periode, faktisk land-/transaksjonsliste, veiledende EUR-prisvisning, fradragsrett,
 offentlige mottakeres EHF-/ordrereferansekrav og oppbevarings-/driftsansvar er
 åpne. Direkte MVA-/skatteinnsending, bankintegrasjon og lisensutstedelse er
 fortsatt utenfor første leveranse. Lavt bilagstall brukes ikke som SAF-T-fritak
@@ -169,3 +170,23 @@ stopper med en synlig feil ved mislykket databaseforespørsel.
 Kilder kontrollert 2026-10-11:
 [Brønnøysundregistrenes kontrollsiffer](https://www.brreg.no/om-oss/registrene-vare/om-enhetsregisteret/organisasjonsnummeret/)
 og [Skatteetatens satser](https://www.skatteetaten.no/satser/merverdiavgift?pageid=1500).
+
+
+## Neste implementerte del: salgsdokumenter og bilagskontroll
+
+Standard tilbud, faktura og språkvalg aktiveres ved installasjon og oppdatering.
+Nye salgsdokumenter begrenses til NOK; MultiCurrency deaktiveres uten sletting av
+historikk. Separat EUR-kalkulator henter kun veiledende kurs fra Norges Bank.
+Se sales-documents.md for arbeidsflyt og avgrensninger.
+
+Den nye skrivebeskyttede bilagskontrollen avstemmer debet/kredit per
+foretak/journal/bilagsnummer og viser manglende kundefakturakoblinger. Summer
+beregnes med åtte desimaler i DB, uten avrunding som skjuler små differanser.
+Andre kildetyper og aggregerte fakturaposter fremgår eksplisitt. Dette gir ikke
+bokført avgiftskode/-grunnlag eller komplett historisk endringsspor; disse
+lagringsgapene, MVA-rapport og SAF-T gjenstår. Fordringer og betalinger er ikke
+avstemt av denne kontrollen.
+
+Lisensintegrasjoner er en senere, valgfri adapter uten leverandørspesifikke
+navn, adresser eller avhengigheter i regnskapsmodulen. Ingen integrasjonskode
+eller lisenskrav inngår i denne leveransen.
