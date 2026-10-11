@@ -27,6 +27,10 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $wizard = request('/custom/norway/admin/wizard.php');
+    if (strpos($wizard, 'Norwegian setup wizard') !== false || strpos($wizard, 'Norsk oppsettsveiviser') !== false) {
+        throw new RuntimeException('Wizard visible before authentication');
+    }
     $preview = request('/custom/norway/admin/chart.php');
     if (strpos($preview, 'name="chart_csv"') !== false) { throw new RuntimeException('Chart preview visible before authentication'); }
     $accounting = request('/custom/norway/admin/accounting.php');
@@ -51,6 +55,26 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    foreach (array('nb_NO', 'en_US') as $wizardLanguage) {
+        for ($wizardStep = 1; $wizardStep <= 11; $wizardStep++) {
+            $wizard = request('/custom/norway/admin/wizard.php?step='.$wizardStep.'&lang='.$wizardLanguage);
+            if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
+                || strpos($wizard, $wizardStep.' / 11') === false
+                || strpos($wizard, 'aria-current="step"') === false
+                || strpos($wizard, 'norwegian-setup-guide.md') === false
+                || strpos($wizard, 'NorwayWizardBody') !== false
+                || strpos($wizard, 'NorwayWizardLimit') !== false
+                || strpos($wizard, 'Could not read accounting setup') !== false
+                || strpos($wizard, 'Kunne ikke lese bokføringsoppsettet') !== false
+                || strpos($wizard, '<form') !== false) {
+                throw new RuntimeException('Wizard step missing, untranslated, failed or writable');
+            }
+        }
+    }
+    foreach (array(-2 => 1, 99 => 11) as $inputStep => $expectedStep) {
+        $wizard = request('/custom/norway/admin/wizard.php?step='.$inputStep);
+        if (strpos($wizard, $expectedStep.' / 11') === false) { throw new RuntimeException('Invalid wizard step not bounded'); }
+    }
     $accounting = request('/custom/norway/admin/accounting.php');
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200
         || (strpos($accounting, 'Chart and accounting setup check') === false

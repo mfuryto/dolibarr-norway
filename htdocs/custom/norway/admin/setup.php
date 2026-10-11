@@ -11,6 +11,7 @@ llxHeader('', $langs->trans('NorwaySetup'));
 print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwaySetup'), '', 'accountancy');
 print '<div class="warning">'.$langs->trans('NorwayPrototypeWarning').'</div>';
+print '<p><a class="butAction" href="'.dol_buildpath('/norway/admin/wizard.php', 1).'">'.$langs->trans('NorwayWizard').'</a></p>';
 print '<p>'.$langs->trans('NorwayVersionScope').'</p>';
 print '<p>'.$langs->trans('NorwayNextSteps').'</p>';
 print '<p>'.$langs->trans((int) $mysoc->tva_assuj === 1 ? 'NorwayVATEnabled' : 'NorwayVATDisabled').'</p>';
