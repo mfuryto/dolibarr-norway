@@ -47,7 +47,7 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.17.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.18.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
 bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og
@@ -62,3 +62,5 @@ Manuell MVA-sammenligning med Brønnøysundregistrene: [registerkontroll](docs/r
 [Kontoplan fra CSV](docs/chart-preview.md) har skrivebeskyttet forhåndsvisning og bekreftet import av bare nye kontoer. Norsk kontoplan kan installeres separat; avgifts- og rapporteringsmapping gjenstår.
 
 Se [bekreftet bankkobling](docs/bank-defaults.md) for én ny ordinær NOK-bankkonto.
+
+Se [kontroll av faktura- og tilbudsoppsett](docs/document-setup.md) for samlet oversikt over nummerering, PDF-valg og språk.

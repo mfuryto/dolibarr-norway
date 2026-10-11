@@ -62,3 +62,5 @@ Se [dekningsanalysen](coverage-analysis.md), [kilderegisteret](sources.md) og [t
 Fra 0.16.0 fylles et tomt MVA-nummer fra gyldig norsk organisasjonsnummer ved ordinær lagring når «MVA brukes» er valgt. Eksisterende MVA-nummer og registreringsstatus endres ikke. Se [foretaksoppsett](company-setup.md).
 
 Bankkoblingens avgrensning og vern er beskrevet i [bekreftet bankkobling](bank-defaults.md). Bank- og reskontroavstemming gjenstår.
+
+Fra 0.18.0 samler [dokumentoppsettkontrollen](document-setup.md) valgt nummerering, nummermasker, effektive PDF-modeller og språk. Den er skrivebeskyttet; konkret dokumenttest og gjennomgang av etablerte nummerserier gjenstår per installasjon.
