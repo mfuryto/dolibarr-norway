@@ -19,7 +19,7 @@ Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
 
 Driftsoppsettet bruker databasen `accounting`, vedvarende data og ingen
 syntetiske bilag. Standardfilen `compose.yaml` og `deploy/compose.yaml` beskriver
-samme driftsprosjekt; bruk alltid `--env-file deploy/.env`. Utviklingstestene
+samme driftsprosjekt med persistente data i `data/` og backup i `backups/`; bruk alltid `--env-file deploy/.env`. Utviklingstestene
 krever eksplisitt `-f compose.test.yaml` og har egne volumer.
 
 Se [serveroppdatering og backup](docs/vps-installation.md).

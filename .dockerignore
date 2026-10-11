@@ -9,3 +9,5 @@ dist
 vendor
 *.log
 *.dump
+
+data

@@ -13,6 +13,7 @@ compose=(docker compose --env-file deploy/.env -f deploy/compose.yaml -p "$proje
 # Back up the running image/data before building or replacing any container.
 bash scripts/backup-installation.sh
 "${compose[@]}" build web
+python3 scripts/migrate-storage.py
 "${compose[@]}" up -d --wait --wait-timeout 300
 # Read-only checks, including retained instance key and secured installer.
 # Administrator passwords may have changed since installation: do not log in.

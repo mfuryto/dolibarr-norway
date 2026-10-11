@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 umask 077
-backup_parent=${NORWAY_BACKUP_DIR:-../dolibarr-backups}
+backup_parent=${NORWAY_BACKUP_DIR:-backups}
 project=${NORWAY_COMPOSE_PROJECT:-dolibarr-norway-accounting}
 compose=(docker compose --env-file deploy/.env -f deploy/compose.yaml -p "$project")
 "${compose[@]}" config --quiet

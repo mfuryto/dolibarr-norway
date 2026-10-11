@@ -6,6 +6,13 @@ install_root=$(mktemp -d /tmp/norway-install-ci.XXXXXXXX)
 compose=(docker compose --env-file "$install_root/deploy/.env" -f "$install_root/deploy/compose.yaml" -p "norway-install-ci-$$")
 cleanup() {
     "${compose[@]}" down --volumes --remove-orphans >/dev/null 2>&1 || true
+    # Old named volumes intentionally survive migration; remove only this test's volumes.
+    mapfile -t old_volumes < <(docker volume ls -q --filter "label=com.docker.compose.project=norway-install-ci-$$")
+    if (( ${#old_volumes[@]} )); then docker volume rm "${old_volumes[@]}" >/dev/null; fi
+    if [[ -d "$install_root/data" ]]; then
+        docker run --rm --network none --mount "type=bind,src=$install_root/data,dst=/cleanup" \
+            --entrypoint sh "norway-install-ci-$$-web" -c 'find /cleanup -mindepth 1 -delete' >/dev/null 2>&1 || true
+    fi
     rm -rf -- "$install_root"
 }
 trap cleanup EXIT
@@ -30,7 +37,10 @@ python3 - "$install_root/deploy/compose.yaml" <<'PY'
 from pathlib import Path
 import sys
 p = Path(sys.argv[1])
-p.write_text(p.read_text().replace("    ports: ['127.0.0.1:8088:80']\n", ''))
+bind_config = p.read_text().replace("    ports: ['127.0.0.1:8088:80']\n", '')
+(p.parent/'compose.bind.yaml').write_text(bind_config)
+legacy = bind_config.replace('../data/database:', 'db:').replace('../data/documents:', 'documents:').replace('../data/config:', 'conf:')
+p.write_text(legacy + '\nvolumes:\n  db:\n  documents:\n  conf:\n')
 PY
 "${compose[@]}" config --quiet
 "${compose[@]}" up -d --build
@@ -54,13 +64,26 @@ wait_ready
 cd "$install_root"
 export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
-"${compose[@]}" exec -T web sh -c 'printf "synthetic backup marker\n" > /var/www/documents/norway-backup-marker'
+"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
+cp deploy/compose.bind.yaml deploy/compose.yaml
+rm deploy/compose.bind.yaml
 git init --quiet -b main
 git config user.name 'Dolibarr Norway verification'
 git config user.email 'verification@dolibarr-norway.invalid'
 git add .
 git commit --quiet -m 'Synthetic installation snapshot'
 bash scripts/update-installation.sh
+python3 scripts/migrate-storage.py
+"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
+"${compose[@]}" ps -q web | xargs docker inspect | python3 -c '
+import json,sys
+from pathlib import Path
+c=json.load(sys.stdin)[0]
+expected={"/var/www/documents": "documents", "/var/www/html/conf": "config"}
+for target,name in expected.items():
+    m=next(m for m in c["Mounts"] if m["Destination"]==target)
+    assert m["Type"]=="bind" and Path(m["Source"])==Path.cwd()/"data"/name
+'
 test "$(cat .deployed-revision)" = "$(git rev-parse HEAD)"
 backup_dir=$(find "$NORWAY_BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d)
 test -f "$backup_dir/COMPLETE"
@@ -76,4 +99,5 @@ wait_ready
 "${compose[@]}" exec -T web grep -qx 'synthetic backup marker' /var/www/documents/norway-backup-marker
 "${compose[@]}" exec -T web php < scripts/verify-installation.php
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/deployment-smoke.php
+"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
 printf 'PASS backup checksums, database and document/config recovery\n'
