@@ -29,6 +29,8 @@ function request($path, $post = null)
 try {
     $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
     if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
+    $documents=request('/custom/norway/admin/documents.php');
+    if (strpos($documents,'Invoice and proposal setup check')!==false || strpos($documents,'Kontroll av faktura- og tilbudsoppsett')!==false) { throw new RuntimeException('Document setup exposed before login'); }
     $journals = request('/custom/norway/admin/journals.php');
     if (strpos($journals, 'value="createjournals"') !== false) { throw new RuntimeException('Journal confirmation visible before login'); }
     $defaults = request('/custom/norway/admin/defaults.php');
@@ -80,6 +82,10 @@ try {
     foreach (array(-2 => 1, 99 => 11) as $inputStep => $expectedStep) {
         $wizard = request('/custom/norway/admin/wizard.php?step='.$inputStep);
         if (strpos($wizard, $expectedStep.' / 11') === false) { throw new RuntimeException('Invalid wizard step not bounded'); }
+    }
+    foreach (array('nb_NO','en_US') as $documentLang) {
+        $documents=request('/custom/norway/admin/documents.php?lang='.$documentLang);
+        if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($documents,'sponge')===false || strpos($documents,'NorwayDocuments')!==false || strpos($documents,'<form')!==false || strpos($documents,'admin/propal.php')===false) { throw new RuntimeException('Document setup missing, untranslated or writable'); }
     }
     $company=request('/admin/company.php?lang=nb_NO');
     foreach (array('Organisasjonsnummer','Organisasjonsform','MVA-nummer (ved registrering)','ENK — Enkeltpersonforetak','AS — Aksjeselskap','value="173001"','value="173002"') as $required) {

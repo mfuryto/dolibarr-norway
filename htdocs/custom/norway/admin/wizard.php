@@ -16,7 +16,7 @@ $links = array(
     4 => array('/custom/norway/admin/defaults.php' => 'NorwayDefaults', '/custom/norway/admin/journals.php' => 'NorwayJournals', '/custom/norway/admin/profile.php' => 'NorwayProfile', '/accountancy/admin/defaultaccounts.php' => 'NorwayAccountingDefaultSettings', '/accountancy/admin/journals_list.php' => 'NorwayAccountingJournalSettings', '/custom/norway/admin/accounting.php' => 'NorwayAccountingSetup'),
     5 => array('/custom/norway/admin/bankdefaults.php' => 'NorwayBankDefaults', '/compta/bank/list.php' => 'NorwayBankSetupOpen'),
     6 => array('/societe/list.php' => 'NorwayWizardPartners', '/product/list.php' => 'NorwayWizardProducts'),
-    7 => array('/admin/invoice.php' => 'NorwayWizardInvoiceSettings', '/admin/propal.php' => 'NorwayWizardProposalSettings', '/custom/norway/admin/invoice.php' => 'NorwayInvoiceCheck'),
+    7 => array('/custom/norway/admin/documents.php' => 'NorwayDocuments', '/admin/invoice.php' => 'NorwayWizardInvoiceSettings', '/admin/propal.php' => 'NorwayWizardProposalSettings', '/custom/norway/admin/invoice.php' => 'NorwayInvoiceCheck'),
     8 => array('/custom/norway/admin/pricing.php' => 'NorwayPricing'),
     9 => array('/accountancy/admin/fiscalyear.php' => 'NorwayWizardPeriods', '/custom/norway/admin/audit.php' => 'NorwayAudit'),
     10 => array('/custom/norway/admin/setup.php' => 'NorwaySetup'),

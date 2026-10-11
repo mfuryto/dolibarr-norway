@@ -276,3 +276,27 @@ NorwayBankDefaultsConfirmScope=Confirm this is the correct bank account. Only em
 
 NorwayBankDefaultsReasonMappings=Review existing ledger/journal mappings manually before filling empty choices.
 NorwayBankDefaultsSaved=Saved %s bank mappings. Existing choices are preserved.
+
+NorwayDocuments=Invoice and proposal setup check
+NorwayDocumentsScope=Read-only overview of selected numbering, enabled PDF models and languages. Configured confirms the setting only, not legal requirements, numbering suitability or the finished PDF. No document number is requested or reserved.
+NorwayDocumentsConfigured=Configured – document testing remains
+NorwayDocumentsMissing=Missing setting or enabled model
+NorwayDocumentsReview=Manual review required
+NorwayDocumentsReadError=Could not read document setup.
+NorwayDocumentsNext=Test invoices, credit notes and proposals in Norwegian and English with synthetic data in a separate test environment. Check numbering, seller/customer identity, delivery, VAT, NOK totals and payment information on the actual PDF. Resolve numbering continuity before first issue when migrating from another system.
+NorwayDocumentsFACTURE_ADDON=Invoice numbering
+NorwayDocumentsPROPALE_ADDON=Proposal numbering
+NorwayDocumentsFACTURE_ADDON_PDF=Default invoice PDF model
+NorwayDocumentsPROPALE_ADDON_PDF=Default proposal PDF model
+NorwayDocumentsMAIN_MULTILANGS=Multilingual documents (1 = enabled)
+NorwayDocumentsMAIN_LANG_DEFAULT=Default language
+NorwayDocumentsCurrency=Base currency
+NorwayDocumentsFACTURE_MERCURE_MASK_INVOICE=Invoice numbering mask (Mercure)
+NorwayDocumentsFACTURE_MERCURE_MASK_CREDIT=Credit note numbering mask (Mercure)
+NorwayDocumentsPROPALE_SAPHIR_MASK=Proposal numbering mask (Saphir)
+NorwayDocumentsFACTURE_ADDON_PDF_0=Standard invoice — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_1=Replacement invoice — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_2=Credit note — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_3=Deposit invoice — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_4=Proforma invoice — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_5=Situation invoice — PDF

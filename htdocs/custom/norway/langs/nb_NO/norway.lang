@@ -276,3 +276,27 @@ NorwayBankDefaultsConfirmScope=Bekreft at dette er riktig bankkonto. Bare tom bo
 
 NorwayBankDefaultsReasonMappings=Eksisterende konto-/journalkobling må gjennomgås manuelt før tomme valg fylles.
 NorwayBankDefaultsSaved=Lagret %s bankkoblinger. Eksisterende valg er bevart.
+
+NorwayDocuments=Kontroll av faktura- og tilbudsoppsett
+NorwayDocumentsScope=Skrivebeskyttet oversikt over valgt nummerering, aktiverte PDF-modeller og språk. «Konfigurert» bekrefter bare innstillingen, ikke lovkrav, nummerseriens egnethet eller ferdig PDF. Ingen nummer hentes eller reserveres.
+NorwayDocumentsConfigured=Konfigurert – dokumenttest gjenstår
+NorwayDocumentsMissing=Mangler valg eller aktivert modell
+NorwayDocumentsReview=Må gjennomgås manuelt
+NorwayDocumentsReadError=Kunne ikke lese dokumentoppsettet.
+NorwayDocumentsNext=Prøv faktura, kreditnota og tilbud på norsk og engelsk med syntetiske data i separat testmiljø. Kontroller nummerering, selger-/kundeopplysninger, leveranse, MVA, NOK-beløp og betalingsopplysninger på faktisk PDF. Ved overgang fra tidligere system må nummerserier avklares før første utstedelse.
+NorwayDocumentsFACTURE_ADDON=Fakturanummerering
+NorwayDocumentsPROPALE_ADDON=Tilbudsnummerering
+NorwayDocumentsFACTURE_ADDON_PDF=Standard PDF-modell for faktura
+NorwayDocumentsPROPALE_ADDON_PDF=Standard PDF-modell for tilbud
+NorwayDocumentsMAIN_MULTILANGS=Flerspråklige dokumenter (1 = aktivert)
+NorwayDocumentsMAIN_LANG_DEFAULT=Standard språk
+NorwayDocumentsCurrency=Basisvaluta
+NorwayDocumentsFACTURE_MERCURE_MASK_INVOICE=Nummermaske for faktura (Mercure)
+NorwayDocumentsFACTURE_MERCURE_MASK_CREDIT=Nummermaske for kreditnota (Mercure)
+NorwayDocumentsPROPALE_SAPHIR_MASK=Nummermaske for tilbud (Saphir)
+NorwayDocumentsFACTURE_ADDON_PDF_0=Ordinær faktura — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_1=Erstatningsfaktura — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_2=Kreditnota — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_3=Forskuddsfaktura — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_4=Proformafaktura — PDF
+NorwayDocumentsFACTURE_ADDON_PDF_5=Situasjonsfaktura — PDF

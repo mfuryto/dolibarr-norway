@@ -89,6 +89,8 @@ try {
         }
     }
     verify($secure, 'Session cookie is not Secure behind HTTPS proxy');
+    $documents=page('/custom/norway/admin/documents.php');
+    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($documents,'NorwayDocuments')===false && strpos($documents,'<form')===false && strpos($documents,'admin/invoice.php')!==false,'Document setup report missing or writable');
     $profile = page('/custom/norway/admin/profile.php');
     verify(strpos($profile, 'NORWAY-NO-1') !== false && strpos($profile, 'value="installprofile"') !== false,
         'Norwegian chart preview or confirmation missing');

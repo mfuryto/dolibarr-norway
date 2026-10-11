@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.17.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
+Kontrollert 2026-10-11 mot modul 0.18.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Første versjon er skrivebeskyttet: den viser gjeldende kontroller og lenker, men lagrer ikke valg eller fremdrift. Se [veiviserens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
@@ -84,6 +84,8 @@ Opprett programvaren som den leveransetypen som faktisk brukes. Angi tydelig bes
 **Manuelt:** Velg og prøv maskinell fakturanummerering før første faktura. Ved overgang må nummerserier og tidligere dokumenter avklares; bruk ikke manuell gjenbruk av numre. Velg betalingsvilkår, forfallsberegning, bankopplysninger og dokumentmodell. Prøv norsk og engelsk PDF med syntetiske data i separat testmiljø.
 
 Kontroller på det faktiske dokumentet: dato og nummer, selgeridentitet og korrekt MVA-merking, kjøperidentitet, konkret leveransebeskrivelse, leveringstid/-sted der relevant, grunnlag/avgift og totalsum i NOK, betalingsfrist og kreditnotareferanse. Ulike avgiftsbehandlinger må kunne skilles. Foretaksform kan kreve ytterligere registertekst. Se [Altinns fakturakrav](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/faktura-salgsdokumentasjon/).
+
+Fra 0.18.0 samler [kontroll av dokumentoppsett](document-setup.md) gjeldende nummereringsmoduler, nummermasker, effektive PDF-valg og språk uten å reservere numre eller endre dokumenter.
 
 **Delvis levert:** fakturatrigger og PDF-tilpasninger dekker deler av dette. De garanterer ikke alle opplysninger på alle dokumentmodeller. Prøvde modeller er azur for tilbud og sponge for faktura. Fritekst oversettes ikke automatisk. Rett utstedte feil gjennom dokumentert kreditnota-/rettingsflyt, ikke sletting av historikk.
 

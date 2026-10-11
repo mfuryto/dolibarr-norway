@@ -15,3 +15,5 @@ Autentisert HTTP-test åpner alle elleve steg på nb_NO og en_US, kontrollerer n
 Fra 0.15.0 forklarer steg 2 forskjellen på organisasjonsnummer, MVA-nummer og organisasjonsform. Foretaksoppsettet har tydelige norske feltnavn og norske organisasjonsformer, uten automatisk valg. Se [foretaksoppsett](company-setup.md).
 
 Fra 0.17.0 lenker steg 5 til separat [bekreftet bankkobling](bank-defaults.md) for ett avgrenset nytt NOK-oppsett. Veiviseren i seg selv er fortsatt skrivebeskyttet.
+
+Fra 0.18.0 lenker steg 7 til [kontroll av dokumentoppsett](document-setup.md). Ingen numre reserveres og ingen dokumenter endres.
