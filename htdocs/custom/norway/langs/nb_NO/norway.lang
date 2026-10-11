@@ -130,7 +130,7 @@ NorwayAccountingDefaultSettings=Åpne standardkontoer
 NorwayAccountingJournalSettings=Åpne journaloppsett
 
 NorwayChartPreview=Forhåndsvisning av kontoplanimport
-NorwayChartScope=Kun forhåndsvisning. Ingen kontoer, koblinger eller bilag endres. Kontonavn sammenlignes nøyaktig. Hovedbokbruk telles per kontonummer i aktivt foretak, også fra tidligere kontoplaner. Produkt-, motparts- og linjekoblinger undersøkes ikke. Dette bekrefter ikke norsk kontoplan eller SAF-T-mapping.
+NorwayChartScope=Forhåndsvisningen endrer ingenting. Ved bekreftet import opprettes bare nye kontoer; eksisterende kontoer, koblinger og bilag bevares. Kontonavn sammenlignes nøyaktig. Hovedbokbruk telles per kontonummer i aktivt foretak, også fra tidligere kontoplaner. Produkt-, motparts- og linjekoblinger undersøkes ikke. Dette bekrefter ikke norsk kontoplan eller SAF-T-mapping.
 NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semikolon, overskrift account_number;label. Én konto per linje, kontonummer 4–8 siffer uten innledende null, navn 1–255 byte. Maks 500 kontoer og 256 KiB. Velg en aktiv kontoplan knyttet til Norge først.
 NorwayChartCSV=Lim inn CSV
 NorwayChartRun=Vis forhåndsvisning
@@ -147,3 +147,10 @@ NorwayChartStatusHistorical=Historisk kontonummer – må avklares
 NorwayChartInvalidChart=Velg en aktiv kontoplan knyttet til Norge i bokføringsoppsettet. Ingen forhåndsvisning kan lages.
 NorwayChartInvalidCSV=Ugyldig CSV, duplikat eller overskredet grense. Hele forhåndsvisningen er avvist.
 NorwayChartReadError=Kunne ikke lese kontoplan eller hovedbok. Ingen forhåndsvisning kan lages.
+
+NorwayChartConfirm=Bekreft oppretting av nye kontoer
+NorwayChartConfirmScope=Bekreft bare etter gjennomgang og med en fersk sikkerhetskopi. Bekreftelsen gjelder denne forhåndsvisningen i ti minutter. Ingen standardkontoer, avgiftskoder eller SAF-T-mapping settes. CSV lagres midlertidig i din serverøkt frem til bekreftelse, ny forhåndsvisning eller utløp.
+NorwayChartBlocked=Import sperret: avklar konflikter, inaktive eller historiske kontonumre først.
+NorwayChartImported=Opprettet %s nye kontoer. Eksisterende kontoer og bilag er bevart.
+NorwayChartChanged=Forhåndsvisningen er utløpt, endret eller mangler gyldig bekreftelse. Lag en ny forhåndsvisning. Ingen kontoer er importert.
+NorwayChartImportFailed=Importen kunne ikke bekreftes. Lag en ny forhåndsvisning og kontroller lagrede kontoer før nytt forsøk.

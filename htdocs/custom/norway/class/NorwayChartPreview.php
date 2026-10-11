@@ -48,7 +48,7 @@ class NorwayChartPreview
         $numbers = array();
         foreach ($rows as $row) { $numbers[] = "'".$db->escape($row['number'])."'"; }
         $in = implode(',', $numbers);
-        $existing = $query("SELECT account_number,label,active FROM ".$prefix."accounting_account WHERE entity=".(int) $entity
+        $existing = $query("SELECT rowid,account_number,label,active FROM ".$prefix."accounting_account WHERE entity=".(int) $entity
             ." AND fk_pcg_version='".$db->escape($chart[0]->pcg_version)."' AND account_number IN (".$in.")");
         $accounts = array();
         foreach ($existing as $account) { $accounts[$account->account_number][] = $account; }
@@ -59,6 +59,7 @@ class NorwayChartPreview
         foreach ($usage as $entry) { $used[$entry->numero_compte] = (int) $entry->total; }
         foreach ($rows as &$row) {
             $matches = $accounts[$row['number']] ?? array();
+            $row['existing_id'] = count($matches) === 1 ? (int) $matches[0]->rowid : 0;
             $row['existing_label'] = count($matches) === 1 ? $matches[0]->label : '';
             $row['usage'] = $used[$row['number']] ?? 0;
             $row['status'] = !$matches ? ($row['usage'] > 0 ? 'Historical' : 'New')

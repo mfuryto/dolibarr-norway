@@ -130,7 +130,7 @@ NorwayAccountingDefaultSettings=Open default accounts
 NorwayAccountingJournalSettings=Open journal settings
 
 NorwayChartPreview=Chart import preview
-NorwayChartScope=Preview only. No accounts, mappings or entries are changed. Account labels are compared exactly. Ledger usage counts each number in the active entity, including previous charts. Product, third-party and line mappings are not inspected. This does not confirm Norwegian chart suitability or SAF-T mapping.
+NorwayChartScope=Preview changes nothing. Confirmed import creates only new accounts; existing accounts, mappings and entries are preserved. Account labels are compared exactly. Ledger usage counts each number in the active entity, including previous charts. Product, third-party and line mappings are not inspected. This does not confirm Norwegian chart suitability or SAF-T mapping.
 NorwayChartFormat=Format norway-chart-csv/1: UTF-8, semicolon, header account_number;label. One account per line, 4–8 digits without a leading zero, label 1–255 bytes. Maximum 500 accounts and 256 KiB. Select an active chart associated with Norway first.
 NorwayChartCSV=Paste CSV
 NorwayChartRun=Show preview
@@ -147,3 +147,10 @@ NorwayChartStatusHistorical=Historical account number – investigate
 NorwayChartInvalidChart=Select an active chart associated with Norway in accounting settings. Preview unavailable.
 NorwayChartInvalidCSV=Invalid CSV, duplicate or exceeded limit. The entire preview was rejected.
 NorwayChartReadError=Could not read chart or ledger. Preview unavailable.
+
+NorwayChartConfirm=Confirm creation of new accounts
+NorwayChartConfirmScope=Confirm only after review and with a recent backup. This preview can be confirmed for ten minutes. No default accounts, tax codes or SAF-T mapping are set. CSV is temporarily held in your server session until confirmation, replacement or expiry.
+NorwayChartBlocked=Import blocked: resolve conflicting, inactive or historical account numbers first.
+NorwayChartImported=Created %s new accounts. Existing accounts and entries were preserved.
+NorwayChartChanged=Preview expired, changed or lacks valid confirmation. Create a new preview. No accounts were imported.
+NorwayChartImportFailed=Import could not be confirmed. Create a new preview and check stored accounts before retrying.
