@@ -31,3 +31,21 @@ Salg til utlandet og salg uten MVA må avklares før bruk av 3020 som standard. 
 Syntetiske integrasjonstester dekker forslag etter full kontoplaninstallering, eksisterende samsvar, manglende standard, isolering mellom foretak/planer, inaktiv konto og endret kontonavn. Automatisk oppsett av standardkontoer, journalvalg, avgiftskoder, utenlandshandel og SAF-T-mapping gjenstår.
 
 Teknisk referanse: [Dolibarr 24.0.1 kilde](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25), særlig `accountancy/admin/defaultaccounts.php`, `core/class/html.formaccounting.class.php` og tabellene `accounting_system`, `accounting_account`, `accounting_journal`.
+
+## Bankkoblinger fra versjon 0.11.0
+
+Kontrollsiden viser hver åpen bank-/kassekonto i aktivt foretak med lenke til kontokortet, bokføringskonto, tilknyttet journal, valuta og eventuell deling av bokføringskonto. Den henter ikke faktiske bankkontonumre, IBAN, eiere eller saldoer. Lukkede konti utelates; historiske bevegelser og avstemming er fortsatt eget arbeid.
+
+Bokføringskontoen må finnes og være aktiv i valgt, aktiv kontoplan for samme foretak. Journalen må tilhøre samme foretak, være aktiv, ha kode og ha natur 4 (bank/kasse). En aktiv salgsjournal kan derfor ikke passere som bankjournal. En kobling til et annet foretaks journal vises som manglende uten å vise journalens kode. Tom konto eller journal vises som ikke angitt. Manglende valgt plan eller inaktiv plan blir ikke godkjent for kontokoblingen. Andre valutaer enn NOK og deling av bokføringskonto mellom flere åpne bank-/kassekonti vises for vurdering, uten å sperre eller endre betalinger.
+
+«Tilgjengelig» bekrefter strukturell kobling, ikke at kontoen har riktig regnskapsmessig klassifisering. Kontoplanimporten setter foreløpig ingen kontokategorier. Deling kan være tilsiktet; kontrollen krever ikke separate journaler eller tvinger alle bankkonti til 1920. En tom bankliste gir en tydelig melding fremfor en grønn status.
+
+### Manuell gjennomgang
+
+1. Åpne journaloppsettet fra kontrollsiden. Kontroller aktive journaler med egen kode og riktig type for salg (2), kjøp (3), bank/kasse (4) og diverse (1). Eksisterende koder kan beholdes; kodene er ikke norske myndighetskoder.
+2. Åpne bank-/kasselisten og det aktuelle kontokortet. Under redigering velges bokføringskonto og bankjournal. 1920 Bankinnskudd er et kontoforslag for en ordinær NOK-bankkonto; flere konti og kasse krever egne vurderinger.
+3. Åpne kontrollsiden igjen og gjennomgå konto-, journal- og valutastatus hver for seg. Produkt-, motparts- og linjekoblinger, MVA-koder og hovedbokoverføring må kontrolleres separat.
+
+Siden oppretter ingen journaler og lagrer ingen bankkoblinger. Den kontrollerer ikke salgs-/kjøpsjournalens konkrete bilagsoverføring eller bankavstemming. Syntetiske transaksjonstester dekker gyldig kobling, tom/manglende/inaktiv konto, feil plan og foretak, inaktiv/feil journaltype, tom journalkode, fremmed journal, lukkede konti, kasse, valuta, deling og databasefeil. Testdata rulles tilbake. Autentisert HTTP-test kontrollerer at bankdelen finnes.
+
+Teknisk grunnlag: Dolibarr 24.0.1, særlig bankkontokortets felt account_number og fk_accountancy_journal samt accountancy/journal/bankjournal.php. Bankjournalens utvalg bruker bankkontoens tilknyttede journal; det er ikke tilstrekkelig at en aktiv bankjournal finnes i registeret.
