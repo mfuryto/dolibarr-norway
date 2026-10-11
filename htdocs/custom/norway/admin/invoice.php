@@ -8,6 +8,7 @@ require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
 llxHeader('', $langs->trans('NorwayInvoiceCheck'));
+print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayInvoiceCheck'), '', 'bill');
 print '<p>'.$langs->trans('NorwayInvoiceScope').'</p>';
 print '<form method="get" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
@@ -42,12 +43,13 @@ if (GETPOSTISSET('id')) {
             }
         }
         print '<p><a href="'.DOL_URL_ROOT.'/compta/facture/card.php?facid='.(int) $invoice->id.'">'.dol_escape_htmltag($invoice->ref).'</a></p>';
-        print '<table class="noborder centpercent">';
+        print '<div class="div-table-responsive"><table class="noborder centpercent">';
         foreach (NorwayInvoiceCheck::evaluate($invoice, $mysoc, $customer, $source) as $key => $status) {
             print '<tr><td>'.$langs->trans('NorwayInvoice'.$key).'</td><td>'.$langs->trans('NorwayInvoice'.$status).'</td></tr>';
         }
-        print '</table>';
+        print '</table></div>';
     }
 }
+print '</div>';
 llxFooter();
 $db->close();

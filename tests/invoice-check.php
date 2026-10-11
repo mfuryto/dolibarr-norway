@@ -3,7 +3,7 @@
 if (PHP_SAPI !== 'cli') { exit(1); }
 require '/var/www/html/custom/norway/class/NorwayInvoiceCheck.php';
 function check($condition, $message) { if (!$condition) { throw new RuntimeException($message); } }
-$seller = (object) array('name'=>'SYNTHETIC ONLY', 'idprof1'=>'123456785', 'address'=>'Synthetic', 'zip'=>'0000', 'town'=>'Synthetic');
+$seller = (object) array('name'=>'SYNTHETIC ONLY', 'country_code'=>'NO', 'idprof1'=>'123456785', 'address'=>'Synthetic', 'zip'=>'0000', 'town'=>'Synthetic');
 $customer = clone $seller;
 $invoice = (object) array('id'=>10, 'entity'=>1, 'socid'=>20, 'type'=>0, 'statut'=>1, 'date'=>1,
     'date_lim_reglement'=>2, 'multicurrency_code'=>'NOK', 'lines'=>array((object) array('desc'=>'Software licence')));
@@ -31,3 +31,20 @@ foreach (array('entity'=>2, 'socid'=>21, 'statut'=>0, 'type'=>2, 'id'=>31) as $f
 $report = NorwayInvoiceCheck::evaluate($invoice,$seller,$customer);
 check($report['CreditSource'] === 'Missing' && $report['DueDate'] === 'Review', 'Credit note without source or due date misclassified');
 print "PASS invoice presence checks, credit source isolation and mandatory manual review\n";
+
+require '/var/www/html/custom/norway/class/NorwayInvoiceValidation.php';
+$seller->idprof1 = '123456785'; $seller->tva_assuj = 1;
+$invoice->multicurrency_code = 'NOK'; $invoice->lines[0]->desc = 'Software';
+$invoice->type = 0; $invoice->date_lim_reglement = 2;
+$invoice->lines[0]->tva_tx = 25; $invoice->total_tva = '25.00000000';
+check(NorwayInvoiceValidation::missing($invoice,$seller,$customer) === array(), 'Complete registered invoice blocked');
+$seller->tva_assuj = 0;
+check(in_array('UnregisteredVAT', NorwayInvoiceValidation::missing($invoice,$seller,$customer), true), 'VAT accepted with registration disabled');
+$invoice->lines[0]->tva_tx = 0; $invoice->total_tva = 0;
+check(NorwayInvoiceValidation::missing($invoice,$seller,$customer) === array(), 'Unregistered zero-VAT invoice rejected');
+$invoice->lines[0]->desc = ''; $invoice->lines[0]->product_label = 'Software';
+check(NorwayInvoiceValidation::missing($invoice,$seller,$customer) === array(), 'Product label not recognised');
+$invoice->type = 2; $invoice->total_tva = -25;
+check(NorwayInvoiceValidation::missing($invoice,$seller,$customer,$source) === array(), 'Historical linked VAT credit blocked after deregistration');
+check(in_array('CreditSource', NorwayInvoiceValidation::missing($invoice,$seller,$customer), true), 'Credit without source accepted');
+print "PASS minimum invoice validation, unregistered VAT guard and historical linked credit exception\n";

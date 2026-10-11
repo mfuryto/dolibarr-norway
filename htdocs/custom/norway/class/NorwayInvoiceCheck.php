@@ -17,7 +17,7 @@ class NorwayInvoiceCheck
         };
         $descriptions = !empty($invoice->lines);
         foreach ($invoice->lines ?? array() as $line) {
-            $descriptions = $descriptions && (self::text($line->desc ?? '') || self::text($line->label ?? ''));
+            $descriptions = $descriptions && (self::text($line->desc ?? '') || self::text($line->label ?? '') || self::text($line->product_label ?? ''));
         }
         $credit = (int) $invoice->type === 2;
         $sourceValid = !$credit || ($source && (int) $source->id === (int) $invoice->fk_facture_source
@@ -25,6 +25,7 @@ class NorwayInvoiceCheck
             && (int) $source->socid === (int) $invoice->socid
             && (int) $source->statut > 0 && (int) $source->type !== 2);
         $present = array(
+            'SellerCountry' => ($seller->country_code ?? '') === 'NO',
             'SellerName' => self::text($seller->name ?? ''),
             'SellerOrganisation' => NorwayReadiness::validOrganisationNumber($seller->idprof1 ?? ''),
             'SellerAddress' => $address($seller),

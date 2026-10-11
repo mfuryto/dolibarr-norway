@@ -8,6 +8,7 @@ if (!$user->admin || !isModEnabled('norway')) {
 require_once __DIR__.'/../class/NorwayReadiness.php';
 $langs->load('norway@norway');
 llxHeader('', $langs->trans('NorwaySetup'));
+print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwaySetup'), '', 'accountancy');
 print '<div class="warning">'.$langs->trans('NorwayPrototypeWarning').'</div>';
 print '<p>'.$langs->trans('NorwayVersionScope').'</p>';
@@ -47,5 +48,6 @@ if (!$result) {
 print '<p><a href="'.dol_buildpath('/norway/admin/audit.php', 1).'">'.$langs->trans('NorwayAudit').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/pricing.php', 1).'">'.$langs->trans('NorwayPricing').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/invoice.php', 1).'">'.$langs->trans('NorwayInvoiceCheck').'</a></p>';
+print '</div>';
 llxFooter();
 $db->close();

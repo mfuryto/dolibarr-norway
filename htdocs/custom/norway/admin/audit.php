@@ -7,6 +7,7 @@ $langs->load('norway@norway');
 $start = GETPOSTISSET('date_start') ? GETPOST('date_start', 'alphanohtml') : date('Y-m-01');
 $end = GETPOSTISSET('date_end') ? GETPOST('date_end', 'alphanohtml') : date('Y-m-t');
 llxHeader('', $langs->trans('NorwayAudit'));
+print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayAudit'), '', 'accountancy');
 print '<div class="warning">'.$langs->trans('NorwayAuditScope').'</div>';
 print '<form method="get" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
@@ -40,5 +41,6 @@ try {
     print '<div class="error">'.$langs->trans('NorwayAuditReadError').'</div>';
 }
 print '<p>'.$langs->trans('NorwayAuditTraceScope').'</p>';
+print '</div>';
 llxFooter();
 $db->close();

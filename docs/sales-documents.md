@@ -124,3 +124,37 @@ brukes dagens foretaksstatus; ikke regenerer historiske dokumenter ukritisk.
 Andre manuelt utfylte felt, som MVA-nummer eller bunntekst, kan fremdeles vise
 MVA og må holdes korrekte av administrator. Avgiftssatser, avgiftsbehandling,
 MVA-rapport, registreringsdato og overgangshistorikk er separate arbeidsområder.
+
+## Minstekontroll ved fakturavalidering (0.4.0)
+
+Når norsk modul er aktiv, avviser standard `BILL_VALIDATE`-trigger fakturaer med
+manglende/ugyldig selgernavn, norsk land, organisasjonskontrollsiffer eller
+adresse, kundeidentitet, fakturadato, betalingsfrist, NOK eller linjebeskrivelse.
+Produktets etikett kan brukes når en linje ikke har egen beskrivelse.
+Kreditnota trenger en validert kildefaktura i samme foretak og for samme kunde;
+betalingsfrist på kreditnota krever separat gjennomgang hvis den mangler.
+
+En ordinær faktura med MVA-beløp eller ikke-null MVA-sats avvises når MVA er
+deaktivert i foretaksoppsettet. Dette aktiverer ikke MVA, velger ingen satser
+og bekrefter ikke registrering. Kreditnota er unntatt denne statuskontrollen
+fordi den kan rette MVA fra en tidligere registrert periode; kobling til
+originalfaktura kreves fortsatt. Riktig sats, beløp og grunnlag mot originalen
+kontrolleres ikke av unntaket og må gjennomgås separat.
+
+Utkast kan fortsatt opprettes og korrigeres. Ved avvisning viser meldingen hvilke
+opplysninger som må kontrolleres, og kjernens transaksjon ruller tilbake status
+og referanse. Eksisterende validerte fakturaer, bokførte data og nummerserier
+omskrives ikke. Dette er en minimumskontroll ved standard validering, ingen
+utsendingssperre for allerede validerte dokumenter eller full norsk
+regnskapsgodkjenning. Levering, MVA-behandling, historikk, dokumentlayout,
+nummerrekkefølge, EHF og rapporter gjenstår som egne kontrollområder.
+
+## Sidebredde (0.4.0)
+
+Modulen laster en versjonert stilfil som lar hovedkolonnen krympe innenfor
+skjermen. Brede lister ruller inne i tabellområdet, mens titler og verktøylinjer
+brytes på smale skjermer. Bankkontoskjemaet og forsidens bokser tilpasses den
+ledige bredden. Modulens egne skjemaer brytes og fakturakontrollen får samme
+rullbare tabellinnpakning som de andre kontrollsidene. Ingen felt skjules av
+rettingen. Standard Eldy-tema er undersøkt; andre temaer og tillegg kan trenge
+egen gjennomgang.

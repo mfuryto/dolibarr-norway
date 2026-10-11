@@ -60,6 +60,9 @@ try {
     if (strpos($body, 'SAF-T 1.40') === false || strpos($body, 'EHF/Peppol') === false) {
         throw new RuntimeException('Unfinished accounting requirements missing');
     }
+    if (strpos($body, '/norway/css/layout-0.4.0.css') === false) {
+        throw new RuntimeException('Module layout stylesheet not loaded');
+    }
     $body = request('/custom/norway/admin/invoice.php?id=0');
     if (strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') === false
         && strpos($body, 'Invoice could not be read in the active entity.') === false) {

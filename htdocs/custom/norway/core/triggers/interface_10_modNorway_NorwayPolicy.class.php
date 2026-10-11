@@ -8,8 +8,8 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
     {
         parent::__construct($db);
         $this->family = 'financial';
-        $this->description = 'Norwegian NOK sales and cheque payment restrictions';
-        $this->version = '0.3.1';
+        $this->description = 'Norwegian invoice validation and payment restrictions';
+        $this->version = '0.4.0';
         $this->picto = 'accountancy';
     }
 
@@ -31,6 +31,17 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
             if (!$res) { $this->error = 'Could not verify payment method'; return -1; }
             $payment = $this->db->fetch_object($res);
             if ($payment && $payment->code === 'CHQ') { $reason = 'NorwayNoCheques'; }
+        }
+        if ($reason === '' && $action === 'BILL_VALIDATE') {
+            require_once __DIR__.'/../../class/NorwayInvoiceValidation.php';
+            $missing = NorwayInvoiceValidation::loadAndCheck($this->db, $object, $GLOBALS['mysoc'], $conf->entity);
+            if ($missing) {
+                $langs->load('norway@norway');
+                $labels = array_map(static function ($key) use ($langs) { return $langs->trans('NorwayInvoice'.$key); }, $missing);
+                $this->error = $langs->trans('NorwayInvoiceValidationFailed', implode(', ', $labels));
+                $object->error = $this->error;
+                return -1;
+            }
         }
         if ($reason !== '') {
             $langs->load('norway@norway');
