@@ -65,7 +65,7 @@ wait_ready
 "${compose[@]}" exec -T web php < scripts/install-chart-profile.php
 "${compose[@]}" exec -T web php < scripts/install-chart-profile.php
 
-"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_TEST_DEFAULTS=1 web php < tests/deployment-smoke.php
+"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_TEST_DEFAULTS=1 -e NORWAY_TEST_JOURNALS=1 web php < tests/deployment-smoke.php
 
 # Exercise backup and recovery using synthetic data, never the interactive volumes.
 cd "$install_root"
@@ -73,7 +73,7 @@ export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.13.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.14.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
 "${compose[@]}" exec -T web php <<'PHPTEST'
 <?php

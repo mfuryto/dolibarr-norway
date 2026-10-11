@@ -27,6 +27,12 @@ if (getenv('NORWAY_EXPECT_EMPTY') === '1') {
         verify((bool) $result && (int) $db->fetch_object($result)->n === 0, 'New installation contains accounting data');
     }
 }
+if (getenv('NORWAY_TEST_JOURNALS') === '1') {
+    verify(getenv('DOLI_COMPANY_NAME') === 'SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY') === '1', 'Synthetic journal guard missing');
+    $banks=$db->query('SELECT COUNT(*) AS n FROM '.$db->prefix().'bank_account');
+    verify($banks && (int)$db->fetch_object($banks)->n===0,'Journal fixture requires no bank accounts');
+    verify((bool)$db->query('DELETE FROM '.$db->prefix().'accounting_journal WHERE entity='.(int)$conf->entity),'Journal fixture reset failed');
+}
 $db->close();
 $cookie = tempnam(sys_get_temp_dir(), 'norway-deploy-http-');
 $curl = curl_init();
@@ -101,6 +107,23 @@ try {
         forwardProxyCookies();
         $defaults = page('/custom/norway/admin/defaults.php');
         verify(strpos($defaults,'Lagringen kunne ikke bekreftes')!==false || strpos($defaults,'Saving could not be confirmed')!==false, 'Defaults confirmation replay accepted');
+    }
+    if (getenv('NORWAY_TEST_JOURNALS') === '1') {
+        $journals=page('/custom/norway/admin/journals.php');
+        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$journals,$journalToken)===1
+            && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$journals,$journalNonce)===1,'Journal confirmation missing');
+        forwardProxyCookies();
+        page('/custom/norway/admin/journals.php',array('action'=>'createjournals','token'=>html_entity_decode($journalToken[1]),'preview_nonce'=>$journalNonce[1]));
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Journal save did not redirect');
+        forwardProxyCookies();
+        $journals=page('/custom/norway/admin/journals.php');
+        verify(strpos($journals,'value="createjournals"')===false
+            && (strpos($journals,'Opprettet 4 journaler')!==false || strpos($journals,'Created 4 journals')!==false),'Confirmed journal creation failed');
+        forwardProxyCookies();
+        page('/custom/norway/admin/journals.php',array('action'=>'createjournals','token'=>html_entity_decode($journalToken[1]),'preview_nonce'=>$journalNonce[1]));
+        forwardProxyCookies();
+        $journals=page('/custom/norway/admin/journals.php');
+        verify(strpos($journals,'Opprettingen kunne ikke bekreftes')!==false || strpos($journals,'Creation could not be confirmed')!==false,'Journal confirmation replay accepted');
     }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {

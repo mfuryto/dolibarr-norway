@@ -240,3 +240,14 @@ NorwayDefaultsConfirm=Bekreft utfylling av tomme valg
 NorwayDefaultsSaved=Lagret %s standardkontovalg. Eksisterende valg er bevart.
 NorwayDefaultsFailed=Lagringen kunne ikke bekreftes. Lag ny forhåndsvisning og kontroller lagrede verdier før nytt forsøk.
 NorwayDefaultsNothing=Ingen tomme valg å fylle. Eksisterende valg er bevart; dette bekrefter ikke at alle kontokoblinger er riktige.
+
+NorwayJournals=Opprett manglende journaltyper
+NorwayJournalsScope=Foreslår bare manglende aktive journaltyper for salg, kjøp, bank og diverse. Eksisterende aktive journaler med kode bevares, uansett navn og kode. Inaktive journaler aktiveres ikke. Forslagskodene er prosjektets standardvalg, ikke myndighetskoder. Ingen bankkontoer, kontokoblinger eller bilag endres.
+NorwayJournalsCreate=Ny journal etter bekreftelse
+NorwayJournalsKeep=Behold eksisterende journaler
+NorwayJournalsBlocked=Oppretting sperret: en foreslått kode finnes allerede uten at journaltypen er dekket. Gjennomgå eksisterende journaler manuelt. Ingen journaler erstattes eller aktiveres.
+NorwayJournalsConfirmScope=Kontroller forslagene og ha en fersk sikkerhetskopi før bekreftelse. Bekreftelsen gjelder denne forhåndsvisningen i ti minutter. Journalregisteret kontrolleres på nytt ved lagring. Bankkonto må fortsatt kobles til riktig bankjournal.
+NorwayJournalsConfirm=Bekreft oppretting av manglende journaler
+NorwayJournalsSaved=Opprettet %s journaler. Eksisterende journaler og bilag er bevart.
+NorwayJournalsFailed=Opprettingen kunne ikke bekreftes. Lag ny forhåndsvisning og kontroller journalregisteret før nytt forsøk.
+NorwayJournalsNothing=Alle fire journaltyper finnes med aktive koder. Dette bekrefter ikke bankkoblinger eller korrekt bilagsoverføring.

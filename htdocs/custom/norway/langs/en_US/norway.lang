@@ -240,3 +240,14 @@ NorwayDefaultsConfirm=Confirm filling empty choices
 NorwayDefaultsSaved=Saved %s account defaults. Existing choices were preserved.
 NorwayDefaultsFailed=Saving could not be confirmed. Create a new preview and check stored values before retrying.
 NorwayDefaultsNothing=No empty choices to fill. Existing choices are preserved; this does not verify that all mappings are correct.
+
+NorwayJournals=Create missing journal types
+NorwayJournalsScope=Proposes only missing active sales, purchase, bank and general journal types. Existing active coded journals are preserved regardless of name or code. Inactive journals are not activated. Proposed codes are project defaults, not authority codes. Bank accounts, mappings and entries are not changed.
+NorwayJournalsCreate=New journal after confirmation
+NorwayJournalsKeep=Preserve existing journals
+NorwayJournalsBlocked=Creation blocked: a proposed code already exists without covering the journal type. Review existing journals manually. No journals are replaced or activated.
+NorwayJournalsConfirmScope=Review proposals and have a recent backup before confirming. Confirmation applies to this preview for ten minutes. The journal register is checked again when saving. Bank accounts must still be linked to their appropriate bank journal.
+NorwayJournalsConfirm=Confirm creation of missing journals
+NorwayJournalsSaved=Created %s journals. Existing journals and entries were preserved.
+NorwayJournalsFailed=Creation could not be confirmed. Create a new preview and check the journal register before retrying.
+NorwayJournalsNothing=All four journal types have active coded journals. This does not verify bank mappings or correct posting.

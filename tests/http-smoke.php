@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $journals = request('/custom/norway/admin/journals.php');
+    if (strpos($journals, 'value="createjournals"') !== false) { throw new RuntimeException('Journal confirmation visible before login'); }
     $defaults = request('/custom/norway/admin/defaults.php');
     if (strpos($defaults, 'value="savedefaults"') !== false) { throw new RuntimeException('Defaults confirmation visible before login'); }
     $wizard = request('/custom/norway/admin/wizard.php');
@@ -133,6 +135,13 @@ try {
             && strpos($defaults, 'No empty choices') === false && strpos($defaults, 'Ingen tomme valg') === false)) {
         throw new RuntimeException('Defaults offers unsafe replacement or failed to render');
     }
+    $journals = request('/custom/norway/admin/journals.php');
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==200 || strpos($journals,'NorwayJournalsScope')!==false
+        || (strpos($journals,'Create missing journal types')===false && strpos($journals,'Opprett manglende journaltyper')===false)) {
+        throw new RuntimeException('Journal preview missing');
+    }
+    request('/custom/norway/admin/journals.php', array('action'=>'createjournals','token'=>'invalid'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Journal CSRF guard missing'); }
     request('/custom/norway/admin/defaults.php', array('action'=>'savedefaults','token'=>'invalid'));
     if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Defaults CSRF guard missing'); }
     $profile = request('/custom/norway/admin/profile.php');
