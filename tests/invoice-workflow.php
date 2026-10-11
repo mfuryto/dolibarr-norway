@@ -131,6 +131,11 @@ foreach (array(array('SYN-SALE-25', 1000, 25, 0), array('SYN-SALE-0', 600, 0, 0)
     insist($invoice->fetch($invoice->id) > 0, 'Invoice reload failed');
     $invoices[] = $invoice;
 }
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayInvoiceAmounts.php';
+foreach ($invoices as $storedInvoice) {
+    insist(NorwayInvoiceAmounts::report($storedInvoice)['status'] === 'Match', 'Stored core invoice/credit totals differ from lines');
+}
+print "PASS stored core sale, zero-VAT invoice and credit note amount comparison\n";
 // Exercise automatic core numbering rather than forced test references.
 insist(preg_match('/^(.*?)([0-9]+)$/D', $invoices[0]->ref, $first) === 1
     && preg_match('/^(.*?)([0-9]+)$/D', $invoices[1]->ref, $second) === 1,

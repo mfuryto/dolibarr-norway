@@ -47,7 +47,7 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.21.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.22.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
 bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og
@@ -70,3 +70,5 @@ Se [kontroll av regnskapsperioder](docs/period-setup.md) for datodekning, overla
 Se [kontroll av MVA-kontokoblinger](docs/vat-setup.md) for satskontoer og standardkontoer som reserve.
 
 Se [eksplisitt MVA-virkningsdato](docs/vat-registration.md) for bekreftet første lagring og datovarsler.
+
+Se [fakturaens MVA-beløp](docs/invoice-amounts.md) for lesekontroll av linjer mot fakturatotaler.

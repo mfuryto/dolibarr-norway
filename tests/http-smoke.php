@@ -227,6 +227,13 @@ try {
     if (strpos($body, '/norway/css/layout-0.4.0.css') === false) {
         throw new RuntimeException('Module layout stylesheet not loaded');
     }
+    $recent = request('/custom/norway/admin/invoice.php');
+    if (!preg_match('/invoice\.php\?id=([0-9]+)/', $recent, $invoiceLink)) { throw new RuntimeException('Synthetic invoice link missing'); }
+    foreach (array('nb_NO'=>'MVA-beløp på faktura', 'en_US'=>'Invoice VAT amounts') as $locale=>$title) {
+        $body = request('/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale);
+        $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
+        if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
+    }
     $body = request('/custom/norway/admin/invoice.php?id=0');
     if (strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') === false
         && strpos($body, 'Invoice could not be read in the active entity.') === false) {

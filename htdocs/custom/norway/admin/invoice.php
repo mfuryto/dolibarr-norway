@@ -5,6 +5,7 @@ if (!$user->admin || !isModEnabled('norway') || !$user->hasRight('facture', 'lir
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
+require_once __DIR__.'/../class/NorwayInvoiceAmounts.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -47,6 +48,20 @@ if (GETPOSTISSET('id')) {
         print '<div class="div-table-responsive"><table class="noborder centpercent">';
         foreach (NorwayInvoiceCheck::evaluate($invoice, $mysoc, $customer, $source) as $key => $status) {
             print '<tr><td>'.$langs->trans('NorwayInvoice'.$key).'</td><td>'.$langs->trans('NorwayInvoice'.$status).'</td></tr>';
+        }
+        print '</table></div>';
+        $amounts = NorwayInvoiceAmounts::report($invoice);
+        $formatAmount = static function ($value) { return $value === null ? '—' : price($value); };
+        print '<h2>'.$langs->trans('NorwayAmounts').'</h2><p>'.$langs->trans('NorwayAmountsScope').'</p>';
+        print '<div class="warning">'.$langs->trans('NorwayAmounts'.$amounts['status']).'</div>';
+        print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+        foreach (array('Line','Rate','Net','VAT','Review') as $column) { print '<th>'.$langs->trans('NorwayAmounts'.$column).'</th>'; }
+        print '</tr>';
+        foreach ($amounts['rows'] as $index => $line) {
+            print '<tr><td>'.($index + 1).'</td><td>'.$formatAmount($line['rate']).'</td><td>'.$formatAmount($line['net']).'</td><td>'.$formatAmount($line['vat']).'</td><td>'.$langs->trans('NorwayAmounts'.$line['status']).'</td></tr>';
+        }
+        foreach (array('Sum'=>array($amounts['net'],$amounts['vat']), 'Header'=>array($amounts['header_net'],$amounts['header_vat'])) as $label=>$values) {
+            print '<tr><td colspan="2">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
         }
         print '</table></div>';
         try {
