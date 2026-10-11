@@ -169,7 +169,7 @@ function token($body)
     insist(preg_match('/name="token"[^>]*value="([^"]+)"/', $body, $match) === 1, 'CSRF token missing');
     return html_entity_decode($match[1]);
 }
-function assertPdfLanguage($path, $title)
+function assertPdfLanguage($path, $title, $expected = true)
 {
     insist(is_file($path), 'PDF missing');
     $pdf = file_get_contents($path);
@@ -186,9 +186,12 @@ function assertPdfLanguage($path, $title)
     $unicode = mb_convert_encoding($title, 'UTF-16BE', 'UTF-8');
     foreach ($parts as $part) {
         if (strpos($part, $title) !== false || strpos($part, $unicode) !== false
-            || stripos($part, bin2hex($unicode)) !== false) { return; }
+            || stripos($part, bin2hex($unicode)) !== false) {
+            insist($expected, 'Unexpected PDF text: '.$title);
+            return;
+        }
     }
-    throw new RuntimeException('Expected PDF text missing: '.$title);
+    if ($expected) { throw new RuntimeException('Expected PDF text missing: '.$title); }
 }
 // Deterministic regression: a valid zlib stream whose final checksum byte is CR.
 $fixture = tempnam(sys_get_temp_dir(), 'norway-pdf-stream-');
@@ -253,15 +256,19 @@ try {
     $body = http($path);
     http($path, $params + array('token' => token($body), 'action' => 'writebookkeeping'));
     insist((int) $db->fetch_object(sql("SELECT COUNT(*) AS n FROM ".$db->prefix()."accounting_bookkeeping WHERE doc_type='customer_invoice' AND entity=".(int) $conf->entity))->n === $count, 'Repeated transfer duplicated postings');
+    $mysoc->idprof1 = '123456785'; // Artificial checksum fixture, no real business.
+    $mysoc->tva_assuj = 1;
+    $identityBefore = array($mysoc->idprof1, $mysoc->tva_assuj, $mysoc->tva_intra);
     foreach (array('nb_NO', 'en_US') as $language) {
         $outputlangs = new Translate('', $conf);
         $outputlangs->setDefaultLang($language);
         $outputlangs->loadLangs(array('main', 'bills', 'propal'));
-        foreach (array($invoices[0], $invoices[3]) as $invoice) {
+        foreach (array($invoices[0], $invoices[2], $invoices[3]) as $invoice) {
             insist($invoice->generateDocument('sponge', $outputlangs) > 0, 'Invoice PDF failed: '.$invoice->error);
             $pdf = $conf->facture->dir_output.'/'.dol_sanitizeFileName($invoice->ref).'/'.dol_sanitizeFileName($invoice->ref).'.pdf';
-            assertPdfLanguage($pdf, $outputlangs->transnoentities('PdfInvoiceTitle'));
+            assertPdfLanguage($pdf, $outputlangs->transnoentities((int) $invoice->type === 2 ? 'InvoiceAvoir' : 'PdfInvoiceTitle'));
             assertPdfLanguage($pdf, $outputlangs->transnoentitiesnoconv('Currency'.$invoice->multicurrency_code));
+            assertPdfLanguage($pdf, '123 456 785 MVA');
         }
         foreach (array('NOK') as $currency) {
             $proposal = new Propal($db);
@@ -279,8 +286,22 @@ try {
             $pdf = $conf->propal->dir_output.'/'.dol_sanitizeFileName($proposal->ref).'/'.dol_sanitizeFileName($proposal->ref).'.pdf';
             assertPdfLanguage($pdf, $outputlangs->transnoentities('PdfCommercialProposalTitle'));
             assertPdfLanguage($pdf, $outputlangs->transnoentitiesnoconv('Currency'.$currency));
+            assertPdfLanguage($pdf, '123 456 785 MVA');
+            $mysoc->tva_assuj = 0;
+            // Document rendering must not invent registration from charged tax.
+            foreach (array(array($invoices[1], 'sponge', $conf->facture->dir_output), array($proposal, 'azur', $conf->propal->dir_output)) as $unregistered) {
+                $document = $unregistered[0];
+                insist($document->generateDocument($unregistered[1], $outputlangs) > 0, 'Unregistered PDF generation failed');
+                $unregisteredPdf = $unregistered[2].'/'.dol_sanitizeFileName($document->ref).'/'.dol_sanitizeFileName($document->ref).'.pdf';
+                assertPdfLanguage($unregisteredPdf, '123 456 785');
+                assertPdfLanguage($unregisteredPdf, '123 456 785 MVA', false);
+            }
+            $mysoc->tva_assuj = 1;
+
         }
     }
+    insist(array($mysoc->idprof1, $mysoc->tva_assuj, $mysoc->tva_intra) === $identityBefore, 'PDF rendering changed company identity');
+    print "PASS Norwegian/English invoice, credit note and proposal PDF organisation/MVA identity\n";
     print "PASS Norwegian/English invoice and proposal PDFs in NOK\n";
     print "PASS core invoice creation, validation, sales-journal transfer, credit note, NOK ledger and repeated transfer\n";
 } finally {

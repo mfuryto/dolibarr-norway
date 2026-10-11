@@ -12,6 +12,7 @@ print load_fiche_titre($langs->trans('NorwaySetup'), '', 'accountancy');
 print '<div class="warning">'.$langs->trans('NorwayPrototypeWarning').'</div>';
 print '<p>'.$langs->trans('NorwayVersionScope').'</p>';
 print '<p>'.$langs->trans('NorwayNextSteps').'</p>';
+print '<p>'.$langs->trans((int) $mysoc->tva_assuj === 1 ? 'NorwayVATEnabled' : 'NorwayVATDisabled').'</p>';
 $rates = array();
 $sql = "SELECT t.taux,t.type_vat,t.active FROM ".$db->prefix()."c_tva t"
     ." INNER JOIN ".$db->prefix()."c_country c ON c.rowid=t.fk_pays"

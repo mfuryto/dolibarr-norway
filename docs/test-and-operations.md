@@ -225,3 +225,13 @@ Feltkontroller dekker feil organisasjonskontrollsiffer, tom HTML-beskrivelse,
 utenlandsk kundeidentifikator og ugyldig kreditnotakobling (kunde, foretak,
 status, dokumenttype og ID). Rapporten må alltid kreve separat gjennomgang av
 nummerering, levering, MVA og faktisk PDF. Ingen opplysninger skrives av kontrollen.
+
+### Organisasjonsnummer i PDF 0.3.1
+
+PDF-integrasjonen prøver ekte sponge-faktura og kreditnota samt azur-tilbud på
+nb_NO/en_US. Med MVA aktivert skal organisasjonsnummer etterfølges av MVA;
+uten aktivert MVA skal modulens linje ha nummeret uten suffiks. Nummer og
+MVA-felter i avsenderobjektet skal være uendret etter generering. Negative
+hook-tester dekker ugyldig kontrollsiffer, mottakeradresse, annen kildetype,
+utenlandsk avsender og annet foretak. Oppdateringskontrollen krever nå
+registrert `pdfgeneration`-hook også ved oppgradering av aktivert modul.
