@@ -11,7 +11,7 @@ og CI med lesetilgang. Prosjektets teknologistakk og GPL-lisens beholdes.
 - `main` er stabil kanal og fortsatt standardgren. Den oppdateres gjennom PR
   fra staging. Ingen direkte push, force-push eller sletting.
 - `staging` er utviklings-/integrasjonsgren. Nye arbeidsgrener starter her.
-  Utviklings-PR-er rettes hit. Den første modulgrunnlags-PR-en er flyttet hit.
+  Utviklings-PR-er rettes hit. Modulgrunnlaget integreres via PR mot staging.
 - En PR til main må komme fra staging i samme repo; CI avviser andre kilder.
 - Begge CI-jobber skal bestå på aktuell revisjon før stabilisering. Kontroller
   også leveransens relevante manuelle akseptansekriterier og dokumenter

@@ -17,3 +17,4 @@
 - Ingen virkelige bilag, personopplysninger, passord eller eksportfiler i Git.
 - Bevar ekstern modularkitektur under htdocs/custom. Ikke endre Dolibarr-kjernen.
 - Les docs/branch-workflow.md for grenflyt og kontroll av serververn.
+- Bruk nøytrale prosjektnavn i grener, commit-metadata og dokumentasjon.
