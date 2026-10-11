@@ -1,0 +1,170 @@
+{
+  "synthetic": true,
+  "profile": "registered",
+  "currency": "NOK",
+  "period": [
+    "2026-01-01",
+    "2026-02-28"
+  ],
+  "documents": [
+    {
+      "id": "SYN-OPEN",
+      "kind": "opening",
+      "date": "2025-12-31",
+      "lines": [
+        {
+          "account": "1920",
+          "debit": 1000000,
+          "credit": 0
+        },
+        {
+          "account": "2050",
+          "debit": 0,
+          "credit": 1000000
+        }
+      ]
+    },
+    {
+      "id": "SYN-INV-1",
+      "kind": "sale",
+      "date": "2026-01-10",
+      "net": 100000,
+      "vat": 25000,
+      "gross": 125000,
+      "tax_code": "3",
+      "lines": [
+        {
+          "account": "1500",
+          "debit": 125000,
+          "credit": 0
+        },
+        {
+          "account": "3000",
+          "debit": 0,
+          "credit": 100000
+        },
+        {
+          "account": "2700",
+          "debit": 0,
+          "credit": 25000
+        }
+      ]
+    },
+    {
+      "id": "SYN-CN-1",
+      "kind": "credit",
+      "date": "2026-01-11",
+      "source": "SYN-INV-1",
+      "net": -20000,
+      "vat": -5000,
+      "gross": -25000,
+      "tax_code": "3",
+      "lines": [
+        {
+          "account": "3000",
+          "debit": 20000,
+          "credit": 0
+        },
+        {
+          "account": "2700",
+          "debit": 5000,
+          "credit": 0
+        },
+        {
+          "account": "1500",
+          "debit": 0,
+          "credit": 25000
+        }
+      ]
+    },
+    {
+      "id": "SYN-PAY-1",
+      "kind": "receipt",
+      "date": "2026-01-12",
+      "source": "SYN-INV-1",
+      "amount": 100000,
+      "lines": [
+        {
+          "account": "1920",
+          "debit": 100000,
+          "credit": 0
+        },
+        {
+          "account": "1500",
+          "debit": 0,
+          "credit": 100000
+        }
+      ]
+    },
+    {
+      "id": "SYN-BUY-1",
+      "kind": "purchase",
+      "date": "2026-01-15",
+      "net": 50000,
+      "vat": 12500,
+      "gross": 62500,
+      "tax_code": "1",
+      "lines": [
+        {
+          "account": "6800",
+          "debit": 50000,
+          "credit": 0
+        },
+        {
+          "account": "2710",
+          "debit": 12500,
+          "credit": 0
+        },
+        {
+          "account": "2400",
+          "debit": 0,
+          "credit": 62500
+        }
+      ]
+    },
+    {
+      "id": "SYN-PAY-2",
+      "kind": "disbursement",
+      "date": "2026-01-16",
+      "source": "SYN-BUY-1",
+      "amount": 62500,
+      "lines": [
+        {
+          "account": "2400",
+          "debit": 62500,
+          "credit": 0
+        },
+        {
+          "account": "1920",
+          "debit": 0,
+          "credit": 62500
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "opening": {
+      "1920": 1000000,
+      "2050": -1000000
+    },
+    "closing": {
+      "1920": 1037500,
+      "2050": -1000000,
+      "1500": 0,
+      "3000": -80000,
+      "2700": -20000,
+      "6800": 50000,
+      "2710": 12500,
+      "2400": 0
+    },
+    "vat_base": {
+      "3": 80000,
+      "1": 50000
+    },
+    "vat": {
+      "3": 20000,
+      "1": 12500
+    },
+    "vat_payable": 7500
+  }
+}
