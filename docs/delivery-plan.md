@@ -92,3 +92,5 @@ Fra 0.28.0 viser fakturakontrollen eksakt medlemskap i en fast offisiell SAF-T-k
 Fra 0.29.0 kan administrator [prøve én datert avgiftsmapping](tax-mapping-preview.md) mot det åpne dokumentets lagrede linjekoder. Valget lagres ikke, og særmarkeringer må avklares. Versjonert mapping med rettbar historikk, bokførte avgiftsmetadata og rapportering gjenstår.
 
 Fra 0.30.0 kan administrator [lagre daterte avgiftskodekoblinger](tax-mappings.md) per foretak og salg/kjøp, med bekreftet retting, avslutning og bevart oppsettshistorikk. Overlapp og foreldede forhåndsvisninger sperres. Koblingene brukes ennå ikke ved bokføring eller rapportering. Kobling til bokførte avgiftsmetadata og historisk rapportversjon gjenstår.
+
+Fra 0.31.0 kan [fakturalinjer sammenlignes mot en uttrykkelig valgt oppsettsversjon](invoice-mapping.md). Senere rettinger/avslutninger tas ikke med i kandidatsammenligningen. Dette oppretter ikke bokført avgiftsgrunnlag eller historisk rapportering.

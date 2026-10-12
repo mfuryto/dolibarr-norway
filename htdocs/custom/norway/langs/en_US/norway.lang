@@ -591,3 +591,17 @@ NorwayMappingsFailed=The change could not be completed. Check company identity, 
 NorwayMappingsHistory=All stored versions
 NorwayMappingsRevision=Revision
 NorwayMappingsUser=User ID
+
+NorwaySavedMappingTitle=Compare with a stored configuration revision
+NorwaySavedMappingScope=Explicitly choose the configuration revision to try. No revision is selected automatically from the invoice date. The comparison uses today's stored invoice lines and invoice date, with sales mappings as they stood in the selected revision. Later corrections and retirements are not applied. A match is only a candidate; this is not posted tax evidence, historical approval or reporting. No data is changed or saved.
+NorwaySavedMappingRevision=Configuration revision
+NorwaySavedMappingChoose=Choose a revision
+NorwaySavedMappingRun=Compare lines
+NorwaySavedMappingSelected=Selected configuration revision
+NorwaySavedMappingRule=Mapping / last correction in selected revision
+NorwaySavedMappingCandidate=Possible match – professional assessment still required
+NorwaySavedMappingNoRule=No sales mapping for this code and invoice date in the selected revision
+NorwaySavedMappingUnknownDate=Invoice date unavailable
+NorwaySavedMappingUnavailable=Stored line code missing or unavailable
+NorwaySavedMappingMarkers=Special or unknown marker – resolve first
+NorwaySavedMappingFailed=Could not compare the configuration. Check company identity and choose an existing revision. Invalid history is not used.

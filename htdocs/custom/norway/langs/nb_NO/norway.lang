@@ -591,3 +591,17 @@ NorwayMappingsFailed=Endringen kunne ikke utføres. Kontroller foretaksidentitet
 NorwayMappingsHistory=Alle lagrede versjoner
 NorwayMappingsRevision=Versjon
 NorwayMappingsUser=Bruker-ID
+
+NorwaySavedMappingTitle=Sammenlign med en lagret oppsettsversjon
+NorwaySavedMappingScope=Velg uttrykkelig hvilken oppsettsversjon som skal prøves. Ingen versjon velges automatisk fra fakturadato. Sammenligningen bruker dagens lagrede fakturalinjer og fakturadato, med salgskoblingene slik de var i valgt oppsettsversjon. Rettinger og avslutninger etter denne versjonen brukes ikke. Et treff er bare en kandidat; dette er ikke bokført avgiftsgrunnlag, historisk godkjenning eller rapportering. Ingen data endres eller lagres.
+NorwaySavedMappingRevision=Oppsettsversjon
+NorwaySavedMappingChoose=Velg versjon
+NorwaySavedMappingRun=Sammenlign linjer
+NorwaySavedMappingSelected=Valgt oppsettsversjon
+NorwaySavedMappingRule=Kobling / siste retting i valgt versjon
+NorwaySavedMappingCandidate=Mulig treff – faglig vurdering gjenstår
+NorwaySavedMappingNoRule=Ingen salgskobling for denne koden og fakturadatoen i valgt versjon
+NorwaySavedMappingUnknownDate=Fakturadato utilgjengelig
+NorwaySavedMappingUnavailable=Lagret linjekode mangler eller er utilgjengelig
+NorwaySavedMappingMarkers=Særmarkering eller ukjent markering – må avklares først
+NorwaySavedMappingFailed=Kunne ikke sammenligne oppsettet. Kontroller foretaksidentitet og velg en eksisterende oppsettsversjon. Ugyldig historikk brukes ikke.
