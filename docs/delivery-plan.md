@@ -111,3 +111,8 @@ Regnskapskoder for varer/tjenester omfattes som standarder; individuelle kort
 beholdes. Bruttosammenligning mellom faktura og kildekoblet hovedbok er lesende.
 Full konto-/MVA-avstemming, årsavslutning og rapportering gjenstår. Se
 [standardkontoer](standard-accounts.md) for faggrunnlag og støttet omfang.
+
+Fra 0.38.0 viser veiviserens steg 6 en samlet, lesende gjennomgang av egne
+regnskapskoder og standardkontoer på varer og tjenester. Kontokandidater,
+handelsfelter, inaktive/manglende kontoer og avkorting synliggjøres. Dette
+endrer ingen kort og simulerer ikke faktisk fakturakontering.

@@ -94,3 +94,28 @@ varer og tjenester uten å vurdere hva de faktisk gjelder.
 Felt og prioritering kontrolleres mot kjernens
 [vare-/tjenestekort](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/product/card.php)
 og [kobling av fakturalinjer](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/customer/index.php).
+
+## Gjennomgang av kodene på kortene
+
+Fra 0.38.0 åpner veiviserens steg 6 en lesende oversikt over kontokandidater
+for varer og tjenester. Oversikten finnes også fra standardkontosiden.
+Den viser kortets egen kode, aktuell standardkonto og om kontokandidaten
+finnes entydig og er aktiv i valgt kontoplan. Vare-/tjenestereferansen åpner
+kortet for vanlig redigering. Ingenting lagres av denne oversikten.
+
+Innenlandsk, eksport og EU-felter kan gjennomgås separat. Valget inspiserer
+lagrede felt; det avgjør ikke hvilken handelstype en faktisk leveranse har.
+EU-feltene er ikke en generell kode for handel mellom Norge og EU. Produkter
+av type vare/tjeneste som er markert for salg eller kjøp i aktivt foretak tas
+med, med bare de relevante retningene. Første 200 kort vises i fast rekkefølge;
+avkorting varsles og betyr at gjennomgangen ikke er fullstendig.
+
+Dette er ikke en simulering av fakturakontering. Vist MVA-sats er dagens
+kortstandard. Fakturalinjer, tredjepartskontoer, forskudd, hooks og andre
+moduler kan gi andre resultater. Tilgjengelig konto bekrefter ikke korrekt
+kostnadstype eller avgiftsbehandling. Egne ugyldige/inaktive koder skjules
+ikke ved å bytte dem ut med en standardkonto i visningen.
+
+Den tekniske prioriteringen følger produkt- og standardfeltene i
+[Dolibarrs getAccountingCodeToBind](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/class/accountingaccount.class.php#L744),
+kontrollert mot den låste kjernen. Ingen nye norske avgiftsregler er innført.
