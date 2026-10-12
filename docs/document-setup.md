@@ -17,3 +17,5 @@ Siden viser:
 Bruk lenkene til faktura-/tilbudsinnstillingene ved mangler. Prøv tilbud, faktura og kreditnota på norsk og engelsk i et separat testmiljø. Kontroller faktiske nummer, identitet, leveranse, avgift, NOK-beløp og betalingsopplysninger på PDF. Ved overgang fra tidligere system må tidligere nummerserier og dokumenter avklares før første utstedelse. Ikke endre en etablert nummerserie bare for å få en annen status på kontrollsiden.
 
 Teknisk grunnlag er kjernens `admin/invoice.php`, `admin/propal.php` og `document_model` i støttet Dolibarr 24.0.1. Tester dekker effektiv PDF-overstyring, modellaktivering per foretak/type, alternative modeller, nummermasker, språk, valuta, databasefeil og innlogget webtilgang på norsk/engelsk. Siden kontrolleres også ved fersk installasjon og gjenoppretting.
+
+Fra 0.35.0 kan [nummerserier og startnummer](numbering.md) forhåndsvises og bekreftes på en egen oppsettsside. Dokumentoppsettkontrollen er fortsatt skrivebeskyttet.

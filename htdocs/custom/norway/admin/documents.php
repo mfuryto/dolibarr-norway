@@ -19,7 +19,7 @@ try {
     print '</table></div>';
 } catch (RuntimeException $error) { print '<div class="error">'.$langs->trans('NorwayDocumentsReadError').'</div>'; }
 print '<p>'.$langs->trans('NorwayDocumentsNext').'</p>';
-foreach (array('/admin/invoice.php'=>'NorwayWizardInvoiceSettings','/admin/propal.php'=>'NorwayWizardProposalSettings','/custom/norway/admin/wizard.php?step=7'=>'NorwayWizard') as $path=>$label) {
+foreach (array('/custom/norway/admin/numbering.php'=>'NorwayNumberingTitle','/admin/invoice.php'=>'NorwayWizardInvoiceSettings','/admin/propal.php'=>'NorwayWizardProposalSettings','/custom/norway/admin/wizard.php?step=7'=>'NorwayWizard') as $path=>$label) {
     print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>';
 }
 print '</div>'; llxFooter(); $db->close();

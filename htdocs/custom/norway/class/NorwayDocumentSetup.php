@@ -13,8 +13,8 @@ class NorwayDocumentSetup
     public static function evaluate($settings,$models,$currency)
     {
         $rows=array();
-        foreach (array('FACTURE_ADDON'=>array('mod_facture_terre','mod_facture_mars','mod_facture_mercure'),
-            'PROPALE_ADDON'=>array('mod_propale_marbre','mod_propale_saphir')) as $key=>$known) {
+        foreach (array('FACTURE_ADDON'=>array('mod_facture_terre','mod_facture_mars','mod_facture_mercure','mod_facture_norway'),
+            'PROPALE_ADDON'=>array('mod_propale_marbre','mod_propale_saphir','mod_propale_norway')) as $key=>$known) {
             $value=trim((string)($settings[$key] ?? ''));
             $name=preg_replace('/\.php$/D','',$value);
             $rows[]=array('key'=>$key,'value'=>$value,'status'=>$value==='' ? 'Missing' : (in_array($name,$known,true) ? 'Configured' : 'Review'));

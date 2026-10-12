@@ -85,7 +85,7 @@ Opprett programvaren som den leveransetypen som faktisk brukes. Angi tydelig bes
 
 ## 7. Faktura, tilbud og kreditnota
 
-**Manuelt:** Velg og prøv maskinell fakturanummerering før første faktura. Ved overgang må nummerserier og tidligere dokumenter avklares; bruk ikke manuell gjenbruk av numre. Velg betalingsvilkår, forfallsberegning, bankopplysninger og dokumentmodell. Prøv norsk og engelsk PDF med syntetiske data i separat testmiljø.
+**Nummerserier:** Velg og bekreft F/K/T og kunde-/leverandørnumre med eventuelle startnumre i [oppsettet for nummerserier](numbering.md). Prøv maskinell nummerering før første faktura. Ved overgang må nummerserier og tidligere dokumenter avklares; bruk ikke manuell gjenbruk av numre. Velg betalingsvilkår, forfallsberegning, bankopplysninger og dokumentmodell. Prøv norsk og engelsk PDF med syntetiske data i separat testmiljø.
 
 Kontroller på det faktiske dokumentet: dato og nummer, selgeridentitet og korrekt MVA-merking, kjøperidentitet, konkret leveransebeskrivelse, leveringstid/-sted der relevant, grunnlag/avgift og totalsum i NOK, betalingsfrist og kreditnotareferanse. Ulike avgiftsbehandlinger må kunne skilles. Foretaksform kan kreve ytterligere registertekst. Se [Altinns fakturakrav](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/faktura-salgsdokumentasjon/).
 
