@@ -27,3 +27,18 @@ amountCheck(NorwayInvoiceAmounts::report($invoice)['status']==='Invalid', 'Missi
 $invoice->lines=array();
 amountCheck(NorwayInvoiceAmounts::report($invoice)['status']==='Missing', 'Missing lines approved');
 print "PASS stored invoice amounts, mixed rates, signed credit totals, rounding and invalid inputs\n";
+$line=(object)array('vat_src_code'=>'SYN<25>', 'info_bits'=>'8');
+$before=serialize($line); $e=NorwayInvoiceAmounts::evidence($line);
+amountCheck($e['code']==='SYN<25>' && $e['code_state']==='Recorded' && $e['flags']===8, 'Stored source evidence changed or inferred');
+amountCheck(serialize($line)===$before,'Evidence inspection mutated input');
+$line->vat_src_code='0'; $line->info_bits=0;
+amountCheck(NorwayInvoiceAmounts::evidence($line)['code_state']==='Recorded','Zero-string code discarded');
+$line->vat_src_code=null;
+amountCheck(NorwayInvoiceAmounts::evidence($line)['code_state']==='Missing','Empty stored code misclassified');
+unset($line->vat_src_code);
+amountCheck(NorwayInvoiceAmounts::evidence($line)['code_state']==='Unknown','Unavailable source code treated as empty');
+foreach (array(null,-1,'abc',1.5,true) as $value) {
+    $line->info_bits=$value;
+    amountCheck(NorwayInvoiceAmounts::evidence($line)['flags']===null,'Invalid marker treated as known');
+}
+print "PASS stored source codes, markers, missing/unavailable evidence and read-only preservation\n";

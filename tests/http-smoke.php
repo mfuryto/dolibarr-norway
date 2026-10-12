@@ -253,11 +253,11 @@ try {
     foreach (array('nb_NO'=>'MVA-beløp på faktura', 'en_US'=>'Invoice VAT amounts') as $locale=>$title) {
         $body = request('/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale);
         $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
-        if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
+        if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false || strpos($text,'NorwayTax')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
     }
     foreach (array('nb_NO'=>'Fakturakontroll for periode','en_US'=>'Invoice checks for a period') as $locale=>$title) {
         $body=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01&lang='.$locale);
-        if (strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)===false || strpos($body,'NorwayBatch')!==false || strpos($body,'invoice.php?id=')===false) { throw new RuntimeException('Invoice period translation/data missing'); }
+        if (strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)===false || strpos($body,'NorwayBatch')!==false || strpos($body,'NorwayTax')!==false || strpos($body,'invoice.php?id=')===false) { throw new RuntimeException('Invoice period translation/data missing'); }
     }
     $body=request('/custom/norway/admin/invoiceperiod.php?start=2026-02-30&end=2026-03-01&lang=en_US');
     if (strpos($body,'Choose valid dates')===false || strpos($body,'invoice.php?id=')!==false) { throw new RuntimeException('Invalid period accepted'); }

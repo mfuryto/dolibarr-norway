@@ -136,6 +136,15 @@ foreach ($invoices as $storedInvoice) {
     insist(NorwayInvoiceAmounts::report($storedInvoice)['status'] === 'Match', 'Stored core invoice/credit totals differ from lines');
 }
 print "PASS stored core sale, zero-VAT invoice and credit note amount comparison\n";
+$evidenceLine=(int)$invoices[0]->lines[0]->id;
+$oldEvidence=$db->fetch_object(sql('SELECT vat_src_code,info_bits FROM '.MAIN_DB_PREFIX.'facturedet WHERE rowid='.$evidenceLine));
+sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET vat_src_code='SYN<25>',info_bits=8 WHERE rowid=".$evidenceLine);
+insist($invoices[0]->fetch($invoices[0]->id)>0,'Evidence invoice reload failed');
+$storedEvidence=NorwayInvoiceAmounts::report($invoices[0])['rows'][0]['evidence'];
+insist($storedEvidence['code']==='SYN<25>' && $storedEvidence['flags']===8,'Core stored source fields not preserved');
+sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET vat_src_code='".$db->escape((string)$oldEvidence->vat_src_code)."',info_bits=".(int)$oldEvidence->info_bits.' WHERE rowid='.$evidenceLine);
+insist($invoices[0]->fetch($invoices[0]->id)>0,'Evidence fixture restore failed');
+print "PASS core invoice line persisted tax source and marker read without dictionary inference\n";
 // Exercise automatic core numbering rather than forced test references.
 insist(preg_match('/^(.*?)([0-9]+)$/D', $invoices[0]->ref, $first) === 1
     && preg_match('/^(.*?)([0-9]+)$/D', $invoices[1]->ref, $second) === 1,

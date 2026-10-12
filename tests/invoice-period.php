@@ -38,6 +38,10 @@ try {
     $r=NorwayInvoicePeriod::report($db,987663,'2099-02-01','2099-02-28');
     periodCheck(count($r['rows'])===4 && !$r['truncated'],'Date boundaries/entity/all statuses wrong');
     $rows=array_column($r['rows'],null,'id');
+    periodCheck($rows[$first]['missing_code']===1 && $rows[$first]['marked']===0, 'Empty stored code not counted');
+    periodSql("UPDATE ".$prefix."facturedet SET vat_src_code='SYN25',info_bits=8 WHERE fk_facture=".$first);
+    $evidenceRows=array_column(NorwayInvoicePeriod::report($db,987663,'2099-02-01','2099-02-28')['rows'],null,'id');
+    periodCheck($evidenceRows[$first]['missing_code']===0 && $evidenceRows[$first]['marked']===1, 'Stored marker/code counts wrong');
     periodCheck($rows[$first]['amount_status']==='Match' && $rows[$first]['status']===0 && $rows[$first]['date']==='2099-02-01','Draft/date missing');
     periodCheck($rows[$credit]['vat']===-25.0 && $rows[$credit]['amount_status']==='Match' && $rows[$credit]['date']==='2099-02-28','Credit signs/date changed');
     periodCheck($rows[$different]['amount_status']==='Different' && $rows[$different]['type']===4,'Proforma/mismatch missing');

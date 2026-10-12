@@ -9,7 +9,7 @@ $start = $run ? GETPOST('start', 'alphanohtml') : dol_print_date(dol_now(), '%Y-
 $end = $run ? GETPOST('end', 'alphanohtml') : dol_print_date(dol_now(), '%Y-%m-%d');
 llxHeader('', $langs->trans('NorwayBatch'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayBatch'), '', 'bill');
-print '<p>'.$langs->trans('NorwayBatchScope').'</p>';
+print '<p>'.$langs->trans('NorwayBatchScope').'</p><p>'.$langs->trans('NorwayTaxEvidenceScope').'</p>';
 print '<form method="get"><label>'.$langs->trans('NorwayBatchStart').' <input type="date" name="start" value="'.dol_escape_htmltag($start).'" required></label><label>'.$langs->trans('NorwayBatchEnd').' <input type="date" name="end" value="'.dol_escape_htmltag($end).'" required></label><button class="button" type="submit">'.$langs->trans('NorwayBatchRun').'</button></form>';
 if ($run) {
     try {
@@ -27,6 +27,9 @@ if ($run) {
                 foreach (array('net','vat') as $amount) { print '<td>'.($row[$amount] === null ? '—' : price($row[$amount])).'</td>'; }
                 print '<td>'.$langs->trans('NorwayBatch'.$row['amount_status']);
                 if ($row['zero']) { print '<br>'.$langs->trans('NorwayBatchZero').': '.$row['zero']; }
+                foreach (array('missing_code'=>'MissingCode','marked'=>'Marked','unknown_evidence'=>'Unknown') as $field=>$label) {
+                    if ($row[$field]) { print '<br>'.$langs->trans('NorwayTaxCount'.$label).': '.$row[$field]; }
+                }
                 if ($row['currency'] !== 'NOK' || $conf->currency !== 'NOK') { print '<br>'.$langs->trans('NorwayBatchCurrency'); }
                 print '</td></tr>';
             }

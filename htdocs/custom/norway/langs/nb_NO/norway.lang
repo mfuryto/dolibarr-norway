@@ -531,3 +531,15 @@ NorwayBatchStatus3=Annullert/avbrutt
 NorwayBatchStatusUnknown=Ukjent status
 NorwayWizardExtraInvoicePeriod=Fakturakontroll for periode
 NorwayWizardExtraInvoicePeriodHelp=Viser lagrede beløp og linjeavvik for fakturaer i en valgt datoperiode. Ingen MVA-melding eller summer på tvers av dokumenter.
+
+NorwayAmountsTaxCode=Lagret avgiftskode
+NorwayAmountsTaxFlags=Særmarkering
+NorwayTaxCodeMissing=Ingen kode lagret
+NorwayTaxCodeUnknown=Opplysning utilgjengelig
+NorwayTaxFlagsUnknown=Opplysning utilgjengelig
+NorwayTaxFlagsNone=Ingen særmarkering
+NorwayTaxFlagsPresent=Kjernemarkering – må vurderes
+NorwayTaxCountMissingCode=Linjer uten lagret avgiftskode
+NorwayTaxCountMarked=Linjer med særmarkering
+NorwayTaxCountUnknown=Linjer med utilgjengelige avgiftsopplysninger
+NorwayTaxEvidenceScope=Avgiftskode og særmarkering leses fra fakturalinjen slik den er lagret. Tom kode betyr bare at ingen kode er lagret; dette er ikke i seg selv bevis på feil. Dagens satsregister brukes ikke til å fylle inn eller forklare historiske koder. Særmarkeringer fra Dolibarr krever gjennomgang; de tolkes ikke som norske avgiftskoder. Dette er ikke historisk MVA-godkjenning, SAF-T-mapping eller MVA-melding.

@@ -37,3 +37,5 @@ Testene bruker syntetiske fakturaer og dekker datoavgrensning, aktive foretak,
 alle statuser, proforma, kreditnotafortegn, avvik, tom periode, dokumenter uten
 linjer/dato, avkorting og lesefeil. Autentisert visning prøves på norsk/engelsk,
 og uautentisert tilgang avvises. Breddekontrollen inkluderer en utfylt periode.
+
+Fra 0.27.0 vises også antall linjer med tom avgiftskode, særmarkering eller utilgjengelig avgiftsopplysning. Se [lagrede avgiftsopplysninger](invoice-tax-evidence.md). Dette er ingen automatisk feilklassifisering eller rapporteringsmapping.

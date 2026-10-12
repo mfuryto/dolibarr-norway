@@ -531,3 +531,15 @@ NorwayBatchStatus3=Abandoned
 NorwayBatchStatusUnknown=Unknown status
 NorwayWizardExtraInvoicePeriod=Invoice checks for a period
 NorwayWizardExtraInvoicePeriodHelp=Shows stored amounts and line differences for invoices in a date range. No VAT return or totals across documents.
+
+NorwayAmountsTaxCode=Stored tax code
+NorwayAmountsTaxFlags=Special marker
+NorwayTaxCodeMissing=No code stored
+NorwayTaxCodeUnknown=Field unavailable
+NorwayTaxFlagsUnknown=Field unavailable
+NorwayTaxFlagsNone=No special marker
+NorwayTaxFlagsPresent=Core marker – review required
+NorwayTaxCountMissingCode=Lines without a stored tax code
+NorwayTaxCountMarked=Lines with special markers
+NorwayTaxCountUnknown=Lines with unavailable tax fields
+NorwayTaxEvidenceScope=Tax codes and special markers are read from the stored invoice line. An empty code only means no code was stored; it does not by itself prove an error. Today’s rate dictionary is not used to fill in or interpret historical codes. Dolibarr special markers require review and are not interpreted as Norwegian tax codes. This is not historical VAT approval, SAF-T mapping or a VAT return.
