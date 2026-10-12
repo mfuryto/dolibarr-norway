@@ -177,6 +177,32 @@ try {
         verify(strpos($registration,'kunne ikke bekreftes')!==false || strpos($registration,'could not be confirmed')!==false,'Registration replay accepted');
         forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>'invalid','confirmed'=>'1'));
         verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Registration CSRF rejection missing');
+        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US');
+        verify(strpos($mapping,'NorwayMappings')===false && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping form missing');
+        $mapInput=array('action'=>'previewmapping','token'=>html_entity_decode($mapToken[1]),'rule'=>'0','source'=>'SYNMAP','target'=>'3','start'=>'2026-01-01','end'=>'2026-12-31','direction'=>'sale');
+        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US',$mapInput);
+        verify(preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$mapping,$mapNonce)===1 && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping confirmation missing');
+        $mapSave=array('action'=>'savemapping','token'=>html_entity_decode($mapToken[1]),'preview_nonce'=>$mapNonce[1],'confirmed'=>'1');
+        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Mapping save did not redirect');
+        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?rule=1&lang=en_US');
+        verify(strpos($mapping,'SYNMAP')!==false && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Stored mapping edit missing');
+        $mapInput['rule']='1'; $mapInput['target']='31'; $mapInput['token']=html_entity_decode($mapToken[1]);
+        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US',$mapInput);
+        verify(strpos($mapping,'Previous version')!==false && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$mapping,$mapNonce)===1 && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping correction preview missing');
+        $mapSave['token']=html_entity_decode($mapToken[1]); $mapSave['preview_nonce']=$mapNonce[1];
+        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Mapping correction did not redirect');
+        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
+        // Core CSRF can reject before the consumed nonce is evaluated. Both paths must preserve history.
+        verify(in_array(curl_getinfo($curl,CURLINFO_HTTP_CODE),array(302,403),true),'Mapping replay was not rejected or redirected');
+        $mapRows=$db->query("SELECT value FROM ".$db->prefix()."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_TAX_MAPPINGS_V1'");
+        $mapRecord=$mapRows ? $db->fetch_object($mapRows) : null;
+        $mapHistory=$mapRecord ? json_decode($mapRecord->value,true) : null;
+        verify(is_array($mapHistory) && count($mapHistory['events'])===2,'Mapping replay changed stored history');
+        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',array('action'=>'savemapping','token'=>'invalid','confirmed'=>'1'));
+        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Mapping CSRF guard bypassed');
+
     }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {

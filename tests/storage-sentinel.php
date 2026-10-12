@@ -10,6 +10,14 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRegistration.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayWizardProgress.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayTaxMappings.php';
+$mappingRows=$db->query("SELECT value FROM ".$db->prefix()."const WHERE entity=".(int)$conf->entity." AND name='".NorwayTaxMappings::SETTING."'");
+$mappingRow=$mappingRows ? $db->fetch_object($mappingRows) : null;
+$mapping=$mappingRow ? json_decode($mappingRow->value,true) : null;
+if (!$mapping) { throw new RuntimeException('Mapping history missing after installation/update/recovery'); }
+$mappingState=NorwayTaxMappings::validate($mapping,$conf->entity,'123456785');
+if (count($mapping['events'])!==2 || $mapping['events'][0]['target']!=='3' || $mapping['events'][1]['target']!=='31'
+    || $mappingState['active'][1]['source']!=='SYNMAP' || $mappingState['active'][1]['target']!=='31') { throw new RuntimeException('Mapping correction history lost'); }
 $registration=NorwayVatRegistration::read($db,$conf->entity,'123456785');
 if ($registration['status']!=='Recorded' || $registration['start']!=='2024-02-29') { throw new RuntimeException('Confirmed registration date lost'); }
 foreach (array('ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400') as $key=>$value) {

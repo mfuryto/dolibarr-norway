@@ -90,3 +90,5 @@ Fra 0.27.0 viser [fakturalinjenes lagrede avgiftsopplysninger](invoice-tax-evide
 Fra 0.28.0 viser fakturakontrollen eksakt medlemskap i en fast offisiell SAF-T-kodereferanse. Lik skrivemåte bekrefter ikke mapping eller avgiftsbehandling. Neste faglige grunnlag er eksplisitt, versjonert mapping med historisk metadata; MVA-melding og SAF-T-eksport gjenstår. Se [avgiftsopplysninger](invoice-tax-evidence.md).
 
 Fra 0.29.0 kan administrator [prøve én datert avgiftsmapping](tax-mapping-preview.md) mot det åpne dokumentets lagrede linjekoder. Valget lagres ikke, og særmarkeringer må avklares. Versjonert mapping med rettbar historikk, bokførte avgiftsmetadata og rapportering gjenstår.
+
+Fra 0.30.0 kan administrator [lagre daterte avgiftskodekoblinger](tax-mappings.md) per foretak og salg/kjøp, med bekreftet retting, avslutning og bevart oppsettshistorikk. Overlapp og foreldede forhåndsvisninger sperres. Koblingene brukes ennå ikke ved bokføring eller rapportering. Kobling til bokførte avgiftsmetadata og historisk rapportversjon gjenstår.
