@@ -11,6 +11,8 @@ require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRegistration.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayWizardProgress.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayTaxMappings.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwaySchema.php';
+NorwaySchema::verify($db);
 $mappingRows=$db->query("SELECT value FROM ".$db->prefix()."const WHERE entity=".(int)$conf->entity." AND name='".NorwayTaxMappings::SETTING."'");
 $mappingRow=$mappingRows ? $db->fetch_object($mappingRows) : null;
 $mapping=$mappingRow ? json_decode($mappingRow->value,true) : null;
@@ -50,6 +52,15 @@ if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     file_put_contents('php://stderr', "Synthetic database/document content was not preserved.\n");
     exit(1);
 }
+$syntheticPayload='{"synthetic":true,"purpose":"backup-restore-only","version":1}';
+$syntheticHash=hash('sha256',$syntheticPayload);
+if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
+    $sql="INSERT INTO ".$db->prefix()."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".(int)$conf->entity.",'synthetic_backup',987665,1,UTC_TIMESTAMP(),".(int)$user->id.",2,'".$db->escape($syntheticPayload)."','".$syntheticHash."')";
+    if (!$db->query($sql)) { throw new RuntimeException('Synthetic evidence backup fixture failed'); }
+}
+$r=$db->query("SELECT payload,payload_sha256 FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".(int)$conf->entity." AND document_type='synthetic_backup' AND fk_document=987665 AND revision=1");
+$evidence=$r ? $db->fetch_object($r) : null;
+if (!$evidence || $evidence->payload!==$syntheticPayload || $evidence->payload_sha256!==$syntheticHash) { throw new RuntimeException('Synthetic evidence payload lost through update/restore'); }
 $work = NorwayWizardProgress::read($db, $conf->entity, 1, '123456785');
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     NorwayWizardProgress::save($db, $conf->entity, 1, 'Waiting', '123456785', $work['fingerprint'], $user);
