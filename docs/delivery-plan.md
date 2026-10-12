@@ -116,3 +116,10 @@ Fra 0.38.0 viser veiviserens steg 6 en samlet, lesende gjennomgang av egne
 regnskapskoder og standardkontoer på varer og tjenester. Kontokandidater,
 handelsfelter, inaktive/manglende kontoer og avkorting synliggjøres. Dette
 endrer ingen kort og simulerer ikke faktisk fakturakontering.
+
+Fra 0.39.0 er alle åtte standardfelt for innenlandske varer/tjenester og
+eksport/import gitt kildebegrunnede, formålsavgrensede alternativer. Eksport
+har egne kontoer fra kontoplanprofilen, og tjenestekjøp dekker flere generelle
+kostnadstyper. Valgene krever fortsatt forhåndsvisning/bekreftelse og opphever
+ikke vern for eksisterende valg eller historikk. MVA-beregning og rapportering
+er ikke utvidet. Se [faggrunnlag og forslag](trade-account-suggestions.md).

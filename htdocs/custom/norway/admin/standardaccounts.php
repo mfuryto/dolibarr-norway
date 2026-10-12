@@ -25,12 +25,13 @@ try {
     $catalog=NorwayStandardAccounts::catalog();
     $labels=array_column(NorwayChartPreview::parse(NorwayChartProfile::csv()),'label','number');
     print '<form method="post" class="norway-standard-accounts"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="previewstandard">';
-    $groups=array('Parties'=>array(),'Trade'=>array(),'Vat'=>array(),'Closing'=>array(),'Other'=>array());
+    $groups=array('Parties'=>array(),'Trade'=>array(),'Foreign'=>array(),'Vat'=>array(),'Closing'=>array(),'Other'=>array());
     foreach ($catalog as $key=>$rule) {
         $group=in_array($key,array('ACCOUNTING_ACCOUNT_CUSTOMER','ACCOUNTING_ACCOUNT_SUPPLIER'),true) ? 'Parties'
             : (in_array($key,array('ACCOUNTING_PRODUCT_SOLD_ACCOUNT','ACCOUNTING_PRODUCT_BUY_ACCOUNT','ACCOUNTING_SERVICE_SOLD_ACCOUNT','ACCOUNTING_SERVICE_BUY_ACCOUNT'),true) ? 'Trade'
+            : (strpos($key,'_EXPORT_ACCOUNT')!==false ? 'Foreign'
             : (in_array($key,array('ACCOUNTING_VAT_SOLD_ACCOUNT','ACCOUNTING_VAT_BUY_ACCOUNT','ACCOUNTING_VAT_PAY_ACCOUNT'),true) ? 'Vat'
-            : (strpos($key,'ACCOUNTING_RESULT_')===0 ? 'Closing' : 'Other')));
+            : (strpos($key,'ACCOUNTING_RESULT_')===0 ? 'Closing' : 'Other'))));
         $groups[$group][$key]=$rule;
     }
     foreach ($groups as $group=>$rules) {
@@ -67,6 +68,7 @@ try {
         } else { print '<p>'.$langs->trans($blocked ? 'NorwayDefaultsBlocked' : 'NorwayDefaultsNothing').'</p>'; }
     }
 } catch (Throwable $error) { unset($_SESSION['norway_standard_accounts']);print '<div class="warning">'.$langs->trans('NorwayDefaultsFailed').'</div>'; }
+print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/trade-account-suggestions.md" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayStandardSources').'</a></p>';
 print '<p>'.$langs->trans('NorwayStandardClosingScope').'</p><p><a href="'.DOL_URL_ROOT.'/accountancy/admin/closure.php">'.$langs->trans('NorwayStandardClosingOpen').'</a></p>';
 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/admin/defaultaccounts.php">'.$langs->trans('NorwayAccountingDefaultSettings').'</a></p><p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=4">'.$langs->trans('NorwayWizard').'</a></p></div>';
 llxFooter();$db->close();

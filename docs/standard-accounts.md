@@ -58,7 +58,7 @@ alle koblingene. Feltlisten kontrolleres mot
 
 Kildene ble kontrollert 2026-10-12. UI-tekstene forklarer formål og forbehold
 for hvert felt. Felt uten kvalifisert standardforslag vises som «må vurderes
-separat». Dette gjelder blant annet utenlandshandel, omvendt avgiftsplikt,
+separat». Dette gjelder blant annet omvendt avgiftsplikt,
 lokale skatter, rabatter, gaver, medlemskap og mellomregning. Ingen norsk
 MVA-konto settes automatisk i kjernens EU- eller lokale skattefelt. Utenlandsk
 leveranse må vurderes etter leveransetype og mottakerforhold.
@@ -119,3 +119,7 @@ ikke ved å bytte dem ut med en standardkonto i visningen.
 Den tekniske prioriteringen følger produkt- og standardfeltene i
 [Dolibarrs getAccountingCodeToBind](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/class/accountingaccount.class.php#L744),
 kontrollert mot den låste kjernen. Ingen nye norske avgiftsregler er innført.
+
+Fra 0.39.0 finnes [generelle kontoforslag for handel](trade-account-suggestions.md)
+med egne import-/eksportvalg og flere kostnadstyper. Forslagene følger
+medfølgende kontoplan og krever eksplisitt valg etter formål og avgiftsbehandling.

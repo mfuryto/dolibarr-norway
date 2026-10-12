@@ -29,13 +29,24 @@
     },
     "ACCOUNTING_PRODUCT_SOLD_ACCOUNT": {
       "options": [
-        "3000"
+        "3000",
+        "3010",
+        "3030",
+        "3040",
+        "3100",
+        "3110",
+        "3200",
+        "3210"
       ],
-      "reason": "DomesticSale"
+      "reason": "GoodsSale"
     },
     "ACCOUNTING_PRODUCT_BUY_ACCOUNT": {
       "options": [
-        "4300"
+        "4000",
+        "4030",
+        "4100",
+        "4300",
+        "4330"
       ],
       "reason": "GoodsBuy"
     },
@@ -44,30 +55,51 @@
       "reason": "Intra"
     },
     "ACCOUNTING_PRODUCT_SOLD_EXPORT_ACCOUNT": {
-      "options": [],
-      "reason": "Foreign"
+      "options": [
+        "3105",
+        "3115"
+      ],
+      "reason": "ForeignGoodsSale"
     },
     "ACCOUNTING_PRODUCT_BUY_INTRA_ACCOUNT": {
       "options": [],
       "reason": "Intra"
     },
     "ACCOUNTING_PRODUCT_BUY_EXPORT_ACCOUNT": {
-      "options": [],
-      "reason": "Foreign"
+      "options": [
+        "4040",
+        "4041",
+        "4042",
+        "4340",
+        "4341",
+        "4342"
+      ],
+      "reason": "ForeignGoodsBuy"
     },
     "ACCOUNTING_SERVICE_SOLD_ACCOUNT": {
       "options": [
-        "3020"
+        "3020",
+        "3050",
+        "3120",
+        "3220"
       ],
-      "reason": "DomesticSale"
+      "reason": "ServiceSale"
     },
     "ACCOUNTING_SERVICE_BUY_ACCOUNT": {
       "options": [
         "4500",
+        "4550",
+        "6300",
+        "6400",
+        "6420",
         "6552",
         "6553",
+        "6700",
+        "6705",
+        "6720",
         "6790",
-        "6795"
+        "6795",
+        "7320"
       ],
       "reason": "ServiceBuy"
     },
@@ -76,16 +108,32 @@
       "reason": "Intra"
     },
     "ACCOUNTING_SERVICE_SOLD_EXPORT_ACCOUNT": {
-      "options": [],
-      "reason": "Foreign"
+      "options": [
+        "3125"
+      ],
+      "reason": "ForeignServiceSale"
     },
     "ACCOUNTING_SERVICE_BUY_INTRA_ACCOUNT": {
       "options": [],
       "reason": "Intra"
     },
     "ACCOUNTING_SERVICE_BUY_EXPORT_ACCOUNT": {
-      "options": [],
-      "reason": "Foreign"
+      "options": [
+        "4500",
+        "4550",
+        "6300",
+        "6400",
+        "6420",
+        "6552",
+        "6553",
+        "6700",
+        "6705",
+        "6720",
+        "6790",
+        "6795",
+        "7320"
+      ],
+      "reason": "ForeignServiceBuy"
     },
     "ACCOUNTING_VAT_SOLD_ACCOUNT": {
       "options": [

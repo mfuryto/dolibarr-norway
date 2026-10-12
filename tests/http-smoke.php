@@ -87,7 +87,7 @@ try {
     if (strpos($codes,'Could not read account codes.')===false) { throw new RuntimeException('Invalid product scope accepted'); }
     foreach (array('nb_NO'=>'Norske standardkontoer under Regnskap','en_US'=>'Norwegian default accounts under Accounting') as $locale=>$title) {
         $standard=request('/custom/norway/admin/standardaccounts.php?lang='.$locale);
-        if (strpos(html_entity_decode($standard,ENT_QUOTES,'UTF-8'),$title)===false || strpos($standard,'NorwayStandard')!==false || strpos($standard,'choices[ACCOUNTING_RESULT_LOSS]')===false || strpos($standard,'accountancy/admin/closure.php')===false) { throw new RuntimeException('Complete translated standard/closing page missing'); }
+        if (strpos(html_entity_decode($standard,ENT_QUOTES,'UTF-8'),$title)===false || strpos($standard,'NorwayStandard')!==false || strpos($standard,'choices[ACCOUNTING_RESULT_LOSS]')===false || strpos($standard,'accountancy/admin/closure.php')===false || strpos($standard,'choices[ACCOUNTING_SERVICE_SOLD_EXPORT_ACCOUNT]')===false || strpos($standard,'choices[ACCOUNTING_SERVICE_BUY_EXPORT_ACCOUNT]')===false || strpos($standard,'trade-account-suggestions.md')===false) { throw new RuntimeException('Complete translated standard/closing page missing'); }
     }
     $standard=request('/custom/norway/admin/standardaccounts.php?lang=en_US');
     if (!preg_match('/name="token" value="([^"]+)"/',$standard,$standardToken)) { throw new RuntimeException('Standard token missing'); }
