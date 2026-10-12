@@ -27,6 +27,7 @@ const {chromium}=require('playwright');
   '/custom/norway/admin/periods.php',
   '/custom/norway/admin/vat.php',
   '/custom/norway/admin/registration.php',
+  '/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01',
   '/custom/norway/admin/journals.php',
   '/admin/company.php',
   '/custom/norway/admin/chart.php',
