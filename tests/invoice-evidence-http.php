@@ -35,6 +35,19 @@ try {
  $save=array('token'=>ehToken($body),'action'=>'saveevidence','id'=>$id,'preview_nonce'=>ehToken($body,'preview_nonce'),'confirmed'=>'1');
  ehPage($path,$save); ehAssert(ehCount()===1,'Confirmed copy missing');
  ehPage($path,$save); ehAssert(ehCount()===1,'HTTP replay created copy');
+ foreach (array('nb_NO'=>'Ingen forskjeller i de undersøkte feltene.','en_US'=>'No differences in the examined fields.') as $lang=>$message) {
+  $body=ehPage($path.'&copy_revision=1&lang='.$lang);
+  ehAssert(strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$message)!==false && strpos($body,'NorwayEvidence')===false,'Comparison translation/result missing');
+ }
+ ehAssert(ehCount()===1,'Comparison created a copy');
+ ehSql('UPDATE '.$p.'facture SET total_ht=total_ht+1 WHERE rowid='.$id.' AND entity='.$entity);
+ try {
+  $body=ehPage($path.'&copy_revision=1&lang=en_US');
+  ehAssert(strpos($body,'Changed value')!==false && strpos($body,'Amount excluding VAT')!==false,'HTTP difference missing');
+ } finally { ehSql('UPDATE '.$p.'facture SET total_ht=total_ht-1 WHERE rowid='.$id.' AND entity='.$entity); }
+ $body=ehPage($path.'&copy_revision=999&lang=en_US');
+ ehAssert(strpos($body,'Comparison could not be completed.')!==false && strpos($body,'No differences in the examined fields.')===false,'Unknown copy presented as equal');
+
  $body=ehPage($path); $body=ehPage($path,array('token'=>ehToken($body),'action'=>'previewevidence','id'=>$id,'mapping_revision'=>1));
  $save['token']=ehToken($body); $save['preview_nonce']=ehToken($body,'preview_nonce');
  ehSql('UPDATE '.$p.'facture SET total_ht=total_ht+1 WHERE rowid='.$id.' AND entity='.$entity);

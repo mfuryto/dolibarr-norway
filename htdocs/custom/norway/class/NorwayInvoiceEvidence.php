@@ -47,7 +47,7 @@ class NorwayInvoiceEvidence
         unset($row); return $rows;
     }
 
-    private static function basis($db,$entity,$id,$revision,$user,$lock)
+    private static function basis($db,$entity,$id,$revision,$user,$lock,$reading=false)
     {
         self::guard($entity,$id,$user); NorwaySchema::verify($db);
         $p=$db->prefix(); $suffix=$lock ? ' FOR UPDATE' : '';
@@ -67,11 +67,55 @@ class NorwayInvoiceEvidence
         $comparison=NorwayInvoiceMapping::report($mapping['record'],$revision,$invoice,substr($header['datef'],0,10));
         $selected=$mapping['record']; $selected['events']=array_slice($selected['events'],0,$revision);
         $history=self::history($db,$entity,$id,$user);
-        if (count($history)>=self::LIMIT) { throw new RuntimeException('Evidence history capacity'); }
+        if (!$reading && count($history)>=self::LIMIT) { throw new RuntimeException('Evidence history capacity'); }
         $basis=array('version'=>1,'entity'=>$entity,'document_type'=>'customer_invoice','document_id'=>$id,'org'=>$selected['org'],
             'invoice'=>$header,'lines'=>$lines,'ledger'=>$ledger,'mapping'=>array('revision'=>$revision,'record'=>$selected,'comparison'=>$comparison));
         $fingerprint=hash('sha256',self::encode(array($basis,$mapping['fingerprint'],array_column($history,'payload_sha256'))));
         return array('basis'=>$basis,'fingerprint'=>$fingerprint,'revision'=>count($history)+1);
+    }
+
+    /** Read-only comparison against the same explicitly selected mapping revision. */
+    public static function compare($db,$entity,$id,$copyRevision,$user)
+    {
+        $history=self::history($db,$entity,$id,$user);
+        if (!is_int($copyRevision) || $copyRevision<1 || !isset($history[$copyRevision-1])) { throw new InvalidArgumentException('Evidence revision'); }
+        $saved=$history[$copyRevision-1]['data'];
+        $current=self::basis($db,$entity,$id,$saved['mapping']['revision'],$user,false,true)['basis'];
+        return self::differences($saved,$current);
+    }
+
+    public static function differences($saved,$current)
+    {
+        foreach (array('version','entity','document_type','document_id') as $key) {
+            if (!array_key_exists($key,$saved) || !array_key_exists($key,$current) || $saved[$key]!==$current[$key]) { throw new InvalidArgumentException('Evidence identity'); }
+        }
+        $changes=array();
+        foreach (array('invoice','lines','ledger') as $group) {
+            if (!isset($saved[$group],$current[$group]) || !is_array($saved[$group]) || !is_array($current[$group])) { throw new InvalidArgumentException('Evidence content'); }
+            $before=$group==='invoice' ? array($saved[$group]) : $saved[$group];
+            $after=$group==='invoice' ? array($current[$group]) : $current[$group];
+            $index=static function ($rows) {
+                $out=array();
+                foreach ($rows as $row) {
+                    if (!is_array($row) || !isset($row['rowid']) || isset($out[(string)$row['rowid']])) { throw new InvalidArgumentException('Evidence row'); }
+                    $out[(string)$row['rowid']]=$row;
+                }
+                return $out;
+            };
+            $before=$index($before); $after=$index($after);
+            $ids=array_unique(array_merge(array_keys($before),array_keys($after))); sort($ids,SORT_NUMERIC);
+            foreach ($ids as $id) {
+                if (!isset($before[$id]) || !isset($after[$id])) {
+                    $changes[]=array('group'=>$group,'id'=>$id,'field'=>'row','status'=>isset($after[$id]) ? 'Added' : 'Removed','before'=>null,'after'=>null);
+                    continue;
+                }
+                foreach (array_unique(array_merge(array_keys($before[$id]),array_keys($after[$id]))) as $field) {
+                    $old=$before[$id][$field] ?? null; $new=$after[$id][$field] ?? null;
+                    if ($old!==$new) { $changes[]=array('group'=>$group,'id'=>$id,'field'=>$field,'status'=>'Changed','before'=>$old,'after'=>$new); }
+                }
+            }
+        }
+        return array('changes'=>$changes,'mapping_changed'=>$saved['mapping']!==$current['mapping'],'organisation_changed'=>$saved['org']!==$current['org']);
     }
 
     public static function preview($db,$entity,$id,$revision,$user)
