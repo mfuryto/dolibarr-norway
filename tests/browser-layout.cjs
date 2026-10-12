@@ -32,6 +32,7 @@ const {chromium}=require('playwright');
   '/custom/norway/admin/defaults.php',
   '/custom/norway/admin/bankdefaults.php',
   '/custom/norway/admin/documents.php',
+  '/custom/norway/admin/numbering.php',
   '/custom/norway/admin/periods.php',
   '/custom/norway/admin/vat.php',
   '/custom/norway/admin/registration.php',
@@ -60,6 +61,15 @@ const {chromium}=require('playwright');
   const result=await page.evaluate(()=>({vw:innerWidth,width:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('#id-right *')].filter(e=>{let r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('.div-table-responsive,.div-table-responsive-no-min')}).slice(0,8).map(e=>({tag:e.tagName,cls:e.className,right:Math.round(e.getBoundingClientRect().right)}))}));
   console.log(JSON.stringify({viewport:width,path:evidencePath,expanded:true,...result}));
   if(result.width>width+1||result.offenders.length)throw Error('Expanded evidence overflow at '+width);
+  const numberingPath='/custom/norway/admin/numbering.php';
+  await page.goto(base+numberingPath);
+  await Promise.all([page.waitForNavigation(),page.locator('button[type=submit]').first().click()]);
+  if(!await page.locator('input[name=preview_nonce]').count())throw Error('Numbering confirmation preview missing');
+  for(const name of ['invoice_start','credit_start','proposal_start','customer_start','supplier_start'])if(!await page.locator('input[name='+name+']').count())throw Error('Numbering series missing: '+name);
+  const numberingResult=await page.evaluate(()=>({vw:innerWidth,width:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('#id-right *')].filter(e=>{let r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('.div-table-responsive,.div-table-responsive-no-min')}).slice(0,8).map(e=>({tag:e.tagName,cls:e.className,right:Math.round(e.getBoundingClientRect().right)}))}));
+  console.log(JSON.stringify({viewport:width,path:numberingPath,preview:true,...numberingResult}));
+  if(numberingResult.width>width+1||numberingResult.offenders.length)throw Error('Numbering preview overflow at '+width);
+
  }
  await browser.close();
 })().catch(e=>{console.error(e.message);process.exit(1)});
