@@ -86,3 +86,5 @@ Fra 0.25.0 foreslår veiviseren hvor arbeidet kan fortsette ut fra eksisterende 
 Fra 0.26.0 samler [fakturakontrollen for periode](invoice-period.md) dokumentstatus, type og beløpsavvik for et datointervall i aktivt foretak. Ingen summer på tvers av dokumenter eller MVA-melding beregnes; avgiftsmetadata, rapportering og hovedboksavstemming gjenstår.
 
 Fra 0.27.0 viser [fakturalinjenes lagrede avgiftsopplysninger](invoice-tax-evidence.md) kildekode og særmarkering uten oppslag i dagens satsregister. Periodeoversikten teller tomme koder og markeringer. Uforanderlig avgiftshistorikk, norsk rapporteringsmapping og MVA-melding gjenstår.
+
+Fra 0.28.0 viser fakturakontrollen eksakt medlemskap i en fast offisiell SAF-T-kodereferanse. Lik skrivemåte bekrefter ikke mapping eller avgiftsbehandling. Neste faglige grunnlag er eksplisitt, versjonert mapping med historisk metadata; MVA-melding og SAF-T-eksport gjenstår. Se [avgiftsopplysninger](invoice-tax-evidence.md).

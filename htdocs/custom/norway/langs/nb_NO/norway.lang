@@ -543,3 +543,10 @@ NorwayTaxCountMissingCode=Linjer uten lagret avgiftskode
 NorwayTaxCountMarked=Linjer med særmarkering
 NorwayTaxCountUnknown=Linjer med utilgjengelige avgiftsopplysninger
 NorwayTaxEvidenceScope=Avgiftskode og særmarkering leses fra fakturalinjen slik den er lagret. Tom kode betyr bare at ingen kode er lagret; dette er ikke i seg selv bevis på feil. Dagens satsregister brukes ikke til å fylle inn eller forklare historiske koder. Særmarkeringer fra Dolibarr krever gjennomgang; de tolkes ikke som norske avgiftskoder. Dette er ikke historisk MVA-godkjenning, SAF-T-mapping eller MVA-melding.
+
+NorwayAmountsTaxReference=SAF-T-referanse
+NorwayTaxReferenceScope=Referansekontrollen sammenligner bare kodens skrivemåte med en fast versjon av den offisielle SAF-T-listen. Lik kode er ikke en bekreftet mapping eller riktig avgiftsbehandling. Lokal kode som ikke finnes i listen kan fortsatt være gyldig, men trenger en eksplisitt mapping. Ingen kode velges ut fra sats eller beløp.
+NorwayTaxReferenceSource=Offisiell kodeliste (fast revisjon)
+NorwayTaxReferenceListed=Finnes i referanselisten – mapping ikke bekreftet
+NorwayTaxReferenceUnlisted=Finnes ikke i referanselisten – lokal mapping må avklares
+NorwayTaxReferenceUnavailable=Ingen tilgjengelig kode å sammenligne

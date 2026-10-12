@@ -543,3 +543,10 @@ NorwayTaxCountMissingCode=Lines without a stored tax code
 NorwayTaxCountMarked=Lines with special markers
 NorwayTaxCountUnknown=Lines with unavailable tax fields
 NorwayTaxEvidenceScope=Tax codes and special markers are read from the stored invoice line. An empty code only means no code was stored; it does not by itself prove an error. Today’s rate dictionary is not used to fill in or interpret historical codes. Dolibarr special markers require review and are not interpreted as Norwegian tax codes. This is not historical VAT approval, SAF-T mapping or a VAT return.
+
+NorwayAmountsTaxReference=SAF-T reference
+NorwayTaxReferenceScope=The reference check only compares the exact code spelling with a fixed version of the official SAF-T list. A matching code does not confirm a mapping or correct tax treatment. A local code absent from the list may still be valid but needs an explicit mapping. No code is selected from a rate or amount.
+NorwayTaxReferenceSource=Official code list (fixed revision)
+NorwayTaxReferenceListed=Present in reference list – mapping unconfirmed
+NorwayTaxReferenceUnlisted=Absent from reference list – local mapping needs review
+NorwayTaxReferenceUnavailable=No available code to compare

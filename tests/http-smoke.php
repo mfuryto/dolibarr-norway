@@ -253,6 +253,7 @@ try {
     foreach (array('nb_NO'=>'MVA-beløp på faktura', 'en_US'=>'Invoice VAT amounts') as $locale=>$title) {
         $body = request('/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale);
         $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
+        if (strpos($body,'05179521e435d82feb0b2d6c89a92a32a4f2d02f')===false || strpos($text, $locale==='nb_NO' ? 'SAF-T-referanse' : 'SAF-T reference')===false) { throw new RuntimeException('Pinned translated tax reference missing'); }
         if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false || strpos($text,'NorwayTax')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
     }
     foreach (array('nb_NO'=>'Fakturakontroll for periode','en_US'=>'Invoice checks for a period') as $locale=>$title) {
