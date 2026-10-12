@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $mapping=request('/custom/norway/admin/taxmappings.php');
+    if (strpos($mapping,'previewmapping')!==false) { throw new RuntimeException('Mapping form exposed before login'); }
     $batch=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01');
     if (strpos($batch,'name="start"')!==false || strpos($batch,'invoice.php?id=')!==false) { throw new RuntimeException('Invoice period exposed before login'); }
     $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
@@ -71,6 +73,10 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    foreach (array('nb_NO'=>'Lagrede koblinger av avgiftskoder','en_US'=>'Stored tax code mappings') as $locale=>$title) {
+        $mapping=request('/custom/norway/admin/taxmappings.php?lang='.$locale);
+        if (strpos(html_entity_decode($mapping,ENT_QUOTES,'UTF-8'),$title)===false || strpos($mapping,'NorwayMappings')!==false) { throw new RuntimeException('Translated mapping page missing'); }
+    }
     foreach (array('nb_NO', 'en_US') as $wizardLanguage) {
         for ($wizardStep = 1; $wizardStep <= 11; $wizardStep++) {
             $wizard = request('/custom/norway/admin/wizard.php?step='.$wizardStep.'&lang='.$wizardLanguage);

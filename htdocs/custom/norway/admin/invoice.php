@@ -72,6 +72,7 @@ if (GETPOSTISSET('id')) {
             print '<tr><td colspan="5">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
         }
         print '</table></div>';
+        print '<p><a href="'.dol_buildpath('/norway/admin/taxmappings.php',1).'">'.$langs->trans('NorwayMappingsTitle').'</a></p>';
         print '<h2>'.$langs->trans('NorwayMappingTitle').'</h2><p>'.$langs->trans('NorwayMappingScope').'</p>';
         $mappingInput=array('source'=>GETPOST('mapsource','none'),'target'=>GETPOST('maptarget','none'),
             'start'=>GETPOST('mapstart','none'),'end'=>GETPOST('mapend','none'));
