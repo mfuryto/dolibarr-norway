@@ -46,11 +46,31 @@ try {
         $_SESSION['norway_evidence']=array('entity'=>(int)$conf->entity,'user'=>(int)$user->id,'id'=>$id,'mapping_revision'=>$revision,'expires'=>time()+600,'nonce'=>$nonce,'fingerprint'=>$preview['fingerprint']);
         print '<form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="saveevidence"><input type="hidden" name="preview_nonce" value="'.$nonce.'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayEvidenceConfirmScope').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayEvidenceSave').'</button></form>';
     }
+    $copyRevision=GETPOSTINT('copy_revision');
+    if ($copyRevision>0) {
+        print '<h2>'.$langs->trans('NorwayEvidenceCompare').' #'.$copyRevision.'</h2><p>'.$langs->trans('NorwayEvidenceCompareScope').'</p>';
+        try {
+            $difference=NorwayInvoiceEvidence::compare($db,(int)$conf->entity,$id,$copyRevision,$user);
+            if (!$difference['changes'] && !$difference['mapping_changed'] && !$difference['organisation_changed']) { print '<p>'.$langs->trans('NorwayEvidenceUnchanged').'</p>'; }
+            else {
+                if ($difference['mapping_changed'] || $difference['organisation_changed']) { print '<div class="warning">'.$langs->trans('NorwayEvidenceContextChanged').'</div>'; }
+                print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                foreach (array('Group','Field','Change','Before','After') as $heading) { print '<th>'.$langs->trans('NorwayEvidence'.$heading).'</th>'; }
+                print '</tr>';
+                foreach ($difference['changes'] as $change) {
+                    $value=static function ($v) { return $v===null ? '—' : dol_escape_htmltag(dol_trunc((string)$v,300)); };
+                    print '<tr><td>'.$langs->trans('NorwayEvidenceGroup'.$change['group']).' #'.(int)$change['id'].'</td><td>'.$langs->trans('NorwayEvidenceField'.$change['field']).'</td><td>'.$langs->trans('NorwayEvidence'.$change['status']).'</td><td>'.$value($change['before']).'</td><td>'.$value($change['after']).'</td></tr>';
+                }
+                print '</table></div>';
+            }
+        } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayEvidenceCompareUnavailable').'</div>'; }
+    }
     print '<h2>'.$langs->trans('NorwayEvidenceHistory').'</h2>';
     $history=NorwayInvoiceEvidence::history($db,(int)$conf->entity,$id,$user);
     if (!$history) { print '<p>'.$langs->trans('NorwayEvidenceEmpty').'</p>'; }
     foreach (array_reverse($history) as $copy) {
         print '<details><summary>'.dol_escape_htmltag('#'.$copy['revision'].' / '.$copy['captured_at'].' UTC / '.$langs->trans('NorwayEvidenceUser').' #'.$copy['fk_user']).'</summary>';
+        print '<p><a href="'.dol_buildpath('/norway/admin/evidence.php',1).'?id='.$id.'&amp;copy_revision='.(int)$copy['revision'].'">'.$langs->trans('NorwayEvidenceCompare').'</a></p>';
         $render($copy['data']); print '</details>';
     }
 } catch (Throwable $error) { print '<div class="error">'.$langs->trans('NorwayEvidenceFailed').'</div>'; }

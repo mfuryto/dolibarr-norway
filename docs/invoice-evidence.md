@@ -67,3 +67,11 @@ Oppdaterings- og gjenopprettingsprøven kontrollerer at lagret tabellinnhold og
 kontrollsum beholdes. Syntetiske integrasjonsprøver dekker også faktisk lagring,
 endret grunnlag, nye revisjoner, skrivefeil og nettleserbekreftelse.
 Dette er teknisk aksept for kontrollkopier, ikke norsk regnskapsfaglig produksjonsaksept.
+
+## Sammenligning fra 0.36.0
+
+Åpne en lagret kontrollkopi og velg **Sammenlign med dagens grunnlag**. Siden viser endrede fakturafelt, linjefelt og hovedboksposter med verdi i kontrollkopien og verdi nå. Nye og fjernede rader vises separat med radreferanse. Lange verdier forkortes i tabellen; kontrollkopiens detaljer beholdes. Radrekkefølge alene er ikke en endring.
+
+Sammenligningen bruker samme uttrykkelig valgte avgiftsoppsettsversjon som kopien, slik at senere oppsettsrevisjoner ikke gir falske historiske endringer. Ingen kopier opprettes eller endres. Foretak, administratorrettigheter, kopiens integritet og dokumenttilhørighet kontrolleres før visning. Ufullstendig eller ustøttet grunnlag gir utilgjengelig sammenligning, ikke «ingen forskjeller».
+
+Dette er sammenligning av de feltene kopien inneholder, ikke betalingshistorikk, PDF-sammenligning, opprinnelig bokføringstidspunkt eller beløps-/MVA-avstemming. Dagens opplysninger leses ved åpning; oppdater siden etter samtidige endringer. Ingen forskjeller godkjenner ikke avgiftsbehandling. Kontroller ved behov originaldokument og øvrig historikk separat.

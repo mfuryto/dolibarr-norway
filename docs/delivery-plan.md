@@ -102,3 +102,5 @@ Fra 0.33.0 finnes et [versjonert lagringsgrunnlag for avgiftsopplysninger](tax-e
 Fra 0.34.0 kan administrator forhåndsvise og bekrefte [kontrollkopier av dagens fakturagrunnlag](invoice-evidence.md), hovedboksreferanser og valgt oppsettsversjon. Ny kopi bevarer tidligere revisjoner, og endringer etter forhåndsvisning sperrer lagring. Dette dokumenterer ikke opprinnelig bokføringstidspunkt og godkjenner ikke MVA-behandling. Neste del er en lesbar sammenligning av lagret kopi mot dagens grunnlag, før videre beløpsavstemming og kvalifisering av rapportering.
 
 Fra 0.35.0 kan [enkle nummerserier](numbering.md) for F/K/T og kunde-/leverandørnumre velges med startnummer, forhåndsvisning og bekreftelse. Eksisterende numre beholdes. Dette er kvalifisert nummereringsfunksjonalitet innen dokumentert omfang, ikke full norsk regnskapsmessig produksjonsaksept.
+
+Fra 0.36.0 kan en lagret kontrollkopi sammenlignes med dagens fakturafelt, linjer og hovedboksposter mot samme oppsettsversjon. Endrede verdier og nye/fjernede rader vises uten lagring. Dette kvalifiserer ikke beløps-/MVA-avstemming eller rapportering, som fortsatt gjenstår.
