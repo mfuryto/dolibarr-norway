@@ -256,6 +256,14 @@ try {
         if (strpos($body,'05179521e435d82feb0b2d6c89a92a32a4f2d02f')===false || strpos($text, $locale==='nb_NO' ? 'SAF-T-referanse' : 'SAF-T reference')===false) { throw new RuntimeException('Pinned translated tax reference missing'); }
         if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false || strpos($text,'NorwayTax')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
     }
+    foreach (array('nb_NO'=>'Prøv en mapping uten å lagre','en_US'=>'Try a mapping without saving') as $locale=>$title) {
+        $base='/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale;
+        $body=request($base.'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31');
+        $text=html_entity_decode($body,ENT_QUOTES,'UTF-8');
+        if (strpos($text,$title)===false || strpos($text,'NorwayMapping')!==false || strpos($body,'name="mapsource"')===false) { throw new RuntimeException('Bilingual mapping preview missing'); }
+        $body=request($base.'&mapping=1&mapsource=LOCAL25&maptarget=03&mapstart=2026-01-01&mapend=2026-12-31');
+        if (strpos($body,$locale==='nb_NO' ? 'Angi en ikke-tom lokal kode' : 'Enter a non-empty local code')===false) { throw new RuntimeException('Invalid mapping plan accepted over HTTP'); }
+    }
     foreach (array('nb_NO'=>'Fakturakontroll for periode','en_US'=>'Invoice checks for a period') as $locale=>$title) {
         $body=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01&lang='.$locale);
         if (strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)===false || strpos($body,'NorwayBatch')!==false || strpos($body,'NorwayTax')!==false || strpos($body,'invoice.php?id=')===false) { throw new RuntimeException('Invoice period translation/data missing'); }

@@ -58,3 +58,39 @@ foreach (array('Missing','Unknown') as $state) {
 }
 amountCheck(NorwayTaxReference::inspect(array('code_state'=>'Recorded','code'=>3))==='Unlisted','Non-string input matched loosely');
 print "PASS exact official reference membership, zero code, local aliases and unavailable sources; no mapping inferred\n";
+
+require '/var/www/html/custom/norway/class/NorwayTaxMappingPreview.php';
+$plan=NorwayTaxMappingPreview::plan('LOCAL25','3','2026-01-01','2026-12-31');
+$e=array('code_state'=>'Recorded','code'=>'LOCAL25','flags'=>0);
+$before=serialize(array($plan,$e));
+foreach (array('2026-01-01','2026-06-30','2026-12-31') as $date) {
+    amountCheck(NorwayTaxMappingPreview::compare($plan,$date,$e)==='Candidate','Inclusive mapping interval failed');
+}
+foreach (array('2025-12-31','2027-01-01') as $date) {
+    amountCheck(NorwayTaxMappingPreview::compare($plan,$date,$e)==='Outside','Mapping leaked outside interval');
+}
+amountCheck(NorwayTaxMappingPreview::compare($plan,'',$e)==='UnknownDate','Missing invoice date accepted');
+amountCheck(serialize(array($plan,$e))===$before,'Preview mutated plan or evidence');
+$e['code']='LOCAL25 ';
+amountCheck(NorwayTaxMappingPreview::compare($plan,'2026-06-30',$e)==='OtherCode','Local code normalised');
+$e['code']='LOCAL25'; $e['flags']=8;
+amountCheck(NorwayTaxMappingPreview::compare($plan,'2026-06-30',$e)==='Markers','Special marker mapped');
+$e['flags']=null;
+amountCheck(NorwayTaxMappingPreview::compare($plan,'2026-06-30',$e)==='Markers','Unavailable marker mapped');
+$e['flags']=0; $e['code_state']='Missing';
+amountCheck(NorwayTaxMappingPreview::compare($plan,'2026-06-30',$e)==='Unavailable','Missing source mapped');
+$zero=NorwayTaxMappingPreview::plan('0','0','2026-01-01','2026-01-01');
+amountCheck(NorwayTaxMappingPreview::compare($zero,'2026-01-01',array('code_state'=>'Recorded','code'=>'0','flags'=>0))==='Candidate','Zero identifier discarded');
+foreach (array(
+ array('','3','2026-01-01','2026-12-31'),array('LOCAL25','03','2026-01-01','2026-12-31'),
+ array('LOCAL25','3','2026-02-30','2026-12-31'),array('LOCAL25','3','2027-01-01','2026-12-31'),
+ array('LOCAL25','3','','2026-12-31'),array(str_repeat('x',11),'3','2026-01-01','2026-12-31'),
+ array("x\n",'3','2026-01-01','2026-12-31'),array(array(),'3','2026-01-01','2026-12-31')
+) as $input) {
+    $blocked=false; try { NorwayTaxMappingPreview::plan(...$input); } catch (InvalidArgumentException $error) { $blocked=true; }
+    amountCheck($blocked,'Invalid candidate plan accepted');
+}
+$plan['target']='INVALID'; $blocked=false;
+try { NorwayTaxMappingPreview::compare($plan,'2026-06-30',$e); } catch (InvalidArgumentException $error) { $blocked=true; }
+amountCheck($blocked,'Forged plan bypassed validation');
+print "PASS unsaved mapping preview, exact local codes, inclusive dates, markers, missing fields and unchanged inputs\n";

@@ -22,7 +22,7 @@ if ($modulePayloadMatches) {
 $checks = array(
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.28.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.29.0',
     'norway_module_payload' => $modulePayloadMatches,
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),
