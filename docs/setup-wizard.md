@@ -62,7 +62,7 @@ fortsatt kan leses. Markeringer arves ikke fra andre foretak eller globale valg.
 - Steg 3: [første MVA-virkningsdato](vat-registration.md) og [MVA-kontokontroll](vat-setup.md).
 - Steg 4: [norsk kontoplan](norwegian-chart.md), [kunde-/leverandørstandard](default-accounts.md), øvrige standardkontoer og [journaler](journal-setup.md).
 - Steg 5: [bekreftet bankkobling](bank-defaults.md) i avgrenset nytt NOK-oppsett.
-- Steg 7: [dokumentoppsett](document-setup.md) og [fakturaens MVA-beløp](invoice-amounts.md).
+- Steg 7: [fakturakontroll for periode](invoice-period.md), [dokumentoppsett](document-setup.md) og [fakturaens MVA-beløp](invoice-amounts.md).
 - Steg 9: [periodediagnostikk](period-setup.md) og separat bilagskontroll.
 
 ## Verifikasjon

@@ -13,6 +13,7 @@ llxHeader('', $langs->trans('NorwayInvoiceCheck'));
 print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayInvoiceCheck'), '', 'bill');
 print '<p>'.$langs->trans('NorwayInvoiceScope').'</p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/invoiceperiod.php',1).'">'.$langs->trans('NorwayBatch').'</a></p>';
 print '<form method="get" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
 print '<label>'.$langs->trans('NorwayInvoiceID').' <input type="number" min="1" name="id" value="'.($id > 0 ? $id : '').'"></label> ';
 print '<input class="button" type="submit" value="'.$langs->trans('NorwayInvoiceRun').'"></form>';

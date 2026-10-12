@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $batch=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01');
+    if (strpos($batch,'name="start"')!==false || strpos($batch,'invoice.php?id=')!==false) { throw new RuntimeException('Invoice period exposed before login'); }
     $bankDefaults = request('/custom/norway/admin/bankdefaults.php');
     if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
     $registration=request('/custom/norway/admin/registration.php');
@@ -253,6 +255,12 @@ try {
         $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
         if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false) { throw new RuntimeException('Translated invoice amount report missing'); }
     }
+    foreach (array('nb_NO'=>'Fakturakontroll for periode','en_US'=>'Invoice checks for a period') as $locale=>$title) {
+        $body=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01&lang='.$locale);
+        if (strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)===false || strpos($body,'NorwayBatch')!==false || strpos($body,'invoice.php?id=')===false) { throw new RuntimeException('Invoice period translation/data missing'); }
+    }
+    $body=request('/custom/norway/admin/invoiceperiod.php?start=2026-02-30&end=2026-03-01&lang=en_US');
+    if (strpos($body,'Choose valid dates')===false || strpos($body,'invoice.php?id=')!==false) { throw new RuntimeException('Invalid period accepted'); }
     $body = request('/custom/norway/admin/invoice.php?id=0');
     if (strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') === false
         && strpos($body, 'Invoice could not be read in the active entity.') === false) {
