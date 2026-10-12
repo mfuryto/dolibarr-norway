@@ -47,7 +47,7 @@ python3 scripts/package.py
 
 Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
 Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.33.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+`dist/module_norway-0.34.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
 
 Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
 bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og
@@ -86,3 +86,5 @@ Se [fakturalinjer mot valgt oppsettsversjon](docs/invoice-mapping.md) for skrive
 Se [fakturaens hovedboksreferanser](docs/invoice-ledger.md) for skrivebeskyttet sporbarhet til lagrede posteringer.
 
 Se [versjonert avgiftslagring](docs/tax-evidence-storage.md) for ny skjema-v1-migrering, driftsvern og avgrensninger.
+
+Se [kontrollkopier av fakturagrunnlag](docs/invoice-evidence.md) for bekreftet lagring av dagens grunnlag og valgt oppsettsversjon.

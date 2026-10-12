@@ -23,6 +23,7 @@ const {chromium}=require('playwright');
   if(await page.locator('th').filter({hasText:/Hovedboks-ID|Bookkeeping ID/}).count()){ledgerPath=candidate+'&ledger=1';break;}
  }
  if(!ledgerPath)throw Error('Posted synthetic invoice missing for ledger table layout');
+ const evidencePath=ledgerPath.replace('/invoice.php','/evidence.php').replace('&ledger=1','');
  for(const width of [1440,1024,768,390]){
   await page.setViewportSize({width,height:900});
   for(const path of ['/index.php','/compta/bank/list.php','/compta/bank/bankentries_list.php?id=1','/compta/bank/transfer.php','/compta/bank/bilan.php','/compta/bank/graph.php?account=1','/compta/bank/card.php?action=create','/societe/list.php','/compta/facture/list.php','/custom/norway/admin/setup.php',
@@ -40,7 +41,7 @@ const {chromium}=require('playwright');
   '/admin/company.php',
   '/custom/norway/admin/chart.php',
   '/custom/norway/admin/profile.php',
-  invoicePath, ledgerPath, invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
+  invoicePath, ledgerPath, evidencePath, invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
    const response = await page.goto(base+path); if(response.status()!==200)throw Error('Page status '+response.status()+': '+path);await page.waitForTimeout(150);
    if(await page.locator('input[name=username]').count())throw Error('Synthetic authentication required: '+path);
    for(const expanded of path.includes('/wizard.php') ? [false,true] : [false]){
@@ -51,6 +52,14 @@ const {chromium}=require('playwright');
    if(!await page.locator('link[href*="layout-0.4.0.css"]').count())throw Error('Stylesheet not registered');
    }
   }
+  await page.goto(base+evidencePath);
+  await page.selectOption('select[name=mapping_revision]','1');
+  await Promise.all([page.waitForNavigation(),page.locator('button[type=submit]').first().click()]);
+  if(!await page.locator('input[name=preview_nonce]').count())throw Error('Evidence preview confirmation missing');
+  await page.locator('.norway-page details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
+  const result=await page.evaluate(()=>({vw:innerWidth,width:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('#id-right *')].filter(e=>{let r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('.div-table-responsive,.div-table-responsive-no-min')}).slice(0,8).map(e=>({tag:e.tagName,cls:e.className,right:Math.round(e.getBoundingClientRect().right)}))}));
+  console.log(JSON.stringify({viewport:width,path:evidencePath,expanded:true,...result}));
+  if(result.width>width+1||result.offenders.length)throw Error('Expanded evidence overflow at '+width);
  }
  await browser.close();
 })().catch(e=>{console.error(e.message);process.exit(1)});

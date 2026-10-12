@@ -1,9 +1,10 @@
 # Versjonert lagringsgrunnlag for avgiftsopplysninger
 
 Modul 0.33.0 innfører skjema v1 for fremtidige avgiftsøyeblikksbilder. Dette er
-lagrings- og migreringsgrunnlag. Ingen fakturaer klassifiseres automatisk, ingen
-historiske avgiftsopplysninger fylles inn og ingen brukerfunksjon for lagring
-av slike øyeblikksbilder aktiveres ennå. MVA-melding og SAF-T-eksport gjenstår.
+lagrings- og migreringsgrunnlag. Fra modul 0.34.0 brukes tabellen også til
+[bekreftede kontrollkopier](invoice-evidence.md). Ingen fakturaer klassifiseres
+automatisk og ingen historiske avgiftsopplysninger fylles inn. MVA-melding og
+SAF-T-eksport gjenstår.
 
 To eksterne modultabeller opprettes med installasjonens tabellprefiks:
 
@@ -14,8 +15,9 @@ To eksterne modultabeller opprettes med installasjonens tabellprefiks:
 Dokumentrevisjon er unik innen foretak/dokumenttype/dokument-ID. Primærnøkkel
 og unik indeks kontrolleres. Tabellen bruker InnoDB. Ingen kjernetabeller endres.
 Tabellenes eksistens bekrefter ikke bokført avgiftsgrunnlag eller sporbarhet.
-Innholdsskjema, skriveflyt, retting, låsing og kobling til faktiske posteringer
-må implementeres og kvalifiseres før tabellen tas i funksjonell bruk.
+Kontrollkopiens innholdsskjema, skriveflyt, låsing og kobling til posteringer
+er avgrenset og dokumentert i veiledningen for kontrollkopier. Dette er ikke
+dokumentasjon av opprinnelig avgiftsbehandling på bokføringstidspunktet.
 SHA-256 er heller ikke et manipulasjonssikkert revisjonsspor alene.
 
 ## Migrering og drift

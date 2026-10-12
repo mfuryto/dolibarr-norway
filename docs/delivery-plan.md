@@ -98,3 +98,5 @@ Fra 0.31.0 kan [fakturalinjer sammenlignes mot en uttrykkelig valgt oppsettsvers
 Fra 0.32.0 viser [hovedboksreferanser for fakturaen](invoice-ledger.md) faktisk lagrede posteringer og referanseavvik. Samlede posteringer skilles fra bestemte fakturalinjer. Dette er ikke beløps-/MVA-avstemming eller bokførte avgiftsmetadata.
 
 Fra 0.33.0 finnes et [versjonert lagringsgrunnlag for avgiftsopplysninger](tax-evidence-storage.md), med migreringshistorikk, strukturelt vern og testet backup/gjenoppretting. Ingen avgiftsøyeblikksbilder opprettes i ordinær drift ennå. Innholdsskjema, bekreftet lagring/retting og kobling til faktiske posteringer må kvalifiseres før rapportering.
+
+Fra 0.34.0 kan administrator forhåndsvise og bekrefte [kontrollkopier av dagens fakturagrunnlag](invoice-evidence.md), hovedboksreferanser og valgt oppsettsversjon. Ny kopi bevarer tidligere revisjoner, og endringer etter forhåndsvisning sperrer lagring. Dette dokumenterer ikke opprinnelig bokføringstidspunkt og godkjenner ikke MVA-behandling. Neste del er en lesbar sammenligning av lagret kopi mot dagens grunnlag, før videre beløpsavstemming og kvalifisering av rapportering.
