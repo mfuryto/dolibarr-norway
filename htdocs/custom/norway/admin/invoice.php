@@ -75,6 +75,7 @@ if (GETPOSTISSET('id')) {
         }
         print '</table></div>';
         if (isModEnabled('accounting') && $user->hasRight('accounting','mouvements','lire')) {
+            print '<p><a href="'.dol_buildpath('/norway/admin/evidence.php',1).'?id='.(int)$invoice->id.'">'.$langs->trans('NorwayEvidenceTitle').'</a></p>';
             print '<details'.(GETPOSTISSET('ledger') ? ' open' : '').'><summary>'.$langs->trans('NorwayInvoiceLedgerTitle').'</summary><p>'.$langs->trans('NorwayInvoiceLedgerScope').'</p>';
             try {
                 $ledger=NorwayInvoiceLedger::report($db,(int)$conf->entity,(int)$invoice->id);

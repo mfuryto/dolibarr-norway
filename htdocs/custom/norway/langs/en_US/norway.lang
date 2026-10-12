@@ -627,3 +627,17 @@ NorwayInvoiceLedgerLinked=Invoice line found – amounts and tax not reconciled
 NorwayInvoiceLedgerOpen=Open bookkeeping
 NorwayInvoiceLedgerFailed=Could not read bookkeeping references. No conclusion about posting is made.
 NorwayInvoiceLedgerMissingAccount=Account number missing
+
+NorwayEvidenceTitle=Invoice evidence control copies
+NorwayEvidenceScope=Copies the currently stored invoice data, bookkeeping references and explicitly selected configuration revision. Validated or paid NOK invoices and credit notes with bookkeeping entries only, up to 200 lines and 200 entries. A copy does not approve bookkeeping or VAT treatment and does not establish the data at the original posting time. Missing codes and discrepancies require separate review.
+NorwayEvidenceSaved=Control copy saved. Earlier copies are preserved.
+NorwayEvidenceFailed=Unable to read or save the control copy. Review access, configuration and supported invoice scope. If the source changed, preview again.
+NorwayEvidenceLines=invoice lines
+NorwayEvidenceLedger=bookkeeping entries
+NorwayEvidenceDetails=All copied data
+NorwayEvidencePreview=Preview control copy
+NorwayEvidenceConfirmScope=I reviewed the copy and understand that it copies the current data without approving accounting treatment. Earlier copies are retained.
+NorwayEvidenceSave=Save control copy
+NorwayEvidenceHistory=Saved control copies
+NorwayEvidenceEmpty=No control copies have been saved for this invoice.
+NorwayEvidenceUser=User

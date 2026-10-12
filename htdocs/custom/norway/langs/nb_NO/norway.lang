@@ -627,3 +627,17 @@ NorwayInvoiceLedgerLinked=Fakturalinjen finnes – beløp og avgift ikke avstemt
 NorwayInvoiceLedgerOpen=Åpne hovedboken
 NorwayInvoiceLedgerFailed=Kunne ikke lese hovedboksreferansene. Ingen konklusjon om bokføring trekkes.
 NorwayInvoiceLedgerMissingAccount=Kontonummer mangler
+
+NorwayEvidenceTitle=Kontrollkopier av fakturagrunnlag
+NorwayEvidenceScope=Kopierer dagens lagrede fakturaopplysninger, hovedboksreferanser og valgt oppsettsversjon. Kun validerte eller betalte fakturaer og kreditnotaer i NOK med hovedboksposter, inntil 200 linjer og 200 hovedboksposter. Kopien er ikke en godkjenning av bokføring eller MVA-behandling og dokumenterer ikke opplysningene på opprinnelig bokføringstidspunkt. Manglende koder og avvik må vurderes særskilt.
+NorwayEvidenceSaved=Kontrollkopien er lagret. Tidligere kopier er bevart.
+NorwayEvidenceFailed=Kunne ikke lese eller lagre kontrollkopien. Kontroller tilgang, oppsett og støttet fakturaomfang. Hvis grunnlaget er endret, lag en ny forhåndsvisning.
+NorwayEvidenceLines=fakturalinjer
+NorwayEvidenceLedger=hovedboksposter
+NorwayEvidenceDetails=Alle kopierte opplysninger
+NorwayEvidencePreview=Forhåndsvis kontrollkopi
+NorwayEvidenceConfirmScope=Jeg har gjennomgått kopien og forstår at dette er en kopi av dagens grunnlag, ikke en regnskapsmessig godkjenning. Tidligere kopier beholdes.
+NorwayEvidenceSave=Lagre kontrollkopi
+NorwayEvidenceHistory=Lagrede kontrollkopier
+NorwayEvidenceEmpty=Ingen kontrollkopier er lagret for denne fakturaen.
+NorwayEvidenceUser=Bruker
