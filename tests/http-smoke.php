@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $productCodes=request('/custom/norway/admin/productaccounts.php');
+    if (strpos($productCodes,'name="scope"')!==false) { throw new RuntimeException('Product codes exposed before login'); }
     $standard=request('/custom/norway/admin/standardaccounts.php');
     if (strpos($standard,'previewstandard')!==false) { throw new RuntimeException('Standard account form exposed before login'); }
     $mapping=request('/custom/norway/admin/taxmappings.php');
@@ -75,6 +77,14 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    foreach (array('nb_NO'=>'Regnskapskoder på varer og tjenester','en_US'=>'Accounting codes on products and services') as $locale=>$title) {
+        foreach (array('domestic','export','intra') as $scope) {
+            $codes=request('/custom/norway/admin/productaccounts.php?lang='.$locale.'&scope='.$scope);
+            if (strpos(html_entity_decode($codes,ENT_QUOTES,'UTF-8'),$title)===false || strpos($codes,'NorwayProductAccounts')!==false || strpos($codes,'Could not read account codes.')!==false || strpos($codes,'Kunne ikke lese kontokodene.')!==false) { throw new RuntimeException('Product code rendering failed'); }
+        }
+    }
+    $codes=request('/custom/norway/admin/productaccounts.php?lang=en_US&scope=invalid');
+    if (strpos($codes,'Could not read account codes.')===false) { throw new RuntimeException('Invalid product scope accepted'); }
     foreach (array('nb_NO'=>'Norske standardkontoer under Regnskap','en_US'=>'Norwegian default accounts under Accounting') as $locale=>$title) {
         $standard=request('/custom/norway/admin/standardaccounts.php?lang='.$locale);
         if (strpos(html_entity_decode($standard,ENT_QUOTES,'UTF-8'),$title)===false || strpos($standard,'NorwayStandard')!==false || strpos($standard,'choices[ACCOUNTING_RESULT_LOSS]')===false || strpos($standard,'accountancy/admin/closure.php')===false) { throw new RuntimeException('Complete translated standard/closing page missing'); }
