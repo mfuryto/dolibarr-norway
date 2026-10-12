@@ -8,6 +8,7 @@ require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
 require_once __DIR__.'/../class/NorwayInvoiceAmounts.php';
 require_once __DIR__.'/../class/NorwayTaxReference.php';
 require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
+require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -73,6 +74,32 @@ if (GETPOSTISSET('id')) {
         }
         print '</table></div>';
         print '<p><a href="'.dol_buildpath('/norway/admin/taxmappings.php',1).'">'.$langs->trans('NorwayMappingsTitle').'</a></p>';
+        $selectedRevision=GETPOSTINT('mapping_revision');
+        print '<details'.(GETPOSTISSET('mapping_revision') ? ' open' : '').'><summary>'.$langs->trans('NorwaySavedMappingTitle').'</summary><p>'.$langs->trans('NorwaySavedMappingScope').'</p>';
+        try {
+            $mappingState=NorwayTaxMappings::read($db,$conf->entity);
+            if (!$mappingState['record']['events']) { print '<p>'.$langs->trans('NorwayMappingsEmpty').'</p>'; }
+            else {
+                print '<form method="get"><input type="hidden" name="id" value="'.(int)$invoice->id.'"><p><label>'.$langs->trans('NorwaySavedMappingRevision').' <select name="mapping_revision" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+                foreach ($mappingState['record']['events'] as $event) {
+                    print '<option value="'.(int)$event['revision'].'"'.($selectedRevision===$event['revision'] ? ' selected' : '').'>'.dol_escape_htmltag('#'.$event['revision'].' / '.$event['at']).'</option>';
+                }
+                print '</select></label></p><button class="button" type="submit">'.$langs->trans('NorwaySavedMappingRun').'</button></form>';
+                if (GETPOSTISSET('mapping_revision')) {
+                    $date=empty($invoice->date) ? '' : dol_print_date($invoice->date,'%Y-%m-%d');
+                    $comparison=NorwayInvoiceMapping::report($mappingState['record'],$selectedRevision,$invoice,$date);
+                    print '<p>'.$langs->trans('NorwaySavedMappingSelected').' #'.(int)$comparison['revision'].' / '.dol_escape_htmltag($comparison['at']).'</p>';
+                    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayAmountsLine').'</th><th>'.$langs->trans('NorwayMappingResult').'</th><th>'.$langs->trans('NorwaySavedMappingRule').'</th><th>'.$langs->trans('NorwayMappingTarget').'</th></tr>';
+                    foreach ($comparison['rows'] as $index=>$row) {
+                        $rule=$row['rule'];
+                        print '<tr><td>'.($index+1).'</td><td>'.$langs->trans('NorwaySavedMapping'.$row['status']).'</td><td>'.($rule ? '#'.(int)$rule['id'].' / '.$langs->trans('NorwayMappingsRevision').' '.(int)$rule['revision'] : '—').'</td><td>'.($rule ? dol_escape_htmltag($rule['target']) : '—').'</td></tr>';
+                    }
+                    if (!$comparison['rows']) { print '<tr><td colspan="4">'.$langs->trans('NorwayMappingNoLines').'</td></tr>'; }
+                    print '</table></div>';
+                }
+            }
+        } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwaySavedMappingFailed').'</div>'; }
+        print '</details>';
         print '<h2>'.$langs->trans('NorwayMappingTitle').'</h2><p>'.$langs->trans('NorwayMappingScope').'</p>';
         $mappingInput=array('source'=>GETPOST('mapsource','none'),'target'=>GETPOST('maptarget','none'),
             'start'=>GETPOST('mapstart','none'),'end'=>GETPOST('mapend','none'));

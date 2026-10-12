@@ -3,6 +3,7 @@
 if (PHP_SAPI!=='cli' || getenv('NORWAY_SYNTHETIC_TEST')!=='1' || getenv('DOLI_DB_NAME')!=='norway_test') { exit(1); }
 require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayTaxMappings.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayInvoiceMapping.php';
 function tmAssert($ok,$message) { if (!$ok) { throw new RuntimeException($message); } }
 function tmBlocked($call,$message) {
     $blocked=false; try { $call(); } catch (InvalidArgumentException | RuntimeException $error) { $blocked=true; }
@@ -44,6 +45,33 @@ try {
  $retired=NorwayTaxMappings::read($db,$entity);
  tmAssert($retired['active'][1]['retire'] && count($retired['record']['events'])===5,'Retirement lost history');
  tmBlocked(fn()=>NorwayTaxMappings::preview($db,$entity,$retire),'Retired rule reopened');
+ $invoice=(object)array('entity'=>$entity,'type'=>2,'lines'=>array((object)array('vat_src_code'=>'LOCAL25','info_bits'=>0,'total_ht'=>-100,'total_tva'=>-25)));
+ $before=serialize(array($retired['record'],$invoice));
+ foreach (array(1=>'3',3=>'3',4=>'31') as $revision=>$target) {
+  $comparison=NorwayInvoiceMapping::report($retired['record'],$revision,$invoice,'2026-01-01');
+  tmAssert($comparison['rows'][0]['status']==='Candidate' && $comparison['rows'][0]['rule']['target']===$target,'Selected history revision not respected');
+ }
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],5,$invoice,'2026-01-01')['rows'][0]['status']==='NoRule','Retired sale or purchase rule applied');
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-06-30')['rows'][0]['status']==='Candidate','Inclusive end boundary lost');
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-07-01')['rows'][0]['status']==='NoRule','Rule leaked outside interval');
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'')['rows'][0]['status']==='UnknownDate','Unknown date mapped');
+ tmAssert(serialize(array($retired['record'],$invoice))===$before,'History comparison mutated input');
+ $invoice->lines[0]->info_bits=8;
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-01-01')['rows'][0]['status']==='Markers','Flagged line mapped');
+ $invoice->lines[0]->info_bits=0; $invoice->lines[0]->vat_src_code='LOCAL25 ';
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-01-01')['rows'][0]['status']==='NoRule','Local code normalised');
+ unset($invoice->lines[0]->vat_src_code);
+ tmAssert(NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-01-01')['rows'][0]['status']==='Unavailable','Missing line code mapped');
+ foreach (array(0,6,-1,'1') as $invalidRevision) {
+  tmBlocked(fn()=>NorwayInvoiceMapping::report($retired['record'],$invalidRevision,$invoice,'2026-01-01'),'Invalid revision accepted');
+ }
+ $invoice->entity=$entity+1;
+ tmBlocked(fn()=>NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-01-01'),'Foreign invoice accepted');
+ $invoice->entity=$entity; $corrupt=$retired['record']; $corrupt['events'][4]['target']='INVALID';
+ tmBlocked(fn()=>NorwayInvoiceMapping::report($corrupt,1,$invoice,'2026-01-01'),'Invalid later history ignored');
+ $invoice->lines=array();
+ tmAssert(!NorwayInvoiceMapping::report($retired['record'],1,$invoice,'2026-01-01')['rows'],'Empty invoice invented rows');
+ print "PASS explicit mapping revision comparison, correction/retirement boundaries, sale-only rules, source markers, identity scope and read-only preservation\n";
  $f=NorwayTaxMappings::preview($db,$entity,$input); tmAssert($f['input']['id']===4,'ID reused after retirement');
  // A failed history write must preserve history even within an enclosing transaction.
  $failing=new class($db) {
