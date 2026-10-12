@@ -19,4 +19,5 @@ try {
     print '</table></div>';
 } catch (RuntimeException $error) { print '<div class="error">'.$langs->trans('NorwayVatSetupReadError').'</div>'; }
 foreach (array('/admin/dict.php?id=10'=>'NorwayVatSetupDictionary','/accountancy/admin/defaultaccounts.php'=>'NorwayAccountingDefaultSettings','/custom/norway/admin/wizard.php?step=3'=>'NorwayWizard') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
+print '<p><a href="'.dol_buildpath('/norway/admin/vataccounts.php',1).'">'.$langs->trans('NorwayVatAccountsTitle').'</a></p>';
 print '</div>'; llxFooter(); $db->close();

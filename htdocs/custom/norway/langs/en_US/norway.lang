@@ -858,3 +858,10 @@ NorwayStandardReasonForeignGoodsBuy=4040/4041/4042 cover foreign raw-material pu
 NorwayStandardReasonForeignServiceBuy=Choose the expense type as for domestic service purchases. Supplier country alone does not determine the expense account. Remotely supplied services may require reverse charge; deduction rights and Norwegian/foreign VAT must be assessed separately. This choice does not calculate or report import VAT.
 NorwayStandardGroupForeign=Exports and imports
 NorwayStandardSources=Sources and account suggestions
+
+NorwayVatAccountsTitle=Fill VAT accounts for sales and purchases
+NorwayVatAccountsScope=Preview empty account fields on active ordinary Norwegian VAT rows without a special code: 25% → 2700/2710, 15% → 2701/2711 and 12% → 2703/2713 (sales/purchases) in the shipped chart. Requires an unused setup without validated invoices or ledger history. Existing choices are preserved. Default accounts and rate accounts are separate settings; saving defaults does not fill these fields.
+NorwayVatAccountsSeparate=No rates are created, activated or changed. Historical rates such as 8 and 14%, zero rates, coded and special rows, imports and reverse charge require separate review. Accounts do not determine registration, deduction rights, tax treatment or reporting.
+NorwayVatAccountsConfirm=I confirm that rows to fill concern ordinary domestic taxable sales/purchases and that the displayed accounts are correct. Deduction rights and the correct rate must be assessed for each transaction.
+NorwayWizardTaskVatAccounts=Fill sales and purchase accounts on VAT rates
+NorwayWizardTaskVatAccountsHelp=Default accounts do not fill the rate rows. Preview ordinary Norwegian rate accounts and confirm only in an unused accounting setup. Existing choices and special cases are preserved.

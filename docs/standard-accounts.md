@@ -123,3 +123,7 @@ kontrollert mot den låste kjernen. Ingen nye norske avgiftsregler er innført.
 Fra 0.39.0 finnes [generelle kontoforslag for handel](trade-account-suggestions.md)
 med egne import-/eksportvalg og flere kostnadstyper. Forslagene følger
 medfølgende kontoplan og krever eksplisitt valg etter formål og avgiftsbehandling.
+
+Fra 0.40.0 kan tomme salg- og kjøpskontoer på ordinære norske MVA-satser
+fylles separat med forhåndsvisning og bekreftelse. Standardkontoene fyller
+ikke satsradens egne felt. Se [MVA-kontoer](vat-accounts.md) for bruk og omfang.

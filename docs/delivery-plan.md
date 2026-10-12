@@ -123,3 +123,10 @@ har egne kontoer fra kontoplanprofilen, og tjenestekjøp dekker flere generelle
 kostnadstyper. Valgene krever fortsatt forhåndsvisning/bekreftelse og opphever
 ikke vern for eksisterende valg eller historikk. MVA-beregning og rapportering
 er ikke utvidet. Se [faggrunnlag og forslag](trade-account-suggestions.md).
+
+Fra 0.40.0 leveres bekreftet utfylling av tomme kontokoder på ordinære norske
+MVA-satser (25/15/12 %) i et nytt bokføringsoppsett. Eksisterende valg bevares;
+nullsats, historiske og spesielle rader, import og omvendt avgiftsplikt holdes
+utenfor. Ingen satser eller bilag endres. Se [MVA-kontoer](vat-accounts.md).
+Teknisk aksept omfatter lagring, transaksjonsvern og kontooppsett; norsk
+MVA-beregning, fradragsvurdering og rapportering er fortsatt ikke godkjent.

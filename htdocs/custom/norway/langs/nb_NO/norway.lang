@@ -858,3 +858,10 @@ NorwayStandardReasonForeignGoodsBuy=4040/4041/4042 gjelder utenlandske råvarekj
 NorwayStandardReasonForeignServiceBuy=Velg kostnadstype som ved innenlandske tjenestekjøp. Leverandørlandet alene avgjør ikke kostnadskontoen. Fjernleverbare tjenester kan kreve omvendt avgiftsplikt; fradragsrett og norsk/utenlandsk MVA må avklares separat. Valget her beregner eller rapporterer ikke import-MVA.
 NorwayStandardGroupForeign=Eksport og import
 NorwayStandardSources=Faggrunnlag og kontoforslag
+
+NorwayVatAccountsTitle=Fyll MVA-kontoer for salg og innkjøp
+NorwayVatAccountsScope=Forhåndsvisning for tomme kontofelt på aktive, ordinære norske satsrader uten særkode: 25 % → 2700/2710, 15 % → 2701/2711 og 12 % → 2703/2713 (salg/kjøp) i den medfølgende kontoplanen. Krever nytt bokføringsoppsett uten validerte fakturaer eller hovedbokhistorikk. Eksisterende valg bevares. Standardkontoer og satskontoer er separate innstillinger; lagring av standardkontoene fyller ikke disse feltene.
+NorwayVatAccountsSeparate=Ingen satser opprettes, aktiveres eller endres. Historiske satser som 8 og 14 %, nullsats, kodede og spesielle satsrader, import og omvendt avgiftsplikt må gjennomgås separat. Kontoene avgjør ikke registrering, fradragsrett, avgiftsbehandling eller rapportering.
+NorwayVatAccountsConfirm=Jeg bekrefter at radene som skal fylles gjelder ordinær innenlandsk avgiftspliktig omsetning/innkjøp, og at de viste kontoene er riktige. Fradragsrett og riktig sats vurderes for hver transaksjon.
+NorwayWizardTaskVatAccounts=Fyll salg- og kjøpskonto på MVA-satsene
+NorwayWizardTaskVatAccountsHelp=Standardkontoer fyller ikke satsradens egne felt. Forhåndsvis kontoer for ordinære norske satser og bekreft bare i et nytt bokføringsoppsett. Eksisterende valg og særtilfeller bevares.
