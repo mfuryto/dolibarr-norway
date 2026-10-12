@@ -27,6 +27,8 @@ function request($path, $post = null)
     return $body;
 }
 try {
+    $standard=request('/custom/norway/admin/standardaccounts.php');
+    if (strpos($standard,'previewstandard')!==false) { throw new RuntimeException('Standard account form exposed before login'); }
     $mapping=request('/custom/norway/admin/taxmappings.php');
     if (strpos($mapping,'previewmapping')!==false) { throw new RuntimeException('Mapping form exposed before login'); }
     $batch=request('/custom/norway/admin/invoiceperiod.php?start=2026-10-01&end=2026-10-01');
@@ -73,6 +75,16 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    foreach (array('nb_NO'=>'Norske standardkontoer under Regnskap','en_US'=>'Norwegian default accounts under Accounting') as $locale=>$title) {
+        $standard=request('/custom/norway/admin/standardaccounts.php?lang='.$locale);
+        if (strpos(html_entity_decode($standard,ENT_QUOTES,'UTF-8'),$title)===false || strpos($standard,'NorwayStandard')!==false || strpos($standard,'choices[ACCOUNTING_RESULT_LOSS]')===false || strpos($standard,'accountancy/admin/closure.php')===false) { throw new RuntimeException('Complete translated standard/closing page missing'); }
+    }
+    $standard=request('/custom/norway/admin/standardaccounts.php?lang=en_US');
+    if (!preg_match('/name="token" value="([^"]+)"/',$standard,$standardToken)) { throw new RuntimeException('Standard token missing'); }
+    $standard=request('/custom/norway/admin/standardaccounts.php',array('action'=>'previewstandard','token'=>html_entity_decode($standardToken[1]),'choices'=>array('ACCOUNTING_RESULT_PROFIT'=>'8800')));
+    if (strpos($standard,'Saving could not be confirmed.')===false || strpos($standard,'value="savestandard"')!==false) { throw new RuntimeException('Wrong-purpose closing choice accepted'); }
+    request('/custom/norway/admin/standardaccounts.php',array('action'=>'previewstandard','token'=>'invalid','choices'=>array('ACCOUNTING_RESULT_PROFIT'=>'2050')));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('Standard account CSRF rejection missing'); }
     foreach (array('nb_NO'=>'Lagrede koblinger av avgiftskoder','en_US'=>'Stored tax code mappings') as $locale=>$title) {
         $mapping=request('/custom/norway/admin/taxmappings.php?lang='.$locale);
         if (strpos(html_entity_decode($mapping,ENT_QUOTES,'UTF-8'),$title)===false || strpos($mapping,'NorwayMappings')!==false) { throw new RuntimeException('Translated mapping page missing'); }
@@ -153,7 +165,7 @@ try {
         || strpos($accounting, 'compta/bank/list.php') === false
         || (strpos($accounting, 'Bank and cash mapping checks') === false
             && strpos($accounting, 'Kontroll av bank- og kassekoblinger') === false)
-        || strpos($accounting, '/norway/css/layout-0.4.0.css') === false
+        || strpos($accounting, '/norway/css/layout-0.5.0.css') === false
         || strpos($accounting, 'Could not read accounting setup') !== false
         || strpos($accounting, 'Kunne ikke lese bokføringsoppsettet') !== false) {
         throw new RuntimeException('Accounting setup report missing or failed');
@@ -251,7 +263,7 @@ try {
     if (strpos($body, 'SAF-T 1.40') === false || strpos($body, 'EHF/Peppol') === false) {
         throw new RuntimeException('Unfinished accounting requirements missing');
     }
-    if (strpos($body, '/norway/css/layout-0.4.0.css') === false) {
+    if (strpos($body, '/norway/css/layout-0.5.0.css') === false) {
         throw new RuntimeException('Module layout stylesheet not loaded');
     }
     $recent = request('/custom/norway/admin/invoice.php');

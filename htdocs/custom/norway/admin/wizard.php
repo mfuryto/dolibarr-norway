@@ -38,7 +38,7 @@ $tasks = array(
     1 => array('Scope'=>null),
     2 => array('Company'=>'/admin/company.php', 'Users'=>'/user/list.php'),
     3 => array('VATCompany'=>'/admin/company.php', 'Registration'=>'/custom/norway/admin/registration.php'),
-    4 => array('Chart'=>'/custom/norway/admin/profile.php', 'Defaults'=>'/custom/norway/admin/defaults.php', 'OtherAccounts'=>'/accountancy/admin/defaultaccounts.php', 'Journals'=>'/custom/norway/admin/journals.php'),
+    4 => array('Chart'=>'/custom/norway/admin/profile.php', 'Defaults'=>'/custom/norway/admin/defaults.php', 'OtherAccounts'=>'/custom/norway/admin/standardaccounts.php', 'Journals'=>'/custom/norway/admin/journals.php'),
     5 => array('Bank'=>'/compta/bank/list.php', 'BankLink'=>'/custom/norway/admin/bankdefaults.php'),
     6 => array('Partners'=>'/societe/list.php', 'Products'=>'/product/list.php'),
     7 => array('Numbering'=>'/custom/norway/admin/numbering.php', 'Invoice'=>'/admin/invoice.php', 'Proposal'=>'/admin/propal.php', 'PDF'=>null),

@@ -10,6 +10,7 @@ require_once __DIR__.'/../class/NorwayTaxReference.php';
 require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
 require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
 require_once __DIR__.'/../class/NorwayInvoiceLedger.php';
+require_once __DIR__.'/../class/NorwayInvoiceReconciliation.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -90,6 +91,16 @@ if (GETPOSTISSET('id')) {
                     }
                     print '</table></div>';
                 }
+                print '<h3>'.$langs->trans('NorwayReconcileTitle').'</h3><p>'.$langs->trans('NorwayReconcileScope').'</p>';
+                try {
+                    $totals=NorwayInvoiceReconciliation::report($db,(int)$conf->entity,(int)$invoice->id);
+                    print '<div class="warning">'.$langs->trans('NorwayReconcile'.$totals['status']).'</div>';
+                    print '<div class="div-table-responsive"><table class="noborder centpercent">';
+                    foreach (array('gross'=>'Gross','debit'=>'Debit','credit'=>'Credit','difference'=>'Difference') as $key=>$label) {
+                        print '<tr><td>'.$langs->trans('NorwayReconcile'.$label).'</td><td>'.($totals[$key]===null ? '—' : dol_escape_htmltag($totals[$key])).' NOK</td></tr>';
+                    }
+                    print '</table></div>';
+                } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayReconcileUnavailable').'</div>'; }
                 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/bookkeeping/list.php">'.$langs->trans('NorwayInvoiceLedgerOpen').'</a></p>';
             } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayInvoiceLedgerFailed').'</div>'; }
             print '</details>';

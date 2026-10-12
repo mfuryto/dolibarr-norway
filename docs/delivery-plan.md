@@ -104,3 +104,10 @@ Fra 0.34.0 kan administrator forhåndsvise og bekrefte [kontrollkopier av dagens
 Fra 0.35.0 kan [enkle nummerserier](numbering.md) for F/K/T og kunde-/leverandørnumre velges med startnummer, forhåndsvisning og bekreftelse. Eksisterende numre beholdes. Dette er kvalifisert nummereringsfunksjonalitet innen dokumentert omfang, ikke full norsk regnskapsmessig produksjonsaksept.
 
 Fra 0.36.0 kan en lagret kontrollkopi sammenlignes med dagens fakturafelt, linjer og hovedboksposter mot samme oppsettsversjon. Endrede verdier og nye/fjernede rader vises uten lagring. Dette kvalifiserer ikke beløps-/MVA-avstemming eller rapportering, som fortsatt gjenstår.
+
+Fra 0.37.0 finnes en samlet, kildebegrunnet oversikt over standardkontoer og
+lukkingskontoer, med eksplisitt valg og utfylling av tomme felt i nytt oppsett.
+Regnskapskoder for varer/tjenester omfattes som standarder; individuelle kort
+beholdes. Bruttosammenligning mellom faktura og kildekoblet hovedbok er lesende.
+Full konto-/MVA-avstemming, årsavslutning og rapportering gjenstår. Se
+[standardkontoer](standard-accounts.md) for faggrunnlag og støttet omfang.

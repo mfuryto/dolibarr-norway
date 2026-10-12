@@ -59,12 +59,14 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/numbering.php
 "${compose[@]}" exec -T web php /opt/norway-tests/numbering-http.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-ledger.php
+"${compose[@]}" exec -T web php /opt/norway-tests/invoice-reconciliation.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-evidence.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-evidence-http.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-period.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-preview.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-import.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-profile.php
+"${compose[@]}" exec -T web php /opt/norway-tests/standard-accounts.php
 "${compose[@]}" exec -T web php /opt/norway-tests/ledger-audit.php
 "${compose[@]}" exec -T web php /opt/norway-tests/http-smoke.php
 "${compose[@]}" exec -T web php /opt/norway-tests/company-vat-http.php

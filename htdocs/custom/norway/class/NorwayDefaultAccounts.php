@@ -18,12 +18,15 @@ class NorwayDefaultAccounts
         return $rows;
     }
 
-    public static function preview($db, $entity)
+    public static function preview($db, $entity, $mapping = null)
     {
         if ((int) $entity <= 0 || (int) $GLOBALS['conf']->entity !== (int) $entity) { throw new InvalidArgumentException('Entity'); }
+        if ($mapping !== null) { require_once __DIR__.'/NorwayStandardAccounts.php'; $mapping = NorwayStandardAccounts::validate($mapping); }
+        else { $mapping = self::mapping(); }
+        $names = "'CHARTOFACCOUNTS','".implode("','",array_keys($mapping))."'";
         $entity = (int) $entity; $prefix = $db->prefix();
         $constants = self::rows($db, "SELECT name,value,entity FROM ".$prefix."const WHERE entity IN (0,".$entity.")"
-            ." AND name IN ('CHARTOFACCOUNTS','ACCOUNTING_ACCOUNT_CUSTOMER','ACCOUNTING_ACCOUNT_SUPPLIER') ORDER BY entity,name");
+            ." AND name IN (".$names.") ORDER BY entity,name");
         $settings = array();
         foreach ($constants as $constant) { $settings[$constant['name']] = $constant['value']; }
         $chartId = (int) ($settings['CHARTOFACCOUNTS'] ?? 0);
@@ -38,7 +41,7 @@ class NorwayDefaultAccounts
         }
         $labels = array_column(NorwayChartPreview::parse(NorwayChartProfile::csv()), 'label', 'number');
         $rows = array(); $evidence = array();
-        foreach (self::mapping() as $key => $number) {
+        foreach ($mapping as $key => $number) {
             $accounts = self::rows($db, "SELECT rowid,label,active FROM ".$prefix."accounting_account WHERE entity=".$entity
                 ." AND fk_pcg_version='".$db->escape(NorwayChartProfile::VERSION)."' AND account_number='".$number."' ORDER BY rowid");
             $evidence[$key] = $accounts;
@@ -63,14 +66,22 @@ class NorwayDefaultAccounts
         return hash('sha256', json_encode($preview, JSON_THROW_ON_ERROR));
     }
 
-    public static function apply($db, $entity, $fingerprint, $user)
+    public static function apply($db, $entity, $fingerprint, $user, $mapping = null)
     {
         if ((int) $entity <= 0 || (int) $GLOBALS['conf']->entity !== (int) $entity || empty($user->admin) || (int) $user->id <= 0) {
             throw new InvalidArgumentException('Confirmation');
         }
         require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+        $custom = $mapping !== null;
+        if ($custom) {
+            require_once __DIR__.'/NorwayStandardAccounts.php'; $mapping = NorwayStandardAccounts::validate($mapping);
+            $active = self::rows($db,'SELECT @@in_transaction AS active');
+            if (count($active)!==1 || (int)$active[0]['active']!==0 || !$db->query('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE')) { throw new RuntimeException('Defaults transaction'); }
+        } else { $mapping = self::mapping(); }
+        $names = "'CHARTOFACCOUNTS','".implode("','",array_keys($mapping))."'";
+        $numbers = "'".implode("','",array_values($mapping))."'";
         $runtimeBefore = array();
-        foreach (self::mapping() as $key => $number) {
+        foreach ($mapping as $key => $number) {
             $runtimeBefore[$key] = array(property_exists($GLOBALS['conf']->global, $key), $GLOBALS['conf']->global->$key ?? null);
         }
         if ($db->begin() <= 0) { throw new RuntimeException('Defaults'); }
@@ -79,13 +90,13 @@ class NorwayDefaultAccounts
             // Lock chart, settings, accounts and source/history ranges before re-reading the preview.
             foreach (array(
                 "SELECT rowid FROM ".$prefix."accounting_system WHERE pcg_version='".$db->escape(NorwayChartProfile::VERSION)."' FOR UPDATE",
-                "SELECT rowid FROM ".$prefix."const WHERE entity IN (0,".$entity.") AND name IN ('CHARTOFACCOUNTS','ACCOUNTING_ACCOUNT_CUSTOMER','ACCOUNTING_ACCOUNT_SUPPLIER') FOR UPDATE",
-                "SELECT rowid FROM ".$prefix."accounting_account WHERE entity=".$entity." AND account_number IN ('1500','2400') FOR UPDATE",
+                "SELECT rowid FROM ".$prefix."const WHERE entity IN (0,".$entity.") AND name IN (".$names.") FOR UPDATE",
+                "SELECT rowid FROM ".$prefix."accounting_account WHERE entity=".$entity." AND account_number IN (".$numbers.") FOR UPDATE",
                 "SELECT rowid FROM ".$prefix."facture WHERE entity=".$entity." FOR UPDATE",
                 "SELECT rowid FROM ".$prefix."facture_fourn WHERE entity=".$entity." FOR UPDATE",
                 "SELECT rowid FROM ".$prefix."accounting_bookkeeping WHERE entity=".$entity." FOR UPDATE"
             ) as $sql) { self::rows($db, $sql); }
-            $preview = self::preview($db, $entity);
+            $preview = self::preview($db, $entity, $custom ? $mapping : null);
             if (!hash_equals(self::fingerprint($preview), (string) $fingerprint)) { throw new InvalidArgumentException('Changed'); }
             $saved = 0;
             foreach ($preview['rows'] as $row) {
