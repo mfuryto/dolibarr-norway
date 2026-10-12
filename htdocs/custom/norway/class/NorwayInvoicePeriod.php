@@ -21,11 +21,16 @@ class NorwayInvoicePeriod
             foreach (array_slice($ids, 0, self::LIMIT) as $id) {
                 $invoice = new Facture($db);
                 if ($invoice->fetch($id) <= 0 || (int) $invoice->entity !== (int) $entity) { throw new RuntimeException('Invoice read'); }
-                $amounts = NorwayInvoiceAmounts::report($invoice); $zero = 0;
-                foreach ($amounts['rows'] as $line) { if ($line['status'] === 'ZeroReview') { $zero++; } }
+                $amounts = NorwayInvoiceAmounts::report($invoice); $zero = 0; $missingCode = 0; $marked = 0; $unknown = 0;
+                foreach ($amounts['rows'] as $line) {
+                    if ($line['status'] === 'ZeroReview') { $zero++; }
+                    if ($line['evidence']['code_state'] === 'Missing') { $missingCode++; }
+                    if ($line['evidence']['flags'] !== null && $line['evidence']['flags'] > 0) { $marked++; }
+                    if ($line['evidence']['code_state'] === 'Unknown' || $line['evidence']['flags'] === null) { $unknown++; }
+                }
                 $rows[] = array('id'=>$id, 'ref'=>$invoice->ref, 'date'=>dol_print_date($invoice->date, '%Y-%m-%d'),
                     'type'=>(int) $invoice->type, 'status'=>(int) $invoice->statut, 'currency'=>(string) $invoice->multicurrency_code,
-                    'net'=>$amounts['header_net'], 'vat'=>$amounts['header_vat'], 'amount_status'=>$amounts['status'], 'zero'=>$zero);
+                    'net'=>$amounts['header_net'], 'vat'=>$amounts['header_vat'], 'amount_status'=>$amounts['status'], 'zero'=>$zero, 'missing_code'=>$missingCode, 'marked'=>$marked, 'unknown_evidence'=>$unknown);
             }
             if ($db->commit() <= 0) { throw new RuntimeException('Period read'); }
             return array('rows'=>$rows, 'truncated'=>$truncated);

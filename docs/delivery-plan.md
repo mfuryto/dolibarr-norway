@@ -84,3 +84,5 @@ Fra 0.24.2 omtaler veiviseren leveranser generelt, og fakturakontrollen bruker v
 Fra 0.25.0 foreslår veiviseren hvor arbeidet kan fortsette ut fra eksisterende arbeidsstatus. Direkte valg av steg beholdes, og navigasjon endrer ingen markeringer eller innstillinger.
 
 Fra 0.26.0 samler [fakturakontrollen for periode](invoice-period.md) dokumentstatus, type og beløpsavvik for et datointervall i aktivt foretak. Ingen summer på tvers av dokumenter eller MVA-melding beregnes; avgiftsmetadata, rapportering og hovedboksavstemming gjenstår.
+
+Fra 0.27.0 viser [fakturalinjenes lagrede avgiftsopplysninger](invoice-tax-evidence.md) kildekode og særmarkering uten oppslag i dagens satsregister. Periodeoversikten teller tomme koder og markeringer. Uforanderlig avgiftshistorikk, norsk rapporteringsmapping og MVA-melding gjenstår.

@@ -22,3 +22,5 @@ Dette bekrefter ikke riktige satser, norsk avgiftsbehandling, registreringsperio
 fradragsrett, bokføring, hovedboksavstemming eller MVA-melding. Ingen innstillinger,
 linjer, dokumenter, valideringsregler eller bokførte beløp endres. Historisk
 avgiftsmetadata, rapporteringsmapping og sporbar MVA-rapport gjenstår.
+
+Fra 0.27.0 vises også [lagrede avgiftsopplysninger](invoice-tax-evidence.md), uten endring av beløpskontrollen.

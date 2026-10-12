@@ -53,16 +53,19 @@ if (GETPOSTISSET('id')) {
         print '</table></div>';
         $amounts = NorwayInvoiceAmounts::report($invoice);
         $formatAmount = static function ($value) { return $value === null ? '—' : price($value); };
-        print '<h2>'.$langs->trans('NorwayAmounts').'</h2><p>'.$langs->trans('NorwayAmountsScope').'</p>';
+        print '<h2>'.$langs->trans('NorwayAmounts').'</h2><p>'.$langs->trans('NorwayAmountsScope').'</p><p>'.$langs->trans('NorwayTaxEvidenceScope').'</p>';
         print '<div class="warning">'.$langs->trans('NorwayAmounts'.$amounts['status']).'</div>';
         print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
-        foreach (array('Line','Rate','Net','VAT','Review') as $column) { print '<th>'.$langs->trans('NorwayAmounts'.$column).'</th>'; }
+        foreach (array('Line','Rate','TaxCode','TaxFlags','Net','VAT','Review') as $column) { print '<th>'.$langs->trans('NorwayAmounts'.$column).'</th>'; }
         print '</tr>';
         foreach ($amounts['rows'] as $index => $line) {
-            print '<tr><td>'.($index + 1).'</td><td>'.$formatAmount($line['rate']).'</td><td>'.$formatAmount($line['net']).'</td><td>'.$formatAmount($line['vat']).'</td><td>'.$langs->trans('NorwayAmounts'.$line['status']).'</td></tr>';
+            $evidence = $line['evidence'];
+            $code = $evidence['code_state'] === 'Recorded' ? dol_escape_htmltag($evidence['code']) : $langs->trans('NorwayTaxCode'.$evidence['code_state']);
+            $flags = $evidence['flags'] === null ? $langs->trans('NorwayTaxFlagsUnknown') : ($evidence['flags'] === 0 ? $langs->trans('NorwayTaxFlagsNone') : $langs->trans('NorwayTaxFlagsPresent').' ('.$evidence['flags'].')');
+            print '<tr><td>'.($index + 1).'</td><td>'.$formatAmount($line['rate']).'</td><td>'.$code.'</td><td>'.$flags.'</td><td>'.$formatAmount($line['net']).'</td><td>'.$formatAmount($line['vat']).'</td><td>'.$langs->trans('NorwayAmounts'.$line['status']).'</td></tr>';
         }
         foreach (array('Sum'=>array($amounts['net'],$amounts['vat']), 'Header'=>array($amounts['header_net'],$amounts['header_vat'])) as $label=>$values) {
-            print '<tr><td colspan="2">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
+            print '<tr><td colspan="4">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
         }
         print '</table></div>';
         try {
