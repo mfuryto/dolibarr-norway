@@ -33,3 +33,29 @@ Syntetiske tester dekker lagret kode/markering, kode `0`, tomme og utilgjengelig
 felt, ugyldige markeringer, uendrede inngangsdata og kjernens fakturalesing etter
 lagring. Periodeprøven kontrollerer antall per dokument. Norsk/engelsk visning og
 bredden på faktura- og periodesidene prøves separat.
+
+## Referansekontroll fra 0.28.0
+
+Fakturakontrollen viser i tillegg om den eksakt lagrede koden finnes blant de
+30 numeriske identifikatorene i Skatteetatens
+[Standard Tax Codes CSV, fast revisjon](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv).
+Bare identifikatorene inngår i modulen. Beskrivelser, satser og behandlingsregler
+kopieres ikke. Ingen nettverksoppslag gjøres ved fakturakontroll; oppdatering av
+referansen krever en ny, testet modulversjon.
+
+Tre resultater vises: kode finnes i referanselisten, kode finnes ikke, eller
+ingen tilgjengelig kode å sammenligne. `0` sammenlignes som en faktisk kode.
+`03`, `3 ` og lokale navn normaliseres ikke til `3`. En lokal kode som ikke
+finnes i listen er ikke automatisk feil. Identisk skrivemåte betyr heller ikke
+at Dolibarr-koden har samme betydning som den offisielle koden.
+
+Dette er et hjelpemiddel før eksplisitt mapping, ikke en implementasjon av
+mapping. Ingen kode tildeles fra sats, kontonummer, kunde, land eller beløp.
+Periodeoversikten endres ikke og beregner ingen rapport etter referansekoder.
+Referanselisten er ikke MVA-meldingens rapporteringsformat og bekrefter ikke
+hvilket SAF-T-skjema som gjelder for en rapporteringsperiode.
+
+Akseptert teknisk omfang: skrivebeskyttet, eksakt referansesammenligning på den
+eksisterende fakturakontrollen i norsk/engelsk visning. Tester dekker kode `0`,
+lokale aliaser, mellomrom, manglende kildefelt og uendrede data. Historisk,
+versjonert mapping og avgiftsbehandling er fortsatt utenfor støttet omfang.

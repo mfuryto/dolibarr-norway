@@ -42,3 +42,19 @@ foreach (array(null,-1,'abc',1.5,true) as $value) {
     amountCheck(NorwayInvoiceAmounts::evidence($line)['flags']===null,'Invalid marker treated as known');
 }
 print "PASS stored source codes, markers, missing/unavailable evidence and read-only preservation\n";
+
+require '/var/www/html/custom/norway/class/NorwayTaxReference.php';
+foreach (array('0','1','3','52','92') as $code) {
+    $line=(object)array('vat_src_code'=>$code,'info_bits'=>0);
+    $before=serialize($line);
+    amountCheck(NorwayTaxReference::inspect(NorwayInvoiceAmounts::evidence($line))==='Listed','Official identifier not recognised');
+    amountCheck(serialize($line)===$before,'Reference comparison changed source');
+}
+foreach (array('03','3 ',' 3','3.0','25','SYN<25>','NO_DEDUCTION') as $code) {
+    amountCheck(NorwayTaxReference::inspect(array('code_state'=>'Recorded','code'=>$code))==='Unlisted','Local code automatically normalised or inferred');
+}
+foreach (array('Missing','Unknown') as $state) {
+    amountCheck(NorwayTaxReference::inspect(array('code_state'=>$state,'code'=>'3'))==='Unavailable','Unavailable source treated as mapping');
+}
+amountCheck(NorwayTaxReference::inspect(array('code_state'=>'Recorded','code'=>3))==='Unlisted','Non-string input matched loosely');
+print "PASS exact official reference membership, zero code, local aliases and unavailable sources; no mapping inferred\n";

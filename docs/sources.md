@@ -22,3 +22,5 @@ ved reproduksjon. Ingen tidligere undersøkelse alene regnes som bekreftelse.
 Ingen modul ble funnet gjennom kombinerte GitHub-/DoliStore-søk etter
 Dolibarr Norway, Norwegian accounting og Norwegian SAF-T. Negativt søk er
 begrenset til indeksert offentlig materiale og er ikke et markedsbevis.
+
+SAF-T-kodereferansen fra 0.28.0 bruker kun de 30 numeriske identifikatorene fra [Standard Tax Codes CSV ved S6-revisjonen](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv), kontrollert 2026-10-12. Beskrivelser og behandlingsregler distribueres ikke. Eksakt kodemedlemskap er ikke historisk mapping eller valg av avgiftsbehandling.

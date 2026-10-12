@@ -4,7 +4,7 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 root = Path(__file__).resolve().parents[1]
 base = root / 'htdocs/custom'
-target = root / 'dist/module_norway-0.27.0.zip'
+target = root / 'dist/module_norway-0.28.0.zip'
 target.parent.mkdir(exist_ok=True)
 with ZipFile(target, 'w', ZIP_DEFLATED) as archive:
     for file in sorted((base / 'norway').rglob('*')):
