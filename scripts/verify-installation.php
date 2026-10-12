@@ -19,10 +19,13 @@ if ($modulePayloadMatches) {
         }
     }
 }
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwaySchema.php';
+try { $schemaValid=NorwaySchema::verify($db); } catch (Throwable $error) { $schemaValid=false; }
 $checks = array(
+    'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.32.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.33.0',
     'norway_module_payload' => $modulePayloadMatches,
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),

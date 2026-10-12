@@ -96,3 +96,5 @@ Fra 0.30.0 kan administrator [lagre daterte avgiftskodekoblinger](tax-mappings.m
 Fra 0.31.0 kan [fakturalinjer sammenlignes mot en uttrykkelig valgt oppsettsversjon](invoice-mapping.md). Senere rettinger/avslutninger tas ikke med i kandidatsammenligningen. Dette oppretter ikke bokført avgiftsgrunnlag eller historisk rapportering.
 
 Fra 0.32.0 viser [hovedboksreferanser for fakturaen](invoice-ledger.md) faktisk lagrede posteringer og referanseavvik. Samlede posteringer skilles fra bestemte fakturalinjer. Dette er ikke beløps-/MVA-avstemming eller bokførte avgiftsmetadata.
+
+Fra 0.33.0 finnes et [versjonert lagringsgrunnlag for avgiftsopplysninger](tax-evidence-storage.md), med migreringshistorikk, strukturelt vern og testet backup/gjenoppretting. Ingen avgiftsøyeblikksbilder opprettes i ordinær drift ennå. Innholdsskjema, bekreftet lagring/retting og kobling til faktiske posteringer må kvalifiseres før rapportering.

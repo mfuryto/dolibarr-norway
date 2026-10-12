@@ -41,6 +41,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/pdf-identity.php
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-currency.php
 "${compose[@]}" exec -T web php /opt/norway-tests/integration.php
+"${compose[@]}" exec -T web php /opt/norway-tests/schema-migration.php
 "${compose[@]}" exec -T web php /opt/norway-tests/accounting-setup.php
 "${compose[@]}" exec -T web php /opt/norway-tests/bank-setup.php
 "${compose[@]}" exec -T web php /opt/norway-tests/bank-defaults.php
