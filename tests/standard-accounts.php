@@ -56,11 +56,13 @@ try {
  saAssert(NorwayDefaultAccounts::apply($db,$entity,NorwayDefaultAccounts::fingerprint($kept),$user,array('ACCOUNTING_RESULT_LOSS'=>'2080'))===0 && getDolGlobalString('ACCOUNTING_RESULT_LOSS')==='2050','Preservation failed');
  try { NorwayDefaultAccounts::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user,$choices);throw new LogicException('Stale confirmation accepted'); }catch (InvalidArgumentException $expected) {}
  $new=array('ACCOUNTING_PRODUCT_BUY_ACCOUNT'=>'4300');
- saSql("INSERT INTO ".$p."facture (ref,entity,type,fk_soc,datec,datef,fk_statut) VALUES ('SYN-STANDARD-HISTORY',".$entity.",0,1,NOW(),NOW(),1)");
+ saSql("INSERT INTO ".$p."societe (nom,entity,client,status) VALUES ('Synthetic standard history',".$entity.",1,1)");
+ $party=(int)$db->last_insert_id($p.'societe');
+ saSql("INSERT INTO ".$p."facture (ref,entity,type,fk_soc,datec,datef,fk_statut) VALUES ('SYN-STANDARD-HISTORY',".$entity.",0,".$party.",NOW(),NOW(),1)");
  $blocked=NorwayDefaultAccounts::preview($db,$entity,$new);saAssert($blocked['rows'][0]['action']==='Blocked','Issued history ignored');
  try { NorwayDefaultAccounts::apply($db,$entity,NorwayDefaultAccounts::fingerprint($blocked),$user,$new);throw new LogicException('History accepted'); }catch (InvalidArgumentException $expected) {}
 } finally {
- $db->rollback();foreach (array('facture','accounting_account','const') as $table) { saSql('DELETE FROM '.$p.$table.' WHERE entity='.$entity); }
+ $db->rollback();foreach (array('facture','societe','accounting_account','const') as $table) { saSql('DELETE FROM '.$p.$table.' WHERE entity='.$entity); }
  if (!$old) { saSql("DELETE FROM ".$p."accounting_system WHERE pcg_version='".NorwayChartProfile::VERSION."'"); }
  foreach ($before as $key=>$value) { if ($value[0]) { $conf->global->$key=$value[1]; }else { unset($conf->global->$key); } }$conf->entity=$originalEntity;
 }

@@ -68,6 +68,7 @@ try {
         } else { print '<p>'.$langs->trans($blocked ? 'NorwayDefaultsBlocked' : 'NorwayDefaultsNothing').'</p>'; }
     }
 } catch (Throwable $error) { unset($_SESSION['norway_standard_accounts']);print '<div class="warning">'.$langs->trans('NorwayDefaultsFailed').'</div>'; }
+print '<p><a href="'.dol_buildpath('/norway/admin/vataccounts.php',1).'">'.$langs->trans('NorwayVatAccountsTitle').'</a></p>';
 print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/trade-account-suggestions.md" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayStandardSources').'</a></p>';
 print '<p>'.$langs->trans('NorwayStandardClosingScope').'</p><p><a href="'.DOL_URL_ROOT.'/accountancy/admin/closure.php">'.$langs->trans('NorwayStandardClosingOpen').'</a></p>';
 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/admin/defaultaccounts.php">'.$langs->trans('NorwayAccountingDefaultSettings').'</a></p><p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=4">'.$langs->trans('NorwayWizard').'</a></p></div>';

@@ -89,6 +89,12 @@ try {
         $standard=request('/custom/norway/admin/standardaccounts.php?lang='.$locale);
         if (strpos(html_entity_decode($standard,ENT_QUOTES,'UTF-8'),$title)===false || strpos($standard,'NorwayStandard')!==false || strpos($standard,'choices[ACCOUNTING_RESULT_LOSS]')===false || strpos($standard,'accountancy/admin/closure.php')===false || strpos($standard,'choices[ACCOUNTING_SERVICE_SOLD_EXPORT_ACCOUNT]')===false || strpos($standard,'choices[ACCOUNTING_SERVICE_BUY_EXPORT_ACCOUNT]')===false || strpos($standard,'trade-account-suggestions.md')===false) { throw new RuntimeException('Complete translated standard/closing page missing'); }
     }
+    foreach (array('nb_NO'=>'Fyll MVA-kontoer for salg og innkjøp','en_US'=>'Fill VAT accounts for sales and purchases') as $locale=>$title) {
+        $vatAccounts=request('/custom/norway/admin/vataccounts.php?lang='.$locale);
+        if (strpos(html_entity_decode($vatAccounts,ENT_QUOTES,'UTF-8'),$title)===false || strpos($vatAccounts,'NorwayVatAccounts')!==false || strpos($vatAccounts,'Saving could not be confirmed.')!==false || strpos($vatAccounts,'Kunne ikke bekrefte lagringen.')!==false) { throw new RuntimeException('VAT accounts rendering failed'); }
+    }
+    request('/custom/norway/admin/vataccounts.php',array('action'=>'savevataccounts','token'=>'invalid','confirmed'=>'1'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('VAT accounts CSRF rejection missing'); }
     $standard=request('/custom/norway/admin/standardaccounts.php?lang=en_US');
     if (!preg_match('/name="token" value="([^"]+)"/',$standard,$standardToken)) { throw new RuntimeException('Standard token missing'); }
     $standard=request('/custom/norway/admin/standardaccounts.php',array('action'=>'previewstandard','token'=>html_entity_decode($standardToken[1]),'choices'=>array('ACCOUNTING_RESULT_PROFIT'=>'8800')));
