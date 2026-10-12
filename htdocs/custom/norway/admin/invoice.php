@@ -9,6 +9,7 @@ require_once __DIR__.'/../class/NorwayInvoiceAmounts.php';
 require_once __DIR__.'/../class/NorwayTaxReference.php';
 require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
 require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
+require_once __DIR__.'/../class/NorwayInvoiceLedger.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -73,6 +74,25 @@ if (GETPOSTISSET('id')) {
             print '<tr><td colspan="5">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
         }
         print '</table></div>';
+        if (isModEnabled('accounting') && $user->hasRight('accounting','mouvements','lire')) {
+            print '<details'.(GETPOSTISSET('ledger') ? ' open' : '').'><summary>'.$langs->trans('NorwayInvoiceLedgerTitle').'</summary><p>'.$langs->trans('NorwayInvoiceLedgerScope').'</p>';
+            try {
+                $ledger=NorwayInvoiceLedger::report($db,(int)$conf->entity,(int)$invoice->id);
+                if (!$ledger['rows']) { print '<p>'.$langs->trans('NorwayInvoiceLedgerEmpty').'</p>'; }
+                else {
+                    if ($ledger['truncated']) { print '<div class="warning">'.$langs->trans('NorwayInvoiceLedgerTruncated').'</div>'; }
+                    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                    foreach (array('ID','Journal','Voucher','Date','Line','Account','Debit','Credit','Trace') as $column) { print '<th>'.$langs->trans('NorwayInvoiceLedger'.$column).'</th>'; }
+                    print '</tr>';
+                    foreach ($ledger['rows'] as $row) {
+                        print '<tr><td>'.(int)$row->rowid.'</td><td>'.dol_escape_htmltag($row->code_journal).'</td><td>'.(int)$row->piece_num.'</td><td>'.dol_escape_htmltag($row->doc_date).'</td><td>'.($row->fk_docdet===null ? '—' : (int)$row->fk_docdet).'</td><td>'.dol_escape_htmltag($row->numero_compte).'</td><td>'.price($row->debit).'</td><td>'.price($row->credit).'</td><td>'.$langs->trans('NorwayInvoiceLedger'.$row->trace).'</td></tr>';
+                    }
+                    print '</table></div>';
+                }
+                print '<p><a href="'.DOL_URL_ROOT.'/accountancy/bookkeeping/list.php">'.$langs->trans('NorwayInvoiceLedgerOpen').'</a></p>';
+            } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayInvoiceLedgerFailed').'</div>'; }
+            print '</details>';
+        }
         print '<p><a href="'.dol_buildpath('/norway/admin/taxmappings.php',1).'">'.$langs->trans('NorwayMappingsTitle').'</a></p>';
         $selectedRevision=GETPOSTINT('mapping_revision');
         print '<details'.(GETPOSTISSET('mapping_revision') ? ' open' : '').'><summary>'.$langs->trans('NorwaySavedMappingTitle').'</summary><p>'.$langs->trans('NorwaySavedMappingScope').'</p>';

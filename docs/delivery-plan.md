@@ -94,3 +94,5 @@ Fra 0.29.0 kan administrator [prøve én datert avgiftsmapping](tax-mapping-prev
 Fra 0.30.0 kan administrator [lagre daterte avgiftskodekoblinger](tax-mappings.md) per foretak og salg/kjøp, med bekreftet retting, avslutning og bevart oppsettshistorikk. Overlapp og foreldede forhåndsvisninger sperres. Koblingene brukes ennå ikke ved bokføring eller rapportering. Kobling til bokførte avgiftsmetadata og historisk rapportversjon gjenstår.
 
 Fra 0.31.0 kan [fakturalinjer sammenlignes mot en uttrykkelig valgt oppsettsversjon](invoice-mapping.md). Senere rettinger/avslutninger tas ikke med i kandidatsammenligningen. Dette oppretter ikke bokført avgiftsgrunnlag eller historisk rapportering.
+
+Fra 0.32.0 viser [hovedboksreferanser for fakturaen](invoice-ledger.md) faktisk lagrede posteringer og referanseavvik. Samlede posteringer skilles fra bestemte fakturalinjer. Dette er ikke beløps-/MVA-avstemming eller bokførte avgiftsmetadata.

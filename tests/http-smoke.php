@@ -260,7 +260,7 @@ try {
         $body = request('/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale);
         $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
         if (strpos($body,'05179521e435d82feb0b2d6c89a92a32a4f2d02f')===false || strpos($text, $locale==='nb_NO' ? 'SAF-T-referanse' : 'SAF-T reference')===false) { throw new RuntimeException('Pinned translated tax reference missing'); }
-        if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false || strpos($text,'NorwayTax')!==false || strpos($text,'NorwaySavedMapping')!==false || strpos($text,$locale==='nb_NO' ? 'Sammenlign med en lagret oppsettsversjon' : 'Compare with a stored configuration revision')===false) { throw new RuntimeException('Translated invoice amount report missing'); }
+        if (strpos($text,$title)===false || strpos($text,'NorwayAmounts')!==false || strpos($text,'NorwayTax')!==false || strpos($text,$locale==='nb_NO' ? 'Hovedboksreferanser for fakturaen' : 'Bookkeeping references for this invoice')===false || strpos($text,'NorwayInvoiceLedger')!==false || strpos($text,'NorwaySavedMapping')!==false || strpos($text,$locale==='nb_NO' ? 'Sammenlign med en lagret oppsettsversjon' : 'Compare with a stored configuration revision')===false) { throw new RuntimeException('Translated invoice amount report missing'); }
     }
     foreach (array('nb_NO'=>'Prøv en mapping uten å lagre','en_US'=>'Try a mapping without saving') as $locale=>$title) {
         $base='/custom/norway/admin/invoice.php?id='.$invoiceLink[1].'&lang='.$locale;

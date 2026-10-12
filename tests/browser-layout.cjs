@@ -16,6 +16,13 @@ const {chromium}=require('playwright');
  await page.goto(base+'/custom/norway/admin/invoice.php');
  const invoicePath=await page.locator('a[href*="invoice.php?id="]').first().getAttribute('href');
  if(!invoicePath)throw Error('Synthetic invoice missing for amount layout');
+ const invoicePaths=await page.locator('a[href*="invoice.php?id="]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('href')));
+ let ledgerPath=null;
+ for(const candidate of invoicePaths){
+  await page.goto(base+candidate+'&ledger=1');
+  if(await page.locator('th').filter({hasText:/Hovedboks-ID|Bookkeeping ID/}).count()){ledgerPath=candidate+'&ledger=1';break;}
+ }
+ if(!ledgerPath)throw Error('Posted synthetic invoice missing for ledger table layout');
  for(const width of [1440,1024,768,390]){
   await page.setViewportSize({width,height:900});
   for(const path of ['/index.php','/compta/bank/list.php','/compta/bank/bankentries_list.php?id=1','/compta/bank/transfer.php','/compta/bank/bilan.php','/compta/bank/graph.php?account=1','/compta/bank/card.php?action=create','/societe/list.php','/compta/facture/list.php','/custom/norway/admin/setup.php',
@@ -33,7 +40,7 @@ const {chromium}=require('playwright');
   '/admin/company.php',
   '/custom/norway/admin/chart.php',
   '/custom/norway/admin/profile.php',
-  invoicePath, invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
+  invoicePath, ledgerPath, invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
    const response = await page.goto(base+path); if(response.status()!==200)throw Error('Page status '+response.status()+': '+path);await page.waitForTimeout(150);
    if(await page.locator('input[name=username]').count())throw Error('Synthetic authentication required: '+path);
    for(const expanded of path.includes('/wizard.php') ? [false,true] : [false]){
