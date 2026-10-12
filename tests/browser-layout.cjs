@@ -42,7 +42,7 @@ const {chromium}=require('playwright');
   '/admin/company.php',
   '/custom/norway/admin/chart.php',
   '/custom/norway/admin/profile.php',
-  invoicePath, ledgerPath, evidencePath, ...(process.env.NORWAY_LAYOUT_COMPARE_ID ? ['/custom/norway/admin/evidence.php?id='+process.env.NORWAY_LAYOUT_COMPARE_ID+'&copy_revision=1'] : []), invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
+  invoicePath, ledgerPath, evidencePath, ...(process.env.NORWAY_LAYOUT_COMPARE_ID ? ['/custom/norway/admin/evidence.php?id='+process.env.NORWAY_LAYOUT_COMPARE_ID+'&copy_revision=1'] : []), invoicePath+'&mapping_revision=1', invoicePath+'&mapping=1&mapsource=LOCAL25&maptarget=3&mapstart=2026-01-01&mapend=2026-12-31', '/custom/norway/admin/standardaccounts.php','/custom/norway/admin/registry.php','/custom/norway/admin/invoice.php','/custom/norway/admin/audit.php','/custom/norway/admin/pricing.php']){
    const response = await page.goto(base+path); if(response.status()!==200)throw Error('Page status '+response.status()+': '+path);await page.waitForTimeout(150);
    if(await page.locator('input[name=username]').count())throw Error('Synthetic authentication required: '+path);
    for(const expanded of path.includes('/wizard.php') ? [false,true] : [false]){
@@ -50,7 +50,7 @@ const {chromium}=require('playwright');
    const result=await page.evaluate(()=>({vw:innerWidth,width:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('#id-right *')].filter(e=>{let r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('.div-table-responsive,.div-table-responsive-no-min')}).slice(0,8).map(e=>({tag:e.tagName,cls:e.className,right:Math.round(e.getBoundingClientRect().right)}))}));
    console.log(JSON.stringify({viewport:width,path,expanded,...result}));
    if(result.width>width+1||result.offenders.length)throw Error('Overflow remains: '+path+' at '+width);
-   if(!await page.locator('link[href*="layout-0.4.0.css"]').count())throw Error('Stylesheet not registered');
+   if(!await page.locator('link[href*="layout-0.5.0.css"]').count())throw Error('Stylesheet not registered');
    }
   }
   await page.goto(base+evidencePath);

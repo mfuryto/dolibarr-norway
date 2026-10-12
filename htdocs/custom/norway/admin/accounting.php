@@ -77,6 +77,7 @@ foreach (array('/custom/norway/admin/bankdefaults.php' => 'NorwayBankDefaults', 
 }
 print '<p><a href="'.dol_buildpath('/norway/admin/chart.php', 1).'">'.$langs->trans('NorwayChartPreview').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/profile.php', 1).'">'.$langs->trans('NorwayProfile').'</a></p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/standardaccounts.php',1).'">'.$langs->trans('NorwayStandardTitle').'</a></p>';
 print '</div>';
 llxFooter();
 $db->close();

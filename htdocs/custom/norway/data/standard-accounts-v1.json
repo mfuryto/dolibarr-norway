@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "chart": "NORWAY-NO-1",
+  "core": "24.0.1",
+  "rules": {
+    "ACCOUNTING_ACCOUNT_CUSTOMER": {
+      "options": [
+        "1500"
+      ],
+      "reason": "Customer"
+    },
+    "ACCOUNTING_ACCOUNT_SUPPLIER": {
+      "options": [
+        "2400"
+      ],
+      "reason": "Supplier"
+    },
+    "SALARIES_ACCOUNTING_ACCOUNT_PAYMENT": {
+      "options": [
+        "2930"
+      ],
+      "reason": "Salary"
+    },
+    "ACCOUNTING_ACCOUNT_EXPENSEREPORT": {
+      "options": [
+        "2910"
+      ],
+      "reason": "Expense"
+    },
+    "ACCOUNTING_PRODUCT_SOLD_ACCOUNT": {
+      "options": [
+        "3000"
+      ],
+      "reason": "DomesticSale"
+    },
+    "ACCOUNTING_PRODUCT_BUY_ACCOUNT": {
+      "options": [
+        "4300"
+      ],
+      "reason": "GoodsBuy"
+    },
+    "ACCOUNTING_PRODUCT_SOLD_INTRA_ACCOUNT": {
+      "options": [],
+      "reason": "Intra"
+    },
+    "ACCOUNTING_PRODUCT_SOLD_EXPORT_ACCOUNT": {
+      "options": [],
+      "reason": "Foreign"
+    },
+    "ACCOUNTING_PRODUCT_BUY_INTRA_ACCOUNT": {
+      "options": [],
+      "reason": "Intra"
+    },
+    "ACCOUNTING_PRODUCT_BUY_EXPORT_ACCOUNT": {
+      "options": [],
+      "reason": "Foreign"
+    },
+    "ACCOUNTING_SERVICE_SOLD_ACCOUNT": {
+      "options": [
+        "3020"
+      ],
+      "reason": "DomesticSale"
+    },
+    "ACCOUNTING_SERVICE_BUY_ACCOUNT": {
+      "options": [
+        "4500",
+        "6552",
+        "6553",
+        "6790",
+        "6795"
+      ],
+      "reason": "ServiceBuy"
+    },
+    "ACCOUNTING_SERVICE_SOLD_INTRA_ACCOUNT": {
+      "options": [],
+      "reason": "Intra"
+    },
+    "ACCOUNTING_SERVICE_SOLD_EXPORT_ACCOUNT": {
+      "options": [],
+      "reason": "Foreign"
+    },
+    "ACCOUNTING_SERVICE_BUY_INTRA_ACCOUNT": {
+      "options": [],
+      "reason": "Intra"
+    },
+    "ACCOUNTING_SERVICE_BUY_EXPORT_ACCOUNT": {
+      "options": [],
+      "reason": "Foreign"
+    },
+    "ACCOUNTING_VAT_SOLD_ACCOUNT": {
+      "options": [
+        "2700"
+      ],
+      "reason": "VatSOLD"
+    },
+    "ACCOUNTING_VAT_BUY_ACCOUNT": {
+      "options": [
+        "2710"
+      ],
+      "reason": "VatBUY"
+    },
+    "ACCOUNTING_VAT_PAY_ACCOUNT": {
+      "options": [
+        "2740"
+      ],
+      "reason": "VatPAY"
+    },
+    "ACCOUNTING_LT1_SOLD_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT1_BUY_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT1_PAY_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT2_SOLD_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT2_BUY_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT2_PAY_ACCOUNT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_VAT_BUY_REVERSE_CHARGES_CREDIT": {
+      "options": [],
+      "reason": "Reverse"
+    },
+    "ACCOUNTING_VAT_BUY_REVERSE_CHARGES_DEBIT": {
+      "options": [],
+      "reason": "Reverse"
+    },
+    "ACCOUNTING_LT1_BUY_REVERSE_CHARGES_CREDIT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT1_BUY_REVERSE_CHARGES_DEBIT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT2_BUY_REVERSE_CHARGES_CREDIT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_LT2_BUY_REVERSE_CHARGES_DEBIT": {
+      "options": [],
+      "reason": "LocalTax"
+    },
+    "ACCOUNTING_ACCOUNT_TRANSFER_CASH": {
+      "options": [],
+      "reason": "Transfer"
+    },
+    "ACCOUNTING_ACCOUNT_CUSTOMER_RETAINED_WARRANTY": {
+      "options": [],
+      "reason": "Warranty"
+    },
+    "DONATION_ACCOUNTINGACCOUNT": {
+      "options": [],
+      "reason": "Donation"
+    },
+    "ADHERENT_SUBSCRIPTION_ACCOUNTINGACCOUNT": {
+      "options": [],
+      "reason": "Membership"
+    },
+    "LOAN_ACCOUNTING_ACCOUNT_CAPITAL": {
+      "options": [
+        "2220"
+      ],
+      "reason": "LoanCapital"
+    },
+    "LOAN_ACCOUNTING_ACCOUNT_INTEREST": {
+      "options": [
+        "8150"
+      ],
+      "reason": "LoanInterest"
+    },
+    "LOAN_ACCOUNTING_ACCOUNT_INSURANCE": {
+      "options": [
+        "7500"
+      ],
+      "reason": "LoanInsurance"
+    },
+    "ACCOUNTING_ACCOUNT_SUSPENSE": {
+      "options": [],
+      "reason": "Suspense"
+    },
+    "ACCOUNTING_ACCOUNT_DISCOUNT_GRANTED": {
+      "options": [],
+      "reason": "Discount"
+    },
+    "ACCOUNTING_ACCOUNT_DISCOUNT_RECEIVED": {
+      "options": [],
+      "reason": "Discount"
+    },
+    "ACCOUNTING_ACCOUNT_CUSTOMER_DEPOSIT": {
+      "options": [
+        "2900"
+      ],
+      "reason": "CustomerDeposit"
+    },
+    "ACCOUNTING_ACCOUNT_CUSTOMER_DEPOSIT_FOR_VAT": {
+      "options": [],
+      "reason": "DepositVat"
+    },
+    "ACCOUNTING_ACCOUNT_SUPPLIER_DEPOSIT": {
+      "options": [
+        "1480",
+        "1749"
+      ],
+      "reason": "SupplierDeposit"
+    },
+    "ACCOUNTING_RESULT_PROFIT": {
+      "options": [
+        "2050"
+      ],
+      "reason": "ClosingProfit"
+    },
+    "ACCOUNTING_RESULT_LOSS": {
+      "options": [
+        "2050",
+        "2080"
+      ],
+      "reason": "ClosingLoss"
+    }
+  }
+}

@@ -56,4 +56,5 @@ foreach (array('/accountancy/admin/defaultaccounts.php' => 'NorwayAccountingDefa
     '/custom/norway/admin/wizard.php?step=4' => 'NorwayWizard') as $path => $label) {
     print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>';
 }
+print '<p><a href="'.dol_buildpath('/norway/admin/standardaccounts.php',1).'">'.$langs->trans('NorwayStandardTitle').'</a></p>';
 print '</div>'; llxFooter(); $db->close();
