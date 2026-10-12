@@ -1,4 +1,4 @@
-# Norway 0.28.0
+# Norway 0.29.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in

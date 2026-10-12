@@ -7,9 +7,11 @@ require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
 require_once __DIR__.'/../class/NorwayInvoiceAmounts.php';
 require_once __DIR__.'/../class/NorwayTaxReference.php';
+require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
+header('Cache-Control: no-store');
 llxHeader('', $langs->trans('NorwayInvoiceCheck'));
 print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayInvoiceCheck'), '', 'bill');
@@ -70,6 +72,31 @@ if (GETPOSTISSET('id')) {
             print '<tr><td colspan="5">'.$langs->trans('NorwayAmounts'.$label).'</td><td>'.$formatAmount($values[0]).'</td><td>'.$formatAmount($values[1]).'</td><td></td></tr>';
         }
         print '</table></div>';
+        print '<h2>'.$langs->trans('NorwayMappingTitle').'</h2><p>'.$langs->trans('NorwayMappingScope').'</p>';
+        $mappingInput=array('source'=>GETPOST('mapsource','none'),'target'=>GETPOST('maptarget','none'),
+            'start'=>GETPOST('mapstart','none'),'end'=>GETPOST('mapend','none'));
+        print '<form method="get" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
+        print '<input type="hidden" name="id" value="'.(int)$invoice->id.'"><input type="hidden" name="mapping" value="1">';
+        foreach (array('source','target','start','end') as $field) {
+            $date=in_array($field,array('start','end'),true);
+            $value=is_string($mappingInput[$field]) ? $mappingInput[$field] : '';
+            print '<p><label>'.$langs->trans('NorwayMapping'.ucfirst($field)).' <input required type="'.($date ? 'date' : 'text').'" name="map'.$field.'"'.($date ? '' : ' maxlength="10"').' value="'.dol_escape_htmltag($value).'"></label></p>';
+        }
+        print '<input class="button" type="submit" value="'.$langs->trans('NorwayMappingRun').'"></form>';
+        if (GETPOSTISSET('mapping')) {
+            try {
+                $plan=NorwayTaxMappingPreview::plan($mappingInput['source'],$mappingInput['target'],$mappingInput['start'],$mappingInput['end']);
+                $date=empty($invoice->date) ? '' : dol_print_date($invoice->date,'%Y-%m-%d');
+                print '<div class="warning">'.$langs->trans('NorwayMappingUnsaved').'</div>';
+                print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayAmountsLine').'</th><th>'.$langs->trans('NorwayMappingResult').'</th><th>'.$langs->trans('NorwayMappingTarget').'</th></tr>';
+                foreach ($amounts['rows'] as $index=>$line) {
+                    $status=NorwayTaxMappingPreview::compare($plan,$date,$line['evidence']);
+                    print '<tr><td>'.($index+1).'</td><td>'.$langs->trans('NorwayMapping'.$status).'</td><td>'.($status==='Candidate' ? dol_escape_htmltag($plan['target']) : '—').'</td></tr>';
+                }
+                if (!$amounts['rows']) { print '<tr><td colspan="3">'.$langs->trans('NorwayMappingNoLines').'</td></tr>'; }
+                print '</table></div>';
+            } catch (InvalidArgumentException $error) { print '<div class="error">'.$langs->trans('NorwayMappingInvalid').'</div>'; }
+        }
         try {
             $registration=NorwayVatRegistration::read($db,$conf->entity,$mysoc->idprof1);
             $result=NorwayVatRegistration::compare($registration,dol_print_date($invoice->date,'%Y-%m-%d'));
