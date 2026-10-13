@@ -126,6 +126,19 @@ if (GETPOSTISSET('id')) {
                         foreach ($lineAccounts['totals'] as $total) { print '<tr><td>'.dol_escape_htmltag($total['account']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
                     } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayAllocationUnavailable').'</div>'; }
                 }
+                if (GETPOSTISSET('allocation')) {
+                    print '<h4>'.$langs->trans('NorwayRetainedAllocationTitle').'</h4><p>'.$langs->trans('NorwayRetainedAllocationScope').'</p>';
+                    try {
+                        $retained=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoice->id,$user,$allocation);
+                        print '<div class="warning">'.$langs->trans('NorwayRetainedAllocation'.$retained['status']).'</div>';
+                        if ($retained['source_changed']) { print '<p>'.$langs->trans('NorwayRetainedAllocationChanged').'</p>'; }
+                        if ($retained['totals']) {
+                            print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                            foreach (array('Role','Expected','Actual','Difference') as $column) { print '<th>'.$langs->trans('NorwayAllocation'.$column).'</th>'; }print '</tr>';
+                            foreach ($retained['totals'] as $total) { print '<tr><td>'.$langs->trans('NorwayAllocation'.$total['role']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
+                        }
+                    } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayRetainedAllocationUnavailable').'</div>'; }
+                }
                 print '<h3>'.$langs->trans('NorwayPostingTitle').'</h3><p>'.$langs->trans('NorwayPostingScope').'</p>';
                 try {
                     $observations=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoice->id,$user);

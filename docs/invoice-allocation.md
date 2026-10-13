@@ -91,3 +91,36 @@ kontonummer, kontonavn og linjekobling er ikke et uforanderlig bevis på hva
 som gjaldt ved opprinnelig bokføring. Den nye delen erstatter ikke historisk
 avgiftsmetadata eller faglig vurdering av riktig salgskonto for en leveranse.
 Neste arbeid under A2 er historisk avgiftsgrunnlag og videre kjøps-/bilagsdekning.
+
+## Sammenligning mot bevart grunnlag fra 0.47.0
+
+Den eksisterende profilvelgeren viser nå også **Fordeling mot bevart
+fakturagrunnlag**. Det gjenbruker samme 25/15/12-profiler, beløpsregning og
+kontofordeling, men forventede beløp og linjekontoer kommer fra opplysningene
+som ble bevart ved bokføring. Dagens produkt-/standardkontoer, linjer og
+oppsett erstatter ikke dette grunnlaget. Ingen ny side eller bokføringsflyt
+innføres; dette er en valgfri diagnose for den som utreder rapportgrunnlaget.
+Vanlig bokføring krever ingen ekstra manuell kontrollrunde.
+
+Hendelser og dagens hovedbok leses i én skrivebeskyttet, konsistent
+transaksjon. Alle aktuelle poster må ha intakte, fullstendige observasjoner
+med samme faktura-, linje-, motparts- og oppsettsgrunnlag. Manglende,
+fjernede eller sprikende observasjoner, avkorting og endrede postbeløp eller
+referanser kan ikke gi samsvar. Hele bilaget kontrolleres også for fremmede
+posteringer i samme journal/bilagsnummer. Opplysningene omskrives aldri.
+
+Dagens kildeopplysninger kan være endret uten at den bevarte sammenligningen
+forsvinner; dette varsles uttrykkelig. Manglende spor til enkeltlinjer blir
+ikke skjult av riktige summer. **Summerte kontoer** betyr bare samsvar på
+kontosummer. Det bekrefter ikke fordeling på hver linje eller historisk
+avgiftsbehandling. Samme profil brukes som uttrykkelig sammenligningsgrunnlag,
+aldri som automatisk tolkning av SAF-T-kode eller lovlig MVA-behandling.
+
+Ved uavklart resultat undersøkes kildeobservasjonene og hovedboken før
+rapportgrunnlaget brukes. Det er ingen rapporterings- eller produksjonsaksept.
+Eldre posteringer uten hendelsesgrunnlag etterfylles ikke; kjøp, manuelle
+bilag, nullsats, korreksjonsflyt og kvalifisert avgiftsrapportering gjenstår.
+Testene prøver reell overføring fra salgsjournalen, kreditnota, kildeendringer,
+hovedboksendringer, manglende/sprikende grunnlag og et balansert bilag med
+feil MVA-fordeling. Den eksisterende lagringen og payloadversjonene beholdes,
+uten skjemaendring.

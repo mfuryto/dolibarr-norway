@@ -45,6 +45,8 @@ remote-grener. Den kan omgås; GitHubs main-/staging-vern er serverhåndhevet.
 ## CI og sikkerhet
 
 CI kjører ved push til main/staging, relevante PR-er og manuell start.
+Hoved-README og modul-README skal vise modulens aktuelle versjon og utviklingsstatus.
+Pakkebygging avviser avvik mellom README-versjonene og modulversjonen.
 Kildejobben kontrollerer grenpolicy, hemmeligheter i hentet Git-historikk,
 regnskaps-fixtures og modulpakken. Integrasjonsjobben tester en fersk Dolibarr
 24.0.1 med låste containere, PHP-syntaks, modullivssyklus, hovedbok og webinnlogging.

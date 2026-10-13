@@ -1,4 +1,4 @@
-# Norway 0.46.0
+# Norway 0.47.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -11,7 +11,9 @@ Deactivation leaves accounting data intact. Read-only setup diagnostics cover th
 CSV chart preflight highlights existing, inactive, conflicting and historical accounts.
 Explicit confirmation can create missing accounts atomically, preserving existing accounts.
 The pinned LGPL-3 Odoo Norwegian chart (745 accounts) can be explicitly installed.
-Tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
+New native sales postings retain source observations, explicit tax-code setup
+and registration-date comparisons. Selected allocation profiles can compare
+retained sources with the ledger. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
 A manual VAT registry lookup compares current status without changing settings.
 Activation does not install a chart,
 change VAT rates or produce SAF-T. Provisional module ID: 510173; check collisions

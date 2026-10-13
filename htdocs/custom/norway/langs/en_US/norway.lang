@@ -967,3 +967,13 @@ NorwayPostingRegistrationIdentity=Preserved registration evidence does not match
 NorwayPostingRegistrationUnavailable=Registration comparison was unavailable at posting.
 NorwayPostingRegistrationLegacy=Earlier observation without a preserved registration comparison.
 NorwayPostingRegistrationCredit=Review the credit note against the original document and historical registration evidence.
+
+NorwayRetainedAllocationTitle=Allocation against preserved invoice sources
+NorwayRetainedAllocationScope=The selected profile is compared with sources preserved at posting and the current ledger. This does not approve historical VAT treatment.
+NorwayRetainedAllocationReview=Preserved sources or ledger are incomplete, changed or inconsistent. Investigate the events before using them for reporting.
+NorwayRetainedAllocationGrouped=Amounts agree on grouped accounts. Individual line allocation is not confirmed.
+NorwayRetainedAllocationMatch=Amounts and saved line accounts agree within the selected profile. VAT treatment still requires qualification.
+NorwayRetainedAllocationDifferent=Posted amounts differ from preserved sources within the selected profile. Review account and VAT allocation.
+NorwayRetainedAllocationEmpty=No comparable postings.
+NorwayRetainedAllocationChanged=Current source data has changed. This comparison uses the preserved sources.
+NorwayRetainedAllocationUnavailable=Retained allocation could not be checked for the selected profile. No approval is given.

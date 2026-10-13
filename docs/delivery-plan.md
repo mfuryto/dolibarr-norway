@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.46.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.47.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -277,3 +277,18 @@ sammen med råkilder og kodekobling. Eldre payloadversjoner leses uten
 etterfylling. Full registreringshistorikk med avregistrering/ny registrering,
 retting, kildefakturaens opprinnelige status, konkret avgiftsbehandling og
 hovedboksfordeling gjenstår under A2, før rapporteringsaksept i B1/B2.
+
+## A2 – fordeling mot bevart grunnlag i 0.47.0
+
+Den eksisterende profilkontrollen sammenligner nå også bevarte fakturalinjer
+og kontokoblinger med faktisk hovedbok i ett konsistent lesebilde. Felles
+beløpsregning, profiler og bilagsfullstendighet gjenbrukes. Manglende,
+fjernede, endrede eller sprikende hendelser/poster gir ikke samsvar; endring
+i dagens fakturakilder erstatter ikke det bevarte grunnlaget. Summerte
+kontoposteringer skilles fra enkeltlinjefordeling.
+
+Dette kvalifiserer den tekniske sammenligningen innen uttrykkelig valgte
+25/15/12-profiler, ikke historisk avgiftsbehandling eller rapportgrunnlaget
+som helhet. Neste A2-arbeid er konkrete avgiftsscenarioer, kilde-/rettingsløp,
+kjøp og manuelle bilag med samme krav til sporbarhet. Full registreringshistorikk,
+fradrag, nullsats og B1/B2-aksept gjenstår.

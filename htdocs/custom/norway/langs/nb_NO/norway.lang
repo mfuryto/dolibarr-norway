@@ -967,3 +967,13 @@ NorwayPostingRegistrationIdentity=Bevart registreringsgrunnlag samsvarer ikke me
 NorwayPostingRegistrationUnavailable=Registreringssammenligning var ikke tilgjengelig ved bokføring.
 NorwayPostingRegistrationLegacy=Eldre observasjon uten bevart registreringssammenligning.
 NorwayPostingRegistrationCredit=Kreditnota må vurderes mot opprinnelig dokument og historisk registreringsgrunnlag.
+
+NorwayRetainedAllocationTitle=Fordeling mot bevart fakturagrunnlag
+NorwayRetainedAllocationScope=Valgt profil sammenlignes med kildeopplysningene bevart ved bokføring og dagens hovedbok. Dette godkjenner ikke historisk MVA-behandling.
+NorwayRetainedAllocationReview=Bevart grunnlag eller hovedbok er ufullstendig, endret eller sprikende. Undersøk hendelsene før rapportgrunnlaget brukes.
+NorwayRetainedAllocationGrouped=Beløpene samsvarer på summerte kontoer. Fordeling på enkeltlinjer er ikke bekreftet.
+NorwayRetainedAllocationMatch=Beløp og lagrede linjekontoer samsvarer innenfor valgt profil. Avgiftsbehandlingen krever fortsatt kvalifisering.
+NorwayRetainedAllocationDifferent=Bokførte beløp avviker fra bevart grunnlag innenfor valgt profil. Undersøk konto- og avgiftsfordelingen.
+NorwayRetainedAllocationEmpty=Ingen sammenlignbar bokføring.
+NorwayRetainedAllocationChanged=Dagens kildeopplysninger er endret. Denne sammenligningen bruker det bevarte grunnlaget.
+NorwayRetainedAllocationUnavailable=Bevart fordeling kunne ikke kontrolleres for valgt profil. Ingen godkjenning er gitt.

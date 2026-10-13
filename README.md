@@ -1,5 +1,7 @@
 # Dolibarr Norway
 
+**Versjon 0.47.0 · Under utvikling**
+
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
 
@@ -24,6 +26,9 @@ foretak per installasjon.
   kjøpskontoer, registreringens virkningsdato og avgiftskodekoblinger.
 - **Kontroller av regnskapsgrunnlaget**, blant annet fakturabeløp,
   hovedboksreferanser, bilagsbalanse og endringer i lagrede kontrollkopier.
+  Nye salgsposteringer bevarer kildeopplysninger, kodekoblinger og
+  registreringssammenligning. Valgte fordelingsprofiler kan sammenlignes
+  med bevart grunnlag.
 - **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
   kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
 
