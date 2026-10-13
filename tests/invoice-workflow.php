@@ -127,7 +127,25 @@ foreach (array(array('SYN-SALE-25', 1000, 25, 0), array('SYN-SALE-0', 600, 0, 0)
         insist($invoice->fetch($invoice->id) > 0, 'Invoice reload after corrections failed');
         print "PASS rejected invoice validation rolls back status/reference and corrected draft can proceed\n";
     }
+    $registrationBefore=null;
+    if (!$invoices) {
+        $registrationBefore=$db->fetch_object(sql("SELECT value FROM ".MAIN_DB_PREFIX."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_VAT_REGISTRATION_START'"));
+        setting('NORWAY_VAT_REGISTRATION_START',json_encode(array('version'=>1,'entity'=>(int)$conf->entity,'org'=>'123456785','start'=>'2027-01-01','confirmed_by'=>(int)$user->id,'confirmed_at'=>gmdate('c'))));
+    }
+    unset($_SESSION['dol_events']['warnings']);
+    try {
     insist($invoice->validate($user) > 0, 'Invoice validation failed: '.$invoice->error);
+        if (!$invoices || (int)$invoice->type===2) {
+            $warning=$langs->trans('NorwayRegistrationWarning'.((int)$invoice->type===2 ? 'Credit' : 'Before'));
+            insist(in_array($warning,$_SESSION['dol_events']['warnings'] ?? array(),true),'Native invoice validation omitted actionable registration warning');
+        }
+    } finally {
+        if (!$invoices) {
+            if ($registrationBefore) { setting('NORWAY_VAT_REGISTRATION_START',$registrationBefore->value); }
+            else { sql("DELETE FROM ".MAIN_DB_PREFIX."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_VAT_REGISTRATION_START'");unset($conf->global->NORWAY_VAT_REGISTRATION_START); }
+        }
+    }
+
     insist($invoice->fetch($invoice->id) > 0, 'Invoice reload failed');
     $invoices[] = $invoice;
 }

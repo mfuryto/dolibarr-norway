@@ -135,3 +135,25 @@ formatversjon og bevare lesing av denne versjonen. Kodegrunnlaget er den
 [låste offisielle SAF-T-referansen](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv).
 Skatteetaten publiserer [dokumentasjon for mapping](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/dokumentasjon/);
 SAF-T-kobling alene er ikke aksept for MVA-rapportering.
+
+## Bevart registreringssammenligning fra 0.46.0
+
+Nye payloads bruker versjon 3 og `registration_context.version=1` ved siden
+av den uendrede avgiftskodekoblingen. Fakturadato sammenlignes med bevart,
+identitetsbundet virkningsdato for aktivt foretak. Dato, bekreftelsestid og
+bekreftende bruker følger sammenligningen. Kreditnota markeres særskilt;
+kildedokumentets historiske registreringsstatus utledes ikke fra dette.
+
+Manglende/ugyldig grunnlag, annen identitet, duplikate oppsettsrader eller
+ufullstendige kilder gir ikke en positiv datosammenligning. Foretak 0 er
+ingen reserve. På/etter-datoen er bare en sammenligning, ikke en godkjenning
+av MVA eller bevis for fortsatt registrering. Avregistrering og flere perioder
+krever egen historikk som ennå ikke støttes. Sammenligningen stopper ikke
+bokføring; lagringsfeil håndteres fortsatt atomisk.
+
+Payloadversjon 1 og 2 leses uten at dagens registreringsoppsett etterfylles.
+Visningen merker eldre observasjoner uten bevart sammenligning. Det brukes
+samme tabell og samme transaksjon; ingen skjemaendring gjennomføres.
+Kjernens fakturavalidering gjenbrukes til [handlingsrettede varsler](vat-registration.md),
+og den valgfrie kontrollsiden er fortsatt diagnose, ikke et ekstra steg for
+hver faktura. Nye tolkningsregler må versjoneres uten å endre denne historikken.

@@ -136,6 +136,10 @@ if (GETPOSTISSET('id')) {
                         print '<tr><td>'.(int)$observation['id'].'</td><td>'.dol_escape_htmltag($observation['captured_at']).'</td><td>'.$langs->trans('NorwayPosting'.$observation['status']);
                         if ($observation['data']) {
                             $basis=$observation['data']['basis'];
+                            $registrationContext=$observation['data']['registration_context'] ?? null;
+                            print '<p>'.$langs->trans('NorwayPostingRegistration'.($registrationContext ? $registrationContext['status'] : 'Legacy'));
+                            if ($registrationContext && $registrationContext['start']!=='') { print ' '.dol_escape_htmltag($registrationContext['invoice_date'].' / '.$registrationContext['start']); }
+                            if ($registrationContext && $registrationContext['credit']) { print ' '.$langs->trans('NorwayPostingRegistrationCredit'); }print '</p>';
                             $context=$observation['data']['tax_context'] ?? null;
                             print '<p>'.$langs->trans('NorwayPostingTax'.($context ? $context['status'] : 'Legacy')).'</p>';
                             if ($context && $context['lines']) {

@@ -19,3 +19,34 @@ Tidligere lagret dato kan ikke erstattes/slettes fra denne siden. Feil dato, avr
 ## Verifikasjon
 
 Syntetiske tester dekker første lagring, dato-/skuddårsgrenser, identitet, foretak/rettigheter, endret forhåndsvisning, overskrivingssperre, ugyldig data og bevaring av MVA-status/nummer. Installasjonstesten bekrefter gjennom HTTP, avviser gjentakelse/ugyldig CSRF og kontrollerer at den lagrede datoen bevares ved oppdatering og backup/gjenoppretting. Ingen testdata legges inn i driftsinstallasjonen.
+
+## Integrasjon i fakturaflyten fra 0.46.0
+
+Den som validerer en faktura med MVA får varsel i Dolibarrs vanlige
+meldingsfelt når virkningsdato mangler, ikke kan kontrolleres, tilhører en
+annen foretaksidentitet eller ligger etter fakturadatoen. Varselet angir hva
+som må vurderes før utsending og viser til oppsettsveiviserens steg 3.
+Kreditnota med MVA får egen påminnelse om å kontrollere opprinnelig faktura
+og registreringsgrunnlag. Dokumenter uten MVA får ikke dette varselet.
+
+Varslene endrer ikke faktura, dato eller avgift og er ikke nye
+valideringssperrer. På/etter én lagret virkningsdato bekrefter verken fortsatt
+registrering, riktig sats eller tillatelse til å anføre avgift. Særlig
+etterfakturering, avregistrering og ny registrering krever eget grunnlag.
+Den eksisterende sperren mot MVA på ordinær faktura når «MVA brukes» er av,
+og kravet til kildefaktura på kreditnota, beholdes.
+
+Nye støttede salgsposteringer bevarer samtidig en versjonert sammenligning
+av fakturadato og den dokumenterte virkningsdatoen, med bekreftelsesopplysninger
+og kreditnotamarkering. Dette bruker bare opplysningene som faktisk bevares
+ved bokføring. Dagens oppsett brukes ikke som erstatning for eldre hendelser;
+se [kildeobservasjoner](posting-observations.md). Dette er en datosammenligning,
+ikke en full registreringshistorikk eller avgiftsmessig produksjonsaksept.
+
+Tester dekker kjernens fakturavalidering med forståelig varsel, fortsatte
+sperrer, kreditnota, datogrenser/skuddår, manglende eller skadet grunnlag,
+foretaksidentitet og eldre payloadversjoner. Skatteetatens
+[prinsipputtalelse om fakturering ved registrering](https://www.skatteetaten.no/rettskilder/type/uttalelser/prinsipputtalelser/registrering-i-merverdiavgiftsregisteret-og-fakturering-av-merverdiavgift--skattedirektoratets-fellesskriv-7.2.12/)
+beskriver skillet mellom avgiftspliktig omsetning og tidspunktet avgift kan
+anføres, samt etterfakturering og kreditnota med ny faktura. Derfor innføres
+ikke en generell datosperre fra én virkningsdato.

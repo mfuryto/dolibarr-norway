@@ -50,12 +50,24 @@ class NorwayVatRegistration
     {
         if ((int)$entity<=0 || (int)$GLOBALS['conf']->entity!==(int)$entity) { throw new InvalidArgumentException('Entity'); }
         $rows=self::rows($db,"SELECT value FROM ".$db->prefix()."const WHERE name='".self::SETTING."' AND entity=".(int)$entity);
-        if (!$rows || $rows[0]['value']==='') { return array('status'=>'Missing'); }
-        $r=json_decode($rows[0]['value'],true);
-        if (!is_array($r) || ($r['version'] ?? null)!==1 || ($r['entity'] ?? null)!==(int)$entity || !NorwayPeriodSetup::validDate($r['start'] ?? null)
-            || !NorwayReadiness::validOrganisationNumber($r['org'] ?? '') || !is_int($r['confirmed_by'] ?? null) || $r['confirmed_by']<=0 || !is_string($r['confirmed_at'] ?? null)) { return array('status'=>'Invalid'); }
+        if (!$rows) { return array('status'=>'Missing'); }
+        if (count($rows)!==1) { return array('status'=>'Invalid'); }
+        return self::inspect($rows[0]['value'],(int)$entity,$org);
+    }
+
+    /** Validate a retained record without consulting today's database or company. */
+    public static function inspect($raw,$entity,$org)
+    {
+        if (!is_string($raw) || strlen($raw)>10000 || !is_int($entity) || $entity<=0) { return array('status'=>'Invalid'); }
+        if ($raw==='') { return array('status'=>'Missing'); }
+        $r=json_decode($raw,true);
+        if (!is_array($r) || ($r['version'] ?? null)!==1 || ($r['entity'] ?? null)!==$entity || !NorwayPeriodSetup::validDate($r['start'] ?? null)
+            || !NorwayReadiness::validOrganisationNumber($r['org'] ?? '') || !is_int($r['confirmed_by'] ?? null) || $r['confirmed_by']<=0
+            || !is_string($r['confirmed_at'] ?? null) || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+00:00$/D',$r['confirmed_at'])) { return array('status'=>'Invalid'); }
+        $confirmed=DateTimeImmutable::createFromFormat('!Y-m-d\TH:i:sP',$r['confirmed_at']);
+        if (!$confirmed || $confirmed->format('Y-m-d\TH:i:sP')!==$r['confirmed_at']) { return array('status'=>'Invalid'); }
         if ($r['org']!==preg_replace('/[ \t]/','',(string)$org)) { return array('status'=>'Identity'); }
-        return array('status'=>'Recorded','start'=>$r['start'],'confirmed_at'=>$r['confirmed_at']);
+        return array('status'=>'Recorded','start'=>$r['start'],'confirmed_at'=>$r['confirmed_at'],'confirmed_by'=>$r['confirmed_by']);
     }
 
     public static function compare($record,$date)
