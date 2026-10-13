@@ -1,10 +1,11 @@
 # Kjøpsfordeling i leverandørfakturabildet
 
-Fra 0.50.0, utvidet i 0.51.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være
+Fra 0.50.0, utvidet i 0.51.0 og 0.53.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være
 aktivert for å bruke dette bildet. Åpne en leverandørfaktura i Dolibarr og
 utvid **Norsk kontroll av kjøpsfordeling**. Administrator med leserett for
 leverandørfaktura og hovedbok kan velge et sammenligningsgrunnlag. Ingen profil
-er valgt på forhånd; visningen lagrer ingenting eller endrer fradrag/bokføring.
+er valgt uten et tidligere uttrykkelig lagret valg med uendret grunnlag.
+Sammenligningen endrer ikke fradrag/bokføring.
 Vanlig bokføring krever ingen ekstra manuell kontrollrunde.
 
 ## Gjenbruk og avgrenset gap
@@ -117,12 +118,42 @@ og [beløpsberegningen](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/
 
 Leveransen utvider sammenligningen, ikke den native bokføringen. En endring
 av profil/prosent flytter ikke MVA fra hovedboken til kostnad eller anlegg.
-Fradragsvalg med begrunnelse, linjevis historikk, godkjent bokføringsintegrasjon
-og korreksjonsløp gjenstår. Den viste prosenten er ikke bevart historisk
-fradragsgrunnlag. Et avvik forklarer forskjellen mot valgt sammenligning;
+Godkjent bokføringsintegrasjon og korreksjonsløp gjenstår. Et manuelt valgt
+sammenligningsgrunnlag lagres ikke; lagring gjøres uttrykkelig som beskrevet nedenfor. Et avvik forklarer forskjellen mot valgt sammenligning;
 det er ingen automatisk retting eller produksjonsaksept.
 
 Tester dekker delvis/ingen/fullt fradrag, gyldige/ugyldige andeler, øregrenser,
 store beløp, kreditnotaer, native postering uten separat MVA-konto, manglende
 andel i HTTP og bevaring av hovedbok ved sidevisning. Kjernens globale
 innstilling gjenopprettes etter forsøket. Ingen skjema- eller payloadendring.
+
+
+## Lagret fradragsvurdering fra 0.53.0
+
+I samme leverandørfakturabilde velges sats og fradragsomfang. Delvis krever
+prosent mellom 0,01 og 99,99. Skriv begrunnelse og grunnlag, forhåndsvis
+linjebeløpene og bekreft. Administrator må ha leserett til leverandørfaktura
+og hovedbok samt opprettingsrett til leverandørfaktura for å lagre.
+Samme fradragsandel brukes på alle linjer; kjøpet må være validert,
+innenlandsk i NOK, ha én støttet sats og MVA-beløp med ørepresisjon.
+
+Lagringen bevarer kildelinjene, beløp, valgt prosent og begrunnelse med bruker,
+UTC-tidspunkt og stigende revisjon. Valget har en egen dokumenttype
+`supplier_deduction` i eksisterende kontrollarkiv,
+payloadversjon 1. Det er ingen skjemaendring, tilbakefylling eller endring i
+hovedboken. Endring av valg krever ny forhåndsvisning/bekreftelse og oppretter
+en ny revisjon. Bruk maksimalt 100 revisjoner per faktura; kapasitetsbrudd
+stopper lagring. Gamle revisjoner beholdes ved nye vurderinger.
+
+Endrede faktura-/linjeopplysninger, leverandørland eller relevante foretaksdata
+gir varsel. Betalingsstatus inngår ikke i fradragsgrunnlaget. Ved uendret
+kilde brukes siste lagrede valg i sammenligningen hvis ingen profil er valgt
+manuelt. Sammenligningen bruker fortsatt bevarte bokføringskilder; endringer
+siden bokføring vises separat. Lagret vurdering og likt kontrollresultat
+bekrefter ikke fradragsrett eller at valget ble brukt ved bokføring.
+
+Transaksjon, fakturalås, fingeravtrykk av kilde/valg/historikk og engangsbekreftelse
+beskytter mot endret grunnlag og gjentatt lagring. Kontroller av integritet og
+foretakstilgang gjelder også historikk. Dette er teknisk kvalifisert bevaring,
+ikke aksept for norsk regnskapsproduksjon. Neste arbeid knytter valgt revisjon
+til bokføringshendelser og kvalifiserer fradragsføring og korreksjoner.
