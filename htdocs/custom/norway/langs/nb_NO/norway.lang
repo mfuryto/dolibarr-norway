@@ -942,3 +942,13 @@ NorwayPostingVat=MVA
 NorwayPostingUnavailable=Observasjonene kunne ikke kontrolleres. Lesefeil, skadet lagring eller kapasitetsgrense må undersøkes.
 
 NorwayPostingCaptureFailed=Bokføringen ble stoppet fordi kildegrunnlaget ikke kunne lagres. Be administrator kontrollere modulens lagring, rette feilen og deretter forsøke bokføringen på nytt.
+
+NorwayPostingTaxLinked=Lagret kodekobling funnet. Dette godkjenner ikke avgiftsbehandlingen.
+NorwayPostingTaxUnresolved=Kodekoblingen er uavklart i det bevarte grunnlaget. Kontroller den lokale avgiftskoden og datert oppsett før rapportering.
+NorwayPostingTaxLegacy=Eldre observasjon uten bevart kodekobling. Dagens oppsett brukes ikke som erstatning.
+NorwayPostingTaxTarget=Lagret SAF-T-kode
+NorwayPostingTaxRule=Koblings-ID / versjon
+NorwayPostingTaxState=Kodekoblingens status
+NorwayPostingTaxMissingCode=Lokal avgiftskode mangler
+NorwayPostingTaxNoRule=Ingen datert salgskobling for koden
+NorwayPostingTaxMarkers=Særmarkører krever egen vurdering

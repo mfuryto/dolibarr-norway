@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.44.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.45.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -250,3 +250,17 @@ endret eller fjernet hovedbokspost overskriver ikke lagringen.
 Dette er et teknisk lagrings-/sporingsgrunnlag under KR05/KR08/KR09, ikke
 ferdig historisk MVA-kvalifisering. Kjøp, manuelle bilag, øvrige import- og
 korreksjonsveier, fradragsregler og rapportering gjenstår under A2.
+
+## A2 – bevart oppsettskobling for avgiftskoder i 0.45.0
+
+Nye kildeobservasjoner bevarer automatisk den eksakte lokale linjekodens
+kobling til det daterte salgskodeoppsettet ved bokføring. Oppsettets og regelens
+versjoner følger resultatet. Manglende, motstridende eller ufullstendig
+kildegrunnlag forblir uavklart; sats eller kontonummer brukes ikke til å gjette.
+Eldre hendelser etterfylles ikke, og senere oppsettsrettinger overskriver ikke
+bevarte koblinger. Kjernens salgsjournal og eksisterende hendelseslagring gjenbrukes.
+
+Dette er en teknisk kobling til eksplisitt oppsett, ikke ferdig kvalifisert
+avgiftsbehandling. Neste A2-arbeid må knytte registreringsperioder, konkrete
+avgiftsscenarioer og hovedboksfordeling til dette grunnlaget. Kjøp, manuelle
+bilag, korreksjoner og rapportaksept gjenstår før B1/B2.

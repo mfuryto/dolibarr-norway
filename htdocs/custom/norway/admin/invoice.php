@@ -136,6 +136,16 @@ if (GETPOSTISSET('id')) {
                         print '<tr><td>'.(int)$observation['id'].'</td><td>'.dol_escape_htmltag($observation['captured_at']).'</td><td>'.$langs->trans('NorwayPosting'.$observation['status']);
                         if ($observation['data']) {
                             $basis=$observation['data']['basis'];
+                            $context=$observation['data']['tax_context'] ?? null;
+                            print '<p>'.$langs->trans('NorwayPostingTax'.($context ? $context['status'] : 'Legacy')).'</p>';
+                            if ($context && $context['lines']) {
+                                print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                                foreach (array('Line','Code') as $column) { print '<th>'.$langs->trans('NorwayPosting'.$column).'</th>'; }
+                                foreach (array('Target','Rule','State') as $column) { print '<th>'.$langs->trans('NorwayPostingTax'.$column).'</th>'; }print '</tr>';
+                                foreach ($context['lines'] as $taxLine) {
+                                    print '<tr><td>'.(int)$taxLine['line'].'</td><td>'.dol_escape_htmltag($taxLine['source']).'</td><td>'.dol_escape_htmltag($taxLine['target']).'</td><td>'.(int)$taxLine['rule'].' / '.(int)$taxLine['rule_revision'].'</td><td>'.$langs->trans('NorwayPostingTax'.$taxLine['status']).'</td></tr>';
+                                }print '</table></div>';
+                            }
                             print '<details><summary>'.$langs->trans('NorwayPostingSaved').'</summary><p>'.dol_escape_htmltag($basis['posting']['numero_compte'].' / '.$basis['posting']['debit'].' / '.$basis['posting']['credit']).'</p><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
                             foreach (array('Line','Account','Rate','Code','Net','Vat') as $column) { print '<th>'.$langs->trans('NorwayPosting'.$column).'</th>'; }print '</tr>';
                             foreach ($basis['lines'] as $line) { print '<tr><td>'.(int)$line['rowid'].'</td><td>'.dol_escape_htmltag((string)$line['bound_number']).'</td><td>'.dol_escape_htmltag($line['tva_tx']).'</td><td>'.dol_escape_htmltag((string)$line['vat_src_code']).'</td><td>'.dol_escape_htmltag($line['total_ht']).'</td><td>'.dol_escape_htmltag($line['total_tva']).'</td></tr>'; }print '</table></div></details>';

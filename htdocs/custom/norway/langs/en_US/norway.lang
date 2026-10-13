@@ -942,3 +942,13 @@ NorwayPostingVat=VAT
 NorwayPostingUnavailable=Observations could not be checked. Investigate read errors, damaged storage or capacity limits.
 
 NorwayPostingCaptureFailed=Posting stopped because the source observation could not be saved. Ask an administrator to inspect module storage, resolve the error and then retry posting.
+
+NorwayPostingTaxLinked=Saved code mapping found. This does not approve VAT treatment.
+NorwayPostingTaxUnresolved=Code mapping is unresolved in the preserved sources. Review the local tax code and dated setup before reporting.
+NorwayPostingTaxLegacy=Earlier observation without a preserved code mapping. Current setup is not substituted.
+NorwayPostingTaxTarget=Saved SAF-T code
+NorwayPostingTaxRule=Mapping ID / revision
+NorwayPostingTaxState=Code mapping status
+NorwayPostingTaxMissingCode=Local tax code missing
+NorwayPostingTaxNoRule=No dated sales mapping for this code
+NorwayPostingTaxMarkers=Special markers require separate assessment

@@ -47,7 +47,7 @@ av den aktuelle kjernearbeidsflyten.
 Det eksisterende versjonerte lagringsgrunnlaget brukes uten DDL-endring:
 `norway_tax_evidence`, `document_type=bookkeeping_event`, `fk_document` lik
 hovedboks-ID, `revision=1`, `mapping_revision=0`. Payloaden har eget `kind`
-og `version=1`. Dette formatet er separat fra manuelle kontrollkopier med
+og opprinnelig `version=1` (versjon 2 fra 0.45.0, beskrevet nedenfor). Dette formatet er separat fra manuelle kontrollkopier med
 `document_type=customer_invoice`; ingen eldre payload omskrives.
 
 SHA-256, identitetskontroller og en unik hendelsesnøkkel beskytter mot
@@ -96,3 +96,42 @@ faktiske posteringer og avgiftsbehandling før data brukes i B1/B2.
 Kontrollspor vurderes mot
 [NBS 2](https://www.regnskapsstiftelsen.no/bokforing/bokforingsstandarder/nbs-2-kontrollsporet/);
 denne leveransen oppfyller ikke alene hele standarden.
+
+## Bevart kodekobling fra 0.45.0
+
+Nye observasjoner bruker payloadversjon 2 med `tax_context.version=1`.
+Kjernen bruker allerede `vat_src_code` i salgsjournalens avgiftsgrunnlag, men
+bevarer ikke modulens daterte kodeoppsett på hovedbokshendelsen. Utvidelsen
+løser dette avgrensede gapet i samme automatiske hendelse. Ingen ny
+arbeidsflyt, oppsettskrav eller manuell godkjenning innføres.
+
+Koblingen beregnes bare fra kildeopplysningene som faktisk bevares i
+hendelsen: fakturadato, eksakt lokal linjekode og aktivt foretaks daterte
+salgskoblinger. Referanse, organisasjonsnummer, land, hele oppsettshistorikken
+og entydig datointervall kontrolleres. Foretak 0 brukes ikke som reserve.
+Sats, konto, beløp og land på motparten velger aldri en SAF-T-kode. Heller
+ikke en lokal kode som allerede ser ut som en SAF-T-kode godkjennes uten
+uttrykkelig kobling. Særmarkører/lokale avgifter forblir uavklart.
+
+Resultatet bevarer mål, koblings-ID, koblingsversjon og oppsettets samlede
+versjon per linje. Ufullstendig grunnlag, ukjent dato/identitet, manglende kode,
+korrupt oppsett eller manglende entydig salgskobling gir uavklart resultat.
+Dette stopper ikke bokføringen: rådata bevares, og avgiftsmessig rapportering
+må håndtere avviket før godkjenning. Lagringsfeil stopper fortsatt posteringen.
+
+Fakturakontrollen viser den bevarte koblingen sammen med kildeopplysningene.
+Administrator eller rapporteringsansvarlig bruker dette ved utredning av
+uavklart rapportgrunnlag; vanlig bokføring krever ingen ekstra kontrollrunde.
+En senere retting av dagens kodeoppsett endrer ikke den bevarte koblingen.
+Eldre versjon 1 leses fortsatt, med uttrykkelig beskjed om manglende bevart
+kobling; dagens oppsett etterfylles ikke. Ingen eldre payload omskrives, og
+ingen skjemaendring gjennomføres.
+
+`tax_context.version=1` angir bare en teknisk oppsettskobling, ikke juridisk
+avgiftsklassifisering eller rapportkode for MVA-meldingen. Den bekrefter ikke
+riktig sats, registreringsperiode, fradrag, fritak, korrekt hovedboksfordeling
+eller komplett kontrollspor. Fremtidig endring av tolkningsreglene må få ny
+formatversjon og bevare lesing av denne versjonen. Kodegrunnlaget er den
+[låste offisielle SAF-T-referansen](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv).
+Skatteetaten publiserer [dokumentasjon for mapping](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/dokumentasjon/);
+SAF-T-kobling alene er ikke aksept for MVA-rapportering.
