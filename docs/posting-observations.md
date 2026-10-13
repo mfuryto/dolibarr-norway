@@ -198,3 +198,33 @@ handlingsrettede feilmelding. Administrator undersøker lagringen og retter
 gjentatt overføring, rollback, lagringsfeil, kildeendring, slettet post,
 korrupsjon, dokumenttype- og foretaksisolasjon. Papirløs bilagsflyt og
 matching er flyttet til slutt og inngår ikke i denne leveransen.
+
+## Datert kjøpskodekobling fra 0.49.0
+
+Kjøpsjournalens kildebevaring gjenbrukes uten nye brukertrinn. Det konkrete
+gapet etter 0.48.0 er at datert kjøpsoppsett ikke fulgte den bevarte hendelsen.
+Nye kjøpshendelser bruker derfor payloadversjon 5 med
+`tax_context.version=2`, `direction=purchase`. Den eksakte lokale linjekoden
+kobles bare mot aktivt foretaks uttrykkelige kjøpsregler for fakturadatoen.
+Oppsettets versjon, regel-ID/-versjon og valgt mål bevares sammen med rådata.
+
+Salg beholder sin uendrede versjon 1-tolkning i payloadversjon 3. Identisk
+lokal kode kan ha ulike uttrykkelige regler for salg og kjøp; salgsregler
+brukes aldri som reserve for kjøp. Sats, konto, beløp eller leverandørland
+velger ikke mål. Manglende, skadet, overlappende, fremmed eller ufullstendig
+grunnlag gir uavklart resultat. Særmarkører på linjer, reverseringsmarkør og
+stempelavgift på kjøpshodet krever separat vurdering og gir ikke positiv
+koblingsstatus. Null eller ukjent kode er ikke en automatisk fritakskode.
+
+En funnet oppsettskobling godkjenner ikke MVA-behandling, sats, fradragsrett,
+fradragsandel, periodisering eller kjøpsfordeling. `registration_context`
+forblir null: selgerens registreringsdato brukes ikke til å avgjøre fradrag
+på kjøpet. Uavklart kobling stopper ikke bokføring; rådata bevares. Feil ved
+selve lagringen stopper fortsatt posteringen atomisk.
+
+Senere oppsettsretting overskriver ikke gamle hendelser. Payloadversjon 4
+leses fortsatt med null kodekobling, uten etterfylling fra dagens oppsett.
+Versjon 1–3 for salg er uendret. Ingen skjemaendring eller ny kontrollside
+innføres. Tester dekker faktisk kjøpsjournal, native hendelser før/etter
+retting, separate salgs-/kjøpsregler med samme kildekode, datogrenser,
+særmarkører og lesing av eldre kjøpsformat. Papirløs bilagsflyt ligger sist.

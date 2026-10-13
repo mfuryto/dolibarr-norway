@@ -57,7 +57,7 @@ class NorwayPostingEvidence
             if ($data['basis']!==$basis) { throw new RuntimeException('Posting observation replay changed'); }return 0;
         }
         $supplier=$basis['posting']['doc_type']==='supplier_invoice';
-        $data=array('version'=>$supplier ? 4 : 3,'kind'=>self::TYPE,'entity'=>$entity,'posting_id'=>$id,'event'=>'BOOKKEEPING_CREATE','captured_at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$basis,'tax_context'=>$supplier ? null : NorwayPostingTaxContext::evaluate($basis,$entity),'registration_context'=>$supplier ? null : NorwayPostingRegistrationContext::evaluate($basis,$entity));
+        $data=array('version'=>$supplier ? 5 : 3,'kind'=>self::TYPE,'entity'=>$entity,'posting_id'=>$id,'event'=>'BOOKKEEPING_CREATE','captured_at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$basis,'tax_context'=>$supplier ? NorwayPostingTaxContext::evaluatePurchase($basis,$entity) : NorwayPostingTaxContext::evaluate($basis,$entity),'registration_context'=>$supplier ? null : NorwayPostingRegistrationContext::evaluate($basis,$entity));
         $json=self::encode($data);$hash=hash('sha256',$json);
         $sql="INSERT INTO ".$p."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::TYPE."',".$id.",1,'".$data['captured_at']."',".(int)$user->id.",0,'".$db->escape($json)."','".$hash."')";
         if (!$db->query($sql)) { throw new RuntimeException('Posting observation write'); }return 1;
@@ -66,15 +66,16 @@ class NorwayPostingEvidence
     {
         if (strlen($row['payload'])>self::BYTES || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('Posting observation integrity'); }
         $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
-        if (!in_array($data['version'] ?? null,array(1,2,3,4),true) || ($data['kind'] ?? null)!==self::TYPE || ($data['event'] ?? null)!=='BOOKKEEPING_CREATE'
+        if (!in_array($data['version'] ?? null,array(1,2,3,4,5),true) || ($data['kind'] ?? null)!==self::TYPE || ($data['event'] ?? null)!=='BOOKKEEPING_CREATE'
             || ($data['entity'] ?? null)!==$entity || ($data['posting_id'] ?? null)!==$id || !is_array($data['basis'] ?? null)
             || !is_int($data['user'] ?? null) || $data['user']<=0 || !is_string($data['captured_at'] ?? null)
             || !is_bool($data['basis']['source_complete'] ?? null) || !is_array($data['basis']['lines'] ?? null) || count($data['basis']['lines'])>200 || !is_array($data['basis']['settings'] ?? null)
-            || !array_key_exists('invoice',$data['basis']) || ($data['basis']['posting']['doc_type'] ?? null)!==($data['version']===4 ? 'supplier_invoice' : 'customer_invoice')
+            || !array_key_exists('invoice',$data['basis']) || ($data['basis']['posting']['doc_type'] ?? null)!==($data['version']>=4 ? 'supplier_invoice' : 'customer_invoice')
             || (int)($data['basis']['posting']['rowid'] ?? 0)!==$id || (int)($data['basis']['posting']['entity'] ?? 0)!==$entity) { throw new RuntimeException('Posting observation metadata'); }
         if (in_array($data['version'],array(2,3),true) && ($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting tax context integrity'); }
         if ($data['version']===3 && ($data['registration_context'] ?? null)!==NorwayPostingRegistrationContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting registration context integrity'); }
         if ($data['version']===4 && (!array_key_exists('tax_context',$data) || $data['tax_context']!==null || !array_key_exists('registration_context',$data) || $data['registration_context']!==null)) { throw new RuntimeException('Supplier observation is not tax qualification'); }
+        if ($data['version']===5 && (($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluatePurchase($data['basis'],$entity) || !array_key_exists('registration_context',$data) || $data['registration_context']!==null)) { throw new RuntimeException('Purchase tax context integrity'); }
         return $data;
     }
     public static function report($db,$entity,$invoiceId,$user,$profile=null,$documentType='customer_invoice')

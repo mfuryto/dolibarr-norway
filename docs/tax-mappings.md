@@ -2,7 +2,8 @@
 
 Fra 0.30.0 åpnes siden **Lagrede koblinger av avgiftskoder** fra Norsk
 fakturakontroll. Den er et frivillig oppsettsverktøy for administrator. Fra 0.45.0 bevares en teknisk kobling fra dette oppsettet ved støttede nye
-salgsposteringer; se [kildeobservasjoner](posting-observations.md). Koblingene
+salgsposteringer, og fra 0.49.0 også daterte kjøpskoblinger ved støttede
+kjøpsposteringer; se [kildeobservasjoner](posting-observations.md). Koblingene
 velger ikke avgiftsbehandling ved fakturavalidering eller rapportering. De er
 ikke en MVA-melding, SAF-T-eksport eller godkjenning av avgiftsbehandling.
 

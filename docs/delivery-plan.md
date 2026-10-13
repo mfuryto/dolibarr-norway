@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.48.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.49.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -309,3 +309,16 @@ som avgiftsvurdering av kjøp. Neste A2-arbeid er datert kjøpskodekobling,
 kjøpsfordeling, fradragsomfang og korreksjonsløp. Manuelle bilag, nullsats og
 rapportaksept gjenstår. Papirløs opplasting og matching tas til slutt; krav
 til dokumentasjon og arkiv gjelder fortsatt under de øvrige leveransene.
+
+## A2 – bevart datert kjøpskodekobling i 0.49.0
+
+Nye kjøpshendelser bevarer automatisk eksakt linjekodes daterte kjøpsregel,
+mål og oppsettsversjon. Salgsregler er ingen reserve. Manglende eller
+ufullstendig grunnlag og særmarkører forblir uavklart. Senere retting endrer
+ikke den bevarte koblingen, og eldre rå kjøpshendelser etterfylles ikke.
+Kjernens kjøpsjournal, samme lagring og eksisterende oppsett gjenbrukes.
+
+Dette kvalifiserer teknisk oppsettskobling, ikke fradragsrett eller MVA.
+Neste A2-arbeid er kjøpsfordeling mot hovedbok, uttrykkelig fradragsomfang og
+korreksjonsløp. Manuelle bilag, nullsats, registreringshistorikk og B1/B2-aksept
+gjenstår. Papirløs opplasting og matching er fortsatt prioritert sist.

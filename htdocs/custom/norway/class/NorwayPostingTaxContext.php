@@ -6,7 +6,26 @@ class NorwayPostingTaxContext
 {
     public static function evaluate($basis, $entity)
     {
-        $result = array('version'=>1, 'status'=>'Unresolved', 'mapping_revision'=>0, 'date'=>'', 'lines'=>array());
+        return self::resolve($basis,$entity,'sale',1);
+    }
+
+    public static function evaluatePurchase($basis,$entity)
+    {
+        $result=self::resolve($basis,$entity,'purchase',2);
+        $result['direction']='purchase';
+        if (($basis['posting']['doc_type'] ?? null)!=='supplier_invoice'
+            || !preg_match('/^0(?:\.0+)?$/D',(string)($basis['invoice']['vat_reverse_charge'] ?? ''))
+            || !preg_match('/^0(?:\.0+)?$/D',(string)($basis['invoice']['revenuestamp'] ?? ''))) {
+            $result['status']='Unresolved';
+            foreach ($result['lines'] as &$line) { $line['status']='Markers'; }unset($line);
+        }
+        return $result;
+    }
+
+    /** Version one sales semantics must remain unchanged for existing observations. */
+    private static function resolve($basis,$entity,$direction,$version)
+    {
+        $result = array('version'=>$version, 'status'=>'Unresolved', 'mapping_revision'=>0, 'date'=>'', 'lines'=>array());
         if (!is_int($entity) || $entity<=0 || !is_array($basis) || ($basis['source_complete'] ?? null)!==true
             || !is_array($basis['lines'] ?? null) || !is_array($basis['settings'] ?? null)
             || (int)($basis['posting']['entity'] ?? 0)!==$entity
@@ -38,7 +57,7 @@ class NorwayPostingTaxContext
             if ($entry['source']!=='') {
                 $entry['status']='NoRule';$matches=array();
                 foreach ($state['active'] as $rule) {
-                    if (!$rule['retire'] && $rule['direction']==='sale' && $rule['source']===$entry['source']
+                    if (!$rule['retire'] && $rule['direction']===$direction && $rule['source']===$entry['source']
                         && $rule['start']<=$date && $date<=$rule['end']) { $matches[]=$rule; }
                 }
                 if (count($matches)===1) {
