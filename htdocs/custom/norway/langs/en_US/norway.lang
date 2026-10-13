@@ -1011,3 +1011,14 @@ NorwayDeductionLine=Invoice line
 NorwayDeductionVat=Input VAT (NOK)
 NorwayDeductionDeductible=Selected deduction (NOK)
 NorwayDeductionNonDeductible=Non-deductible (NOK)
+
+NorwayDeductionPostingTitle=Deduction assessment at posting
+NorwayDeductionPostingScope=Shows the assessment observed when each posting was created. The link records time and source; it does not mean the selected deduction was posted or entitlement established. Saving a new assessment does not change historical links.
+NorwayDeductionPostingPosting=Posting
+NorwayDeductionPostingStatus=Retained link
+NorwayDeductionPostingRevision=Assessment revision
+NorwayDeductionPostingTime=Observed at
+NorwayDeductionPostingLinked=Assessment and source agreed at posting
+NorwayDeductionPostingChanged=Source differed from the last assessment
+NorwayDeductionPostingMissing=No retained assessment at posting
+NorwayDeductionPostingNotCaptured=No link was captured for this posting
