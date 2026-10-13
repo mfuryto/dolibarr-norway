@@ -328,6 +328,23 @@ try {
     $body = http($path);
     http($path, $params + array('token' => token($body), 'action' => 'writebookkeeping'));
     insist((int) $db->fetch_object(sql("SELECT COUNT(*) AS n FROM ".$db->prefix()."accounting_bookkeeping WHERE doc_type='customer_invoice' AND entity=".(int) $conf->entity))->n === $count, 'Repeated transfer duplicated postings');
+    require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayPostingEvidence.php';
+    foreach (array($invoices[0],$invoices[2],$invoices[3]) as $postedInvoice) {
+        $retained=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$postedInvoice->id,$user,'domestic25');
+        insist($retained['status']==='Grouped','Native retained allocation failed: '.$retained['status']);
+    }
+    $line=$db->fetch_object(sql('SELECT rowid,total_tva FROM '.MAIN_DB_PREFIX.'facturedet WHERE fk_facture='.(int)$invoices[0]->id.' ORDER BY rowid LIMIT 1'));
+    try {
+        sql('UPDATE '.MAIN_DB_PREFIX.'facturedet SET total_tva=total_tva+1 WHERE rowid='.(int)$line->rowid);
+        $retained=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoices[0]->id,$user,'domestic25');
+        insist($retained['status']==='Grouped' && $retained['source_changed'],'Current line mutation replaced preserved allocation');
+    } finally { sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET total_tva='".$db->escape($line->total_tva)."' WHERE rowid=".(int)$line->rowid); }
+    $entry=$db->fetch_object(sql("SELECT rowid,credit FROM ".MAIN_DB_PREFIX."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoices[0]->id." AND numero_compte='2700' LIMIT 1"));
+    try {
+        sql('UPDATE '.MAIN_DB_PREFIX.'accounting_bookkeeping SET credit=credit+1 WHERE rowid='.(int)$entry->rowid);
+        insist(NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoices[0]->id,$user,'domestic25')['status']==='Review','Changed ledger accepted against preserved posting');
+    } finally { sql("UPDATE ".MAIN_DB_PREFIX."accounting_bookkeeping SET credit='".$db->escape($entry->credit)."' WHERE rowid=".(int)$entry->rowid); }
+    print "PASS native retained allocation, credit note, current-source changes and changed-ledger rejection\n";
     $mysoc->idprof1 = '123456785'; // Artificial checksum fixture, no real business.
     $mysoc->tva_assuj = 1;
     $identityBefore = array($mysoc->idprof1, $mysoc->tva_assuj, $mysoc->tva_intra);

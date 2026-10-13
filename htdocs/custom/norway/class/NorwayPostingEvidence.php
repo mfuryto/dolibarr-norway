@@ -3,6 +3,7 @@
 require_once __DIR__.'/NorwaySchema.php';
 require_once __DIR__.'/NorwayPostingTaxContext.php';
 require_once __DIR__.'/NorwayPostingRegistrationContext.php';
+require_once __DIR__.'/NorwayPostingAllocation.php';
 /** Raw observations at a native create event, not tax qualification or backfill. */
 class NorwayPostingEvidence
 {
@@ -69,13 +70,19 @@ class NorwayPostingEvidence
         if ($data['version']===3 && ($data['registration_context'] ?? null)!==NorwayPostingRegistrationContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting registration context integrity'); }
         return $data;
     }
-    public static function report($db,$entity,$invoiceId,$user)
+    public static function report($db,$entity,$invoiceId,$user,$profile=null)
     {
         if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !is_int($invoiceId) || $invoiceId<=0
             || empty($user->admin) || !$user->hasRight('facture','lire') || !$user->hasRight('accounting','mouvements','lire')) { throw new InvalidArgumentException('Posting observation access'); }
         $active=self::rows($db,'SELECT @@in_transaction AS active');
         if ((int)$active[0]['active']!==0 || !$db->query('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ') || !$db->query('SET TRANSACTION READ ONLY') || $db->begin()<=0) { throw new RuntimeException('Posting observation read boundary'); }
-        try { $result=self::readReport($db,$entity,$invoiceId);if ($db->commit()<=0) { throw new RuntimeException('Observation read commit'); }return $result; }
+        try { $result=self::readReport($db,$entity,$invoiceId);
+            if ($profile!==null) {
+                $ledger=NorwayInvoiceLedger::report($db,$entity,$invoiceId);
+                NorwayInvoiceAllocation::assertCompleteVoucher($db,$entity,$invoiceId,$ledger);
+                $result=NorwayPostingAllocation::evaluate($result,$ledger,$profile);
+            }
+            if ($db->commit()<=0) { throw new RuntimeException('Observation read commit'); }return $result; }
         catch (Throwable $error) { $db->rollback();throw $error; }
     }
     private static function readReport($db,$entity,$invoiceId)

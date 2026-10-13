@@ -87,6 +87,17 @@ class NorwayInvoiceAllocation
             if ($db->commit()<=0) { throw new RuntimeException('Snapshot commit'); }return $result;
         } catch (Throwable $error) { $db->rollback();throw $error; }
     }
+    /** Reused by current and retained-source readers inside their own read snapshot. */
+    public static function assertCompleteVoucher($db,$entity,$id,$ledger)
+    {
+        $p=$db->prefix();
+        $keys=array();
+        foreach ($ledger['rows'] as $row) {
+            $key=$row->code_journal.'|'.$row->piece_num;if(isset($keys[$key])) { continue; }$keys[$key]=true;
+            $extra=$db->query("SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND code_journal='".$db->escape($row->code_journal)."' AND piece_num=".(int)$row->piece_num." AND (doc_type IS NULL OR doc_type<>'customer_invoice' OR fk_doc IS NULL OR fk_doc<>".$id.") LIMIT 1");
+            if (!$extra || $db->fetch_object($extra)) { throw new RuntimeException('Incomplete voucher'); }
+        }
+    }
     private static function read($db,$entity,$id,$profile)
     {
         $p=$db->prefix();
@@ -95,12 +106,8 @@ class NorwayInvoiceAllocation
         $header->seller_country=$GLOBALS['mysoc']->country_code ?? '';
         $r=$db->query('SELECT d.rowid,d.total_ht,d.total_tva,d.tva_tx,d.info_bits,d.localtax1_tx,d.localtax2_tx,d.fk_code_ventilation,a.account_number AS bound_number,a.label AS bound_label,a.active AS bound_active FROM '.$p.'facturedet d LEFT JOIN '.$p.'accounting_account a ON a.rowid=d.fk_code_ventilation AND a.entity='.$entity.' WHERE d.fk_facture='.$id.' ORDER BY d.rowid LIMIT 201');
         if (!$r) { throw new RuntimeException('Lines'); }$lines=array();while ($line=$db->fetch_object($r)) { $lines[]=$line; }
-        $ledger=NorwayInvoiceLedger::report($db,$entity,$id);$keys=array();
-        foreach ($ledger['rows'] as $row) {
-            $key=$row->code_journal.'|'.$row->piece_num;if(isset($keys[$key])) { continue; }$keys[$key]=true;
-            $extra=$db->query("SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND code_journal='".$db->escape($row->code_journal)."' AND piece_num=".(int)$row->piece_num." AND (doc_type IS NULL OR doc_type<>'customer_invoice' OR fk_doc IS NULL OR fk_doc<>".$id.") LIMIT 1");
-            if (!$extra || $db->fetch_object($extra)) { throw new RuntimeException('Incomplete voucher'); }
-        }
+        $ledger=NorwayInvoiceLedger::report($db,$entity,$id);
+        self::assertCompleteVoucher($db,$entity,$id,$ledger);
         $result=self::evaluate($header,$lines,$ledger,$profile);
         $result['line_accounts']=self::lineAccounts($lines,$ledger,$profile);
         if ($result['status']==='Match' && $result['line_accounts']['status']!=='Match') { $result['status']=$result['line_accounts']['status']; }
