@@ -1,6 +1,7 @@
 # Kjøpsfordeling i leverandørfakturabildet
 
-Fra 0.50.0, videre arbeid under A2. Åpne en leverandørfaktura i Dolibarr og
+Fra 0.50.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være
+aktivert for å bruke dette bildet. Åpne en leverandørfaktura i Dolibarr og
 utvid **Norsk kontroll av kjøpsfordeling**. Administrator med leserett for
 leverandørfaktura og hovedbok kan velge et sammenligningsgrunnlag. Ingen profil
 er valgt på forhånd; visningen lagrer ingenting eller endrer fradrag/bokføring.
