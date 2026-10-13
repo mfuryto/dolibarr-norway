@@ -88,13 +88,14 @@ class NorwayInvoiceAllocation
         } catch (Throwable $error) { $db->rollback();throw $error; }
     }
     /** Reused by current and retained-source readers inside their own read snapshot. */
-    public static function assertCompleteVoucher($db,$entity,$id,$ledger)
+    public static function assertCompleteVoucher($db,$entity,$id,$ledger,$documentType='customer_invoice')
     {
+        if (!in_array($documentType,array('customer_invoice','supplier_invoice'),true)) { throw new InvalidArgumentException('Voucher source type'); }
         $p=$db->prefix();
         $keys=array();
         foreach ($ledger['rows'] as $row) {
             $key=$row->code_journal.'|'.$row->piece_num;if(isset($keys[$key])) { continue; }$keys[$key]=true;
-            $extra=$db->query("SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND code_journal='".$db->escape($row->code_journal)."' AND piece_num=".(int)$row->piece_num." AND (doc_type IS NULL OR doc_type<>'customer_invoice' OR fk_doc IS NULL OR fk_doc<>".$id.") LIMIT 1");
+            $extra=$db->query("SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND code_journal='".$db->escape($row->code_journal)."' AND piece_num=".(int)$row->piece_num." AND (doc_type IS NULL OR doc_type<>'".$documentType."' OR fk_doc IS NULL OR fk_doc<>".$id.") LIMIT 1");
             if (!$extra || $db->fetch_object($extra)) { throw new RuntimeException('Incomplete voucher'); }
         }
     }

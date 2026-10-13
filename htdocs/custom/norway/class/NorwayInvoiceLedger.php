@@ -3,14 +3,16 @@
 /** Stored bookkeeping references only; not reconciliation or tax allocation. */
 class NorwayInvoiceLedger
 {
-    public static function report($db,$entity,$invoiceId)
+    public static function report($db,$entity,$invoiceId,$documentType='customer_invoice')
     {
         if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !is_int($invoiceId) || $invoiceId<=0) { throw new InvalidArgumentException('Invoice/entity'); }
+        if (!in_array($documentType,array('customer_invoice','supplier_invoice'),true)) { throw new InvalidArgumentException('Ledger source type'); }
+        $table=$documentType==='supplier_invoice' ? 'facture_fourn' : 'facture';$detail=$documentType==='supplier_invoice' ? 'facture_fourn_det' : 'facturedet';$foreign=$documentType==='supplier_invoice' ? 'fk_facture_fourn' : 'fk_facture';
         $p=$db->prefix();
         $r=$db->query("SELECT b.rowid,b.code_journal,b.piece_num,b.doc_date,b.doc_ref,b.fk_docdet,b.numero_compte,b.debit,b.credit,f.ref AS invoice_ref,d.rowid AS line_exists"
-            ." FROM ".$p."accounting_bookkeeping b INNER JOIN ".$p."facture f ON f.rowid=b.fk_doc AND f.entity=b.entity"
-            ." LEFT JOIN ".$p."facturedet d ON d.rowid=b.fk_docdet AND d.fk_facture=f.rowid"
-            ." WHERE b.entity=".$entity." AND b.fk_doc=".$invoiceId." AND b.doc_type='customer_invoice' ORDER BY b.rowid LIMIT 201");
+            ." FROM ".$p."accounting_bookkeeping b INNER JOIN ".$p.$table." f ON f.rowid=b.fk_doc AND f.entity=b.entity"
+            ." LEFT JOIN ".$p.$detail." d ON d.rowid=b.fk_docdet AND d.".$foreign."=f.rowid"
+            ." WHERE b.entity=".$entity." AND b.fk_doc=".$invoiceId." AND b.doc_type='".$documentType."' ORDER BY b.rowid LIMIT 201");
         if (!$r) { throw new RuntimeException('Invoice ledger read'); }
         $rows=array();
         while ($row=$db->fetch_object($r)) {

@@ -977,3 +977,17 @@ NorwayRetainedAllocationDifferent=Bokførte beløp avviker fra bevart grunnlag i
 NorwayRetainedAllocationEmpty=Ingen sammenlignbar bokføring.
 NorwayRetainedAllocationChanged=Dagens kildeopplysninger er endret. Denne sammenligningen bruker det bevarte grunnlaget.
 NorwayRetainedAllocationUnavailable=Bevart fordeling kunne ikke kontrolleres for valgt profil. Ingen godkjenning er gitt.
+
+NorwayPurchaseTitle=Norsk kontroll av kjøpsfordeling
+NorwayPurchaseScope=Valgfri sammenligning av bevart fakturagrunnlag og hovedbok. Velg fullt fradrag bare når dette er vurdert for kjøpet. Kontrollresultatet bekrefter ikke fradragsrett. Delvis fradrag, særmarkører og utenlandskjøp inngår ikke.
+NorwayPurchaseProfile=Sammenligningsgrunnlag
+NorwayPurchaseFull=Fullt fradrag valgt for sammenligningen
+NorwayPurchaseReview=Grunnlaget er ufullstendig, endret eller utenfor valgt omfang. Undersøk kildeopplysninger og bokføring før tallene brukes til rapportering.
+NorwayPurchaseGrouped=Kontosummene samsvarer med valgt grunnlag. Fordeling på enkeltlinjer og fradragsrett er ikke bekreftet.
+NorwayPurchaseMatch=Beløp og linjekontoer samsvarer med valgt grunnlag. Fradragsrett og avgiftsbehandling krever fortsatt vurdering.
+NorwayPurchaseDifferent=Bokføringen avviker fra valgt sammenligningsgrunnlag. Kontroller leverandørgjeld, kjøpskontoer og MVA; andre fradragsforhold kan kreve et annet grunnlag.
+NorwayPurchaseUnavailable=Kjøpsfordelingen kunne ikke kontrolleres. Ingen godkjenning er gitt.
+NorwayPurchaseSupplier=Leverandørgjeld
+NorwayPurchasePurchase=Kjøpskontoer
+NorwayPurchaseVat=Inngående MVA
+NorwayPurchaseOther=Andre kontoer
