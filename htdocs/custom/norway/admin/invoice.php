@@ -12,6 +12,7 @@ require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
 require_once __DIR__.'/../class/NorwayInvoiceLedger.php';
 require_once __DIR__.'/../class/NorwayInvoiceReconciliation.php';
 require_once __DIR__.'/../class/NorwayInvoiceAllocation.php';
+require_once __DIR__.'/../class/NorwayPostingEvidence.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -125,6 +126,22 @@ if (GETPOSTISSET('id')) {
                         foreach ($lineAccounts['totals'] as $total) { print '<tr><td>'.dol_escape_htmltag($total['account']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
                     } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayAllocationUnavailable').'</div>'; }
                 }
+                print '<h3>'.$langs->trans('NorwayPostingTitle').'</h3><p>'.$langs->trans('NorwayPostingScope').'</p>';
+                try {
+                    $observations=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoice->id,$user);
+                    if (!$observations) { print '<p>'.$langs->trans('NorwayInvoiceLedgerEmpty').'</p>'; }
+                    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                    foreach (array('ID','Captured','Status') as $column) { print '<th>'.$langs->trans('NorwayPosting'.$column).'</th>'; }print '</tr>';
+                    foreach ($observations as $observation) {
+                        print '<tr><td>'.(int)$observation['id'].'</td><td>'.dol_escape_htmltag($observation['captured_at']).'</td><td>'.$langs->trans('NorwayPosting'.$observation['status']);
+                        if ($observation['data']) {
+                            $basis=$observation['data']['basis'];
+                            print '<details><summary>'.$langs->trans('NorwayPostingSaved').'</summary><p>'.dol_escape_htmltag($basis['posting']['numero_compte'].' / '.$basis['posting']['debit'].' / '.$basis['posting']['credit']).'</p><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                            foreach (array('Line','Account','Rate','Code','Net','Vat') as $column) { print '<th>'.$langs->trans('NorwayPosting'.$column).'</th>'; }print '</tr>';
+                            foreach ($basis['lines'] as $line) { print '<tr><td>'.(int)$line['rowid'].'</td><td>'.dol_escape_htmltag((string)$line['bound_number']).'</td><td>'.dol_escape_htmltag($line['tva_tx']).'</td><td>'.dol_escape_htmltag((string)$line['vat_src_code']).'</td><td>'.dol_escape_htmltag($line['total_ht']).'</td><td>'.dol_escape_htmltag($line['total_tva']).'</td></tr>'; }print '</table></div></details>';
+                        }print '</td></tr>';
+                    }print '</table></div>';
+                } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayPostingUnavailable').'</div>'; }
                 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/bookkeeping/list.php">'.$langs->trans('NorwayInvoiceLedgerOpen').'</a></p>';
             } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayInvoiceLedgerFailed').'</div>'; }
             print '</details>';

@@ -294,6 +294,17 @@ try {
         ksort($actual); ksort($expected[$i]);
         insist($actual === $expected[$i], 'Invoice ledger mismatch: '.$invoice->ref.' '.json_encode($actual));
         insist(array_sum($actual) === 0, 'Invoice voucher does not balance');
+        $events = sql("SELECT e.payload,e.payload_sha256 FROM ".$db->prefix()."norway_tax_evidence e JOIN ".$db->prefix()."accounting_bookkeeping b ON b.rowid=e.fk_document AND b.entity=e.entity WHERE e.document_type='bookkeeping_event' AND b.doc_type='customer_invoice' AND b.entity=".(int) $conf->entity." AND b.fk_doc=".(int) $invoice->id);
+        $eventCount = 0;
+        while ($event = $db->fetch_object($events)) {
+            $payload = json_decode($event->payload, true);
+            insist(hash('sha256', $event->payload) === $event->payload_sha256
+                && ($payload['basis']['posting']['fk_doc'] ?? 0) == $invoice->id
+                && ($payload['basis']['source_complete'] ?? false) === true,
+                'Native sales journal did not preserve a complete source observation');
+            $eventCount++;
+        }
+        insist($eventCount === $db->num_rows($rows), 'Native sales journal omitted posting source observations');
     }
     $count = (int) $db->fetch_object(sql("SELECT COUNT(*) AS n FROM ".$db->prefix()."accounting_bookkeeping WHERE doc_type='customer_invoice' AND entity=".(int) $conf->entity))->n;
     $body = http($path);

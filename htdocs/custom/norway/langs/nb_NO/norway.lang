@@ -921,3 +921,24 @@ NorwayLineAccountsDifferent=Avvik mellom lagrede linjekontoer, beløp eller fakt
 NorwayLineAccountsReview=Manglende kontokobling eller konto utenfor profilen. Ingen samlet bekreftelse av linjefordelingen.
 NorwayLineAccountsEmpty=Ingen hovedboksposter funnet.
 NorwayAllocationGrouped=Kontosummene samsvarer, men salget er helt eller delvis aggregert. Individuell linjefordeling er ikke bekreftet.
+
+NorwayPostingTitle=Kildeopplysninger observert ved ny bokføring
+NorwayPostingScope=Fra denne versjonen bevares rå kildeopplysninger ved støttede nye BOOKKEEPING_CREATE-hendelser for kundefakturaer. Tidligere bilag får ingen konstruert hendelseshistorikk. Sammenligningen gjelder dagens kilder mot lagret observasjon; dette er ikke godkjent historisk MVA-behandling, komplett endringslogg eller MVA-rapport. Tid vises i UTC.
+NorwayPostingID=Hovedbokspost-ID
+NorwayPostingCaptured=Observert (UTC)
+NorwayPostingStatus=Observasjon og endringer
+NorwayPostingMissing=Ingen lagret opprettelseshendelse – historikken er ukjent
+NorwayPostingSame=Ingen endring i observerte kildefelt
+NorwayPostingChanged=Kildedata er endret siden observasjonen
+NorwayPostingRemoved=Posten finnes ikke lenger i dagens kildetilknyttede hovedbok
+NorwayPostingIncomplete=Observasjonen hadde ufullstendig fakturagrunnlag
+NorwayPostingSaved=Vis bevarte linjeopplysninger
+NorwayPostingLine=Linje-ID
+NorwayPostingAccount=Lagret salgskonto
+NorwayPostingRate=Sats
+NorwayPostingCode=Lagret avgiftskode
+NorwayPostingNet=Netto
+NorwayPostingVat=MVA
+NorwayPostingUnavailable=Observasjonene kunne ikke kontrolleres. Lesefeil, skadet lagring eller kapasitetsgrense må undersøkes.
+
+NorwayPostingCaptureFailed=Bokføringen ble stoppet fordi kildegrunnlaget ikke kunne lagres. Be administrator kontrollere modulens lagring, rette feilen og deretter forsøke bokføringen på nytt.

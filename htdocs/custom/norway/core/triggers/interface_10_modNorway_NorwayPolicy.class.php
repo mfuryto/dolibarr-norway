@@ -9,13 +9,19 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.43.0';
+        $this->version = '0.44.0';
         $this->picto = 'accountancy';
     }
 
     public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
     {
         if (!isModEnabled('norway')) { return 0; }
+        if ($action==='BOOKKEEPING_CREATE') {
+            require_once __DIR__.'/../../class/NorwayPostingEvidence.php';
+            try { NorwayPostingEvidence::capture($this->db,(int)$conf->entity,$object,$user); }
+            catch (Throwable $error) { $langs->load('norway@norway');$this->error=$langs->trans('NorwayPostingCaptureFailed');$object->error=$this->error;return -1; }
+            return 0;
+        }
         $reason = '';
         if (in_array($action, array('BILL_CREATE', 'BILL_MODIFY', 'BILL_VALIDATE', 'PROPAL_CREATE', 'PROPAL_MODIFY', 'PROPAL_VALIDATE'), true)) {
             if ($conf->currency !== 'NOK' || (!empty($object->multicurrency_code) && $object->multicurrency_code !== 'NOK')
