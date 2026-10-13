@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.45.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.46.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -264,3 +264,16 @@ Dette er en teknisk kobling til eksplisitt oppsett, ikke ferdig kvalifisert
 avgiftsbehandling. Neste A2-arbeid må knytte registreringsperioder, konkrete
 avgiftsscenarioer og hovedboksfordeling til dette grunnlaget. Kjøp, manuelle
 bilag, korreksjoner og rapportaksept gjenstår før B1/B2.
+
+## A2 – registreringssammenligning i arbeidsflyten i 0.46.0
+
+Kjernens fakturavalidering gir handlingsrettede varsler ved MVA og manglende,
+ugyldig eller avvikende registreringsgrunnlag, dato før virkningsdato og
+kreditnota. Én virkningsdato blir ikke en generell sperre eller avgiftsgodkjenning.
+Den vanlige arbeidsflyten gjenbrukes; ingen ny kontrollside innføres.
+
+Nye salgshendelser bevarer datosammenligning og bekreftelsesopplysninger
+sammen med råkilder og kodekobling. Eldre payloadversjoner leses uten
+etterfylling. Full registreringshistorikk med avregistrering/ny registrering,
+retting, kildefakturaens opprinnelige status, konkret avgiftsbehandling og
+hovedboksfordeling gjenstår under A2, før rapporteringsaksept i B1/B2.

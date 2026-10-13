@@ -1,6 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayInvoiceCheck.php';
+require_once __DIR__.'/NorwayVatRegistration.php';
 /** Minimum field validation only; does not approve VAT treatment or legal compliance. */
 class NorwayInvoiceValidation
 {
@@ -11,13 +12,29 @@ class NorwayInvoiceValidation
         // Historical credit notes may reverse tax from a previously registered period.
         // Their source is required; detailed tax correspondence remains a separate check.
         if ((int) $invoice->type !== 2 && (int) ($seller->tva_assuj ?? 0) !== 1) {
-            $tax = (float) ($invoice->total_tva ?? 0) !== 0.0;
-            foreach ($invoice->lines ?? array() as $line) {
-                $tax = $tax || (float) ($line->tva_tx ?? 0) !== 0.0 || (float) ($line->total_tva ?? 0) !== 0.0;
-            }
+            $tax = self::hasVat($invoice);
             if ($tax) { $missing[] = 'UnregisteredVAT'; }
         }
         return $missing;
+    }
+
+    public static function hasVat($invoice)
+    {
+        $tax=(float)($invoice->total_tva ?? 0)!==0.0;
+        foreach ($invoice->lines ?? array() as $line) { $tax=$tax || (float)($line->tva_tx ?? 0)!==0.0 || (float)($line->total_tva ?? 0)!==0.0; }
+        return $tax;
+    }
+
+    /** Advisory in the native validation workflow, never an inferred permission to charge VAT. */
+    public static function registrationWarning($db,$invoice,$seller,$entity)
+    {
+        if (!self::hasVat($invoice)) { return ''; }
+        if ((int)$invoice->type===2) { return 'Credit'; }
+        try {
+            $record=NorwayVatRegistration::read($db,$entity,$seller->idprof1 ?? '');
+            $status=NorwayVatRegistration::compare($record,dol_print_date($invoice->date,'dayrfc'));
+            return $status==='After' ? '' : $status;
+        } catch (Throwable $error) { return 'Unavailable'; }
     }
 
     public static function loadAndCheck($db, $invoice, $seller, $entity)

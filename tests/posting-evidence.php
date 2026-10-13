@@ -19,7 +19,7 @@ try{
  try {
   $rule=array('revision'=>1,'user'=>(int)$user->id,'at'=>'2026-01-01T00:00:00+00:00','source'=>'SYNVAT','target'=>'3','start'=>'1900-01-01','end'=>'9999-12-31','direction'=>'sale','id'=>1,'retire'=>false);
   $record=array('version'=>1,'entity'=>$entity,'org'=>'123456785','reference'=>NorwayTaxReference::SOURCE,'events'=>array($rule));
-  foreach(array('MAIN_INFO_SIREN'=>'123456785','MAIN_INFO_SOCIETE_COUNTRY'=>'173:NO:NORWAY',NorwayTaxMappings::SETTING=>json_encode($record)) as $name=>$value) {
+  foreach(array('MAIN_INFO_SIREN'=>'123456785','MAIN_INFO_SOCIETE_COUNTRY'=>'173:NO:NORWAY',NorwayVatRegistration::SETTING=>json_encode(array('version'=>1,'entity'=>$entity,'org'=>'123456785','start'=>'2027-01-01','confirmed_by'=>(int)$user->id,'confirmed_at'=>gmdate('c'))),NorwayTaxMappings::SETTING=>json_encode($record)) as $name=>$value) {
    peSql("DELETE FROM ".$p."const WHERE entity=".$entity." AND name='".$db->escape($name)."'");
    peSql("INSERT INTO ".$p."const (name,value,type,visible,entity) VALUES ('".$db->escape($name)."','".$db->escape($value)."','chaine',0,".$entity.")");
   }
@@ -27,7 +27,7 @@ try{
   $first=peObject($db,$invoice,$entity);peAssert($first->createStd($user)>0,'First mapped capture failed');
   $where=" WHERE entity=".$entity." AND document_type='".NorwayPostingEvidence::TYPE."' AND fk_document=";
   $firstRaw=$db->fetch_object(peSql('SELECT payload FROM '.$p.'norway_tax_evidence'.$where.(int)$first->id))->payload;
-  $firstData=json_decode($firstRaw,true);peAssert($firstData['tax_context']['status']==='Linked' && $firstData['tax_context']['lines'][0]['target']==='3','Native capture did not resolve explicit mapping');
+  $firstData=json_decode($firstRaw,true);peAssert($firstData['registration_context']['status']==='Before','Native posting omitted registration comparison');peAssert($firstData['tax_context']['status']==='Linked' && $firstData['tax_context']['lines'][0]['target']==='3','Native capture did not resolve explicit mapping');
   $corrected=$rule;$corrected['revision']=2;$corrected['target']='31';$record['events'][]=$corrected;
   peSql("UPDATE ".$p."const SET value='".$db->escape(json_encode($record))."' WHERE entity=".$entity." AND name='".NorwayTaxMappings::SETTING."'");
   $second=peObject($db,$invoice,$entity);peAssert($second->createStd($user)>0,'Corrected mapped capture failed');
@@ -37,13 +37,17 @@ try{
  } finally { $db->rollback(); }
  $o=peObject($db,$invoice,$entity);peAssert($o->createStd($user)>0,'Committed native event failed');$objects[]=(int)$o->id;
  $report=NorwayPostingEvidence::report($db,$entity,(int)$invoice->rowid,$user);$found=array_values(array_filter($report,fn($r)=>$r['id']===(int)$o->id));peAssert(count($found)===1 && $found[0]['status']==='Same','Saved event did not match current sources');$saved=$found[0]['data'];
- peAssert($saved['version']===2 && $saved['tax_context']===NorwayPostingTaxContext::evaluate($saved['basis'],$entity),'Native capture omitted versioned tax context');
+ peAssert($saved['version']===3 && $saved['tax_context']===NorwayPostingTaxContext::evaluate($saved['basis'],$entity),'Native capture omitted versioned tax context');
  // Version one remains readable; no present-day interpretation is silently added.
- $legacy=$saved;$legacy['version']=1;unset($legacy['tax_context']);
+ $legacy=$saved;$legacy['version']=1;unset($legacy['tax_context'],$legacy['registration_context']);
  $legacyJson=json_encode($legacy,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
  peSql("UPDATE ".$p."norway_tax_evidence SET payload='".$db->escape($legacyJson)."',payload_sha256='".hash('sha256',$legacyJson)."' WHERE entity=".$entity." AND document_type='".NorwayPostingEvidence::TYPE."' AND fk_document=".(int)$o->id);
  $legacyReport=NorwayPostingEvidence::report($db,$entity,(int)$invoice->rowid,$user);$legacyEntry=array_values(array_filter($legacyReport,fn($r)=>$r['id']===(int)$o->id))[0];
  peAssert($legacyEntry['data']['version']===1 && !isset($legacyEntry['data']['tax_context']),'Legacy context was backfilled');
+ $v2=$saved;$v2['version']=2;unset($v2['registration_context']);$v2Json=json_encode($v2,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+ peSql("UPDATE ".$p."norway_tax_evidence SET payload='".$db->escape($v2Json)."',payload_sha256='".hash('sha256',$v2Json)."' WHERE entity=".$entity." AND document_type='".NorwayPostingEvidence::TYPE."' AND fk_document=".(int)$o->id);
+ $v2Report=NorwayPostingEvidence::report($db,$entity,(int)$invoice->rowid,$user);$v2Entry=array_values(array_filter($v2Report,fn($r)=>$r['id']===(int)$o->id))[0];
+ peAssert($v2Entry['data']['version']===2 && !isset($v2Entry['data']['registration_context']),'Version two registration context was backfilled');
  $savedJson=json_encode($saved,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
  peSql("UPDATE ".$p."norway_tax_evidence SET payload='".$db->escape($savedJson)."',payload_sha256='".hash('sha256',$savedJson)."' WHERE entity=".$entity." AND document_type='".NorwayPostingEvidence::TYPE."' AND fk_document=".(int)$o->id);
 

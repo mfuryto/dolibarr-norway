@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.45.0';
+        $this->version = '0.46.0';
         $this->picto = 'accountancy';
     }
 
@@ -48,6 +48,10 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
                 $object->error = $this->error;
                 return -1;
             }
+        }
+        if ($reason==='' && $action==='BILL_VALIDATE') {
+            $warning=NorwayInvoiceValidation::registrationWarning($this->db,$object,$GLOBALS['mysoc'],$conf->entity);
+            if ($warning!=='') { $langs->load('norway@norway');setEventMessages($langs->trans('NorwayRegistrationWarning'.$warning),null,'warnings'); }
         }
         if ($reason !== '') {
             $langs->load('norway@norway');
