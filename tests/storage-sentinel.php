@@ -53,7 +53,7 @@ if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     file_put_contents('php://stderr', "Synthetic database/document content was not preserved.\n");
     exit(1);
 }
-$numberingInput=NorwayNumbering::input('F',1201,'K',501,'T',301);
+$numberingInput=NorwayNumbering::input('F',1201,'K',501,'T',301,1,1,'K','L');
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
     $preview=NorwayNumbering::preview($db,(int)$conf->entity,$numberingInput,$user);
     NorwayNumbering::save($db,(int)$conf->entity,$numberingInput,$preview['fingerprint'],$user);
@@ -62,7 +62,9 @@ if (NorwayNumbering::record($db,(int)$conf->entity)['input']!==$numberingInput
     || NorwayNumbering::record($db,(int)$conf->entity,'proposal')['input']!==$numberingInput
     || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'invoice')!=='F001201'
     || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'credit')!=='K000501'
-    || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'proposal')!=='T000301') { throw new RuntimeException('Numbering/start offsets lost through update/restore'); }
+    || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'proposal')!=='T000301'
+    || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'customer')!=='K00001'
+    || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'supplier')!=='L00001') { throw new RuntimeException('Numbering/start offsets lost through update/restore'); }
 $syntheticPayload='{"synthetic":true,"purpose":"backup-restore-only","version":1}';
 $syntheticHash=hash('sha256',$syntheticPayload);
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {

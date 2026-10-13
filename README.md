@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.51.0 · Under utvikling**
+**Versjon 0.52.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -20,7 +20,8 @@ foretak per installasjon.
 - **Tilbud og faktura på norsk og engelsk**, med NOK som dokumentvaluta.
   En separat kalkulator kan vise veiledende EUR-priser.
 - **Enkle, stigende nummerserier** for faktura, kreditnota og tilbud,
-  samt kunde- og leverandørnumre. Startnummer kan velges ved overgang
+  samt kunde- og leverandørnumre med valgfrie prefikser, for eksempel
+  K00001 og L00001. Startnummer kan velges ved overgang
   fra et annet system.
 - **Hjelp til MVA-oppsett**, med kontroll av norske satser, salg- og
   kjøpskontoer, registreringens virkningsdato og avgiftskodekoblinger.

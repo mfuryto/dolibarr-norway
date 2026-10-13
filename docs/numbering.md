@@ -14,7 +14,8 @@ nummerering. Administrator forhåndsviser og bekrefter overgangen.
 
 Seriene er separate og stigende. Faktura, kreditnota og tilbud bruker seks sifre
 med et valgbart prefiks på 1–4 store bokstaver. Kundenummer og leverandørnummer
-bruker fem sifre uten prefiks. Ingen bindestrek, dato eller årlig/månedlig
+bruker fem sifre med valgfritt prefiks på 0–4 store bokstaver fra 0.52.0.
+Tomt prefiks beholder rene numre; K og L kan brukes til å skille rollene. Ingen bindestrek, dato eller årlig/månedlig
 nullstilling inngår. En part kan være både kunde og leverandør og ha ett nummer
 i hver serie. Nedbetaling er en betaling mot fakturaen og endrer ikke
 fakturanummeret.
@@ -23,7 +24,7 @@ fakturanummeret.
 
 1. Avklar siste brukte numre i tidligere system og eksisterende installasjon.
 2. Åpne **Oppsettsveiviser → steg 7 → Velg nummerserier**.
-3. Velg startnummer for hver serie, og eventuelt andre prefikser for F/K/T.
+3. Velg startnummer for hver serie, og ønskede prefikser. Kunde-/leverandørprefiks kan stå tomt.
 4. Velg **Forhåndsvis nummerering**. Neste forventede nummer vises før lagring.
 5. Gjennomgå overgangen og bekreft **Aktiver nummereringen**.
 
@@ -43,6 +44,8 @@ som bare finnes i et tidligere system; administrator må avklare overgangen.
 F/K/T-oppsettet låses når nye dokumenter er utstedt etter konfigureringen, eller
 når den registrerte utstedte referansehistorikken er endret. Kunde-/leverandør-
 startnumre låses separat når partsposter er lagt til/fjernet eller kodene endret.
+Kunde-/leverandørprefiks kan fortsatt endres etter bruk, for nye koder.
+Tellingen fortsetter på tvers av tidligere valgte prefikser, uten omnummerering.
 Navne-/adresseendringer endrer ikke nummereringen. Betaling av en faktura endrer
 heller ikke serieoppsettet. Før seriene tas i bruk kan startnumrene korrigeres
 med ny forhåndsvisning og bekreftelse. Eksisterende numre beholder alltid sin verdi.
@@ -99,3 +102,36 @@ Teknisk grunnlag er Dolibarr 24.0.1 sin maskefunksjon og modulgrensesnitt, samt
 og [eksterne nummereringsmoduler](https://wiki.dolibarr.org/index.php/Create_numbering_module).
 Kravet gjelder kontrollerbar maskinell sekvens, ikke et bestemt bokstav-/datoformat;
 se [Skatteetatens uttalelse om nummerering](https://www.skatteetaten.no/rettskilder/type/uttalelser/prinsipputtalelser/nummerering-av-salgsdokumenter/).
+
+## Valgfrie partsprefikser fra 0.52.0
+
+Åpne samme nummerserieoppsett i steg 7. Kundenummer og leverandørnummer har
+nå hvert sitt valgfrie prefiksfelt. Eksempel: `K` gir `K00001`, `L` gir
+`L00001`; tomt felt gir `00001`. Velg **Forhåndsvis nummerering** og bekreft
+før endringen lagres. Prefiksene velges ikke automatisk ved oppdatering.
+K i kundekoder kan brukes samtidig med K på kreditnota; disse seriene er separate.
+
+Hver rolle har fortsatt sin egen teller og fem siffer. Neste nummer tar
+hensyn til rene tall og tidligere valgte prefikser for samme rolle i aktivt
+foretak. Bytte fra `00042` til K gir derfor `K00043`; et senere bytte til C
+eller tilbake til tomt prefiks nullstiller ikke tellingen. Kunde og leverandør
+kan fortsatt ha ulike neste numre. Brukte startnumre kan ikke endres for å
+starte på nytt. Høyeste suffix 99999 stopper tildeling også ved prefiksbytte.
+
+Eksisterende koder, også eldre formater, beholdes ved redigering. Prefiksbytte
+gjelder nye koder, også når en eksisterende part får en ny rolle. Det endrer
+ikke regnskapskonto, reskontrokode, faktura, kreditnota eller tilbud. Kjernens
+kodeallokering og eksterne partskodemodul gjenbrukes; ingen ny kjernemodul
+eller teller-tabell innføres.
+
+Oppsettskonstantens navn beholdes. Ved uttrykkelig bekreftet lagring brukes
+recordversjon 2 med valgfrie prefikser og en begrenset historikk over valgte
+prefikser per rolle (maksimalt 100 hver). Versjon 1 leses som før med tomme
+prefikser og oppgraderes ikke automatisk ved sidevisning/oppdatering. Det er
+ingen skjemaendring; eksisterende begrensninger rundt sletting og manuell
+manipulering gjelder fortsatt. Historikken er ikke et uforanderlig revisjonsspor.
+
+Tester dekker ekte oppretting av begge roller, uavhengige tellere, prefiksbytte,
+tomt prefiks og retur til tidligere prefiks, uendrede gamle koder, versjon
+1-kompatibilitet og bekreftet overgang, låst start, duplikat-/formatvern,
+HTTP-bekreftelse etter bruk og bevaring gjennom oppdatering og gjenoppretting.

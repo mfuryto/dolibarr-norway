@@ -60,6 +60,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-workflow.php
 "${compose[@]}" exec -T web php /opt/norway-tests/numbering.php
 "${compose[@]}" exec -T web php /opt/norway-tests/numbering-http.php
+"${compose[@]}" exec -T web php /opt/norway-tests/partner-prefixes.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-ledger.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-reconciliation.php
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-allocation.php

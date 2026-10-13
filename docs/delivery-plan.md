@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.51.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.52.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -351,3 +351,16 @@ begrunnede, versjonerte fradragsvalg, linjevis sporbarhet og kvalifisert
 bokførings-/korreksjonsintegrasjon. Blandede satser, utenlandskjøp, nullsats,
 manuelle bilag, registreringshistorikk og B1/B2-aksept gjenstår.
 Papirløs bilagsflyt og matching er fortsatt prioritert sist.
+
+## Valgfrie kunde-/leverandørprefikser i 0.52.0
+
+Nummerserieoppsettet tilbyr valgfrie prefikser foran femsifrede kunde- og
+leverandørkoder, eksempelvis K00001 og L00001. Prefiksbytte fortsetter hver
+rolles teller uten å endre gamle koder. Brukte startnumre forblir låst.
+Kjernens eksisterende allokering, bekreftelsesflyt og eksterne partskodemodul
+gjenbrukes. Tidligere oppsett leses med tomme prefikser; valg endres bare ved
+uttrykkelig bekreftelse. Ingen skjemaendring.
+
+Dette er en avgrenset oppsettsforbedring etter prosjekteiers valg. Videre
+A2-prioritet er uendret: begrunnede historiske fradragsvalg, linjevis sporbarhet
+og bokførings-/korreksjonsintegrasjon. Papirløs bilagsflyt ligger fortsatt sist.
