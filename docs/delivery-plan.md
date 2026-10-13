@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.54.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.55.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -404,3 +404,28 @@ rollback og bevaring av eldre payload. Ingen skjemaendring.
 Neste A2-arbeid er kvalifisert fradragsbokføring og korreksjonsløp med bevart
 vurderingsrevisjon. Blandede satser, ulike linjeandeler og øvrig særbehandling
 gjenstår. Papirløs bilagsflyt er fortsatt sist.
+
+
+## A2 – bekreftet førstegangsbokføring i 0.55.0
+
+Leverandørfakturabildet kan forhåndsvise og bokføre et nytt kostnadsbilag med
+siste lagrede, uendrede fradragsvurdering. Fullt, delvis og intet fradrag ved
+25/15/12 støttes for innenlandske NOK-fakturaer og kreditnotaer, med samme andel
+på alle linjer. Beløp avrundes per linje og posteres via kjernens API med
+konkret linjekobling, hovedbokskonto, leverandørreskontro og vurderingsrevisjon.
+
+Omfanget krever aktive kostnadskontoer i klasse 4–7 i valgt kontoplan, standard
+leverandørkonto 2400, støttet inngående MVA-konto, leverandørreskontrokode,
+åpen entydig regnskapsperiode og nøyaktig ørebalanse. Gamle eller fjernede
+posteringer i kontrollarkivet sperrer ny førstegangsbokføring. Bekreftelse
+verner kilde/oppsett/historikk; hele bilaget og arkivet rulles tilbake ved feil.
+En egen versjonert bokføringsregistrering bevarer bekreftet grunnlag og
+posterings-ID-er. Ingen DDL eller endring av tidligere posteringer.
+
+Vanlig kjøpsjournal sperres for nye posteringer med lagret delvis/intet fradrag,
+siden den ikke anvender valget. Bekreftet flyt kan ikke brukes til å erstatte
+allerede bokførte bilag. Tekniske tester kvalifiserer kontofordeling og
+sporbarhet innen omfanget, ikke fradragsrett eller norsk produksjonsetterlevelse.
+Neste arbeid er et uttrykkelig korreksjonsløp med bevarte originalposter og
+vurderingsrevisjoner. Blandede satser, ulike linjeandeler, eiendeler, nullsats,
+utland og øvrig særbehandling gjenstår. Papirløs bilagsflyt ligger sist.

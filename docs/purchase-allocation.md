@@ -187,3 +187,48 @@ Koblingen endrer ikke kontofordeling eller fradragsbeløp i hovedboken. For ekse
 vil en bevart 50-prosentvurdering fremdeles gi avvik i sammenligningen når kjernen
 har bokført full inngående MVA. Kvalifisert fradragsføring og korreksjoner er neste
 arbeid; denne leveransen er ikke norsk regnskapsmessig produksjonsaksept.
+
+
+## Bekreftet førstegangsbokføring fra 0.55.0
+
+For et nytt kostnadsbilag: lagre først fradragsvurderingen. Under **Bokfør med
+lagret fradragsvurdering** velges kjøpsjournal. Forhåndsvis kontoer og NOK-beløp,
+og bekreft at posteringene skal opprettes. Handlingen krever administrator,
+leverandørfaktura-/hovedboksleserett og kjernens `accounting.bind.write`-rett.
+Den bruker kjernens hovedboks-API, bilagsnummerering og periodekontroll.
+
+Siste vurdering må ha uendret kilde. Alle linjer må være knyttet til aktive
+kostnadskontoer i klasse 4–7 i valgt aktiv kontoplan; eiendelskjøp inngår ikke
+ennå. Leverandørkontoen må være 2400, og leverandøren må ha reskontrokode.
+MVA-kontoene er 2710/2711/2713 ved sats 25/15/12. Fakturadatoen må tilhøre én
+åpen, avgrenset periode uten overlapp. Erstattede/særskilt lukkede fakturaer og
+kreditnotaer med ukjent/annen leverandør som kilde avvises. Bare ørepresise bilag
+som balanserer nøyaktig støttes; ingen skjult avrundingskonto eller avrunding av
+fakturagrunnlaget. Samme fradragsandel gjelder alle linjer.
+
+Eksempel: netto 100 og MVA 25 med lagret 50 % fradrag gir kostnad 112,50 i
+debet, inngående MVA 12,50 i debet og leverandørgjeld 125 i kredit. Kreditnota
+har motsatt fortegn. Fradragsført MVA avrundes per linje, ikke som samlet
+prosent av fakturaens MVA. Beløpene er en anvendelse av brukerens dokumenterte
+valg, ikke automatisk avgjørelse av fradragsrett. Se Skatteetatens
+[dokumentasjonskrav](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-15/M-15-10/M-15-10.2/).
+
+Første bokføring bruker en egen `supplier_posting`-registrering med
+payloadversjon 1 i eksisterende kontrollarkiv. Den bevarer forhåndsvisning,
+vurderingsrevisjon, posteringer og bilagsnummer. Alle hovedbokslinjer og deres
+kildeobservasjoner opprettes i én transaksjon. Fordelingen kontrolleres før
+commit. Ved feil rulles hele den nye bokføringen tilbake. Ny innsending,
+endret kilde/oppsett og allerede eksisterende eller bevart bokføring avvises.
+En bekreftet registrering sperrer utrygg ny kjernetransfer og sammenblanding
+med et annet bilag på samme bilagsnummer. Ingen skjemaendring.
+
+Vanlig kjøpsjournal kan fortsatt brukes uten lagret særskilt fradragsvalg
+eller med fullt fradrag. Med lagret delvis eller intet fradrag må den bekreftede
+flyten brukes, slik at kjernen ikke posterer fullt fradrag ved en feil.
+Dette påvirker nye bokføringshandlinger; tidligere poster omskrives ikke.
+
+Korreksjon er foreløpig ikke støttet av denne handlingen. En ny vurdering
+endrer ikke eksisterende hovedbok, og sletting/ny overføring er ikke et
+kvalifisert korreksjonsløp. Videre arbeid skal bevare originalpostene og knytte
+rettingen til en ny vurderingsrevisjon. Teknisk verifisert bokføring innen dette
+avgrensede omfanget er ikke norsk regnskapsmessig produksjonsaksept.

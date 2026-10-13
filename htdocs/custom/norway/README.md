@@ -1,4 +1,4 @@
-# Norway 0.54.0
+# Norway 0.55.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -20,7 +20,10 @@ Reasoned deduction assessments can be explicitly previewed and saved with
 line amounts and revision history. Saving does not change postings or
 establish entitlement. New purchase postings retain the observed assessment
 revision and source agreement at creation time. Older observations are not
-backfilled. The comparison does not change postings or infer/approve deduction entitlement. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
+backfilled. Confirmed first posting applies full, partial or no deduction to
+supported domestic expense purchases and credits using the native ledger API.
+Existing postings cannot be replaced; corrections remain future work.
+The comparison does not change postings or infer/approve deduction entitlement. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
 A manual VAT registry lookup compares current status without changing settings.
 Customer/supplier codes have independent five-digit counters and optional
 prefixes. Prefix changes preserve existing codes and continue the counter.

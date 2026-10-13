@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.54.0';
+        $this->version = '0.55.0';
         $this->picto = 'accountancy';
     }
 
@@ -19,7 +19,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         if ($action==='BOOKKEEPING_CREATE') {
             require_once __DIR__.'/../../class/NorwayPostingEvidence.php';
             try { NorwayPostingEvidence::capture($this->db,(int)$conf->entity,$object,$user); }
-            catch (Throwable $error) { $langs->load('norway@norway');$this->error=$langs->trans('NorwayPostingCaptureFailed');$object->error=$this->error;return -1; }
+            catch (Throwable $error) { $langs->load('norway@norway');$message=$error->getMessage()==='ConfirmedDeductionRequired' ? 'NorwayPurchasePostingUseConfirmed' : (in_array($error->getMessage(),array('AlreadyPosted','ProtectedVoucher'),true) ? 'NorwayPurchasePostingAlreadyPosted' : 'NorwayPostingCaptureFailed');$this->error=$langs->trans($message);$object->error=$this->error;return -1; }
             return 0;
         }
         $reason = '';
