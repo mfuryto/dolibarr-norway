@@ -1,8 +1,12 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.42.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.43.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
+
+[Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
+betingede krav med KR01–KR26. Relevante krav skal knyttes til testbevis og
+aksept før et bruksområde erklæres støttet.
 
 ## Omfang og arbeidsregler
 
@@ -27,13 +31,16 @@ prioriteringen. Nye innstillinger skal løse et dokumentert gap i planen.
 | Bokført avgiftsgrunnlag – NBS 2 S15, SAF-T S5/S6 | Linjeopplysninger, koblinger til faktisk hovedbok og versjonerte kontrollkopier; bruttokontroll | Kontrollkopi av dagens data er ikke opprinnelig bokføringsøyeblikksbilde. Knytt grunnlag/avgift til faktiske posteringer for både salg og kjøp, inkludert manuelle bilag og korreksjoner. Avstem avgift og grunnlag hver for seg. |
 | Betaling/reskontro/balanse – NBS 5/7 S15 | Bankkoblinger, bilagsbalanse og syntetiske betalingsforløp | Avstem kunder/leverandører mot kontrollkontoene og bank: inngående saldo + bevegelser = utgående saldo. Prøv delbetaling, kreditnota, refusjon, gebyr og åpne poster. |
 | Utenlandshandel – Skatteetaten S17 | Separate kontoforslag for varer/tjenester og eksport/import | Kvalifiser konkrete land/kundetyper og leveranser. Innførsel av varer, fjernleverbare tjenester og omvendt avgiftsplikt er ulike scenarioer. Utenlandsk kunde alene gir ikke fritak. NOK-faktura fjerner ikke utenlandske avgiftsplikter eller bankens vekslingsgebyrer. |
-| EHF – DFØ S18, NBS 4 S15 | Norske/engelske PDF-er; ingen godkjent EHF-leveranse | Kvalifiser EHF faktura/kreditnota 3.0, kjøper-/ordrereferanser, tilgangspunkt og mottakertest. PDF er ikke EHF. Tilgangspunkt velges før faktisk sending. |
+| E-faktura – DFØ S18, Finansdepartementet S19, NBS 4 S15 | Norske/engelske PDF-er; ingen godkjent EHF-leveranse | Kvalifiser offentlig EHF og utgående e-faktura mellom bokføringspliktige virksomheter etter 2027-reglene. Mottaksplikt og digital bokføring følger 2030-reglene. Kontroller formatforskrift, unntak, referanser, tilgangspunkt, mottak og kvitteringer. PDF er ikke e-faktura. |
 | SAF-T Financial – Skatteetaten S5/S6/S12 | Fast offisiell avgiftskodereferanse og eksternt lagringsgrunnlag | Implementer kontomapping til gjeldende næringsspesifikasjon, fullstendig eksport og avstemming. Mål 1.40, pliktig fra 2027 og tilgjengelig nå. XSD-validering alene er utilstrekkelig. Elektronisk regnskap gir ikke automatisk småforetaksfritak. |
 | Sikring, kontrollspor, oppbevaring – NBS 1/2/3 S15, Altinn S16 | Vedvarende drift, backup og testet restore; begrenset endringshistorikk | Dokumentert risikovurdering, rollevern, låste perioder, retting med spor, lesbarhet og oppbevaring. Primærdokumentasjon normalt 5 år; sekundær normalt 3,5 år; vurder særregler. Backup alene er ikke arkiv eller fullstendig kontrollspor. |
 | Årsavslutning og næringsspesifikasjon | Kontoplan, lukkingskontoforslag og forklaring av skatteordboken | Årsavslutning og rapportgrunnlag for næringsspesifikasjonen er vedtatt videre omfang, men ikke ferdigstilt. Kvalifiser avstemming, periodisering, avskrivninger, resultatdisponering, inngående saldoer og låsing; prøv årsversjon og foretaksform for rapporten. |
 | Skatt/ansatte | Ingen automatisk norsk skatteberegning eller lønn | ENK-skatt er personlig; AS trenger eget årsoppgjørs-/innsendingsløp. Skattekontoer er ikke et utviklingskrav for fakturering. Ansatte/lønn er separat omfang. |
+| Bilag, spesifikasjoner og ajourhold – S15/S20/S22 | Begrensede faktura-/bilagskontroller | Kvalifiser kjøpsbilag, utlegg, manuelle posteringer, pliktige spesifikasjoner, frister og dokumentert retting. Se KR04–KR07; komplette rapporter kan ikke erstattes av en saldobalanse. |
+| Balanse, årsregnskap og særtilfeller – S21/S23/S25/S26 | Begrenset kontooppsett | Avklar varetelling, anleggsmidler, eiertransaksjoner og årsregnskapsplikt. Kontantsalg, lønn, privatkunder og særbransjer får begrunnede egne omfang. Se KR12/KR14/KR21–KR26. |
+| Lagringssted og personvern – S16/S24 | Privat driftsoppsett og backupvern | Avklar land, myndighetstilgang, elektronisk tilgjengelighet, leverandøransvar, innsyn og lagring/sletting uten tap av pliktig materiale. Se KR17–KR20. |
 
-S1–S18 henviser til [kilderegisteret](sources.md). Lov-/forskriftsgrunnlag og
+S1–S28 henviser til [kilderegisteret](sources.md). Lov-/forskriftsgrunnlag og
 NBS brukes som kravgrunnlag; dette dokumentet er ingen sertifisering.
 Prosjekteier har akseptert kontoplanen på grunnlag av sammenligningen med
 SAF-T-standardkontolisten; dette er prosjektaksept, ikke uavhengig
@@ -51,7 +58,7 @@ riktig bruksrett.
 | C | Reskontro, bank og balanseavstemming | Komplette saldoer og bevegelser, ingen dobbelttelling; inngående saldoer fra tidligere system behandles som egen migrering. Nytt regnskap trenger ingen konstruerte inngående poster. |
 | C2 | Årsavslutning før skattemelding og næringsspesifikasjon | Bygger på kvalifisert bokføring og C. Kontroller saldoer, bank, reskontro og MVA, og håndter dokumenterte periodiseringer, avskrivninger og resultatdisponering. Test overføring av inngående saldoer, gjentakelse uten dobbeltføring, endelig låsing og sporbar retting/etterpostering. |
 | D | Utenlandsscenarioer for varer og tjenester | Konkrete land-/kundetyper og leveringsmodeller; eksportdokumentasjon, importgrunnlag og omvendt avgiftsplikt. Bygger på A2/B1. |
-| E – spesifikasjon kan avklares tidlig | EHF/Peppol | Skjema og forretningsregler, kjøperreferanser, testmottaker og tilgangspunkt. Ingen produksjonssending før konkret avtale og aksept. |
+| E – friststyrt; avklares parallelt med A2 | E-faktura/EHF/Peppol for offentlige kunder og næringslivet | Kvalifiser sending etter 2027-reglene, format og unntak. Planlegg mottak og digital behandling etter 2030-reglene. Skjema/forretningsregler, referanser, arkiv, tilgangspunkt og mottakertest inngår. Sporet skal ikke vente på full MVA-/årsrapport. |
 | F – kontomapping kan utvikles parallelt | SAF-T 1.40 | Låst skjema/kodelisteversjon, datoavgrenset kontomapping, konto-/reskontrosaldoer, sporbar avgift og komplette totaler. Krever A2/B1/C før endelig eksportaksept. |
 | F2 | Rapportgrunnlag for næringsspesifikasjonen | Bygger på avstemt årsgrunnlag fra C2. Knytt regnskapstall til riktig årsversjon og foretaksprofil, med sporbarhet til kontoer/posteringer og eksplisitt behandling av skattemessige forskjeller. Kontroller fullstendighet og totaler før tallene brukes ved levering. |
 | G – vern utvikles gjennom alle trinn | Perioder, retting, arkiv, drift og produksjonsaksept | Rolle-/låsetester, dokumentert gjenoppretting, oppbevaring og en signert scenario-/kravmatrise for konkret støttet omfang. |
@@ -106,6 +113,11 @@ men stopper ikke uavhengig utvikling med syntetiske data.
 
 ## Fast ferdigkriterium
 
+Hvert støttet scenario skal gjennomgå relevante KR01–KR26 fra
+[kravregisteret](norwegian-requirements.md), med kilder, testbevis, eventuelle
+eksterne rutiner og begrunnede avgrensninger. Betingede krav som gjelder
+virksomheten må være håndtert før akkurat dette omfanget godkjennes.
+
 Relevant lokal test, dokumentert omfang/begrensninger og bestått CI på aktuell
 revisjon før PR fra staging leveres til main. Skjemaendringer krever versjonert
 migrering, backup og gjenopprettingstest. Bare eksplisitt støttede scenarioer
@@ -124,3 +136,14 @@ Dette fullfører ikke A2. Neste del er koblingen mellom fakturalinjer,
 konkrete kontoer og historisk avgiftsbehandling, deretter kjøp, manuelle
 bilag og korreksjoner. MVA-perioderapporten i B1 venter på kvalifisert bokført
 avgiftsgrunnlag. Ingen kontrollstatus gir avgiftsmessig produksjonsaksept.
+
+## A2 – lagrede linjekontoer i 0.43.0
+
+Fakturalinjens egne lagrede kontokoblinger sammenlignes med bokført netto
+per konkret salgskonto. Direkte linjereferanser og aggregerte kontosummer
+skilles uttrykkelig. Dagens produkt- og standardkontoer brukes ikke som
+reserve, og manglende/fremmede koblinger kan ikke gi samlet samsvar.
+
+Denne delen fullfører linjekontodiagnostikken innenfor de valgte profilene.
+Historisk avgiftsgrunnlag, kontovalgenes opprinnelige gyldighet, kjøp,
+manuelle bilag og rapportering gjenstår. Neste arbeid forblir A2, før B1/B2.

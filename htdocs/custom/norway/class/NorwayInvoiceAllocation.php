@@ -43,6 +43,40 @@ class NorwayInvoiceAllocation
         $status=$gross['status']==='Empty' ? 'Empty' : ($gross['status']==='Review' ? 'Review' : ($different ? 'Different' : 'Match'));
         return array('profile'=>$profile,'status'=>$status,'totals'=>$totals,'rows'=>$rows);
     }
+    /** Compare persisted line bindings, not today's product/default accounts. */
+    public static function lineAccounts($lines,$ledger,$profile)
+    {
+        $profiles=self::profiles();if (!isset($profiles[$profile]) || $ledger['truncated'] || count($ledger['rows'])>200 || count($lines)>200) { throw new InvalidArgumentException('Line account scope'); }
+        $rule=$profiles[$profile];$expected=array();$actual=array();$byLine=array();$linked=array();$rows=array();$review=false;$grouped=false;$different=false;
+        foreach ($lines as $line) {
+            $id=(int)$line->rowid;if ($id<=0 || isset($byLine[$id])) { throw new InvalidArgumentException('Line identity'); }
+            $number=(string)($line->bound_number ?? '');$amount=-NorwayInvoiceReconciliation::amount($line->total_ht);
+            $state=empty($line->fk_code_ventilation) || $number==='' ? 'Missing' : (!in_array($number,$rule['sales'],true) ? 'Outside' : 'Bound');
+            $review=$review || $state!=='Bound';$byLine[$id]=array('account'=>$number,'amount'=>$amount);
+            if ($state==='Bound') { $expected[$number]=($expected[$number] ?? 0)+$amount; }
+            $rows[]=array('line'=>$id,'binding'=>(int)($line->fk_code_ventilation ?? 0),'account'=>$number,'label'=>(string)($line->bound_label ?? ''),'active'=>isset($line->bound_active) ? (int)$line->bound_active : null,'status'=>$state);
+        }
+        foreach ($ledger['rows'] as $row) {
+            $number=(string)$row->numero_compte;if (!in_array($number,$rule['sales'],true)) { continue; }
+            $amount=NorwayInvoiceReconciliation::amount($row->debit)-NorwayInvoiceReconciliation::amount($row->credit);
+            $actual[$number]=($actual[$number] ?? 0)+$amount;
+            $review=$review || !in_array($row->trace,array('Linked','Aggregated'),true) || $row->fk_docdet===null;
+            $id=(int)$row->fk_docdet;
+            if ($id===0) { $grouped=true;continue; }
+            if (!isset($byLine[$id]) || $byLine[$id]['account']!==$number) { $different=true;continue; }
+            $linked[$id]=($linked[$id] ?? 0)+$amount;
+        }
+        $totals=array();$numbers=array_unique(array_merge(array_keys($expected),array_keys($actual)));sort($numbers);
+        foreach ($numbers as $number) {
+            $e=$expected[$number] ?? 0;$a=$actual[$number] ?? 0;$delta=$a-$e;$different=$different || abs($delta)>1000000;
+            $totals[]=array('account'=>(string)$number,'expected'=>NorwayInvoiceReconciliation::display($e),'actual'=>NorwayInvoiceReconciliation::display($a),'difference'=>NorwayInvoiceReconciliation::display($delta));
+        }
+        if (!$grouped) { foreach ($byLine as $id=>$line) { $different=$different || abs(($linked[$id] ?? 0)-$line['amount'])>1000000; } }
+        // A known wrong line reference is still wrong when other rows are aggregated.
+        foreach ($linked as $id=>$amount) { if (!$grouped || ($amount!==0 && ($amount<0)!==($byLine[$id]['amount']<0)) || abs($amount)>abs($byLine[$id]['amount'])+1000000) { $different=$different || abs($amount-$byLine[$id]['amount'])>1000000; } }
+        $status=$review ? 'Review' : (!$ledger['rows'] ? 'Empty' : ($different ? 'Different' : ($grouped ? 'Grouped' : 'Match')));
+        return array('status'=>$status,'rows'=>$rows,'totals'=>$totals);
+    }
     public static function report($db,$entity,$id,$profile)
     {
         if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !is_int($id) || $id<=0) { throw new InvalidArgumentException('Entity'); }
@@ -59,7 +93,7 @@ class NorwayInvoiceAllocation
         $r=$db->query('SELECT f.ref,f.type,f.fk_statut,f.datef,f.multicurrency_code,f.total_ht,f.total_tva,f.total_ttc,c.code AS buyer_country FROM '.$p.'facture f LEFT JOIN '.$p.'societe s ON s.rowid=f.fk_soc AND s.entity=f.entity LEFT JOIN '.$p.'c_country c ON c.rowid=s.fk_pays WHERE f.entity='.$entity.' AND f.rowid='.$id);
         $header=$r ? $db->fetch_object($r) : null;if (!$header) { throw new RuntimeException('Invoice'); }
         $header->seller_country=$GLOBALS['mysoc']->country_code ?? '';
-        $r=$db->query('SELECT rowid,total_ht,total_tva,tva_tx,info_bits,localtax1_tx,localtax2_tx FROM '.$p.'facturedet WHERE fk_facture='.$id.' ORDER BY rowid LIMIT 201');
+        $r=$db->query('SELECT d.rowid,d.total_ht,d.total_tva,d.tva_tx,d.info_bits,d.localtax1_tx,d.localtax2_tx,d.fk_code_ventilation,a.account_number AS bound_number,a.label AS bound_label,a.active AS bound_active FROM '.$p.'facturedet d LEFT JOIN '.$p.'accounting_account a ON a.rowid=d.fk_code_ventilation AND a.entity='.$entity.' WHERE d.fk_facture='.$id.' ORDER BY d.rowid LIMIT 201');
         if (!$r) { throw new RuntimeException('Lines'); }$lines=array();while ($line=$db->fetch_object($r)) { $lines[]=$line; }
         $ledger=NorwayInvoiceLedger::report($db,$entity,$id);$keys=array();
         foreach ($ledger['rows'] as $row) {
@@ -67,6 +101,9 @@ class NorwayInvoiceAllocation
             $extra=$db->query("SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND code_journal='".$db->escape($row->code_journal)."' AND piece_num=".(int)$row->piece_num." AND (doc_type IS NULL OR doc_type<>'customer_invoice' OR fk_doc IS NULL OR fk_doc<>".$id.") LIMIT 1");
             if (!$extra || $db->fetch_object($extra)) { throw new RuntimeException('Incomplete voucher'); }
         }
-        return self::evaluate($header,$lines,$ledger,$profile);
+        $result=self::evaluate($header,$lines,$ledger,$profile);
+        $result['line_accounts']=self::lineAccounts($lines,$ledger,$profile);
+        if ($result['status']==='Match' && $result['line_accounts']['status']!=='Match') { $result['status']=$result['line_accounts']['status']; }
+        return $result;
     }
 }

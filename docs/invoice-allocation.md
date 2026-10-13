@@ -64,3 +64,30 @@ og den låste kontoplanprofilen bestemmer de avgrensede kontrollprofilene.
 [NBS 2 Kontrollsporet](https://www.regnskapsstiftelsen.no/bokforing/bokforingsstandarder/nbs-2-kontrollsporet/)
 brukes som kravgrunnlag for sporbarhet. Kontrollen alene oppfyller ikke hele
 standarden. Kildene ble kontrollert 2026-10-13.
+
+## Lagrede linjekontoer fra 0.43.0
+
+Kontrollen leser `facturedet.fk_code_ventilation` og slår opp akkurat denne
+konto-ID-en i aktivt foretak. Dagens produktkort, standardkontoer og valgt
+kontoplan brukes ikke til å fylle tomme koblinger eller forklare historikk.
+Manglende eller fremmede kontokoblinger gir gjennomgang, og fremmede
+kontonavn vises ikke. Nå inaktive kontoer beholdes i sammenligningen;
+inaktivitet alene beviser ikke at en eldre postering er feil.
+
+Netto summeres per konkret lagret salgskonto og sammenlignes med faktiske
+salgsposter. Dette kan avdekke at 600 på konto 3000 og 400 på 3020 feilaktig
+ble bokført som 400 og 600, selv om samlet salg og MVA er riktig.
+Direkte hovedboksreferanser kontrolleres mot riktig fakturalinje, konto og
+beløp når hele salget er postert med linjereferanser.
+
+Hvis noen salgsposter er aggregert (`fk_docdet=0`), vises **samsvar per
+kontosum**, uten bekreftelse av hver linjes beløp. Kjente feil i direkte
+linjereferanser skjules ikke av andre aggregerte poster. Den samlede
+kontrollstatusen kan ikke vise ordinært samsvar ved manglende koblinger
+eller avvik i linjekontoene.
+
+Dette er fortsatt en sammenligning av dagens lagrede kilder. Konto-ID,
+kontonummer, kontonavn og linjekobling er ikke et uforanderlig bevis på hva
+som gjaldt ved opprinnelig bokføring. Den nye delen erstatter ikke historisk
+avgiftsmetadata eller faglig vurdering av riktig salgskonto for en leveranse.
+Neste arbeid under A2 er historisk avgiftsgrunnlag og videre kjøps-/bilagsdekning.
