@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.50.0 · Under utvikling**
+**Versjon 0.51.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -29,7 +29,7 @@ foretak per installasjon.
   Nye salgs- og kjøpsposteringer bevarer kildeopplysninger og separate
   daterte kodekoblinger. Salg bevarer også registreringssammenligning. Valgte fordelingsprofiler kan sammenlignes
   med bevart grunnlag. En valgfri kjøpskontroll finnes i leverandørfakturabildet
-  for uttrykkelig valgte profiler med fullt fradrag.
+  for uttrykkelig valgte profiler med fullt, delvis eller ingen fradragsføring.
 - **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
   kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
 

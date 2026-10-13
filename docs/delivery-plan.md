@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.50.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.51.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -335,3 +335,19 @@ Dette kvalifiserer teknisk sammenligning innen valgt omfang. Neste A2-arbeid
 er uttrykkelig delvis/ingen fradragsbehandling og dokumenterte korreksjonsløp.
 Blandede satser, utenlandskjøp, nullsats, manuelle bilag, registreringshistorikk
 og B1/B2-aksept gjenstår. Papirløs opplasting og matching ligger fortsatt sist.
+
+## A2 – uttrykkelig delvis/ingen fradragssammenligning i 0.51.0
+
+Den eksisterende kjøpskontrollen sammenligner nå også delvis og ingen
+fradragsføring for valgte enkeltsatser. Delvis krever uttrykkelig prosent;
+ørebundet linjeavrunding og kreditnotafortegn kontrolleres. Resterende MVA
+fordeles på bevarte kjøpskontoer i sammenligningen, uten endring i hovedboken.
+Kjernens globale bokføring med avgift på kjøpskonto er undersøkt og testet;
+NPR er uttrykkelig avgrenset og brukes ikke som norsk fradragsmodell.
+
+Dette er teknisk sammenligning av et valgt grunnlag, ikke lagret historisk
+fradragsvalg eller implementert delvis fradragsbokføring. Neste A2-arbeid er
+begrunnede, versjonerte fradragsvalg, linjevis sporbarhet og kvalifisert
+bokførings-/korreksjonsintegrasjon. Blandede satser, utenlandskjøp, nullsats,
+manuelle bilag, registreringshistorikk og B1/B2-aksept gjenstår.
+Papirløs bilagsflyt og matching er fortsatt prioritert sist.
