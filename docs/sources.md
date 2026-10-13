@@ -24,3 +24,26 @@ Dolibarr Norway, Norwegian accounting og Norwegian SAF-T. Negativt søk er
 begrenset til indeksert offentlig materiale og er ikke et markedsbevis.
 
 SAF-T-kodereferansen fra 0.28.0 bruker kun de 30 numeriske identifikatorene fra [Standard Tax Codes CSV ved S6-revisjonen](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv), kontrollert 2026-10-12. Beskrivelser og behandlingsregler distribueres ikke. Eksakt kodemedlemskap er ikke historisk mapping eller valg av avgiftsbehandling.
+
+
+## Revidert kravgrunnlag 2026-10-13
+
+S5/S7/S8/S12 er kontrollert på nytt. SAF-T 1.40 kan brukes nå og er pliktig
+fra 2027; eldre skjema gjelder tidligere regnskapsår. De generelle satsene er
+25/15/12. Faktura-/kreditnotakrav og krav til elektronisk regnskap inngår i
+akseptmatrisen, ikke bare oppsettveiledningen.
+
+| ID | Primærkilde | Bruk / avgrensning |
+| --- | --- | --- |
+| S14 | [Standard Norge: NS 4102:2023, forhåndsvisning](https://forhandsvis.standard.no/product/2557323/en?filePath=096d0e6f-da0b-4f01-8c47-39cdf687ddc7.zip) | Bekrefter revisjonen og strukturendringer. Den medfølgende profilen er ikke verifisert mot hele standarden; innholdet kopieres ikke til Git. |
+| S15 | [Norsk Regnskapsstiftelse: bokføringsstandarder](https://www.regnskapsstiftelsen.no/bokforing/bokforingsstandarder/) | NBS 1/2/3/4/5 april 2025 og NBS 7 november 2025 som separate kravgrunnlag for sikring, kontrollspor, elektronisk tilgjengelighet, e-faktura, balanse og betaling. Full funksjonell kvalifisering gjenstår. |
+| S16 | [Altinn: oppbevaring](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/oppbevaring-av-regnskapsmateriale) | Primær-/sekundærdokumentasjon og særregler; backup alene er ikke dokumentert etterlevelse. |
+| S17 | [Skatteetaten: utenlandshandel](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/utland/) og [kjøp av tjenester fra utlandet](https://www.skatteetaten.no/satser/mva-satser-kjop-av-tjenester-fra-utlandet-svalbard-og-jan-mayen/) | Kjøp/salg, omvendt avgiftsplikt og egne rapporteringsløp må kvalifiseres per scenario. |
+| S18 | [DFØ: EHF-fakturering](https://www.anskaffelser.no/verktoy/veiledere/ehf-fakturering) | EHF faktura/kreditnota 3.0 og offentlig mottakerprosess; ingen leverandør eller tilgangspunkt er valgt av denne kildekontrollen. |
+
+Lovgrunnlaget er bokføringsloven og bokføringsforskriften, blant annet
+salgsdokumentasjon, retting, spesifikasjoner og oppbevaring. Altinns
+veiledninger lenker til gjeldende bestemmelser. Direkte Lovdata-lesing ble
+avvist av tjenesten ved denne kontrollen; det hevdes derfor ikke full ny
+paragrafgjennomgang. Rettskilder og konkrete akseptkrav kontrolleres på nytt
+før hver avhengige leveranse.

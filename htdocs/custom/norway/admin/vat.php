@@ -8,6 +8,7 @@ llxHeader('',$langs->trans('NorwayVatSetup'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayVatSetup'),'','accountancy');
 print '<div class="warning">'.$langs->trans('NorwayVatSetupScope').'</div>';
 print '<p>'.$langs->trans('NorwayVatSetupTreatment').'</p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/vatrates.php',1).'">'.$langs->trans('NorwayVatRatesTitle').'</a></p>';
 try {
     $rows=NorwayVatSetup::report($db,$conf->entity,getDolGlobalInt('CHARTOFACCOUNTS'),array('sell'=>getDolGlobalString('ACCOUNTING_VAT_SOLD_ACCOUNT'),'buy'=>getDolGlobalString('ACCOUNTING_VAT_BUY_ACCOUNT')));
     if (!$rows) { print '<div class="warning">'.$langs->trans('NorwayVatSetupEmpty').'</div>'; }

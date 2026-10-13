@@ -1,5 +1,11 @@
 # Teknisk dekningsanalyse
 
+Oppdatert status og prioritering 2026-10-13 finnes i
+[arbeidsplanen](delivery-plan.md). Analysen nedenfor bevarer tidligere
+kilde-/datakart; formuleringer om «neste del» er historiske og er ikke dagens
+leveransestatus. Programvare og valutaføring er ikke generelle begrensninger
+i kontoplanen; salgsdokumenter er avgrenset til NOK med valgfri EUR-prisvisning.
+
 Vurdert 2026-10-11. Status: første kildekontroll og kjørbart modulgrunnlag, ikke
 bekreftelse på norsk etterlevelse. Kildereferanser S1–S12 finnes i
 [kilderegisteret](sources.md). Testbevis og begrensninger står i
