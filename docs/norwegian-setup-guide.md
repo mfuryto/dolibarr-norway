@@ -103,6 +103,11 @@ Fra 0.18.0 samler [kontroll av dokumentoppsett](document-setup.md) gjeldende num
 
 ## 8. Offentlige kunder og utenlandshandel
 
+**E-faktura til næringslivet:** Roadmapen omfatter også de nye kravene til
+utgående e-faktura fra 2027 og mottak/digital bokføring fra 2030. Kontroller
+gjeldende formatregler og unntak; EHF-behov begrenses ikke til offentlige
+kunder. Se KR16 og fristene i [norsk kravregister](norwegian-requirements.md).
+
 **Offentlige kunder:** Avklar EHF-mottaker, bestiller-/ordrereferanse, kontraktskrav, vedlegg og tilgangspunkt før sending. PDF på e-post er ikke EHF. Kvalifisert norsk EHF/Peppol-integrasjon er ikke levert; ekstern løsning må vurderes med sporbarhet til fakturaen. Se [DFØs EHF-veiledning](https://www.anskaffelser.no/verktoy/veiledere/ehf-fakturering).
 
 **Utland:** Avklar leveringsmodell, mottakerland, kundetype og dokumentasjon for både salg og kjøp før avgiftsregel velges. Programvare er ikke én universell avgiftskategori. Ikke bruk norsk innenlandsk standardkonto eller 0 prosent som eneste beslutningsregel. Utenlandske avgiftsplikter, kjøp med omvendt avgiftsplikt, utenlandsk valuta og dokumenterte bankoppgjør krever særskilt kvalifisering. Støttede NOK-salgsdokumenter utvider ikke automatisk modulens avgiftsstøtte.

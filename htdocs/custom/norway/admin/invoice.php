@@ -115,6 +115,14 @@ if (GETPOSTISSET('id')) {
                         foreach ($allocationReport['totals'] as $total) { print '<tr><td>'.$langs->trans('NorwayAllocation'.$total['role']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
                         print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayInvoiceLedgerID').'</th><th>'.$langs->trans('NorwayInvoiceLedgerAccount').'</th><th>'.$langs->trans('NorwayAllocationRole').'</th><th>'.$langs->trans('NorwayAllocationActual').'</th></tr>';
                         foreach ($allocationReport['rows'] as $row) { print '<tr><td>'.(int)$row['id'].'</td><td>'.dol_escape_htmltag($row['account']).'</td><td>'.$langs->trans('NorwayAllocation'.$row['role']).'</td><td>'.dol_escape_htmltag($row['amount']).'</td></tr>'; }print '</table></div>';
+                        $lineAccounts=$allocationReport['line_accounts'];
+                        print '<h4>'.$langs->trans('NorwayLineAccountsTitle').'</h4><p>'.$langs->trans('NorwayLineAccountsScope').'</p><div class="warning">'.$langs->trans('NorwayLineAccounts'.$lineAccounts['status']).'</div>';
+                        print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                        foreach (array('Line','Binding','Account','Status') as $column) { print '<th>'.$langs->trans('NorwayLineAccounts'.$column).'</th>'; }print '</tr>';
+                        foreach ($lineAccounts['rows'] as $row) { print '<tr><td>'.(int)$row['line'].'</td><td>'.(int)$row['binding'].'</td><td>'.dol_escape_htmltag($row['account'].' — '.$row['label']).($row['active']===0 ? '<br>'.$langs->trans('NorwayLineAccountsInactive') : '').'</td><td>'.$langs->trans('NorwayLineAccounts'.$row['status']).'</td></tr>'; }print '</table></div>';
+                        print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayLineAccountsAccount').'</th>';
+                        foreach (array('Expected','Actual','Difference') as $column) { print '<th>'.$langs->trans('NorwayAllocation'.$column).'</th>'; }print '</tr>';
+                        foreach ($lineAccounts['totals'] as $total) { print '<tr><td>'.dol_escape_htmltag($total['account']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
                     } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayAllocationUnavailable').'</div>'; }
                 }
                 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/bookkeeping/list.php">'.$langs->trans('NorwayInvoiceLedgerOpen').'</a></p>';
