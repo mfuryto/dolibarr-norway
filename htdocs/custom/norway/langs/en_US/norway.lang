@@ -977,3 +977,17 @@ NorwayRetainedAllocationDifferent=Posted amounts differ from preserved sources w
 NorwayRetainedAllocationEmpty=No comparable postings.
 NorwayRetainedAllocationChanged=Current source data has changed. This comparison uses the preserved sources.
 NorwayRetainedAllocationUnavailable=Retained allocation could not be checked for the selected profile. No approval is given.
+
+NorwayPurchaseTitle=Norwegian purchase allocation control
+NorwayPurchaseScope=Optional comparison of preserved invoice sources and ledger. Select full deduction only after assessing this purchase. The result does not establish the right to deduct VAT. Partial deduction, special markers and foreign purchases are outside scope.
+NorwayPurchaseProfile=Comparison basis
+NorwayPurchaseFull=Full deduction selected for comparison
+NorwayPurchaseReview=Sources are incomplete, changed or outside the selected scope. Review source data and postings before using the figures for reporting.
+NorwayPurchaseGrouped=Account totals agree with the selected basis. Individual line allocation and the right to deduct VAT are not confirmed.
+NorwayPurchaseMatch=Amounts and line accounts agree with the selected basis. Deduction entitlement and VAT treatment still require assessment.
+NorwayPurchaseDifferent=Postings differ from the selected comparison basis. Review supplier liability, purchase accounts and VAT; other deduction conditions may require a different basis.
+NorwayPurchaseUnavailable=Purchase allocation could not be checked. Ask an administrator to review access and preserved sources before retrying. No approval is given.
+NorwayPurchaseSupplier=Supplier liability
+NorwayPurchasePurchase=Purchase accounts
+NorwayPurchaseVat=Input VAT
+NorwayPurchaseOther=Other accounts

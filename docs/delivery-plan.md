@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.49.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.50.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -322,3 +322,16 @@ Dette kvalifiserer teknisk oppsettskobling, ikke fradragsrett eller MVA.
 Neste A2-arbeid er kjøpsfordeling mot hovedbok, uttrykkelig fradragsomfang og
 korreksjonsløp. Manuelle bilag, nullsats, registreringshistorikk og B1/B2-aksept
 gjenstår. Papirløs opplasting og matching er fortsatt prioritert sist.
+
+## A2 – kjøpsfordeling i kjernens leverandørfakturabilde i 0.50.0
+
+En valgfri, lesende [kjøpskontroll](purchase-allocation.md) vises i Dolibarrs
+leverandørfakturabilde. Valgte innenlandske 25/15/12-profiler for fullt fradrag
+sammenligner bevart netto, MVA, brutto og konkrete linjekontoer med hovedbok.
+Kreditnota, summerte poster, endrede kilder og bilagsfullstendighet håndteres
+uten en ny bilagsflyt. Fradragsrett velges eller godkjennes ikke automatisk.
+
+Dette kvalifiserer teknisk sammenligning innen valgt omfang. Neste A2-arbeid
+er uttrykkelig delvis/ingen fradragsbehandling og dokumenterte korreksjonsløp.
+Blandede satser, utenlandskjøp, nullsats, manuelle bilag, registreringshistorikk
+og B1/B2-aksept gjenstår. Papirløs opplasting og matching ligger fortsatt sist.

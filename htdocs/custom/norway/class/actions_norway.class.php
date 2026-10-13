@@ -69,6 +69,16 @@ class ActionsNorway
         return 0;
     }
 
+    public function tabContentViewSupplierInvoice($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db,$conf,$user,$langs;
+        if (!isModEnabled('norway') || substr(str_replace('\\','/',$_SERVER['SCRIPT_FILENAME'] ?? ''),-strlen('/fourn/facture/card.php'))!=='/fourn/facture/card.php') { return 0; }
+        require_once __DIR__.'/NorwayPurchaseCard.php';
+        // This core hook expects direct output. Return zero to retain the native card.
+        print NorwayPurchaseCard::render($db,$object,$user,$langs,(int)$conf->entity,GETPOST('norway_purchase_profile','aZ09'));
+        return 0;
+    }
+
     public function updateSession($parameters, &$object, &$action, $hookmanager)
     {
         global $conf, $langs;

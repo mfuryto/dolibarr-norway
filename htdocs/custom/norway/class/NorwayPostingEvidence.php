@@ -4,6 +4,7 @@ require_once __DIR__.'/NorwaySchema.php';
 require_once __DIR__.'/NorwayPostingTaxContext.php';
 require_once __DIR__.'/NorwayPostingRegistrationContext.php';
 require_once __DIR__.'/NorwayPostingAllocation.php';
+require_once __DIR__.'/NorwayPurchaseAllocation.php';
 /** Raw observations at a native create event, not tax qualification or backfill. */
 class NorwayPostingEvidence
 {
@@ -80,7 +81,7 @@ class NorwayPostingEvidence
     }
     public static function report($db,$entity,$invoiceId,$user,$profile=null,$documentType='customer_invoice')
     {
-        if (!in_array($documentType,array('customer_invoice','supplier_invoice'),true) || ($documentType==='supplier_invoice' && $profile!==null)) { throw new InvalidArgumentException('Observation document type'); }
+        if (!in_array($documentType,array('customer_invoice','supplier_invoice'),true)) { throw new InvalidArgumentException('Observation document type'); }
         $supplier=$documentType==='supplier_invoice';
         if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !is_int($invoiceId) || $invoiceId<=0
             || empty($user->admin) || !($supplier ? $user->hasRight('fournisseur','facture','lire') : $user->hasRight('facture','lire')) || !$user->hasRight('accounting','mouvements','lire')) { throw new InvalidArgumentException('Posting observation access'); }
@@ -88,9 +89,9 @@ class NorwayPostingEvidence
         if ((int)$active[0]['active']!==0 || !$db->query('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ') || !$db->query('SET TRANSACTION READ ONLY') || $db->begin()<=0) { throw new RuntimeException('Posting observation read boundary'); }
         try { $result=self::readReport($db,$entity,$invoiceId,$documentType);
             if ($profile!==null) {
-                $ledger=NorwayInvoiceLedger::report($db,$entity,$invoiceId);
-                NorwayInvoiceAllocation::assertCompleteVoucher($db,$entity,$invoiceId,$ledger);
-                $result=NorwayPostingAllocation::evaluate($result,$ledger,$profile);
+                $ledger=NorwayInvoiceLedger::report($db,$entity,$invoiceId,$documentType);
+                NorwayInvoiceAllocation::assertCompleteVoucher($db,$entity,$invoiceId,$ledger,$documentType);
+                $result=$supplier ? NorwayPurchaseAllocation::evaluate($result,$ledger,$profile) : NorwayPostingAllocation::evaluate($result,$ledger,$profile);
             }
             if ($db->commit()<=0) { throw new RuntimeException('Observation read commit'); }return $result; }
         catch (Throwable $error) { $db->rollback();throw $error; }
