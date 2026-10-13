@@ -38,7 +38,8 @@ class mod_codeclient_norway extends mod_codeclient_elephant
             if ((string)$old->code===(string)$code) { return 0; }
         }
         if ($code===null || $code==='') { return -2; }
-        if (!is_string($code) || !preg_match('/^[0-9]{5}$/D',$code) || (int)$code<1) { return -1; }
+        try { $record=NorwayNumbering::record($db,(int)$conf->entity,$type===1 ? 'supplier' : 'customer');$prefix=$record['input'][($type===1 ? 'supplier' : 'customer').'_prefix']; }catch(Throwable $error){return -6;}
+        if (!is_string($code) || !preg_match('/^'.preg_quote($prefix,'/').'[0-9]{5}$/D',$code) || (int)substr($code,strlen($prefix))<1) { return -1; }
         $r=$db->query('SELECT rowid FROM '.$db->prefix().'societe WHERE entity='.(int)$conf->entity.' AND '.$field."='".$db->escape($code)."' AND rowid<>".$id.' LIMIT 1');
         if (!$r) { return -6; } return $db->num_rows($r)>0 ? -3 : 0;
     }

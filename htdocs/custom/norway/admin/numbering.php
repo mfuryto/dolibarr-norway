@@ -34,7 +34,7 @@ try {
             if (!is_string($raw) || !preg_match('/^[0-9]{1,6}$/D',$raw)) { throw new InvalidArgumentException('Start number'); }
             $values[$kind.'_start']=(int)$raw;
         }
-        $input=NorwayNumbering::input(GETPOST('invoice_prefix','none'),$values['invoice_start'],GETPOST('credit_prefix','none'),$values['credit_start'],GETPOST('proposal_prefix','none'),$values['proposal_start'],$values['customer_start'],$values['supplier_start']);
+        $input=NorwayNumbering::input(GETPOST('invoice_prefix','none'),$values['invoice_start'],GETPOST('credit_prefix','none'),$values['credit_start'],GETPOST('proposal_prefix','none'),$values['proposal_start'],$values['customer_start'],$values['supplier_start'],GETPOST('customer_prefix','none'),GETPOST('supplier_prefix','none'));
     }
     $preview=NorwayNumbering::preview($db,(int)$conf->entity,$input,$user);
     if ($record) { print '<p>'.$langs->trans('NorwayNumberingActive').'</p>'; }
@@ -45,12 +45,13 @@ try {
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayNumberingType').'</th><th>'.$langs->trans('NorwayNumberingStart').'</th><th>'.$langs->trans('NorwayNumberingNext').'</th></tr>';
     foreach (NorwayNumbering::KINDS as $kind) { print '<tr><td>'.$langs->trans('NorwayNumbering'.ucfirst($kind)).'</td><td>'.(int)$input[$kind.'_start'].'</td><td>'.dol_escape_htmltag($preview['next'][$kind]).'</td></tr>'; }
     print '</table></div>';
-    if (!$preview['locked'] || !$preview['partners_locked']) {
+    { // Partner prefixes remain configurable after first use; starts stay locked.
         print '<h2>'.$langs->trans('NorwayNumberingConfigure').'</h2><form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="previewnumbering">';
         foreach (NorwayNumbering::KINDS as $kind) {
             $partner=in_array($kind,array('customer','supplier'),true); $readonly=($partner ? $preview['partners_locked'] : $preview['locked']) ? ' readonly' : '';
             print '<fieldset><legend>'.$langs->trans('NorwayNumbering'.ucfirst($kind)).'</legend>';
-            if (!$partner) { print '<p><label>'.$langs->trans('NorwayNumberingPrefix').' <input type="text" maxlength="4" pattern="[A-Z]{1,4}" name="'.$kind.'_prefix" required'.$readonly.' value="'.dol_escape_htmltag($input[$kind.'_prefix']).'"></label></p>'; }
+            $prefixReadonly=$partner ? '' : $readonly;
+            print '<p><label>'.$langs->trans($partner ? 'NorwayNumberingPartnerPrefix' : 'NorwayNumberingPrefix').' <input type="text" maxlength="4" pattern="[A-Z]{'.($partner ? '0' : '1').',4}" name="'.$kind.'_prefix"'.($partner ? '' : ' required').$prefixReadonly.' value="'.dol_escape_htmltag($input[$kind.'_prefix']).'"></label></p>';
             print '<p><label>'.$langs->trans('NorwayNumberingStart').' <input type="number" min="1" max="'.($partner ? '99999' : '999999').'" name="'.$kind.'_start" required'.$readonly.' value="'.(int)$input[$kind.'_start'].'"></label></p></fieldset>';
         }
         print '<p>'.$langs->trans('NorwayNumberingStartHelp').'</p><button class="button" type="submit">'.$langs->trans('NorwayNumberingPreview').'</button></form>';
