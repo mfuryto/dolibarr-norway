@@ -51,7 +51,7 @@ $optional = array(
     1=>array('Registry'=>'/custom/norway/admin/registry.php'),
     2=>array(),
     3=>array('Registry'=>'/custom/norway/admin/registry.php', 'VATCheck'=>'/custom/norway/admin/vat.php'),
-    4=>array('JournalSettings'=>'/accountancy/admin/journals_list.php', 'AccountingCheck'=>'/custom/norway/admin/accounting.php'),
+    4=>array('TaxAccounts'=>'/custom/norway/admin/standardaccounts.php#norway-tax-accounts', 'JournalSettings'=>'/accountancy/admin/journals_list.php', 'AccountingCheck'=>'/custom/norway/admin/accounting.php'),
     5=>array(), 6=>array(),
     7=>array('InvoicePeriod'=>'/custom/norway/admin/invoiceperiod.php', 'DocumentCheck'=>'/custom/norway/admin/documents.php', 'InvoiceCheck'=>'/custom/norway/admin/invoice.php'),
     8=>array('Pricing'=>'/custom/norway/admin/pricing.php'),

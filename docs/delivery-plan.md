@@ -130,3 +130,9 @@ nullsats, historiske og spesielle rader, import og omvendt avgiftsplikt holdes
 utenfor. Ingen satser eller bilag endres. Se [MVA-kontoer](vat-accounts.md).
 Teknisk aksept omfatter lagring, transaksjonsvern og kontooppsett; norsk
 MVA-beregning, fradragsvurdering og rapportering er fortsatt ikke godkjent.
+
+Fra 0.40.1 forklares «Skattekontoer» på standardkontosiden og som valgfri hjelp
+fra veiviserens steg 4. Veiledningen skiller skatte-/avgiftstyper fra kontoplan,
+MVA-satskontoer og lokal skatt 1/2. ENK-eksempelet er avgrenset fra andre
+foretaksformer. Ingen typer, koblinger, bilag eller beregninger endres.
+Se [skattekontoer](tax-accounts.md).

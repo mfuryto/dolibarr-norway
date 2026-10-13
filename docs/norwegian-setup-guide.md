@@ -48,6 +48,10 @@ Fra 0.21.0 kan [én MVA-virkningsdato lagres etter eksplisitt bekreftelse](vat-r
 
 ## 4. Kontoplan, standardkontoer og journaler
 
+«Skattekontoer» er en egen liste for skatt-/avgiftsmodulen. Den kan stå urørt
+når funksjonen ikke brukes, og er ikke en forutsetning for vanlig fakturering
+i ENK uten ansatte. Se [veiledning for skattekontoer](tax-accounts.md).
+
 **Eksplisitt installering:** Norway → Installer norsk kontoplan oppretter og velger den medfølgende planen etter forhåndsvisning og bekreftelse. Oppsett med andre kontoer/historikk erstattes ikke. Planen har 745 kontoer fra en dokumentert, lisensiert Odoo-kilde; dette er ikke en sertifisert kopi av en norsk standardpublikasjon. Se [kontoplaninstallering](norwegian-chart.md).
 
 **Manuelt:** Åpne Norway → Kontroll av kontoplan og bokføringsoppsett, deretter standardkontoene via lenken. Vurder forslagene samlet:

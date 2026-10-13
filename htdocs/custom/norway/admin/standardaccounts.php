@@ -69,6 +69,9 @@ try {
     }
 } catch (Throwable $error) { unset($_SESSION['norway_standard_accounts']);print '<div class="warning">'.$langs->trans('NorwayDefaultsFailed').'</div>'; }
 print '<p><a href="'.dol_buildpath('/norway/admin/vataccounts.php',1).'">'.$langs->trans('NorwayVatAccountsTitle').'</a></p>';
+print '<section id="norway-tax-accounts"><h2>'.$langs->trans('NorwayTaxAccountsTitle').'</h2><p>'.$langs->trans('NorwayTaxAccountsHelp').'</p><p>'.$langs->trans('NorwayTaxAccountsEnk').'</p><p>'.$langs->trans('NorwayTaxAccountsOther').'</p>';
+if (isModEnabled('tax')) { print '<p><a href="'.DOL_URL_ROOT.'/admin/dict.php?id=7&amp;from=accountancy&amp;search_country_id='.(int)$mysoc->country_id.'">'.$langs->trans('NorwayTaxAccountsOpen').'</a></p>'; }
+print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/tax-accounts.md" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayTaxAccountsGuide').'</a></p></section>';
 print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/trade-account-suggestions.md" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayStandardSources').'</a></p>';
 print '<p>'.$langs->trans('NorwayStandardClosingScope').'</p><p><a href="'.DOL_URL_ROOT.'/accountancy/admin/closure.php">'.$langs->trans('NorwayStandardClosingOpen').'</a></p>';
 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/admin/defaultaccounts.php">'.$langs->trans('NorwayAccountingDefaultSettings').'</a></p><p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=4">'.$langs->trans('NorwayWizard').'</a></p></div>';
