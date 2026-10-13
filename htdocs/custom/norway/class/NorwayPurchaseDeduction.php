@@ -25,22 +25,33 @@ class NorwayPurchaseDeduction
     }
     public static function history($db,$entity,$id,$user)
     {
-        self::guard($entity,$id,$user);NorwaySchema::verify($db);
-        $rows=self::rows($db,"SELECT revision,captured_at,fk_user,mapping_revision,payload,payload_sha256 FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::TYPE."' AND fk_document=".$id.' ORDER BY revision LIMIT 101');
+        self::guard($entity,$id,$user);return self::retained($db,$entity,$id);
+    }
+    private static function retained($db,$entity,$id,$lock=false)
+    {
+        NorwaySchema::verify($db);
+        $rows=self::rows($db,"SELECT revision,captured_at,fk_user,mapping_revision,payload,payload_sha256 FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::TYPE."' AND fk_document=".$id.' ORDER BY revision LIMIT 101'.($lock ? ' FOR UPDATE' : ''));
         if (count($rows)>100) { throw new RuntimeException('Purchase choice history size'); }$bytes=0;
         foreach ($rows as $index=>&$row) {
-            $bytes+=strlen($row['payload']);
-            if ($bytes>5000000 || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('Purchase choice integrity'); }
-            $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
-            if (($data['version'] ?? null)!==1 || ($data['entity'] ?? null)!==$entity || ($data['document_id'] ?? null)!==$id
-                || ($data['kind'] ?? null)!==self::TYPE || ($data['revision'] ?? null)!==$index+1 || (int)$row['revision']!==$index+1
-                || ($data['at'] ?? null)!==$row['captured_at'] || ($data['user'] ?? null)!==(int)$row['fk_user'] || (int)$row['mapping_revision']!==0
-                || !is_array($data['basis'] ?? null) || !is_array($data['choice'] ?? null)
-                || (int)($data['basis']['invoice']['rowid'] ?? 0)!==$id || (int)($data['basis']['invoice']['entity'] ?? 0)!==$entity
-                || self::choice($data['choice']['profile'] ?? '',$data['choice']['percentage'] ?? null,$data['choice']['reason'] ?? '')!==$data['choice']
-                || self::lineChoices($data['basis'],$data['choice'])!==($data['lines'] ?? null)) { throw new RuntimeException('Purchase choice metadata'); }
+            $bytes+=strlen($row['payload']);if ($bytes>5000000 || (int)$row['revision']!==$index+1) { throw new RuntimeException('Purchase choice history integrity'); }
+            $data=self::decode($row,$entity,$id);
             $row['data']=$data;unset($row['payload']);
         }unset($row);return $rows;
+    }
+    private static function decode($row,$entity,$id)
+    {
+        if (!is_string($row['payload'] ?? null) || strlen($row['payload'])>1000000 || !is_string($row['payload_sha256'] ?? null)
+            || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('Purchase choice integrity'); }
+        $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
+        if (($data['version'] ?? null)!==1 || ($data['entity'] ?? null)!==$entity || ($data['document_id'] ?? null)!==$id
+            || ($data['kind'] ?? null)!==self::TYPE || !is_int($data['revision'] ?? null) || $data['revision']<1 || $data['revision']>100
+            || (int)($row['revision'] ?? 0)!==$data['revision'] || ($data['at'] ?? null)!==($row['captured_at'] ?? null)
+            || !is_int($data['user'] ?? null) || $data['user']<=0 || $data['user']!==(int)($row['fk_user'] ?? 0) || (int)($row['mapping_revision'] ?? -1)!==0
+            || !is_array($data['basis'] ?? null) || !is_array($data['choice'] ?? null)
+            || (int)($data['basis']['invoice']['rowid'] ?? 0)!==$id || (int)($data['basis']['invoice']['entity'] ?? 0)!==$entity
+            || self::choice($data['choice']['profile'] ?? '',$data['choice']['percentage'] ?? null,$data['choice']['reason'] ?? '')!==$data['choice']
+            || self::lineChoices($data['basis'],$data['choice'])!==($data['lines'] ?? null)) { throw new RuntimeException('Purchase choice metadata'); }
+        return $data;
     }
     public static function choice($profile,$percentage,$reason)
     {
@@ -51,7 +62,11 @@ class NorwayPurchaseDeduction
     }
     public static function basis($db,$entity,$id,$user,$lock=false)
     {
-        self::guard($entity,$id,$user);NorwaySchema::verify($db);$p=$db->prefix();$suffix=$lock ? ' FOR UPDATE' : '';
+        self::guard($entity,$id,$user);return self::readBasis($db,$entity,$id,$lock);
+    }
+    private static function readBasis($db,$entity,$id,$lock=false)
+    {
+        NorwaySchema::verify($db);$p=$db->prefix();$suffix=$lock ? ' FOR UPDATE' : '';
         $headers=self::rows($db,'SELECT rowid,entity,ref,ref_supplier,type,fk_statut,fk_soc,datef,fk_facture_source,multicurrency_code,multicurrency_tx,total_ht,total_tva,total_ttc,vat_reverse_charge,revenuestamp,localtax1,localtax2 FROM '.$p.'facture_fourn WHERE entity='.$entity.' AND rowid='.$id.$suffix);
         if (count($headers)!==1) { throw new InvalidArgumentException('Purchase choice invoice'); }$header=$headers[0];
         // Payment status is deliberately excluded: it does not change the deduction basis.
@@ -89,6 +104,49 @@ class NorwayPurchaseDeduction
         $history=self::history($db,$entity,$id,$user);if (count($history)>=100) { throw new RuntimeException('Purchase choice history full'); }
         $data=array('basis'=>$basis,'choice'=>$choice,'lines'=>$lineChoices);
         return $data+array('revision'=>count($history)+1,'fingerprint'=>hash('sha256',self::encode(array($data,array_column($history,'payload_sha256')))));
+    }
+    /** Internal native-event path. No independent transaction or interactive privilege escalation. */
+    public static function lockForPosting($db,$entity,$id)
+    {
+        $active=self::rows($db,'SELECT @@in_transaction AS active');
+        if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !is_int($id) || $id<=0 || (int)$active[0]['active']!==1) { throw new InvalidArgumentException('Purchase context native boundary'); }
+        self::rows($db,'SELECT rowid FROM '.$db->prefix().'facture_fourn WHERE entity='.$entity.' AND rowid='.$id.' FOR UPDATE');
+    }
+    public static function captureContext($db,$entity,$id,$postingBasis)
+    {
+        self::lockForPosting($db,$entity,$id);
+        $history=self::retained($db,$entity,$id,true);$last=$history ? end($history) : null;$source=null;
+        if ($last) {
+            try { $source=self::readBasis($db,$entity,$id,true); } catch (InvalidArgumentException $error) { /* A changed or unsupported source cannot be linked. */ }
+        }
+        return self::context($last,$source,$postingBasis,$entity,$id);
+    }
+    /** Recompute only from captured data; historical links never read today's choice. */
+    public static function context($entry,$source,$postingBasis,$entity,$id)
+    {
+        if (!is_int($entity) || $entity<=0 || !is_int($id) || $id<=0 || ($postingBasis['posting']['doc_type'] ?? null)!=='supplier_invoice'
+            || (int)($postingBasis['posting']['entity'] ?? 0)!==$entity || (int)($postingBasis['posting']['fk_doc'] ?? 0)!==$id) { throw new InvalidArgumentException('Purchase context identity'); }
+        if ($entry===null) {
+            if ($source!==null) { throw new RuntimeException('Purchase context missing assessment'); }
+            return array('version'=>1,'status'=>'Missing','assessment'=>null,'source'=>null);
+        }
+        if (!is_array($entry) || !is_array($entry['data'] ?? null)) { throw new RuntimeException('Purchase context assessment'); }
+        $row=$entry;$row['payload']=self::encode($entry['data']);$data=self::decode($row,$entity,$id);
+        $linked=is_array($source) && $source===$data['basis'] && self::samePostingSource($source,$postingBasis);
+        return array('version'=>1,'status'=>$linked ? 'Linked' : 'Changed','assessment'=>$entry,'source'=>$source);
+    }
+    private static function samePostingSource($source,$posting)
+    {
+        if (($posting['source_complete'] ?? null)!==true || !is_array($posting['invoice'] ?? null) || !is_array($posting['lines'] ?? null)) { return false; }
+        foreach ($source['invoice'] as $key=>$value) { if (!array_key_exists($key,$posting['invoice']) || $posting['invoice'][$key]!==$value) { return false; } }
+        if (count($source['lines'])!==count($posting['lines'])) { return false; }
+        // Fields not present in legacy posting sources are retained in the separate context source.
+        $keys=array('rowid','fk_facture_fourn','fk_code_ventilation','product_type','qty','pu_ht','remise_percent','tva_tx','vat_src_code','info_bits','localtax1_tx','localtax2_tx','total_ht','total_tva','total_ttc','total_localtax1','total_localtax2');
+        foreach ($source['lines'] as $i=>$line) { foreach ($keys as $key) { if (!array_key_exists($key,$posting['lines'][$i]) || $posting['lines'][$i][$key]!==$line[$key]) { return false; } } }
+        foreach ($source['party'] as $key=>$value) { if (!array_key_exists($key,$posting['party'] ?? array()) || $posting['party'][$key]!==$value) { return false; } }
+        $settings=array();foreach ($posting['settings'] ?? array() as $row) { $settings[$row['entity'].'/'.$row['name']]=$row['value']; }
+        foreach ($source['settings'] as $row) { if (($settings[$row['entity'].'/'.$row['name']] ?? null)!==$row['value']) { return false; } }
+        return true;
     }
     public static function save($db,$entity,$id,$user,$profile,$percentage,$reason,$fingerprint)
     {

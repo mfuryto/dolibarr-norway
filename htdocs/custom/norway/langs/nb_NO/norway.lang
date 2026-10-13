@@ -1011,3 +1011,14 @@ NorwayDeductionLine=Fakturalinje
 NorwayDeductionVat=Inngående MVA (NOK)
 NorwayDeductionDeductible=Valgt fradrag (NOK)
 NorwayDeductionNonDeductible=Uten fradrag (NOK)
+
+NorwayDeductionPostingTitle=Fradragsvurdering ved bokføring
+NorwayDeductionPostingScope=Viser vurderingen som ble observert da hver postering ble opprettet. Koblingen dokumenterer tidspunkt og grunnlag; den betyr ikke at valgt fradrag er bokført eller at fradragsrett er bekreftet. Historiske koblinger endres ikke når en ny vurdering lagres.
+NorwayDeductionPostingPosting=Postering
+NorwayDeductionPostingStatus=Bevart kobling
+NorwayDeductionPostingRevision=Vurderingsrevisjon
+NorwayDeductionPostingTime=Observert tidspunkt
+NorwayDeductionPostingLinked=Vurdering og grunnlag samsvarte ved posteringen
+NorwayDeductionPostingChanged=Grunnlaget samsvarte ikke med siste vurdering
+NorwayDeductionPostingMissing=Ingen lagret vurdering ved posteringen
+NorwayDeductionPostingNotCaptured=Kobling er ikke bevart for denne posteringen

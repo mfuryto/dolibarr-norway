@@ -228,3 +228,9 @@ Versjon 1–3 for salg er uendret. Ingen skjemaendring eller ny kontrollside
 innføres. Tester dekker faktisk kjøpsjournal, native hendelser før/etter
 retting, separate salgs-/kjøpsregler med samme kildekode, datogrenser,
 særmarkører og lesing av eldre kjøpsformat. Papirløs bilagsflyt ligger sist.
+
+
+Fra 0.54.0 bruker nye kjøpsobservasjoner med fakturareferanse payloadversjon 6.
+Den bevarer i tillegg den uttrykkelige fradragsvurderingen som forelå ved
+hendelsen, med eget kildegrunnlag og status. Versjon 4/5 tilbakefylles ikke.
+Se [kjøpsfordeling](purchase-allocation.md) for omfang og begrensninger.

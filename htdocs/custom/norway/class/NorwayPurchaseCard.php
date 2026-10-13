@@ -14,7 +14,7 @@ class NorwayPurchaseCard
         $pending=$_SESSION['norway_purchase_deduction'] ?? null;
         $hasPreview=$pending && $pending['entity']===$entity && $pending['id']===(int)$object->id && $pending['user']===(int)$user->id && $pending['expires']>=time();
         $html='<div class="norway-page clearboth"><details id="norway-purchase-allocation"'.($profile!=='' || $hasPreview ? ' open' : '').'><summary>'.$langs->trans('NorwayPurchaseTitle').'</summary><p>'.$langs->trans('NorwayPurchaseScope').'</p>';
-        $html.=$choiceHtml;
+        $html.=$choiceHtml.self::postingContexts($db,$object,$user,$langs,$entity);
         $html.='<form method="get" action="'.DOL_URL_ROOT.'/fourn/facture/card.php"><input type="hidden" name="facid" value="'.(int)$object->id.'"><label>'.$langs->trans('NorwayPurchaseProfile').' <select name="norway_purchase_profile" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
         foreach (NorwayPurchaseAllocation::profiles() as $key=>$rule) { $html.='<option value="'.$key.'"'.($profile===$key ? ' selected' : '').'>'.$rule['rate'].' % – '.$langs->trans('NorwayPurchase'.ucfirst($rule['deduction'])).'</option>'; }
         $html.='</select></label><label>'.$langs->trans('NorwayPurchaseShare').' <input type="number" name="norway_purchase_share" min="0.01" max="99.99" step="0.01" value="'.dol_escape_htmltag(is_string($percentage) ? $percentage : '').'"></label><button class="button" type="submit">'.$langs->trans('NorwayInvoiceRun').'</button></form>';
@@ -34,6 +34,21 @@ class NorwayPurchaseCard
             } catch (Throwable $error) { $html.='<div class="warning">'.$langs->trans('NorwayPurchaseUnavailable').'</div>'; }
         }
         return $html.'</details></div>';
+    }
+    private static function postingContexts($db,$object,$user,$langs,$entity)
+    {
+        try {
+            $entries=NorwayPostingEvidence::report($db,$entity,(int)$object->id,$user,null,'supplier_invoice');
+            if (!$entries) { return ''; }
+            $html='<details id="norway-deduction-postings"><summary>'.$langs->trans('NorwayDeductionPostingTitle').'</summary><p>'.$langs->trans('NorwayDeductionPostingScope').'</p><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+            foreach (array('Posting','Status','Revision','Time') as $column) { $html.='<th>'.$langs->trans('NorwayDeductionPosting'.$column).'</th>'; }$html.='</tr>';
+            foreach ($entries as $entry) {
+                $context=$entry['data']['deduction_context'] ?? null;
+                $status=$context['status'] ?? 'NotCaptured';$revision=$context['assessment']['revision'] ?? null;
+                $html.='<tr><td>'.(int)$entry['id'].'</td><td>'.$langs->trans('NorwayDeductionPosting'.$status).'</td><td>'.($revision===null ? '—' : '#'.(int)$revision).'</td><td>'.dol_escape_htmltag($entry['captured_at']).' UTC</td></tr>';
+            }
+            return $html.'</table></div></details>';
+        } catch (Throwable $error) { return '<p class="warning">'.$langs->trans('NorwayPurchaseUnavailable').'</p>'; }
     }
     private static function choices($db,$object,$user,$langs,$entity,&$profile,&$percentage)
     {

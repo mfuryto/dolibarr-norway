@@ -157,3 +157,33 @@ beskytter mot endret grunnlag og gjentatt lagring. Kontroller av integritet og
 foretakstilgang gjelder også historikk. Dette er teknisk kvalifisert bevaring,
 ikke aksept for norsk regnskapsproduksjon. Neste arbeid knytter valgt revisjon
 til bokføringshendelser og kvalifiserer fradragsføring og korreksjoner.
+
+
+## Kobling til nye posteringer fra 0.54.0
+
+Under **Fradragsvurdering ved bokføring** vises hva som forelå da hver ny
+postering ble opprettet: vurderingsrevisjon, tidspunkt og om grunnlaget samsvarte.
+Valget må lagres før bokføringen for å inngå i denne historiske koblingen.
+Lagrer du et nytt valg senere, beholder tidligere posteringer sin opprinnelige
+kobling. Valg som lagres etter en eldre postering blir ikke tilbakeført som om
+de var kjent ved bokføringen. Eldre observasjoner vises med at kobling ikke er
+bevart, mens nye observasjoner uten lagret valg viser manglende vurdering.
+
+Ny kjøpspayloadversjon 6 inneholder et eget `deduction_context` med vurdering,
+bevart integritetsavtrykk og kildegrunnlag. Samsvar krever uendret vurderingskilde
+og overensstemmelse med posteringens observerte faktura/linjer/foretak/leverandør.
+Et endret eller ikke støttet grunnlag bevares som avvik uten å brukes som
+bekreftet kobling. Integriteten valideres fra arkiverte data, uavhengig av dagens
+vurdering. Versjon 4/5 leses fortsatt uten nye fradragsopplysninger.
+
+Kjernens transaksjon eier lagringen og rollback. Fakturalås og låst lesing av
+vurderingshistorikk serialiserer lagring mot nye bokføringshendelser. Korrupte
+vurderinger eller svikt i arkivering stopper den aktuelle bokføringshandlingen;
+det opprettes ikke en postering uten den påkrevde observasjonen. Operatøren kan
+bruke kjernens eksisterende bokføringsrettigheter; administrator kreves fortsatt
+for å lagre selve fradragsvurderingen.
+
+Koblingen endrer ikke kontofordeling eller fradragsbeløp i hovedboken. For eksempel
+vil en bevart 50-prosentvurdering fremdeles gi avvik i sammenligningen når kjernen
+har bokført full inngående MVA. Kvalifisert fradragsføring og korreksjoner er neste
+arbeid; denne leveransen er ikke norsk regnskapsmessig produksjonsaksept.

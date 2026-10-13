@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.53.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.54.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -383,3 +383,24 @@ lagring/historikk, linjebeløp, endret grunnlag, replay, tilgang og HTTP-bekreft
 Videre A2-arbeid er kobling av valgt revisjon til nye bokføringshendelser,
 kvalifisert fradragsbokføring og korreksjonsløp. Ulike andeler per linje,
 blandede satser og særbehandling gjenstår. Papirløs bilagsflyt ligger sist.
+
+
+## A2 – bevart vurderingsrevisjon ved bokføring i 0.54.0
+
+Nye kjøpsposteringer bevarer siste lagrede fradragsvurdering med kildedata,
+linjebeløp, revisjon og integritetsavtrykk i kjernens egen transaksjon.
+Koblingen skiller mellom samsvarende grunnlag, endret/ikke støttet grunnlag
+og manglende vurdering. Historikken vises i leverandørfakturabildet. Nyere
+vurderinger endrer ikke gamle posteringers kobling. Tidligere payloadversjoner
+leses uten tilbakefylling; ny kjøpspayload har versjon 6.
+
+Dette kvalifiserer teknisk sporbarhet ved nye bokføringshendelser, ikke at
+valgt fradrag er bokført. Kjernens kontofordeling er uendret, og den eksisterende
+sammenligningen viser fortsatt avvik ved eksempelvis valgt delvis fradrag og
+full MVA-postering. Tester dekker kjøpsjournalen, kreditnota, revisjonsbytte,
+kildeendring, manglende valg, semantisk integritet, ikke-administrativ operatør,
+rollback og bevaring av eldre payload. Ingen skjemaendring.
+
+Neste A2-arbeid er kvalifisert fradragsbokføring og korreksjonsløp med bevart
+vurderingsrevisjon. Blandede satser, ulike linjeandeler og øvrig særbehandling
+gjenstår. Papirløs bilagsflyt er fortsatt sist.
