@@ -79,6 +79,13 @@ try {
         'username' => 'testadmin',
         'password' => getenv('DOLI_ADMIN_PASSWORD'),
     ));
+    $invoiceList=request('/custom/norway/admin/invoice.php');
+    if (!preg_match('/invoice\.php\?id=([0-9]+)/',$invoiceList,$allocationFixture)) { throw new RuntimeException('Allocation invoice fixture missing'); }
+    $allocationId=(int)$allocationFixture[1];
+    foreach (array('nb_NO'=>'Bokført fordeling på kunde, salg og MVA','en_US'=>'Posted customer, sales and VAT allocation') as $locale=>$title) {
+        $allocation=request('/custom/norway/admin/invoice.php?id='.$allocationId.'&ledger=1&allocation=domestic25&lang='.$locale);
+        if (strpos(html_entity_decode($allocation,ENT_QUOTES,'UTF-8'),$title)===false || strpos($allocation,'NorwayAllocation')!==false) { throw new RuntimeException('Allocation rendering failed'); }
+    }
     foreach (array('nb_NO'=>'Regnskapskoder på varer og tjenester','en_US'=>'Accounting codes on products and services') as $locale=>$title) {
         foreach (array('domestic','export','intra') as $scope) {
             $codes=request('/custom/norway/admin/productaccounts.php?lang='.$locale.'&scope='.$scope);

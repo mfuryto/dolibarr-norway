@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.41.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.42.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 ## Omfang og arbeidsregler
@@ -30,7 +30,8 @@ prioriteringen. Nye innstillinger skal løse et dokumentert gap i planen.
 | EHF – DFØ S18, NBS 4 S15 | Norske/engelske PDF-er; ingen godkjent EHF-leveranse | Kvalifiser EHF faktura/kreditnota 3.0, kjøper-/ordrereferanser, tilgangspunkt og mottakertest. PDF er ikke EHF. Tilgangspunkt velges før faktisk sending. |
 | SAF-T Financial – Skatteetaten S5/S6/S12 | Fast offisiell avgiftskodereferanse og eksternt lagringsgrunnlag | Implementer kontomapping til gjeldende næringsspesifikasjon, fullstendig eksport og avstemming. Mål 1.40, pliktig fra 2027 og tilgjengelig nå. XSD-validering alene er utilstrekkelig. Elektronisk regnskap gir ikke automatisk småforetaksfritak. |
 | Sikring, kontrollspor, oppbevaring – NBS 1/2/3 S15, Altinn S16 | Vedvarende drift, backup og testet restore; begrenset endringshistorikk | Dokumentert risikovurdering, rollevern, låste perioder, retting med spor, lesbarhet og oppbevaring. Primærdokumentasjon normalt 5 år; sekundær normalt 3,5 år; vurder særregler. Backup alene er ikke arkiv eller fullstendig kontrollspor. |
-| Skatt/årsoppgjør/ansatte | Kontoplan og forklaring av skatteordboken | Ingen automatisk norsk skatt, lønn eller innsending. ENK-skatt er personlig; AS trenger eget årsoppgjørs-/innsendingsløp. Skattekontoer er ikke et utviklingskrav for fakturering. Ansatte/lønn er separat omfang. |
+| Årsavslutning og næringsspesifikasjon | Kontoplan, lukkingskontoforslag og forklaring av skatteordboken | Årsavslutning og rapportgrunnlag for næringsspesifikasjonen er vedtatt videre omfang, men ikke ferdigstilt. Kvalifiser avstemming, periodisering, avskrivninger, resultatdisponering, inngående saldoer og låsing; prøv årsversjon og foretaksform for rapporten. |
+| Skatt/ansatte | Ingen automatisk norsk skatteberegning eller lønn | ENK-skatt er personlig; AS trenger eget årsoppgjørs-/innsendingsløp. Skattekontoer er ikke et utviklingskrav for fakturering. Ansatte/lønn er separat omfang. |
 
 S1–S18 henviser til [kilderegisteret](sources.md). Lov-/forskriftsgrunnlag og
 NBS brukes som kravgrunnlag; dette dokumentet er ingen sertifisering.
@@ -45,11 +46,14 @@ riktig bruksrett.
 | --- | --- | --- |
 | A1 – levert i 0.41.0 | Fullfør ordinært MVA-satsoppsett for nye installasjoner | Forhåndsvis manglende 25/15/12 og deaktivering av ordinære 8/14. Bevar nullsats, spesialrader, kontovalg og dokumenter. Historikk, eksisterende bruk og tvetydighet sperrer endring. Test gjentakelse, atomisk rollback og foreldet bekreftelse. Ingen sats velges for fakturalinjer. |
 | A2 | Kvalifiser faktura, kreditnota og konto-/avgiftsfordeling | Salg/kjøp, 25/15/12, nullsats med eksplisitt behandling, retting, fradrag og registreringsperioder. Knyt avgift og grunnlag til faktisk hovedbok; manglende metadata må vises som avvik. |
-| B | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
+| B1 | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
+| B2 | Direkte innrapportering av MVA-melding | Bygger på B1. Kvalifiser Skatteetatens gjeldende grensesnitt, autorisasjon, validering, eksplisitt bekreftet innsending, kvittering/status og endringsmeldinger. Test avbrudd og gjentakelse uten utilsiktet dobbeltinnsending før produksjonsbruk. |
 | C | Reskontro, bank og balanseavstemming | Komplette saldoer og bevegelser, ingen dobbelttelling; inngående saldoer fra tidligere system behandles som egen migrering. Nytt regnskap trenger ingen konstruerte inngående poster. |
-| D | Utenlandsscenarioer for varer og tjenester | Konkrete land-/kundetyper og leveringsmodeller; eksportdokumentasjon, importgrunnlag og omvendt avgiftsplikt. Bygger på A2/B. |
+| C2 | Årsavslutning før skattemelding og næringsspesifikasjon | Bygger på kvalifisert bokføring og C. Kontroller saldoer, bank, reskontro og MVA, og håndter dokumenterte periodiseringer, avskrivninger og resultatdisponering. Test overføring av inngående saldoer, gjentakelse uten dobbeltføring, endelig låsing og sporbar retting/etterpostering. |
+| D | Utenlandsscenarioer for varer og tjenester | Konkrete land-/kundetyper og leveringsmodeller; eksportdokumentasjon, importgrunnlag og omvendt avgiftsplikt. Bygger på A2/B1. |
 | E – spesifikasjon kan avklares tidlig | EHF/Peppol | Skjema og forretningsregler, kjøperreferanser, testmottaker og tilgangspunkt. Ingen produksjonssending før konkret avtale og aksept. |
-| F – kontomapping kan utvikles parallelt | SAF-T 1.40 | Låst skjema/kodelisteversjon, datoavgrenset kontomapping, konto-/reskontrosaldoer, sporbar avgift og komplette totaler. Krever A2/B/C før endelig eksportaksept. |
+| F – kontomapping kan utvikles parallelt | SAF-T 1.40 | Låst skjema/kodelisteversjon, datoavgrenset kontomapping, konto-/reskontrosaldoer, sporbar avgift og komplette totaler. Krever A2/B1/C før endelig eksportaksept. |
+| F2 | Rapportgrunnlag for næringsspesifikasjonen | Bygger på avstemt årsgrunnlag fra C2. Knytt regnskapstall til riktig årsversjon og foretaksprofil, med sporbarhet til kontoer/posteringer og eksplisitt behandling av skattemessige forskjeller. Kontroller fullstendighet og totaler før tallene brukes ved levering. |
 | G – vern utvikles gjennom alle trinn | Perioder, retting, arkiv, drift og produksjonsaksept | Rolle-/låsetester, dokumentert gjenoppretting, oppbevaring og en signert scenario-/kravmatrise for konkret støttet omfang. |
 
 Kontoplanens prosjektaksept er gjennomført. Kontomapping under F gjenstår
@@ -57,6 +61,26 @@ og er ikke grunnlag for å bytte allerede brukt kontoplan automatisk.
 Kjerne-/sikkerhetsoppdateringer vurderes løpende på staging med låste images
 og regresjonstester. Støttet kjerne er fortsatt 24.0.1 til en ny versjon er
 kvalifisert; planen lover ingen automatisk versjonsoppgradering.
+
+## Vedtatt videre omfang – 2026-10-13
+
+MVA-perioderapport med direkte innrapportering, årsavslutning og rapport til
+næringsspesifikasjonen inngår i videre utvikling. Rapportproduksjon og
+innsending kvalifiseres som separate leveranser. Dette utvider tidligere
+avgrensning der direkte MVA-innsending var utenfor første leveranse; det
+endrer ikke status for hva som allerede er implementert.
+
+Rapporten til næringsspesifikasjonen skal gi et kontrollert årsgrunnlag for
+skattemeldingen. Begrepene skattemelding og næringsspesifikasjon brukes
+fremfor de tidligere betegnelsene selvangivelse og næringsoppgave.
+Årsversjoner, foretaksform og skattemessige justeringer må håndteres
+uttrykkelig; en SAF-T-kobling alene bekrefter ikke en ferdig skatterapport.
+Se [Skatteetatens struktur for skattemelding og næringsspesifikasjon](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/innhold-og-struktur-i-skattemeldingen/)
+og [MVA-meldingen](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/mva-melding).
+
+Integrasjon av modulens daglige funksjoner i Dolibarrs ordinære menyer
+utsettes til funksjonene er på plass. Neste funksjonelle arbeid forblir A2;
+disse beslutningene skal ikke avbryte arbeidet med bokført avgiftsgrunnlag.
 
 ## Neste arbeid etter A1
 
@@ -87,3 +111,16 @@ revisjon før PR fra staging leveres til main. Skjemaendringer krever versjonert
 migrering, backup og gjenopprettingstest. Bare eksplisitt støttede scenarioer
 kan gis produksjonsaksept; teknisk stabilitet og veiviserens arbeidsstatus er
 ikke norsk regnskapsmessig etterlevelse.
+
+## A2 – første del levert i 0.42.0
+
+[Kunde-/salgs-/MVA-fordeling](invoice-allocation.md) kan sammenlignes med en
+uttrykkelig valgt ordinær innenlandsk profil for 25/15/12 %. Faktiske
+posteringer og forventede beløp vises separat per rolle, også ved kreditnota.
+Feil avgiftsfordeling kan avdekkes selv om bilaget balanserer. Konsistent
+lesing og kontroll av bilagsfullstendighet beskytter resultatet.
+
+Dette fullfører ikke A2. Neste del er koblingen mellom fakturalinjer,
+konkrete kontoer og historisk avgiftsbehandling, deretter kjøp, manuelle
+bilag og korreksjoner. MVA-perioderapporten i B1 venter på kvalifisert bokført
+avgiftsgrunnlag. Ingen kontrollstatus gir avgiftsmessig produksjonsaksept.

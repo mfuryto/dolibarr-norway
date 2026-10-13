@@ -1,97 +1,95 @@
-# Norsk lokalisering for Dolibarr
+# Dolibarr Norway
 
-Under utvikling. **Ikke klart for norsk produksjonsregnskap.**
+**Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
+fakturering og hjelp til å konfigurere regnskapet for norske forhold.
 
-Målet er en ekstern modul under `htdocs/custom/norway` uten endringer i kjernen.
-Første testmål er Dolibarr **24.0.1**, låst til kilde og containerdigest.
-Repoet inneholdt bare README og GPLv3-lisens ved oppstart 11. oktober 2026.
+Modulen utvider Dolibarrs funksjoner for kunder, leverandører, varer,
+tjenester og regnskap. Den installeres som en ekstern modul og krever ingen
+endringer i Dolibarr-kjernen. Den passer for ulike bransjer og bruker ett
+foretak per installasjon.
 
-- [Foretaksfelt og norske organisasjonsformer](docs/company-setup.md)
-- [Bekreftet oppretting av manglende journaltyper](docs/journal-setup.md)
-- [Bekreftet utfylling av kunde- og leverandørkonto](docs/default-accounts.md)
-- [Norsk oppsettsveiviser inne i Dolibarr](docs/setup-wizard.md)
-- [Start her: samlet veiledning for norsk oppsett](docs/norwegian-setup-guide.md)
-- [Installere med norsk modul på VPS og eget domene](docs/vps-installation.md)
-- [Tilbud og faktura på norsk/engelsk i NOK, veiledende EUR-pris og bilagskontroll](docs/sales-documents.md)
-- [Sikkerhet og privat sårbarhetsrapportering](SECURITY.md)
-- [Grenflyt: stabil main og utvikling på staging](docs/branch-workflow.md)
-- [Teknisk dekningsanalyse og datagap](docs/coverage-analysis.md)
-- [Installerbar norsk kontoplan med 745 kontoer](docs/norwegian-chart.md)
-- [Omfang, milepæler og akseptansekriterier](docs/delivery-plan.md)
-- [Testmiljø, installasjon og drift](docs/test-and-operations.md)
-- [Kilderegister](docs/sources.md)
-- [Generelle prosjektkrav](docs/project-brief.txt)
+## Hva modulen gir
 
-## Serverinstallasjon
+- **Norsk kontoplan med 745 kontoer**, med forhåndsvisning og bekreftet
+  installasjon. Forslag til standardkontoer dekker kunder, leverandører,
+  varer, tjenester, eksport, import og lukkingskontoer.
+- **Foretaksoppsett for Norge**, med organisasjonsnummer, norske
+  organisasjonsformer, MVA-identitet og manuelt oppslag i registeret.
+- **Tilbud og faktura på norsk og engelsk**, med NOK som dokumentvaluta.
+  En separat kalkulator kan vise veiledende EUR-priser.
+- **Enkle, stigende nummerserier** for faktura, kreditnota og tilbud,
+  samt kunde- og leverandørnumre. Startnummer kan velges ved overgang
+  fra et annet system.
+- **Hjelp til MVA-oppsett**, med kontroll av norske satser, salg- og
+  kjøpskontoer, registreringens virkningsdato og avgiftskodekoblinger.
+- **Kontroller av regnskapsgrunnlaget**, blant annet fakturabeløp,
+  hovedboksreferanser, bilagsbalanse og endringer i lagrede kontrollkopier.
+- **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
+  kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
 
-Driftsoppsettet bruker databasen `accounting`, vedvarende data og ingen
-syntetiske bilag. Standardfilen `compose.yaml` og `deploy/compose.yaml` beskriver
-samme driftsprosjekt med persistente data i `data/` og backup i `backups/`; bruk alltid `--env-file deploy/.env`. Utviklingstestene
-krever eksplisitt `-f compose.test.yaml` og har egne volumer.
+Sjekkbetalinger og sjekkinnskudd er deaktivert. Oppsetthjelperne bruker
+forhåndsvisning og bekreftelse, og har vern for eksisterende valg og historikk.
 
-Se [serveroppdatering og backup](docs/vps-installation.md).
+## Installere i eksisterende Dolibarr
 
-## Utviklingstester
+Støttet versjon er **Dolibarr 24.0.1**, med **PHP 8.2 eller nyere**.
+Installasjonen må bruke **NOK som basisvaluta** og ha modulen
+**Advanced Accounting** aktivert.
 
-Krever Docker Compose og Python 3. Fra repoets rot:
+1. Ta sikkerhetskopi av den eksisterende installasjonen.
+2. Hent prosjektet fra `main` og kopier mappen `htdocs/custom/norway`
+   til `htdocs/custom/norway` i Dolibarr-installasjonen.
+3. Aktiver modulen **Norway** under **Innstillinger → Moduler**.
+4. Åpne modulens innstillinger og følg **Norsk oppsettsveiviser**.
 
-```sh
-python3 scripts/init-test-env.py
-python3 -m unittest discover -s tests -v
-docker compose -f compose.test.yaml up -d
-# Vent til web-loggen sier at installasjonen er ferdig:
-docker compose -f compose.test.yaml logs --tail 20 web
-docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/integration.php
-python3 scripts/package.py
+Kontoplan, kontokoblinger og nummerserier velges og bekreftes i veiviseren.
+Aktivering alene installerer ikke kontoplanen eller endrer eksisterende
+fakturanumre.
+
+## Installere Dolibarr og modulen med Docker
+
+Prosjektet har et samlet oppsett for Dolibarr, MariaDB og den norske modulen.
+Det krever Linux, Docker med Compose, Git og Python 3.
+
+Kjør følgende i katalogen der du vil hente prosjektet. Oppgi foretakets navn
+og den offentlige HTTPS-adressen når du blir spurt:
+
+```bash
+git clone --branch main https://github.com/mfuryto/dolibarr-norway.git
+cd dolibarr-norway
+
+read -r -p 'Registrert foretaksnavn: ' norway_company_name
+read -r -p 'Offentlig HTTPS-adresse: ' norway_public_url
+python3 scripts/init-install-env.py \
+  --company-name "$norway_company_name" \
+  --url "$norway_public_url"
+
+docker compose --env-file deploy/.env -f deploy/compose.yaml up -d --build
+docker compose --env-file deploy/.env -f deploy/compose.yaml ps
 ```
 
-Modulen kan også kopieres direkte fra `htdocs/custom/norway` til en separat
-Dolibarr 24.0.1-installasjon. Installerbar pakke bygges i
-`dist/module_norway-0.41.0.zip`. Se driftsdokumentet for testinnlogging og nettverk.
+Oppsettet lager tilfeldige passord i den private filen `deploy/.env`.
+Administratorens brukernavn er `admin`; passordet står i `ADMIN_PASSWORD`.
+Modulen aktiveres automatisk. Ingen eksempelbilag eller testbrukere legges inn.
 
-Leveransen inneholder modulaktivering, statusside, isolert testmiljø og syntetiske
-bilag med avstemminger. Norsk MVA-rapport, SAF-T, EHF og
-lisensportal er videre arbeid. Ingen reelle data eller hemmeligheter skal i Git.
+Sett opp HTTPS og en reverse proxy mot `127.0.0.1:8088` på samme server før
+innlogging. Åpne deretter den valgte nettadressen og følg modulens
+oppsettsveiviser. Database, dokumenter og konfigurasjon lagres vedvarende
+under prosjektets `data/`-mappe. Bevar `deploy/.env` og instansnøkkelen ved
+oppdatering og gjenoppretting.
 
-Lisens: GPL-3.0-or-later; se [LICENSE](LICENSE).
+Se [installasjonsveiledningen](docs/vps-installation.md) for proxyoppsett,
+oppdatering og sikkerhetskopiering.
 
-Skrivebeskyttet kontoplan-/bokføringskontroll: [oppsettkontroll](docs/accounting-setup.md).
+## Regnskapsmessig omfang
 
-Manuell MVA-sammenligning med Brønnøysundregistrene: [registerkontroll](docs/registry.md).
+Modulen gir norsk oppsett og kontroller, men full norsk MVA-rapportering,
+SAF-T-eksport og EHF/Peppol er ikke ferdigstilt. Den er foreløpig ikke en
+komplett løsning for norsk produksjonsregnskap. Kontoplan og kontokoblinger
+alene bekrefter ikke riktig avgiftsbehandling eller fradragsrett.
 
-[Kontoplan fra CSV](docs/chart-preview.md) har skrivebeskyttet forhåndsvisning og bekreftet import av bare nye kontoer. Norsk kontoplan kan installeres separat; avgifts- og rapporteringsmapping gjenstår.
+## Lisens
 
-Se [bekreftet bankkobling](docs/bank-defaults.md) for én ny ordinær NOK-bankkonto.
-
-Se [kontroll av faktura- og tilbudsoppsett](docs/document-setup.md) for samlet oversikt over nummerering, PDF-valg og språk.
-
-Se [kontroll av regnskapsperioder](docs/period-setup.md) for datodekning, overlapp og eksisterende periodestatus.
-
-Se [kontroll av MVA-kontokoblinger](docs/vat-setup.md) for satskontoer og standardkontoer som reserve.
-
-Se [eksplisitt MVA-virkningsdato](docs/vat-registration.md) for bekreftet første lagring og datovarsler.
-
-Se [fakturaens MVA-beløp](docs/invoice-amounts.md) for lesekontroll av linjer mot fakturatotaler.
-
-Se [fakturakontroll for periode](docs/invoice-period.md) for samlet lesekontroll og dokumentlenker.
-
-Se [lagrede avgiftsopplysninger](docs/invoice-tax-evidence.md) for fakturalinjenes koder og særmarkeringer.
-
-Se [prøve av datert avgiftsmapping](docs/tax-mapping-preview.md) for manuell forhåndsvisning uten lagring eller rapportering.
-
-Se [lagrede avgiftskodekoblinger](docs/tax-mappings.md) for frivillig, versjonert oppsett uten automatisk bruk i bokføring eller rapportering.
-
-Se [fakturalinjer mot valgt oppsettsversjon](docs/invoice-mapping.md) for skrivebeskyttet sammenligning av lagrede kodekoblinger.
-
-Se [fakturaens hovedboksreferanser](docs/invoice-ledger.md) for skrivebeskyttet sporbarhet til lagrede posteringer.
-
-Se [versjonert avgiftslagring](docs/tax-evidence-storage.md) for ny skjema-v1-migrering, driftsvern og avgrensninger.
-
-Se [kontrollkopier av fakturagrunnlag](docs/invoice-evidence.md) for bekreftet lagring av dagens grunnlag og valgt oppsettsversjon.
-
-Se [enkle nummerserier](docs/numbering.md) for F/K/T, kunde-/leverandørnumre og valgfritt startnummer ved overgang.
-
-Standardkontoer, inkludert lukkingskontoer: [bruk og faggrunnlag](docs/standard-accounts.md).
-
-MVA-satsenes egne salg- og kjøpskontoer fylles separat fra standardkontoene.
-Se [MVA-kontoer for salg og innkjøp](docs/vat-accounts.md).
+GPL-3.0-or-later. Se [LICENSE](LICENSE). Den medfølgende norske kontoplanen
+fra Odoo er lisensiert under LGPL-3.0; kilde- og lisensopplysninger følger
+modulen.
