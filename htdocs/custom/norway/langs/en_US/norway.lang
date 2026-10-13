@@ -874,3 +874,16 @@ NorwayTaxAccountsOpen=Open Tax accounts in Dolibarr
 NorwayTaxAccountsGuide=Read the tax account guide
 NorwayWizardExtraTaxAccounts=Guide: Tax accounts
 NorwayWizardExtraTaxAccountsHelp=Explains when the list can remain unchanged, the distinction from VAT accounts and tax accounts for sole proprietorships. Changes no settings.
+
+NorwayVatRatesTitle=Set up ordinary Norwegian VAT rates
+NorwayVatRatesScope=For an unused accounting setup with the shipped Norwegian chart: Create missing ordinary 25, 15 and 12% sales/purchase rates and deactivate ordinary unused 8 and 14% after confirmation. Existing rates, account codes and defaults are not overwritten. 0% is preserved.
+NorwayVatRatesLimits=Rates alone do not select tax treatment. Exemptions, registration periods, deductions and imports require separate assessment. Historical document rates are unchanged. Fill the rate accounts separately after this setup.
+NorwayVatRatesConfirm=I confirm that this is an unused accounting setup without documents or ledger history and that the displayed changes are correct. No invoice lines or VAT registration status change.
+NorwayVatRatesCreate=Create ordinary sales/purchase rate
+NorwayVatRatesDeactivate=Deactivate old ordinary rate; retain its row
+NorwayVatRatesKeep=Preserve active ordinary rate and account choices
+NorwayVatRatesReview=Existing rate or special choice requires manual review
+NorwayVatRatesBlocked=Changes cannot be confirmed. Check the selected active Norwegian chart. Documents (including drafts/quotes/orders), ledger history, products with 8/14%, inactive or special rate rows and old default choices require manual review. No data changed.
+NorwayVatRatesSource=Source: current Norwegian Tax Administration rates
+NorwayWizardTaskVatRates=Set up ordinary Norwegian VAT rates
+NorwayWizardTaskVatRatesHelp=For an unused setup: review 25/15/12 and old 8/14 before confirming. Documents, history and special choices block changes. Fill VAT accounts in the following task.

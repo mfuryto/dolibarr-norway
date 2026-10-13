@@ -34,4 +34,26 @@ Norsk MVA-behandling, registreringsperioder og SAF-T-/næringsmapping er videre 
 
 ## Aksept
 
+### Prosjektaksept av kontoplanen – 2026-10-13
+
+Prosjekteier har akseptert den medfølgende profilen som tilstrekkelig norsk
+kontoplan og avklart kontoplanens samsvar som prosjektbeslutning. En separat
+verifikasjon mot NS 4102:2023 skal derfor ikke blokkere videre utvikling.
+Dette er prosjektets aksept, ikke en uavhengig sertifisering fra Standard Norge.
+
+Grunnlaget er en sammenligning av modulens CSV med
+[Skatteetatens firesifrede SAF-T-kontoliste ved fast revisjon](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/General%20Ledger%20Standard%20Accounts/CSV/General_Ledger_Standard_Accounts_4_character.csv):
+Begge inneholder 745 unike kontonumre, alle sammenfallende, uten manglende eller
+ekstra kontoer. 740 norske kontonavn er identiske. Forskjellene på 1195, 1475,
+4085 og 7785 er doble mellomrom i referansen; på 2540 er forskjellen en
+tankestrek. Ingen forskjell i navnenes meningsinnhold ble identifisert.
+
+Sammenligningen gjelder den distribuerte filen, ikke eventuelle lokale
+endringer i en installasjonsdatabase. Aksepten gjelder kontoplanen;
+SAF-T-klassifisering, avgiftsmapping, eksport og avstemming må fortsatt
+implementeres og testes separat. Eksisterende kontoer eller bokførte poster
+endres ikke som følge av denne beslutningen.
+
+### Teknisk verifikasjon
+
 Kildetesten kontrollerer fast revisjon, lisensangivelse, filhasher og tapsfri konvertering av alle 745 kontoer. Syntetiske tester kontrollerer oppretting og valg, gjentakelse uten duplikater, utløpt/endret bekreftelse, navnekonflikter og vern mot annen plan eller eksisterende kontoer. Tidligere kontoimporttester dekker feil under andre kontooppretting og atomisk tilbakeføring. Installasjonstesten prøver CLI-installering to ganger og kontrollerer at alle 745 aktive kontoer og planvalget overlever oppdatering og backup/gjenoppretting. Nettlesertesten består for 17 sider ved fire skjermbredder (68 visninger). Ingen produksjonsdata brukes.

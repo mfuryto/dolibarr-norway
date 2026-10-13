@@ -48,6 +48,10 @@ Fra 0.21.0 kan [én MVA-virkningsdato lagres etter eksplisitt bekreftelse](vat-r
 
 ## 4. Kontoplan, standardkontoer og journaler
 
+I nytt regnskap følger du kontoplanvalg med [ordinært MVA-satsoppsett](vat-rates.md)
+og deretter [satskontoene](vat-accounts.md). Dokumenter og historikk sperrer
+den automatiske oppsetthjelperen; etablerte regnskap gjennomgås manuelt.
+
 «Skattekontoer» er en egen liste for skatt-/avgiftsmodulen. Den kan stå urørt
 når funksjonen ikke brukes, og er ikke en forutsetning for vanlig fakturering
 i ENK uten ansatte. Se [veiledning for skattekontoer](tax-accounts.md).

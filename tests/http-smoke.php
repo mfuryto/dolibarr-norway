@@ -39,6 +39,8 @@ try {
     if (strpos($bankDefaults,'value="savebankdefaults"')!==false) { throw new RuntimeException('Bank mapping writable before login'); }
     $registration=request('/custom/norway/admin/registration.php');
     if (strpos($registration,'previewregistration')!==false) { throw new RuntimeException('Registration setup exposed before login'); }
+    $vatRates=request('/custom/norway/admin/vatrates.php');
+    if (strpos($vatRates,'value="savevatrates"')!==false || strpos($vatRates,'norway-page')!==false) { throw new RuntimeException('VAT setup exposed before login'); }
     $vat=request('/custom/norway/admin/vat.php');
     if (strpos($vat,'VAT account mapping check')!==false || strpos($vat,'Kontroll av MVA-kontokoblinger')!==false) { throw new RuntimeException('VAT report exposed before login'); }
     $periods=request('/custom/norway/admin/periods.php');
@@ -93,10 +95,22 @@ try {
         $vatAccounts=request('/custom/norway/admin/vataccounts.php?lang='.$locale);
         if (strpos(html_entity_decode($vatAccounts,ENT_QUOTES,'UTF-8'),$title)===false || strpos($vatAccounts,'NorwayVatAccounts')!==false || strpos($vatAccounts,'Saving could not be confirmed.')!==false || strpos($vatAccounts,'Kunne ikke bekrefte lagringen.')!==false) { throw new RuntimeException('VAT accounts rendering failed'); }
     }
+    foreach (array('nb_NO'=>'Sett opp ordinære norske MVA-satser','en_US'=>'Set up ordinary Norwegian VAT rates') as $locale=>$title) {
+        $vatRates=request('/custom/norway/admin/vatrates.php?lang='.$locale);
+        if (strpos(html_entity_decode($vatRates,ENT_QUOTES,'UTF-8'),$title)===false || strpos($vatRates,'NorwayVatRates')!==false || strpos($vatRates,'Saving could not be confirmed.')!==false) { throw new RuntimeException('VAT rate setup rendering failed'); }
+    }
+    request('/custom/norway/admin/vatrates.php',array('action'=>'savevatrates','token'=>'invalid','confirmed'=>'1'));
+    if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('VAT rate setup CSRF rejection missing'); }
     request('/custom/norway/admin/vataccounts.php',array('action'=>'savevataccounts','token'=>'invalid','confirmed'=>'1'));
     if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==403) { throw new RuntimeException('VAT accounts CSRF rejection missing'); }
     $standard=request('/custom/norway/admin/standardaccounts.php?lang=en_US');
     if (!preg_match('/name="token" value="([^"]+)"/',$standard,$standardToken)) { throw new RuntimeException('Standard token missing'); }
+    foreach (array('vatrates'=>'savevatrates','vataccounts'=>'savevataccounts') as $page=>$action) {
+        curl_setopt($curl,CURLOPT_FOLLOWLOCATION,false);
+        $rejected=request('/custom/norway/admin/'.$page.'.php',array('action'=>$action,'token'=>html_entity_decode($standardToken[1]),'confirmed'=>'1'));
+        if (curl_getinfo($curl,CURLINFO_HTTP_CODE)!==302 || strpos($rejected,'<p>')!==false) { throw new RuntimeException('Unconfirmed VAT setup did not redirect cleanly'); }
+        curl_setopt($curl,CURLOPT_FOLLOWLOCATION,true);
+    }
     $standard=request('/custom/norway/admin/standardaccounts.php',array('action'=>'previewstandard','token'=>html_entity_decode($standardToken[1]),'choices'=>array('ACCOUNTING_RESULT_PROFIT'=>'8800')));
     if (strpos($standard,'Saving could not be confirmed.')===false || strpos($standard,'value="savestandard"')!==false) { throw new RuntimeException('Wrong-purpose closing choice accepted'); }
     request('/custom/norway/admin/standardaccounts.php',array('action'=>'previewstandard','token'=>'invalid','choices'=>array('ACCOUNTING_RESULT_PROFIT'=>'2050')));

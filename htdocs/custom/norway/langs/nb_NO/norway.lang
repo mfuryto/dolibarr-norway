@@ -874,3 +874,16 @@ NorwayTaxAccountsOpen=Åpne Skattekontoer i Dolibarr
 NorwayTaxAccountsGuide=Les veiledning for skattekontoer
 NorwayWizardExtraTaxAccounts=Veiledning: Skattekontoer
 NorwayWizardExtraTaxAccountsHelp=Forklarer når listen kan stå urørt, forskjellen fra MVA-kontoer og bruk av skattekontoer for ENK. Ingen innstillinger endres.
+
+NorwayVatRatesTitle=Sett opp ordinære norske MVA-satser
+NorwayVatRatesScope=For nytt bokføringsoppsett med den medfølgende norske kontoplanen: Oppretter manglende ordinære satser 25, 15 og 12 % for salg og kjøp, og deaktiverer ordinære, ubrukte 8 og 14 % etter bekreftelse. Eksisterende satser, kontokoder og standardvalg overskrives ikke. 0 % beholdes.
+NorwayVatRatesLimits=Satser alene velger ikke avgiftsbehandling. Fritak, unntak, registreringsperioder, fradrag og import må vurderes separat. Gyldige eldre satser i historiske dokumenter endres ikke. Etter satsoppsettet fylles satskontoene via egen lenke.
+NorwayVatRatesConfirm=Jeg bekrefter at dette er et nytt bokføringsoppsett uten dokumenter eller bokføringshistorikk, og at de viste endringene er riktige. Ingen fakturalinjer eller MVA-status endres.
+NorwayVatRatesCreate=Opprett ordinær sats for salg og kjøp
+NorwayVatRatesDeactivate=Deaktiver gammel ordinær sats; behold raden
+NorwayVatRatesKeep=Behold eksisterende aktiv ordinær sats og kontovalg
+NorwayVatRatesReview=Krever manuell gjennomgang av eksisterende sats eller særvalg
+NorwayVatRatesBlocked=Ingen endringer kan bekreftes. Kontroller valgt aktiv norsk kontoplan. Dokumenter (også utkast/tilbud/ordre), hovedbok, produkter med 8/14 %, inaktive eller spesielle satsrader og gamle standardvalg krever manuell gjennomgang. Ingen data er endret.
+NorwayVatRatesSource=Kilde: Skatteetatens gjeldende satser
+NorwayWizardTaskVatRates=Sett opp ordinære norske MVA-satser
+NorwayWizardTaskVatRatesHelp=I nytt bokføringsoppsett: gjennomgå forhåndsvisningen av 25/15/12 og gamle 8/14 før bekreftelse. Dokumenter, historikk og særvalg sperrer endring. Fyll deretter MVA-kontoene i neste punkt.

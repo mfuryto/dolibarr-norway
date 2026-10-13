@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && GETPOST('action','aZ09')==='savevatac
 llxHeader('',$langs->trans('NorwayVatAccountsTitle'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayVatAccountsTitle'),'','accountancy');
 print '<p>'.$langs->trans('NorwayVatAccountsScope').'</p><p>'.$langs->trans('NorwayVatAccountsSeparate').'</p>';
+print '<p><a href="'.dol_buildpath('/norway/admin/vatrates.php',1).'">'.$langs->trans('NorwayVatRatesTitle').'</a></p>';
 try {
     $preview=NorwayVatAccounts::preview($db,$conf->entity);$fills=0;$blocked=false;
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';

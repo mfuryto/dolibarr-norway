@@ -27,8 +27,9 @@ Kilder kontrollert 2026-10-13.
 
 ## Bruk
 
-1. Kontroller de aktive norske avgiftssatsene. Installasjonen kan inneholde
-   eldre satser; oppdatering av satser må gjøres separat i Dolibarrs ordbok.
+1. Kontroller de aktive norske avgiftssatsene. Fra 0.41.0 finnes et separat
+   [bekreftet satsoppsett for nye regnskap](vat-rates.md). Eksisterende
+   regnskap og særvalg må fortsatt gjennomgås manuelt.
 2. Åpne utfyllingssiden og gjennomgå hver rad. Bare tomme felt på ordinære,
    aktive norske satser uten kode eller særinnstillinger foreslås fylt.
 3. Bekreft at radene gjelder ordinære innenlandske avgiftspliktige salg/kjøp,
