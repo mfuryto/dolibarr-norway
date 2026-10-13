@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.47.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.48.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -84,17 +84,17 @@ riktig bruksrett.
 | --- | --- | --- |
 | A1 – levert i 0.41.0 | Fullfør ordinært MVA-satsoppsett for nye installasjoner | Forhåndsvis manglende 25/15/12 og deaktivering av ordinære 8/14. Bevar nullsats, spesialrader, kontovalg og dokumenter. Historikk, eksisterende bruk og tvetydighet sperrer endring. Test gjentakelse, atomisk rollback og foreldet bekreftelse. Ingen sats velges for fakturalinjer. |
 | A2 | Kvalifiser faktura, kreditnota og konto-/avgiftsfordeling | Salg/kjøp, 25/15/12, nullsats med eksplisitt behandling, retting, fradrag og registreringsperioder. Knyt avgift og grunnlag til faktisk hovedbok; manglende metadata må vises som avvik. |
-| A3 | Papirløs bilagsflyt på Dolibarrs dokumentgrunnlag | Etter pågående A2-arbeid: kvalifiser enkel bilagsoversikt, PDF/bilde fra PC, dokument ved registreringen, enkel status og duplikat-/mangelvarsler. Originalen kobles til kjøp/utlegg/manuelt bilag og faktisk postering. Bygg videre på kjernen og bevar dokumenter i backup/restore. |
 | B1 | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
 | B2 | Direkte innrapportering av MVA-melding | Bygger på B1. Kvalifiser Skatteetatens gjeldende grensesnitt, autorisasjon, validering, eksplisitt bekreftet innsending, kvittering/status og endringsmeldinger. Test avbrudd og gjentakelse uten utilsiktet dobbeltinnsending før produksjonsbruk. |
 | C | Reskontro, bank og balanseavstemming | Komplette saldoer og bevegelser, ingen dobbelttelling; inngående saldoer fra tidligere system behandles som egen migrering. Nytt regnskap trenger ingen konstruerte inngående poster. |
-| C1 | Enkel bilagsmatching i nettleseren | Bygger på A3/C. Brukeren kobler tilgjengelig banktransaksjon, dokument og regnskap med bekreftelse. Gjenbruk eksisterende funksjoner. Mobilapp/-opplasting, e-postmottak, OCR og avansert automatisering inngår ikke i bilagsleveransen. |
 | C2 | Årsavslutning før skattemelding og næringsspesifikasjon | Bygger på kvalifisert bokføring og C. Kontroller saldoer, bank, reskontro og MVA, og håndter dokumenterte periodiseringer, avskrivninger og resultatdisponering. Test overføring av inngående saldoer, gjentakelse uten dobbeltføring, endelig låsing og sporbar retting/etterpostering. |
 | D | Utenlandsscenarioer for varer og tjenester | Konkrete land-/kundetyper og leveringsmodeller; eksportdokumentasjon, importgrunnlag og omvendt avgiftsplikt. Bygger på A2/B1. |
 | E – friststyrt; avklares parallelt med A2 | E-faktura/EHF/Peppol for offentlige kunder og næringslivet | Kvalifiser sending etter 2027-reglene, format og unntak. Planlegg mottak og digital behandling etter 2030-reglene. Skjema/forretningsregler, referanser, arkiv, tilgangspunkt og mottakertest inngår. Sporet skal ikke vente på full MVA-/årsrapport. |
 | F – kontomapping kan utvikles parallelt | SAF-T 1.40 | Låst skjema/kodelisteversjon, datoavgrenset kontomapping, konto-/reskontrosaldoer, sporbar avgift og komplette totaler. Krever A2/B1/C før endelig eksportaksept. |
 | F2 | Rapportgrunnlag for næringsspesifikasjonen | Bygger på avstemt årsgrunnlag fra C2. Knytt regnskapstall til riktig årsversjon og foretaksprofil, med sporbarhet til kontoer/posteringer og eksplisitt behandling av skattemessige forskjeller. Kontroller fullstendighet og totaler før tallene brukes ved levering. |
 | G – vern utvikles gjennom alle trinn | Perioder, retting, arkiv, drift og produksjonsaksept | Rolle-/låsetester, dokumentert gjenoppretting, oppbevaring og en signert scenario-/kravmatrise for konkret støttet omfang. |
+| A3 – til slutt | Papirløs bilagsflyt på Dolibarrs dokumentgrunnlag | Etter øvrige planlagte funksjonsleveranser: kvalifiser enkel bilagsoversikt, PDF/bilde fra PC, dokument ved registreringen, enkel status og duplikat-/mangelvarsler. Originalen kobles til kjøp/utlegg/manuelt bilag og faktisk postering. Bygg videre på kjernen og bevar dokumenter i backup/restore. |
+| C1 – til slutt, etter A3 | Enkel bilagsmatching i nettleseren | Bygger på A3/C. Brukeren kobler tilgjengelig banktransaksjon, dokument og regnskap med bekreftelse. Gjenbruk eksisterende funksjoner. Mobilapp/-opplasting, e-postmottak, OCR og avansert automatisering inngår ikke i bilagsleveransen. |
 
 Kontoplanens prosjektaksept er gjennomført. Kontomapping under F gjenstår
 og er ikke grunnlag for å bytte allerede brukt kontoplan automatisk.
@@ -104,7 +104,8 @@ kvalifisert; planen lover ingen automatisk versjonsoppgradering.
 
 ## Vedtatt videre omfang – 2026-10-13
 
-Papirløs bilagsflyt er vedtatt som A3/C1, primært for vanlig nettleserbruk på
+Papirløs bilagsflyt er vedtatt som A3/C1 og flyttet til slutt etter
+øvrige planlagte funksjonsleveranser, etter prosjekteiers prioritering. Omfanget er primært for vanlig nettleserbruk på
 PC med manuell opplasting og registrering. Mobilopplasting og ekstra
 automatisering er tatt ut av bilagsomfanget. Løsningen får selvstendig
 utforming og implementasjon. Offentlige produktbeskrivelser kan belyse brukerbehov;
@@ -292,3 +293,19 @@ Dette kvalifiserer den tekniske sammenligningen innen uttrykkelig valgte
 som helhet. Neste A2-arbeid er konkrete avgiftsscenarioer, kilde-/rettingsløp,
 kjøp og manuelle bilag med samme krav til sporbarhet. Full registreringshistorikk,
 fradrag, nullsats og B1/B2-aksept gjenstår.
+
+## A2 – kildebevaring for kjøp i 0.48.0
+
+Kjernens kjøpsjournal bruker samme BOOKKEEPING_CREATE-hendelse som salg.
+Den eksisterende hendelseslagringen utvides til leverandørfaktura og
+leverandørkreditnota, med rå linje-/avgifts-/kontofelt, leverandørreferanse,
+valutafelt og motpart. Kjøp og salg skilles på dokumenttype også når numeriske
+faktura-ID-er er like. Lagring følger kjernens transaksjon og feil stopper
+posteringen uten å etterlate en post uten kildeobservasjon.
+
+Dette er teknisk bevaring, ikke fradragsvurdering eller kvalifisert
+kjøpsfordeling. Salgsprofiler og selgerens registreringsdato brukes ikke
+som avgiftsvurdering av kjøp. Neste A2-arbeid er datert kjøpskodekobling,
+kjøpsfordeling, fradragsomfang og korreksjonsløp. Manuelle bilag, nullsats og
+rapportaksept gjenstår. Papirløs opplasting og matching tas til slutt; krav
+til dokumentasjon og arkiv gjelder fortsatt under de øvrige leveransene.

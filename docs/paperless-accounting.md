@@ -1,7 +1,10 @@
 # Papirløst regnskap og bilagsflyt
 
 Vedtatt videre omfang 2026-10-13. Funksjonene inngår i roadmapens A3/C1.
-Pågående arbeid med bokført avgiftsgrunnlag fortsetter før denne leveransen.
+Prosjekteier har prioritert papirløs bilagsflyt til slutt, etter de øvrige
+planlagte funksjonsleveransene. A3 gjennomføres før C1. Arbeid med bokføring,
+MVA, avstemming, rapportering og øvrige norske krav fortsetter først.
+Dokumentasjons- og arkivkrav ivaretas underveis; E-sporets frister flyttes ikke.
 
 Omfanget er forenklet etter prosjekteiers valg: vanlig bruk i nettleser på PC,
 med manuell opplasting og registrering. Gjenbruk Dolibarrs eksisterende
