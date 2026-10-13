@@ -50,6 +50,8 @@ class NorwayPostingEvidence
         if (count($active)!==1 || (int)$active[0]['active']!==1) { throw new RuntimeException('Posting observation requires native transaction'); }
         NorwaySchema::verify($db);
         if ($object->doc_type==='supplier_invoice' && (int)($object->fk_doc ?? 0)>0) { NorwayPurchaseDeduction::lockForPosting($db,$entity,(int)$object->fk_doc); }
+        require_once __DIR__.'/NorwayPurchasePosting.php';
+        NorwayPurchasePosting::guardNative($db,$entity,$object);
         $basis=self::source($db,$entity,$id);
         // Temporary/unproven create paths must not label an unrelated existing row as newly observed.
         if (!$basis || $basis['posting']['doc_type']!==$object->doc_type || $basis['posting']['doc_ref']!==($object->doc_ref ?? null)
@@ -62,7 +64,7 @@ class NorwayPostingEvidence
         }
         $supplier=$basis['posting']['doc_type']==='supplier_invoice';
         $data=array('version'=>$supplier ? ((int)$basis['posting']['fk_doc']>0 ? 6 : 5) : 3,'kind'=>self::TYPE,'entity'=>$entity,'posting_id'=>$id,'event'=>'BOOKKEEPING_CREATE','captured_at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$basis,'tax_context'=>$supplier ? NorwayPostingTaxContext::evaluatePurchase($basis,$entity) : NorwayPostingTaxContext::evaluate($basis,$entity),'registration_context'=>$supplier ? null : NorwayPostingRegistrationContext::evaluate($basis,$entity));
-        if ($supplier && $data['version']===6) { $data['deduction_context']=NorwayPurchaseDeduction::captureContext($db,$entity,(int)$basis['posting']['fk_doc'],$basis); }
+        if ($supplier && $data['version']===6) { $data['deduction_context']=NorwayPurchaseDeduction::captureContext($db,$entity,(int)$basis['posting']['fk_doc'],$basis);NorwayPurchasePosting::assertAllocationPath($data['deduction_context'],$entity,(int)$basis['posting']['fk_doc']); }
         $json=self::encode($data);$hash=hash('sha256',$json);
         $sql="INSERT INTO ".$p."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::TYPE."',".$id.",1,'".$data['captured_at']."',".(int)$user->id.",0,'".$db->escape($json)."','".$hash."')";
         if (!$db->query($sql)) { throw new RuntimeException('Posting observation write'); }return 1;

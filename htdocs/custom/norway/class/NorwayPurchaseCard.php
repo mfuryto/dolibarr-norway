@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayPostingEvidence.php';
 require_once __DIR__.'/NorwayPurchaseDeduction.php';
+require_once __DIR__.'/NorwayPurchasePosting.php';
 /** Explicit choices and read-only comparison in the native supplier invoice card. */
 class NorwayPurchaseCard
 {
@@ -12,9 +13,11 @@ class NorwayPurchaseCard
         $langs->load('norway@norway');
         $choiceHtml=self::choices($db,$object,$user,$langs,$entity,$profile,$percentage);
         $pending=$_SESSION['norway_purchase_deduction'] ?? null;
+        $postingPending=$_SESSION['norway_purchase_posting'] ?? null;
+        $postingPreview=$postingPending && $postingPending['entity']===$entity && $postingPending['id']===(int)$object->id && $postingPending['user']===(int)$user->id && $postingPending['expires']>=time();
         $hasPreview=$pending && $pending['entity']===$entity && $pending['id']===(int)$object->id && $pending['user']===(int)$user->id && $pending['expires']>=time();
-        $html='<div class="norway-page clearboth"><details id="norway-purchase-allocation"'.($profile!=='' || $hasPreview ? ' open' : '').'><summary>'.$langs->trans('NorwayPurchaseTitle').'</summary><p>'.$langs->trans('NorwayPurchaseScope').'</p>';
-        $html.=$choiceHtml.self::postingContexts($db,$object,$user,$langs,$entity);
+        $html='<div class="norway-page clearboth"><details id="norway-purchase-allocation"'.($profile!=='' || $hasPreview || $postingPreview ? ' open' : '').'><summary>'.$langs->trans('NorwayPurchaseTitle').'</summary><p>'.$langs->trans('NorwayPurchaseScope').'</p>';
+        $html.=$choiceHtml.self::postingForm($db,$object,$user,$langs,$entity,$postingPreview ? $postingPending : null).self::postingContexts($db,$object,$user,$langs,$entity);
         $html.='<form method="get" action="'.DOL_URL_ROOT.'/fourn/facture/card.php"><input type="hidden" name="facid" value="'.(int)$object->id.'"><label>'.$langs->trans('NorwayPurchaseProfile').' <select name="norway_purchase_profile" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
         foreach (NorwayPurchaseAllocation::profiles() as $key=>$rule) { $html.='<option value="'.$key.'"'.($profile===$key ? ' selected' : '').'>'.$rule['rate'].' % – '.$langs->trans('NorwayPurchase'.ucfirst($rule['deduction'])).'</option>'; }
         $html.='</select></label><label>'.$langs->trans('NorwayPurchaseShare').' <input type="number" name="norway_purchase_share" min="0.01" max="99.99" step="0.01" value="'.dol_escape_htmltag(is_string($percentage) ? $percentage : '').'"></label><button class="button" type="submit">'.$langs->trans('NorwayInvoiceRun').'</button></form>';
@@ -34,6 +37,29 @@ class NorwayPurchaseCard
             } catch (Throwable $error) { $html.='<div class="warning">'.$langs->trans('NorwayPurchaseUnavailable').'</div>'; }
         }
         return $html.'</details></div>';
+    }
+    private static function postingForm($db,$object,$user,$langs,$entity,$pending)
+    {
+        if (!$user->hasRight('accounting','bind','write')) { return ''; }
+        $id=(int)$object->id;
+        $r=$db->query("SELECT rowid FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".$entity." AND doc_type='supplier_invoice' AND fk_doc=".$id.' LIMIT 1');
+        if (!$r) { return '<p class="warning">'.$langs->trans('NorwayPurchasePostingFailed').'</p>'; }
+        if ($db->fetch_object($r)) { return '<p>'.$langs->trans('NorwayPurchasePostingAlreadyPosted').'</p>'; }
+        $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1);
+        $html='<h3>'.$langs->trans('NorwayPurchasePostingTitle').'</h3><p>'.$langs->trans('NorwayPurchasePostingScope').'</p>';
+        $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="previewposting"><p><label>'.$langs->trans('NorwayPurchasePostingJournal').' <select name="journal" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+        $r=$db->query('SELECT rowid,code,label FROM '.$db->prefix().'accounting_journal WHERE entity='.$entity.' AND nature=3 AND active=1 ORDER BY code');
+        if (!$r) { return '<p class="warning">'.$langs->trans('NorwayPurchasePostingFailed').'</p>'; }
+        while ($journal=$db->fetch_object($r)) { $html.='<option value="'.(int)$journal->rowid.'">'.dol_escape_htmltag($journal->code.' — '.$journal->label).'</option>'; }
+        $html.='</select></label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingPreview').'</button></form>';
+        if ($pending) {
+            $preview=$pending['preview'];
+            $html.='<h4>'.$langs->trans('NorwayPurchasePostingPreview').'</h4><p>'.$langs->trans('NorwayDeductionPostingRevision').' #'.(int)$preview['assessment']['revision'].' / '.dol_escape_htmltag($preview['basis']['invoice']['datef']).' / '.dol_escape_htmltag($preview['journal']['code']).'</p><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+            foreach (array('Line','Account','Debit','Credit') as $key) { $html.='<th>'.$langs->trans('NorwayPurchasePosting'.$key).'</th>'; }$html.='</tr>';
+            foreach ($preview['rows'] as $row) { $html.='<tr><td>'.($row['line']===0 ? '—' : $row['line']).'</td><td>'.dol_escape_htmltag($row['account'].' — '.$row['label']).'</td><td>'.dol_escape_htmltag($row['debit']).'</td><td>'.dol_escape_htmltag($row['credit']).'</td></tr>'; }
+            $html.='</table></div><form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="writeposting"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayPurchasePostingConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingWrite').'</button></form>';
+        }
+        return $html;
     }
     private static function postingContexts($db,$object,$user,$langs,$entity)
     {

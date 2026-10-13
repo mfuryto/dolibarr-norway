@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.54.0 · Under utvikling**
+**Versjon 0.55.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -34,6 +34,8 @@ foretak per installasjon.
   Begrunnede fradragsvurderinger kan lagres med linjebeløp og revisjonshistorikk;
   dette endrer ikke bokføringen. Nye kjøpsposteringer bevarer også hvilken
   vurderingsrevisjon som forelå, og om grunnlaget samsvarte ved posteringen.
+  En bekreftet førstegangsbokføring kan anvende lagret fullt, delvis eller intet
+  fradrag på støttede kostnadskjøp og kreditnotaer. Korreksjonsløpet gjenstår.
 - **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
   kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
 
