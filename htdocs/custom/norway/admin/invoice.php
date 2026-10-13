@@ -11,6 +11,7 @@ require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
 require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
 require_once __DIR__.'/../class/NorwayInvoiceLedger.php';
 require_once __DIR__.'/../class/NorwayInvoiceReconciliation.php';
+require_once __DIR__.'/../class/NorwayInvoiceAllocation.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
 $id = GETPOSTINT('id');
@@ -101,6 +102,21 @@ if (GETPOSTISSET('id')) {
                     }
                     print '</table></div>';
                 } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayReconcileUnavailable').'</div>'; }
+                print '<h3>'.$langs->trans('NorwayAllocationTitle').'</h3><p>'.$langs->trans('NorwayAllocationScope').'</p>';
+                $allocation=GETPOST('allocation','aZ09');
+                print '<form method="get"><input type="hidden" name="id" value="'.(int)$invoice->id.'"><input type="hidden" name="ledger" value="1"><p><label>'.$langs->trans('NorwayAllocationProfile').' <select name="allocation" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+                foreach (NorwayInvoiceAllocation::profiles() as $key=>$rule) { print '<option value="'.$key.'"'.($allocation===$key ? ' selected' : '').'>'.dol_escape_htmltag($rule['rate'].' % / '.$rule['customer'].' / '.implode(', ',$rule['sales']).' / '.$rule['vat']).'</option>'; }
+                print '</select></label></p><button class="button" type="submit">'.$langs->trans('NorwayInvoiceRun').'</button></form>';
+                if (GETPOSTISSET('allocation')) {
+                    try {
+                        $allocationReport=NorwayInvoiceAllocation::report($db,(int)$conf->entity,(int)$invoice->id,$allocation);
+                        print '<div class="warning">'.$langs->trans('NorwayAllocation'.$allocationReport['status']).'</div><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                        foreach (array('Role','Expected','Actual','Difference') as $column) { print '<th>'.$langs->trans('NorwayAllocation'.$column).'</th>'; }print '</tr>';
+                        foreach ($allocationReport['totals'] as $total) { print '<tr><td>'.$langs->trans('NorwayAllocation'.$total['role']).'</td><td>'.dol_escape_htmltag($total['expected']).'</td><td>'.dol_escape_htmltag($total['actual']).'</td><td>'.dol_escape_htmltag($total['difference']).'</td></tr>'; }print '</table></div>';
+                        print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayInvoiceLedgerID').'</th><th>'.$langs->trans('NorwayInvoiceLedgerAccount').'</th><th>'.$langs->trans('NorwayAllocationRole').'</th><th>'.$langs->trans('NorwayAllocationActual').'</th></tr>';
+                        foreach ($allocationReport['rows'] as $row) { print '<tr><td>'.(int)$row['id'].'</td><td>'.dol_escape_htmltag($row['account']).'</td><td>'.$langs->trans('NorwayAllocation'.$row['role']).'</td><td>'.dol_escape_htmltag($row['amount']).'</td></tr>'; }print '</table></div>';
+                    } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayAllocationUnavailable').'</div>'; }
+                }
                 print '<p><a href="'.DOL_URL_ROOT.'/accountancy/bookkeeping/list.php">'.$langs->trans('NorwayInvoiceLedgerOpen').'</a></p>';
             } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayInvoiceLedgerFailed').'</div>'; }
             print '</details>';
