@@ -75,7 +75,7 @@ class ActionsNorway
         if (!isModEnabled('norway') || substr(str_replace('\\','/',$_SERVER['SCRIPT_FILENAME'] ?? ''),-strlen('/fourn/facture/card.php'))!=='/fourn/facture/card.php') { return 0; }
         require_once __DIR__.'/NorwayPurchaseCard.php';
         // This core hook expects direct output. Return zero to retain the native card.
-        print NorwayPurchaseCard::render($db,$object,$user,$langs,(int)$conf->entity,GETPOST('norway_purchase_profile','aZ09'));
+        print NorwayPurchaseCard::render($db,$object,$user,$langs,(int)$conf->entity,GETPOST('norway_purchase_profile','aZ09'),GETPOST('norway_purchase_share','alphanohtml'));
         return 0;
     }
 

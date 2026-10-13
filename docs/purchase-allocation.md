@@ -1,6 +1,6 @@
 # Kjøpsfordeling i leverandørfakturabildet
 
-Fra 0.50.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være
+Fra 0.50.0, utvidet i 0.51.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være
 aktivert for å bruke dette bildet. Åpne en leverandørfaktura i Dolibarr og
 utvid **Norsk kontroll av kjøpsfordeling**. Administrator med leserett for
 leverandørfaktura og hovedbok kan velge et sammenligningsgrunnlag. Ingen profil
@@ -16,12 +16,13 @@ kjernens `invoicesuppliercard`-/`tabContentViewSupplierInvoice`-hook, felles
 kilde-/driftkontroll, beløpsregning og bilagsfullstendighet. Kjernens innhold
 og handlinger beholdes. Ingen ny bilags- eller diagnoseside opprettes.
 
-## Uttrykkelig valgt fullt fradrag
+## Uttrykkelig valgt fradragsgrunnlag
 
-Første omfang er innenlandske norske kjøp i NOK med én ordinær sats,
+Omfanget er innenlandske norske kjøp i NOK med én ordinær sats,
 uten særmarkører, lokale avgifter, stempelavgift eller omvendt avgiftsplikt.
-Profilen representerer et uttrykkelig valgt sammenligningsgrunnlag med fullt
-fradrag, ikke et vedtak om at virksomheten eller kjøpet har denne retten.
+Profilen representerer et uttrykkelig valgt sammenligningsgrunnlag, ikke et
+vedtak om at virksomheten eller kjøpet har fradragsrett. Fullt fradrag er
+100 prosent i sammenligningen; delvis og ingen er beskrevet nedenfor.
 
 | Valgt profil | Leverandørgjeld | Inngående MVA | Netto kjøp |
 | --- | --- | --- | --- |
@@ -31,8 +32,8 @@ fradrag, ikke et vedtak om at virksomheten eller kjøpet har denne retten.
 
 Numrene gjelder den medfølgende kontoplanen. Kjøpskontoen kommer fra hver
 linjes bevarte, foretakstilknyttede kontokobling, ikke dagens produkt- eller
-standardkonto. Netto forventes i debet, inngående MVA i debet og brutto på
-leverandørgjeld i kredit. Kreditnota har motsatte fortegn. De faktiske
+standardkonto. Netto og MVA uten fradrag forventes på linjens kjøpskonto i debet,
+fradragsført MVA på MVA-kontoen i debet og brutto på leverandørgjeld i kredit. Kreditnota har motsatte fortegn. De faktiske
 kontosummene og differansene vises separat per rolle; linjekontoene
 sammenlignes også per konkret konto, slik at feil kontofordeling ikke skjules
 av riktig total. Summerte poster gir ikke bekreftelse på hver enkelt linje.
@@ -69,6 +70,59 @@ Tester dekker faktisk kjøpsjournal og kreditnota, native norsk/engelsk visning,
 25/15/12, direkte og summerte linjer, feil mellom flere kjøpskontoer,
 balansert feil MVA-fordeling, uegnet delvis fradrag, kilde-/hovedboksendringer,
 blandede bilag og rettigheter. Papirløs bilagsflyt ligger fortsatt sist.
-Delvis/ingen fradragsrett, blandede satser, utenlandskjøp, nullsats, manuelle
-bilag, korreksjonsløp og rapporteringsaksept gjenstår. Dette er teknisk
+Bokføringsintegrasjon for delvis/ingen fradragsføring, blandede satser,
+utenlandskjøp, nullsats, manuelle bilag, korreksjonsløp og rapporteringsaksept gjenstår. Dette er teknisk
 sammenligning, ikke norsk regnskapsmessig produksjonsaksept.
+
+## Delvis eller ingen fradragsføring fra 0.51.0
+
+Det samme leverandørfakturabildet tilbyr nå fullt, delvis eller ingen
+fradragsføring som uttrykkelig sammenligningsgrunnlag for hver av satsene
+25/15/12. Valget er lesende og gjelder denne visningen; det lagrer ingen
+fradragsbeslutning eller postering. Ingen profil eller prosent utledes fra
+kode, konto, omsetning, registrering eller NPR-markør.
+
+Ved delvis fradrag må en vurdert andel mellom 0,01 og 99,99 prosent oppgis,
+med høyst to desimaler. Manglende/ugyldig andel gir forklaring uten beregning.
+Fullt fradrag betyr 100 prosent i sammenligningen, ingen fradragsføring betyr
+0 prosent; prosentfeltet brukes bare for delvis fradrag. Samme valgte andel
+gjelder alle linjer innenfor den valgte enkeltsatsprofilen.
+
+For hver linje beregnes fradragsført MVA fra bevart MVA og valgt andel, med
+avrunding til nærmeste øre. Et halvt øre avrundes bort fra null, symmetrisk
+for kreditnota. Resterende MVA legges til linjens bevarte kjøpskonto i
+sammenligningsgrunnlaget. Brutto leverandørgjeld endres ikke. Delvis/ingen
+fradragsføring krever MVA-linjebeløp med ørepresisjon; finere lagret presisjon
+gir uavklart resultat fremfor skjult avrunding. Beløpsregningen bruker heltall.
+
+Eksempel på et valgt 50-prosentgrunnlag: netto 1000, MVA 250 og brutto 1250
+gir forventet kjøpskonto 1125, inngående MVA 125 og leverandørgjeld 1250.
+Ved valgt ingen fradragsføring forventes kjøpskonto 1250 og inngående MVA 0.
+Dette vurderer ikke om kjøpet har rett til disse andelene. Se de tidligere
+lenkene til Skatteetatens fradragsregler; bruk og vilkår må dokumenteres selvstendig.
+
+## Kjernens dekning og hva som fortsatt mangler
+
+Kjøpsjournalen i støttet Dolibarr-versjon har en global innstilling som fører
+alle kjøpsavgifter sammen med linjebeløpet. Den er kvalifisert i et isolert
+syntetisk forsøk med faktura og kreditnota, og sammenlignes korrekt med
+ingen fradragsføring. Modulen aktiverer ikke denne globale innstillingen,
+og den er ikke en norsk per-bilag/per-linje-modell for delvis fradrag.
+
+NPR (`info_bits & 1`) er heller ikke en slik modell: kjernen endrer brutto-
+beregningen og oppretter en særskilt motpost. Den beholdes derfor utenfor
+kontrollens støttede omfang. Dette er undersøkt i
+[kjøpsjournalen](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/accountancy/journal/purchasesjournal.php)
+og [beløpsberegningen](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/core/lib/price.lib.php).
+
+Leveransen utvider sammenligningen, ikke den native bokføringen. En endring
+av profil/prosent flytter ikke MVA fra hovedboken til kostnad eller anlegg.
+Fradragsvalg med begrunnelse, linjevis historikk, godkjent bokføringsintegrasjon
+og korreksjonsløp gjenstår. Den viste prosenten er ikke bevart historisk
+fradragsgrunnlag. Et avvik forklarer forskjellen mot valgt sammenligning;
+det er ingen automatisk retting eller produksjonsaksept.
+
+Tester dekker delvis/ingen/fullt fradrag, gyldige/ugyldige andeler, øregrenser,
+store beløp, kreditnotaer, native postering uten separat MVA-konto, manglende
+andel i HTTP og bevaring av hovedbok ved sidevisning. Kjernens globale
+innstilling gjenopprettes etter forsøket. Ingen skjema- eller payloadendring.

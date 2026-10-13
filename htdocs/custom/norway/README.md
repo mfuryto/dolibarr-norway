@@ -1,4 +1,4 @@
-# Norway 0.50.0
+# Norway 0.51.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -15,8 +15,8 @@ New native sales and purchase postings retain source observations and
 separate explicit dated tax-code setup. Sales additionally retain
 registration-date comparisons. Selected allocation profiles can compare
 retained sources with the ledger. The native supplier invoice card includes
-an optional explicit full-deduction purchase comparison; deduction entitlement
-is not inferred or approved. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
+an optional comparison for explicitly selected full, partial or no deduction.
+The comparison does not change postings or infer/approve deduction entitlement. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
 A manual VAT registry lookup compares current status without changing settings.
 Activation does not install a chart,
 change VAT rates or produce SAF-T. Provisional module ID: 510173; check collisions

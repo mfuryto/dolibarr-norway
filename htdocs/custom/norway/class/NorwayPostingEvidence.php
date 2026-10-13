@@ -79,7 +79,7 @@ class NorwayPostingEvidence
         if ($data['version']===5 && (($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluatePurchase($data['basis'],$entity) || !array_key_exists('registration_context',$data) || $data['registration_context']!==null)) { throw new RuntimeException('Purchase tax context integrity'); }
         return $data;
     }
-    public static function report($db,$entity,$invoiceId,$user,$profile=null,$documentType='customer_invoice')
+    public static function report($db,$entity,$invoiceId,$user,$profile=null,$documentType='customer_invoice',$deductionPercentage=null)
     {
         if (!in_array($documentType,array('customer_invoice','supplier_invoice'),true)) { throw new InvalidArgumentException('Observation document type'); }
         $supplier=$documentType==='supplier_invoice';
@@ -91,7 +91,7 @@ class NorwayPostingEvidence
             if ($profile!==null) {
                 $ledger=NorwayInvoiceLedger::report($db,$entity,$invoiceId,$documentType);
                 NorwayInvoiceAllocation::assertCompleteVoucher($db,$entity,$invoiceId,$ledger,$documentType);
-                $result=$supplier ? NorwayPurchaseAllocation::evaluate($result,$ledger,$profile) : NorwayPostingAllocation::evaluate($result,$ledger,$profile);
+                $result=$supplier ? NorwayPurchaseAllocation::evaluate($result,$ledger,$profile,$deductionPercentage) : NorwayPostingAllocation::evaluate($result,$ledger,$profile);
             }
             if ($db->commit()<=0) { throw new RuntimeException('Observation read commit'); }return $result; }
         catch (Throwable $error) { $db->rollback();throw $error; }

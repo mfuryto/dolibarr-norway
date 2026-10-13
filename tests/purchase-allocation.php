@@ -29,4 +29,17 @@ foreach($o as &$e){$e['data']['basis']['lines'][0]['total_ht']='600';$e['data'][
 $e=$o[0];$e['data']['basis']['posting']=(array)$extra+array('doc_type'=>'supplier_invoice');$o[]=$e;foreach($l['rows'] as $i=>$row){$o[$i]['data']['basis']['posting']=(array)$row+array('doc_type'=>'supplier_invoice');}
 pcAssert(NorwayPurchaseAllocation::evaluate($o,$l,'purchase25full')['status']==='Grouped','Multiple bound purchase accounts failed');
 $l['rows'][1]->debit='400';$l['rows'][3]->debit='600';foreach($l['rows'] as $i=>$row){$o[$i]['data']['basis']['posting']=(array)$row+array('doc_type'=>'supplier_invoice');}pcAssert(NorwayPurchaseAllocation::evaluate($o,$l,'purchase25full')['status']==='Different','Swapped purchase bindings hidden by totals');
-print "PASS explicit full-deduction purchase comparison: 25/15/12, direct/grouped lines, credits, no inferred partial deduction, drift, missing/split/foreign sources and balanced VAT defects\n";
+// Explicit percentages never come from codes/accounts and are rounded per VAT line.
+foreach(array(''=>'bad','0'=>'bad','100'=>'bad','-1'=>'bad','50,5'=>'bad','50.001'=>'bad','1e1'=>'bad','050'=>'bad','0.01'=>1,'33.33'=>3333,'99.99'=>9999) as $input=>$expected){
+ try{$bp=NorwayPurchaseAllocation::deduction('purchase25partial',(string)$input);pcAssert($expected!=='bad'&&$bp===$expected,'Invalid deduction percentage accepted');}catch(InvalidArgumentException $error){pcAssert($expected==='bad','Valid percentage rejected');}
+}
+pcAssert(NorwayPurchaseAllocation::deductibleVat(1000000,5000)===1000000&&NorwayPurchaseAllocation::deductibleVat(-1000000,5000)===-1000000,'Half-cent credit rounding asymmetric');
+pcAssert(NorwayPurchaseAllocation::deductibleVat(10000000000000000,9999)===9999000000000000,'Large deduction overflow/precision');
+foreach(array(array('purchase25partial','50','1125','125'),array('purchase25none',null,'1250','0')) as $case){
+ [$o,$l]=pcFixture();$l['rows'][1]->debit=$case[2];$l['rows'][2]->debit=$case[3];foreach($l['rows'] as $i=>$row){$o[$i]['data']['basis']['posting']=(array)$row+array('doc_type'=>'supplier_invoice');}
+ $result=NorwayPurchaseAllocation::evaluate($o,$l,$case[0],$case[1]);pcAssert($result['status']==='Grouped'&&$result['non_deductible_vat']===($case[1]===null?'250.00000000':'125.00000000'),'Explicit partial/no deduction failed');
+ foreach($l['rows'] as $row){$d=$row->debit;$row->debit=$row->credit;$row->credit=$d;}foreach($o as $i=>&$entry){$b=&$entry['data']['basis'];$b['invoice']['type']=2;foreach(array('total_ht','total_tva','total_ttc') as $key){$b['invoice'][$key]='-'.$b['invoice'][$key];}foreach(array('total_ht','total_tva') as $key){$b['lines'][0][$key]='-'.$b['lines'][0][$key];}$b['posting']=(array)$l['rows'][$i]+array('doc_type'=>'supplier_invoice');}unset($entry,$b);
+ pcAssert(NorwayPurchaseAllocation::evaluate($o,$l,$case[0],$case[1])['status']==='Grouped','Partial/no deduction credit signs failed');
+}
+[$o,$l]=pcFixture();pcAssert(NorwayPurchaseAllocation::evaluate($o,$l,'purchase25partial','50')['status']==='Different','Full posting incorrectly accepted as partial deduction');
+print "PASS explicit full/partial/no deduction comparison, cent rounding and percentage guards: 25/15/12, direct/grouped lines, credits, no inferred partial deduction, drift, missing/split/foreign sources and balanced VAT defects\n";
