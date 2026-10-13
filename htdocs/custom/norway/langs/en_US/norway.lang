@@ -998,3 +998,16 @@ NorwayPurchaseShareInvalid=Select a valid basis. For partial deduction, enter a 
 NorwayPurchaseSelectedShare=Selected percentage for this comparison:
 NorwayPurchaseNonDeductible=Non-deducted VAT in the selected basis, included in purchase accounts:
 NorwayNumberingPartnerPrefix=Optional prefix (0–4 uppercase letters, e.g. K or L)
+
+NorwayDeductionTitle=Retained deduction assessment
+NorwayDeductionScope=Domestic NOK purchases with one rate (25, 15 or 12%) and the same deduction share on all lines. Explain the choice and preview before saving. This records an assessment; it does not change postings or establish entitlement.
+NorwayDeductionReason=Reason and basis for the deduction share
+NorwayDeductionSaved=Deduction assessment saved as a new revision. Postings have not changed.
+NorwayDeductionFailed=The deduction assessment could not be processed. Check access, scope and source, then preview again.
+NorwayDeductionChanged=The invoice source has changed since the last assessment. History is retained; assess and confirm a new revision.
+NorwayDeductionCurrent=The last saved assessment matches the current invoice source. The comparison below uses this choice when no other profile is selected. Postings have not changed.
+NorwayDeductionConfirm=I confirm the reason and deduction share for the displayed lines. Saving does not change postings.
+NorwayDeductionLine=Invoice line
+NorwayDeductionVat=Input VAT (NOK)
+NorwayDeductionDeductible=Selected deduction (NOK)
+NorwayDeductionNonDeductible=Non-deductible (NOK)

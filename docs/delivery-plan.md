@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.52.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.53.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -364,3 +364,22 @@ uttrykkelig bekreftelse. Ingen skjemaendring.
 Dette er en avgrenset oppsettsforbedring etter prosjekteiers valg. Videre
 A2-prioritet er uendret: begrunnede historiske fradragsvalg, linjevis sporbarhet
 og bokførings-/korreksjonsintegrasjon. Papirløs bilagsflyt ligger fortsatt sist.
+
+
+## A2 – begrunnede historiske fradragsvalg i 0.53.0
+
+Leverandørfakturabildet tilbyr uttrykkelig forhåndsvisning og bekreftet lagring
+av fullt/delvis/ingen fradrag med begrunnelse. Valget og beregnede linjebeløp
+bevares sammen med fakturagrunnlag, bruker, tidspunkt og stigende revisjon.
+Samme andel gjelder alle linjer; innenlandske NOK-kjøp/kreditnotaer med én sats
+25/15/12 og ørepresisjon støttes. Endret grunnlag gir varsel; gamle revisjoner
+overskrives ikke. Uendret lagret valg brukes i den eksisterende sammenligningen
+når brukeren ikke har valgt en annen profil. Ingen automatisk fradragsvurdering,
+bokføringsendring eller påstand om et historisk bokføringstidspunkt.
+
+Eksisterende versjonert kontrollarkiv gjenbrukes med egen dokumenttype og
+payloadversjon; ingen skjemaendring eller tilbakefylling. Tester kvalifiserer
+lagring/historikk, linjebeløp, endret grunnlag, replay, tilgang og HTTP-bekreftelse.
+Videre A2-arbeid er kobling av valgt revisjon til nye bokføringshendelser,
+kvalifisert fradragsbokføring og korreksjonsløp. Ulike andeler per linje,
+blandede satser og særbehandling gjenstår. Papirløs bilagsflyt ligger sist.

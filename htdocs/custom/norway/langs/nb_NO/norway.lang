@@ -998,3 +998,16 @@ NorwayPurchaseShareInvalid=Velg et gyldig grunnlag. Ved delvis fradrag må andel
 NorwayPurchaseSelectedShare=Valgt andel for denne sammenligningen:
 NorwayPurchaseNonDeductible=MVA uten fradrag i valgt grunnlag, inkludert i kjøpskontoene:
 NorwayNumberingPartnerPrefix=Valgfritt prefiks (0–4 store bokstaver, f.eks. K eller L)
+
+NorwayDeductionTitle=Lagret fradragsvurdering
+NorwayDeductionScope=Gjelder innenlandske NOK-kjøp med én sats (25, 15 eller 12 %) og samme fradragsandel på alle linjer. Begrunn valget og forhåndsvis før lagring. Dette dokumenterer vurderingen; det endrer ikke bokføringen og bekrefter ikke fradragsrett.
+NorwayDeductionReason=Begrunnelse og grunnlag for fradragsandelen
+NorwayDeductionSaved=Fradragsvurderingen er lagret som en ny revisjon. Bokføringen er ikke endret.
+NorwayDeductionFailed=Fradragsvurderingen kunne ikke behandles. Kontroller tilgang, avgrensning og grunnlag, og forhåndsvis på nytt.
+NorwayDeductionChanged=Fakturagrunnlaget er endret siden siste vurdering. Historikken er bevart; vurder og bekreft en ny revisjon.
+NorwayDeductionCurrent=Siste lagrede vurdering gjelder dagens fakturagrunnlag. Sammenligningen nedenfor bruker dette valget når ingen annen profil er valgt. Bokføringen er ikke endret.
+NorwayDeductionConfirm=Jeg bekrefter begrunnelsen og fradragsandelen på de viste linjene. Lagringen endrer ikke bokføringen.
+NorwayDeductionLine=Fakturalinje
+NorwayDeductionVat=Inngående MVA (NOK)
+NorwayDeductionDeductible=Valgt fradrag (NOK)
+NorwayDeductionNonDeductible=Uten fradrag (NOK)
