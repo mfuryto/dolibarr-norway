@@ -85,7 +85,8 @@ utledet eller fylt inn. Payloadgrensen er 1 MB. Rapporten er avgrenset til
 lagring gir ikke godkjent resultat. Oppbevaring av finansielle kilder er
 regnskapsdata i driftsdatabasen, aldri materiale som skal legges i Git.
 
-Hendelsene dekker ikke kjøp, manuelle bilag, alle importveier, korreksjons-
+Den opprinnelige salgsleveransen dekker ikke kjøp (rå kjøpshendelser tilføyes
+fra 0.48.0, se nedenfor), manuelle bilag, alle importveier, korreksjons-
 hendelser eller opprinnelig dokumentutstedelse. Endringer/sletting oppdages
 ved sammenligning, men tidspunkt og aktør for hver senere endring er ikke
 registrert av denne leveransen. Kontoplan-/avgiftsmapping, registrerings-
@@ -157,3 +158,43 @@ samme tabell og samme transaksjon; ingen skjemaendring gjennomføres.
 Kjernens fakturavalidering gjenbrukes til [handlingsrettede varsler](vat-registration.md),
 og den valgfrie kontrollsiden er fortsatt diagnose, ikke et ekstra steg for
 hver faktura. Nye tolkningsregler må versjoneres uten å endre denne historikken.
+
+## Kildebevaring for kjøp fra 0.48.0
+
+Dolibarr 24.0.1 har allerede kjøpsjournal og transaksjonell
+BOOKKEEPING_CREATE for leverandørfakturaer. Det konkrete gapet er at denne
+hendelsen tidligere ikke ble bevart av modulen. Samme trigger, lagring,
+integritetskontroll og transaksjon gjenbrukes nå for `supplier_invoice`.
+Den som bokfører, bruker vanlig overføring fra kjøpsjournal til hovedbok.
+Ingen ekstra opplasting eller manuell kontrollrunde innføres.
+
+Payloadversjon 4 gjelder bare kjøp. Den bevarer fakturahode,
+leverandørreferanse, kreditnotakilde-ID, reverseringsmarkør, valuta- og
+beløpsfelt, motpart, linjer, avgiftsfelt og lagrede kjøpskontokoblinger.
+Kjernens kjøpslinjefelt `tva` bevares som `total_tva` i det felles formatet;
+`fk_facture_fourn` beholdes også ved siden av felles `fk_facture`.
+Ufullstendig grunnlag og de eksisterende kapasitetsgrensene merkes som før.
+Valutafelt er rå lagrede opplysninger, ingen kursintegrasjon eller beregning.
+
+`tax_context` og `registration_context` er uttrykkelig null for kjøp.
+Salgsoppsett og selgerens virkningsdato kan ikke godkjenne fradrag eller
+avgiftsbehandling av en leverandørfaktura. Datert kjøpskodekobling,
+fradragsomfang, hovedboksfordeling, utenlandskjøp og korreksjonsregler må
+kvalifiseres videre før rapportering. Rådata om slike forhold er ikke støtte
+for korrekt norsk avgiftsbehandling i disse scenarioene.
+
+Diagnostikkleseren kan hente kjøpsobservasjoner med eksplisitt dokumenttype
+og krever administrator, leserett for leverandørfaktura og hovedbok i aktivt
+foretak. Denne leveransen oppretter ingen ny diagnose-/bilagsside. Kjøp og
+salg filtreres separat både i hovedbok og arkiv, også ved like numeriske
+faktura-ID-er. Fjernede hovedboksposter beholder observasjonen. Skadet
+lagring avvises; administratorendringer er ikke kryptografisk forhindret.
+Salg beholder payloadversjon 3; versjon 1–3 leses som før uten omskriving.
+Ingen tabell- eller skjemaendring innføres.
+
+Lagringsfeil stopper også støttede kjøpsposteringer med kjernens
+handlingsrettede feilmelding. Administrator undersøker lagringen og retter
+årsaken før nytt forsøk. Tester dekker reell kjøpsjournal, leverandørkreditnota,
+gjentatt overføring, rollback, lagringsfeil, kildeendring, slettet post,
+korrupsjon, dokumenttype- og foretaksisolasjon. Papirløs bilagsflyt og
+matching er flyttet til slutt og inngår ikke i denne leveransen.
