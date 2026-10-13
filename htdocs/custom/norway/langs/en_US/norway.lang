@@ -865,3 +865,12 @@ NorwayVatAccountsSeparate=No rates are created, activated or changed. Historical
 NorwayVatAccountsConfirm=I confirm that rows to fill concern ordinary domestic taxable sales/purchases and that the displayed accounts are correct. Deduction rights and the correct rate must be assessed for each transaction.
 NorwayWizardTaskVatAccounts=Fill sales and purchase accounts on VAT rates
 NorwayWizardTaskVatAccountsHelp=Default accounts do not fill the rate rows. Preview ordinary Norwegian rate accounts and confirm only in an unused accounting setup. Existing choices and special cases are preserved.
+
+NorwayTaxAccountsTitle=Tax accounts – what needs setup?
+NorwayTaxAccountsHelp=Tax accounts under Accounting map tax and contribution types to accounts for the Dolibarr tax/contribution module. This list is separate from the chart, VAT accounts and local taxes 1/2. An empty list does not mean the chart lacks tax accounts. Leave the list unchanged if this feature is not used.
+NorwayTaxAccountsEnk=Sole proprietorship without employees: This list needs no entries for ordinary invoicing. Personal advance income tax paid from the business bank account is normally recorded using 2070 Forskuddsskatt in the shipped chart. The payment does not reduce business profit. An account alone creates no payment or ledger entry.
+NorwayTaxAccountsOther=Other legal forms and businesses with employees: Establish the applicable taxes and contributions before creating mappings. Do not apply 2070 to every legal form. Norwegian tax calculation, payroll and reporting are not qualified by this guide. Existing types and mappings are preserved.
+NorwayTaxAccountsOpen=Open Tax accounts in Dolibarr
+NorwayTaxAccountsGuide=Read the tax account guide
+NorwayWizardExtraTaxAccounts=Guide: Tax accounts
+NorwayWizardExtraTaxAccountsHelp=Explains when the list can remain unchanged, the distinction from VAT accounts and tax accounts for sole proprietorships. Changes no settings.

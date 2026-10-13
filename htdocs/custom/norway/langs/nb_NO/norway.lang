@@ -865,3 +865,12 @@ NorwayVatAccountsSeparate=Ingen satser opprettes, aktiveres eller endres. Histor
 NorwayVatAccountsConfirm=Jeg bekrefter at radene som skal fylles gjelder ordinær innenlandsk avgiftspliktig omsetning/innkjøp, og at de viste kontoene er riktige. Fradragsrett og riktig sats vurderes for hver transaksjon.
 NorwayWizardTaskVatAccounts=Fyll salg- og kjøpskonto på MVA-satsene
 NorwayWizardTaskVatAccountsHelp=Standardkontoer fyller ikke satsradens egne felt. Forhåndsvis kontoer for ordinære norske satser og bekreft bare i et nytt bokføringsoppsett. Eksisterende valg og særtilfeller bevares.
+
+NorwayTaxAccountsTitle=Skattekontoer – hva må settes opp?
+NorwayTaxAccountsHelp=«Skattekontoer» under Regnskap kobler skatte- og avgiftstyper til kontoer for Dolibarrs skatt-/avgiftsmodul. Listen er separat fra kontoplanen, MVA-kontoene og lokale skatter 1/2. En tom liste betyr ikke at skattekontoene mangler i kontoplanen. La listen stå urørt dersom denne funksjonen ikke brukes.
+NorwayTaxAccountsEnk=ENK uten ansatte: Ingen utfylling her er nødvendig for vanlig fakturering. Betales personlig forskuddsskatt fra foretakets bankkonto, brukes normalt 2070 Forskuddsskatt i den medfølgende kontoplanen. Betalingen reduserer ikke virksomhetens overskudd. Kontoen alene oppretter ingen betaling eller bokføring.
+NorwayTaxAccountsOther=Andre foretaksformer og foretak med ansatte: Avklar hvilke skatter og avgifter som faktisk gjelder før koblinger opprettes. Ingen generell kobling til 2070 skal brukes for alle foretaksformer. Norsk skatteberegning, lønn og innrapportering er ikke kvalifisert av denne veiledningen. Eksisterende typer og koblinger endres ikke.
+NorwayTaxAccountsOpen=Åpne Skattekontoer i Dolibarr
+NorwayTaxAccountsGuide=Les veiledning for skattekontoer
+NorwayWizardExtraTaxAccounts=Veiledning: Skattekontoer
+NorwayWizardExtraTaxAccountsHelp=Forklarer når listen kan stå urørt, forskjellen fra MVA-kontoer og bruk av skattekontoer for ENK. Ingen innstillinger endres.
