@@ -921,3 +921,24 @@ NorwayLineAccountsDifferent=Persisted line accounts, amounts or actual line refe
 NorwayLineAccountsReview=Missing binding or account outside the profile. No overall line allocation confirmation.
 NorwayLineAccountsEmpty=No ledger entries found.
 NorwayAllocationGrouped=Account totals match, but sales are wholly or partly aggregated. Individual line allocation is not confirmed.
+
+NorwayPostingTitle=Source data observed at new posting creation
+NorwayPostingScope=From this version, raw source data is preserved at supported new BOOKKEEPING_CREATE events for customer invoices. Earlier entries receive no reconstructed event history. The comparison checks current sources against the stored observation; it does not approve historical VAT treatment or provide a complete change log or VAT report. Times are UTC.
+NorwayPostingID=Ledger entry ID
+NorwayPostingCaptured=Observed (UTC)
+NorwayPostingStatus=Observation and changes
+NorwayPostingMissing=No stored create event – historical provenance is unknown
+NorwayPostingSame=Observed source fields are unchanged
+NorwayPostingChanged=Source data has changed since observation
+NorwayPostingRemoved=Entry is absent from the current source-linked ledger
+NorwayPostingIncomplete=The observation had incomplete invoice sources
+NorwayPostingSaved=Show preserved line data
+NorwayPostingLine=Line ID
+NorwayPostingAccount=Persisted sales account
+NorwayPostingRate=Rate
+NorwayPostingCode=Persisted tax code
+NorwayPostingNet=Net
+NorwayPostingVat=VAT
+NorwayPostingUnavailable=Observations could not be checked. Investigate read errors, damaged storage or capacity limits.
+
+NorwayPostingCaptureFailed=Posting stopped because the source observation could not be saved. Ask an administrator to inspect module storage, resolve the error and then retry posting.
