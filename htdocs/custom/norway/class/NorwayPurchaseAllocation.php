@@ -29,7 +29,7 @@ class NorwayPurchaseAllocation
         $cents=intdiv(abs($vat),1000000);
         return ($vat<0 ? -1 : 1)*intdiv($cents*$basisPoints+5000,10000)*1000000;
     }
-    public static function evaluate($observations,$ledger,$profile,$percentage=null)
+    public static function evaluate($observations,$ledger,$profile,$percentage=null,$postingDate=null)
     {
         $profiles=self::profiles();if (!isset($profiles[$profile])) { throw new InvalidArgumentException('Purchase profile'); }
         $basisPoints=self::deduction($profile,$percentage);
@@ -42,7 +42,8 @@ class NorwayPurchaseAllocation
         foreach (array('vat_reverse_charge','revenuestamp','localtax1','localtax2') as $key) {
             if (!preg_match('/^0(?:\.0+)?$/D',(string)($h->$key ?? ''))) { return $pending; }
         }
-        $gross=NorwayInvoiceReconciliation::evaluate($h,$ledger);$sign=(int)$h->type===2 ? -1 : 1;
+        $grossHeader=clone $h;if ($postingDate!==null) { if (!NorwayPeriodSetup::validDate($postingDate)) { throw new InvalidArgumentException('Correction date'); }$grossHeader->datef=$postingDate; }
+        $gross=NorwayInvoiceReconciliation::evaluate($grossHeader,$ledger);$sign=(int)$h->type===2 ? -1 : 1;
         $expectedCosts=array();$byLine=array();$net=0;$vat=0;$deductible=0;
         foreach ($lines as $line) {
             foreach (array('info_bits','localtax1_tx','localtax2_tx','total_localtax1','total_localtax2') as $key) {

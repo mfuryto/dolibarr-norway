@@ -102,10 +102,22 @@ class NorwayPostingEvidence
             if ($profile!==null) {
                 $ledger=NorwayInvoiceLedger::report($db,$entity,$invoiceId,$documentType);
                 NorwayInvoiceAllocation::assertCompleteVoucher($db,$entity,$invoiceId,$ledger,$documentType);
-                $result=$supplier ? NorwayPurchaseAllocation::evaluate($result,$ledger,$profile,$deductionPercentage) : NorwayPostingAllocation::evaluate($result,$ledger,$profile);
+                if ($supplier) {
+                    require_once __DIR__.'/NorwayPurchasePosting.php';
+                    $effective=NorwayPurchasePosting::effective($db,$entity,$invoiceId,$user,$result,$ledger);
+                    $result=NorwayPurchaseAllocation::evaluate($effective['observations'],$effective['ledger'],$profile,$deductionPercentage,$effective['date']);$result['correction_revision']=$effective['revision'];
+                } else { $result=NorwayPostingAllocation::evaluate($result,$ledger,$profile); }
             }
             if ($db->commit()<=0) { throw new RuntimeException('Observation read commit'); }return $result; }
         catch (Throwable $error) { $db->rollback();throw $error; }
+    }
+    /** Already-guarded native operation owns the transaction; retain the normal read permissions. */
+    public static function transactionReport($db,$entity,$id,$user)
+    {
+        if (!is_int($entity) || $entity!==(int)$GLOBALS['conf']->entity || $entity<=0 || !is_int($id) || $id<=0 || empty($user->admin)
+            || !$user->hasRight('fournisseur','facture','lire') || !$user->hasRight('accounting','mouvements','lire')) { throw new InvalidArgumentException('Observation access'); }
+        $active=self::rows($db,'SELECT @@in_transaction AS active');if ((int)$active[0]['active']!==1) { throw new RuntimeException('Observation transaction'); }
+        return self::readReport($db,$entity,$id,'supplier_invoice');
     }
     private static function readReport($db,$entity,$invoiceId,$documentType)
     {
