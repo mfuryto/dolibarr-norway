@@ -1,6 +1,6 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
+Oppdatert 2026-10-14. Planen gjelder en generell norsk modul for varer og
 tjenester. Status er kontrollert mot kode og tester til og med 0.56.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
