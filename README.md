@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.56.0 · Under utvikling**
+**Versjon 0.57.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -37,6 +37,8 @@ foretak per installasjon.
   En bekreftet førstegangsbokføring kan anvende lagret fullt, delvis eller intet
   fradrag på støttede kostnadskjøp og kreditnotaer. Endret fradragsandel kan
   korrigeres med full reversering og erstatningsbilag innen støttet omfang.
+  Fradragsandel og begrunnelse kan velges per linje, også med blandede
+  satser på 25, 15 og 12 %, med kontroll av hver MVA-konto.
 - **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
   kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
 

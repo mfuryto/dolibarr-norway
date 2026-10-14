@@ -280,3 +280,46 @@ Se [kjernens hovedboks-API](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htd
 Dette kvalifiserer teknisk sporbar retting innen det avgrensede omfanget.
 Fradragsrett, MVA-rapport/endringsmelding og samlet norsk produksjonsetterlevelse
 må fortsatt kvalifiseres separat.
+
+
+## Ulike linjeandeler og blandede satser fra 0.57.0
+
+I leverandørfakturaen velges **Fradragsvurdering per linje**. Hver linje viser
+beskrivelse, lagret MVA-sats og MVA-beløp. Velg fullt, delvis eller intet
+fradrag, og skriv begrunnelse på hver linje. Ved delvis fylles prosent inn;
+fullt/ingen bruker henholdsvis 100/0 uten å velge dette automatisk. Skriv en
+samlet begrunnelse, forhåndsvis linjebeløpene og bekreft. Manglende eller
+uvedkommende linjevalg avvises. Nye linjer eller endret grunnlag krever ny
+forhåndsvisning og vurdering. Satser velges fortsatt på fakturalinjen i kjernen.
+
+Satser 25/15/12 kan blandes på samme innenlandske NOK-bilag. Nullsats, særmarkører,
+eiendeler og utenlandshandel inngår fortsatt ikke. Fradragsretten vurderes av
+brukeren ut fra anskaffelsen, som omtalt i Skatteetatens
+[veiledning om fradrag](https://oppslag.rettskilder.skatteetaten.no/rettskilder2/type/handboker/merverdiavgiftshandboken/gjeldende/MVA2025_M-8).
+Beregningen anvender et uttrykkelig valg, uten å bekrefte vilkårene for fradrag.
+
+Linjevurderinger lagres som vurderingspayload 2; felles vurdering beholder
+payload 1. Nye kjøpsobservasjoner har payload 7 og bruker fradragskontekst 2
+ved linjevurdering, ellers 1. Observasjoner 4/5/6 og vurderinger 1 leses uten
+omskriving eller etterfylling. Linjedekning, satssamsvar, andel, grunnlag og
+beregnede linjebeløp kontrolleres også ved historikklesing. Ingen DDL.
+
+Bekreftet bokføring bruker linjens andel og fordeler fradragsført MVA på
+2710/2711/2713 for 25/15/12 %. MVA uten fradrag går til linjens kostnadskonto.
+Kontrollen viser hver MVA-konto separat og krever eksakt fordeling for
+linjevurderinger. En balansert flytting mellom MVA-kontoer blir avvik selv om
+samlet MVA og bilagsbalanse er riktig. Kjernens vanlige kjøpsjournal kan ikke
+omgå en lagret linjevurdering, heller ikke om alle linjer har fullt fradrag;
+bruk den bekreftede bokføringsflyten.
+
+Eksempel med tre linjer à netto 100: 25 % MVA med 50 % fradrag, 15 % med fullt
+fradrag og 12 % uten fradrag gir kostnad 324,50, inngående MVA 12,50 på 2710 og
+15 på 2711, og leverandørgjeld 352. Kreditnota har motsatt fortegn. Avrunding
+skjer per linje før beløp grupperes på hovedbokskonto.
+
+Korreksjonsløpet kan endre linjeandelene og gå fra en eldre felles vurdering
+til linjevurdering. Endret begrunnelse uten endret fradragsfordeling oppretter
+ikke unødvendige korreksjonsposter. Originalene bevares, og hele kjeden
+verifiseres før erstatningsbilaget brukes i kontrollen. Begrensningene i
+0.56.0 gjelder fortsatt, inkludert uendrede kildeobservasjoner, samme måned,
+åpen periode og brukerens erklæring om at grunnlaget ikke er innrapportert.

@@ -39,8 +39,8 @@ class NorwayPurchasePosting
     }
     public static function assertAllocationPath($context,$entity,$id)
     {
-        $bp=$context['assessment']['data']['choice']['basis_points'] ?? null;
-        if ($bp!==null && $bp<10000 && self::$active!==array($entity,$id)) { throw new RuntimeException('ConfirmedDeductionRequired'); }
+        $choice=$context['assessment']['data']['choice'] ?? null;$bp=$choice['basis_points'] ?? null;
+        if ((($choice['profile'] ?? null)==='purchase_lines' || ($bp!==null && $bp<10000)) && self::$active!==array($entity,$id)) { throw new RuntimeException('ConfirmedDeductionRequired'); }
     }
     public static function preview($db,$entity,$id,$journalId,$user,$lock=false)
     {
@@ -79,8 +79,8 @@ class NorwayPurchasePosting
         if (count($chart)!==1 || (int)$chart[0]['active']!==1) { throw new InvalidArgumentException('Accounts'); }
         $party=self::rows($db,'SELECT rowid,code_fournisseur,code_compta_fournisseur,nom FROM '.$p.'societe WHERE entity='.$entity.' AND rowid='.(int)$basis['invoice']['fk_soc'].$suffix);
         if (count($party)!==1 || trim((string)$party[0]['code_compta_fournisseur'])==='') { throw new InvalidArgumentException('Party'); }
-        $accounts=array();$rows=array();$vat=0;$sum=0;
-        $rule=NorwayPurchaseAllocation::profiles()[$choice['profile']];
+        $accounts=array();$rows=array();$vat=array();$sum=0;
+        $rule=$choice['profile']==='purchase_lines' ? null : NorwayPurchaseAllocation::profiles()[$choice['profile']];
         $account=static function ($number,$boundId=0) use ($db,$p,$entity,$chart,$suffix,&$accounts) {
             $sql='SELECT rowid,account_number,label,active,fk_pcg_version FROM '.$p.'accounting_account WHERE entity='.$entity." AND fk_pcg_version='".$db->escape($chart[0]['pcg_version'])."' AND ".($boundId>0 ? 'rowid='.(int)$boundId : "account_number='".$db->escape($number)."'").$suffix;
             $r=self::rows($db,$sql);
@@ -92,10 +92,9 @@ class NorwayPurchasePosting
             if (!preg_match('/^[4-7][0-9]{3}$/D',$bound['account_number'])) { throw new InvalidArgumentException('Binding'); }
             $n=NorwayInvoiceReconciliation::amount($line['total_ht']);$v=NorwayInvoiceReconciliation::amount($validated['lines'][$i]['non_deductible']);$value=$n+$v;
             if ($value%1000000!==0) { throw new InvalidArgumentException('Precision'); }
-            $rows[]=array('line'=>(int)$line['rowid'],'account'=>$bound['account_number'],'label'=>$bound['label'],'amount'=>$value);$vat+=NorwayInvoiceReconciliation::amount($validated['lines'][$i]['deductible']);$sum+=$value;
+            $rows[]=array('line'=>(int)$line['rowid'],'account'=>$bound['account_number'],'label'=>$bound['label'],'amount'=>$value);$vatCode=$validated['lines'][$i]['vat_account'] ?? $rule['vat'];$vat[$vatCode]=($vat[$vatCode] ?? 0)+NorwayInvoiceReconciliation::amount($validated['lines'][$i]['deductible']);$sum+=$value;
         }
-        $supplier=$account('2400');$vatAccount=$account($rule['vat']);
-        if ($vat!==0) { $rows[]=array('line'=>0,'account'=>$rule['vat'],'label'=>$vatAccount['label'],'amount'=>$vat);$sum+=$vat; }
+        $supplier=$account('2400');ksort($vat);foreach ($vat as $code=>$amount) { $vatAccount=$account((string)$code);if ($amount!==0) { $rows[]=array('line'=>0,'account'=>(string)$code,'label'=>$vatAccount['label'],'amount'=>$amount);$sum+=$amount; } }
         $gross=NorwayInvoiceReconciliation::amount($basis['invoice']['total_ttc']);
         if ($gross===0 || $gross%1000000!==0 || $sum!==$gross || count($rows)>198) { throw new InvalidArgumentException('Precision'); }
         $rows[]=array('line'=>0,'account'=>'2400','label'=>$supplier['label'],'amount'=>-$gross);
@@ -125,7 +124,7 @@ class NorwayPurchasePosting
             self::$active=array($entity,$id);
             $ids=self::writeBatch($db,$entity,$id,$preview,$preview['rows'],$preview['basis']['invoice']['datef'],$piece,$ref,$user,'');
             $choice=$preview['assessment']['data']['choice'];
-            $report=NorwayPurchaseAllocation::evaluate(self::observations($db,$entity,$ids,$preview['assessment']),NorwayInvoiceLedger::report($db,$entity,$id,'supplier_invoice'),$choice['profile'],$choice['percentage']);
+            $report=NorwayPurchaseAllocation::evaluate(self::observations($db,$entity,$ids,$preview['assessment']),NorwayInvoiceLedger::report($db,$entity,$id,'supplier_invoice'),$choice['profile'],$choice['percentage'],null,$choice['profile']==='purchase_lines' ? $choice : null);
             if ($report['status']!=='Match') { throw new RuntimeException('Verification'); }
             $data=array('version'=>1,'kind'=>self::TYPE,'entity'=>$entity,'document_id'=>$id,'revision'=>1,'at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'preview'=>$preview,'postings'=>$ids,'piece'=>$piece,'ref'=>$ref);
             $json=self::encode($data);$hash=hash('sha256',$json);
@@ -202,7 +201,11 @@ class NorwayPurchasePosting
             $assessment=$preview['plan']['assessment'];$date=$preview['date'];$previousPiece=$data['replacement_piece'];$hashes[]=$row['payload_sha256'];
         }
         if (count($seen)!==count($actual)) { throw new RuntimeException('CorrectionIntegrity'); }
-        return array('hashes'=>$hashes,'revision'=>count($records),'active_ids'=>$activeIds,'active_rows'=>$activeRows,'active_date'=>$date,'assessment_revision'=>$assessment['revision'],'basis_points'=>$assessment['data']['choice']['basis_points'],'basis'=>$root['preview']['basis'],'piece'=>$previousPiece,'count'=>count($actual),'finalized'=>$finalized);
+        return array('hashes'=>$hashes,'revision'=>count($records),'active_ids'=>$activeIds,'active_rows'=>$activeRows,'active_date'=>$date,'assessment_revision'=>$assessment['revision'],'basis_points'=>$assessment['data']['choice']['basis_points'],'deduction_vector'=>self::vector($assessment),'basis'=>$root['preview']['basis'],'piece'=>$previousPiece,'count'=>count($actual),'finalized'=>$finalized);
+    }
+    private static function vector($assessment)
+    {
+        $v=array();foreach ($assessment['data']['lines'] as $line) { $v[$line['line']]=$line['basis_points']; }ksort($v);return $v;
     }
     private static function reversalRows($rows)
     {
@@ -224,7 +227,7 @@ class NorwayPurchasePosting
         if (!is_string($reason) || trim($reason)!==$reason || strlen($reason)<3 || strlen($reason)>2000 || preg_match('/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/',$reason)) { throw new InvalidArgumentException('CorrectionReason'); }
         $trail=self::trail($db,$entity,$id,$user);if ($trail['finalized']) { throw new InvalidArgumentException('CorrectionFinalized'); }if ($trail['revision']>=20) { throw new RuntimeException('Capacity'); }
         $plan=self::plan($db,$entity,$id,$journalId,$user,false,false);
-        if ($plan['basis']!==$trail['basis'] || $plan['assessment']['revision']<=$trail['assessment_revision'] || $plan['assessment']['data']['choice']['basis_points']===$trail['basis_points']) { throw new InvalidArgumentException('CorrectionAssessment'); }
+        if ($plan['basis']!==$trail['basis'] || $plan['assessment']['revision']<=$trail['assessment_revision'] || self::vector($plan['assessment'])===$trail['deduction_vector']) { throw new InvalidArgumentException('CorrectionAssessment'); }
         if (!NorwayPeriodSetup::validDate($date) || substr($date,0,7)!==substr($plan['basis']['invoice']['datef'],0,7) || $date<$trail['active_date']) { throw new InvalidArgumentException('CorrectionDate'); }
         $period=NorwayPeriodSetup::report($db,$entity,$date,0,'');if ($period['coverage']!=='Open') { throw new InvalidArgumentException('Period'); }
         $reversals=self::reversalRows($trail['active_rows']);
@@ -256,7 +259,7 @@ class NorwayPurchasePosting
             $json=self::encode($data);$hash=hash('sha256',$json);
             if (!$db->query("INSERT INTO ".$db->prefix()."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::CORRECTION."',".$id.','.$revision.",'".$at."',".(int)$user->id.",0,'".$db->escape($json)."','".$hash."')")) { throw new RuntimeException('Storage'); }
             $entries=NorwayPostingEvidence::transactionReport($db,$entity,$id,$user);$ledger=NorwayInvoiceLedger::report($db,$entity,$id,'supplier_invoice');$effective=self::effective($db,$entity,$id,$user,$entries,$ledger);$choice=$preview['plan']['assessment']['data']['choice'];
-            if (NorwayPurchaseAllocation::evaluate($effective['observations'],$effective['ledger'],$choice['profile'],$choice['percentage'],$date)['status']!=='Match') { throw new RuntimeException('Verification'); }
+            if (NorwayPurchaseAllocation::evaluate($effective['observations'],$effective['ledger'],$choice['profile'],$choice['percentage'],$date,$choice['profile']==='purchase_lines' ? $choice : null)['status']!=='Match') { throw new RuntimeException('Verification'); }
             if ($db->commit()<=0) { throw new RuntimeException('Storage'); }return $revision;
         } catch (Throwable $error) { $db->rollback();throw $error; } finally { self::$active=null; }
     }

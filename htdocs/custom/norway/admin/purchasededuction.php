@@ -30,6 +30,12 @@ try {
         $preview=$pending['preview'];
         NorwayPurchasePosting::apply($db,(int)$conf->entity,$id,(int)$preview['journal']['rowid'],$preview['fingerprint'],$user);
         setEventMessages($langs->trans('NorwayPurchasePostingSaved'),null,'mesgs');
+    } elseif ($action==='previewlines') {
+        unset($_SESSION[$key]);
+        $basis=NorwayPurchaseDeduction::basis($db,(int)$conf->entity,$id,$user);
+        $inputs=NorwayPurchaseDeduction::formLines($basis,GETPOST('line_mode','array'),GETPOST('line_percentage','array'),GETPOST('line_reason','array'));
+        $preview=NorwayPurchaseDeduction::preview($db,(int)$conf->entity,$id,$user,'purchase_lines',null,trim(GETPOST('reason','restricthtml')),false,$inputs);
+        $_SESSION[$key]=array('entity'=>(int)$conf->entity,'id'=>$id,'user'=>(int)$user->id,'expires'=>time()+600,'nonce'=>bin2hex(random_bytes(16)),'preview'=>$preview);
     } elseif ($action==='preview') {
         unset($_SESSION[$key]);
         $profile=GETPOST('profile','aZ09');$percentage=GETPOST('percentage','alphanohtml');$reason=trim(GETPOST('reason','restricthtml'));
@@ -40,7 +46,7 @@ try {
         if (!$pending || $pending['entity']!==(int)$conf->entity || $pending['user']!==(int)$user->id || $pending['id']!==$id || $pending['expires']<time()
             || GETPOST('confirmed','aZ09')!=='1' || !hash_equals($pending['nonce'],GETPOST('nonce','aZ09'))) { throw new InvalidArgumentException('Purchase confirmation'); }
         $preview=$pending['preview'];$choice=$preview['choice'];
-        NorwayPurchaseDeduction::save($db,(int)$conf->entity,$id,$user,$choice['profile'],$choice['percentage'],$choice['reason'],$preview['fingerprint']);
+        NorwayPurchaseDeduction::save($db,(int)$conf->entity,$id,$user,$choice['profile'],$choice['percentage'],$choice['reason'],$preview['fingerprint'],$choice['lines'] ?? null);
         setEventMessages($langs->trans('NorwayDeductionSaved'),null,'mesgs');
     } else { throw new InvalidArgumentException('Purchase action'); }
 } catch (Throwable $error) {

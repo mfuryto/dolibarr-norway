@@ -1,4 +1,4 @@
-# Norway 0.56.0
+# Norway 0.57.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -24,7 +24,9 @@ backfilled. Confirmed first posting applies full, partial or no deduction to
 supported domestic expense purchases and credits using the native ledger API.
 Changed deduction shares can be corrected with full reversal and a replacement
 voucher, retaining originals. Only unchanged invoice sources, the same calendar
-month and bases not used in a submitted VAT return are supported.
+month and bases not used in a submitted VAT return are supported. Line-specific
+shares and reasons support mixed 25/15/12% purchases and credits, with separate
+VAT account controls and preserved version-one assessments.
 The comparison does not change postings or infer/approve deduction entitlement. Qualified tax/reporting mapping remains future work. See data/THIRD-PARTY-NOTICES.md.
 A manual VAT registry lookup compares current status without changing settings.
 Customer/supplier codes have independent five-digit counters and optional

@@ -43,22 +43,46 @@ class NorwayPurchaseDeduction
         if (!is_string($row['payload'] ?? null) || strlen($row['payload'])>1000000 || !is_string($row['payload_sha256'] ?? null)
             || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('Purchase choice integrity'); }
         $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
-        if (($data['version'] ?? null)!==1 || ($data['entity'] ?? null)!==$entity || ($data['document_id'] ?? null)!==$id
+        if (!in_array($data['version'] ?? null,array(1,2),true) || ($data['entity'] ?? null)!==$entity || ($data['document_id'] ?? null)!==$id
             || ($data['kind'] ?? null)!==self::TYPE || !is_int($data['revision'] ?? null) || $data['revision']<1 || $data['revision']>100
             || (int)($row['revision'] ?? 0)!==$data['revision'] || ($data['at'] ?? null)!==($row['captured_at'] ?? null)
             || !is_int($data['user'] ?? null) || $data['user']<=0 || $data['user']!==(int)($row['fk_user'] ?? 0) || (int)($row['mapping_revision'] ?? -1)!==0
             || !is_array($data['basis'] ?? null) || !is_array($data['choice'] ?? null)
             || (int)($data['basis']['invoice']['rowid'] ?? 0)!==$id || (int)($data['basis']['invoice']['entity'] ?? 0)!==$entity
-            || self::choice($data['choice']['profile'] ?? '',$data['choice']['percentage'] ?? null,$data['choice']['reason'] ?? '')!==$data['choice']
+            || (($data['version']===2)!==(($data['choice']['profile'] ?? '')==='purchase_lines'))
+            || self::choice($data['choice']['profile'] ?? '',$data['choice']['percentage'] ?? null,$data['choice']['reason'] ?? '',$data['choice']['lines'] ?? null)!==$data['choice']
             || self::lineChoices($data['basis'],$data['choice'])!==($data['lines'] ?? null)) { throw new RuntimeException('Purchase choice metadata'); }
         return $data;
     }
-    public static function choice($profile,$percentage,$reason)
+    public static function choice($profile,$percentage,$reason,$lineInputs=null)
     {
-        $bp=NorwayPurchaseAllocation::deduction($profile,$percentage);
         if (!is_string($reason) || trim($reason)!==$reason || strlen($reason)<3 || strlen($reason)>2000 || preg_match('/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/',$reason)) { throw new InvalidArgumentException('Purchase choice reason'); }
+        if ($profile==='purchase_lines') {
+            if ($percentage!==null || !is_array($lineInputs) || !$lineInputs || count($lineInputs)>200 || array_keys($lineInputs)!==range(0,count($lineInputs)-1)) { throw new InvalidArgumentException('Line assessment'); }
+            $lines=array();$ids=array();
+            foreach ($lineInputs as $input) {
+                if (!is_array($input) || array_keys($input)!==array('line','profile','percentage','reason') || !is_int($input['line']) || $input['line']<=0 || isset($ids[$input['line']]) || $input['profile']==='purchase_lines') { throw new InvalidArgumentException('Line assessment identity'); }
+                $c=self::choice($input['profile'],$input['percentage'],$input['reason']);$ids[$input['line']]=true;
+                $lines[]=array('line'=>$input['line'],'profile'=>$c['profile'],'percentage'=>$c['percentage'],'reason'=>$c['reason']);
+            }
+            usort($lines,static fn($a,$b)=>$a['line']<=>$b['line']);
+            return array('profile'=>'purchase_lines','percentage'=>null,'basis_points'=>null,'reason'=>$reason,'lines'=>$lines);
+        }
+        if ($lineInputs!==null) { throw new InvalidArgumentException('Unexpected line assessment'); }
+        $bp=NorwayPurchaseAllocation::deduction($profile,$percentage);
         $mode=NorwayPurchaseAllocation::profiles()[$profile]['deduction'];
         return array('profile'=>$profile,'percentage'=>$mode==='partial' ? number_format($bp/100,2,'.','') : null,'basis_points'=>$bp,'reason'=>$reason);
+    }
+    public static function formLines($basis,$modes,$percentages,$reasons)
+    {
+        if (!is_array($modes) || !is_array($percentages) || !is_array($reasons)) { throw new InvalidArgumentException('Line form'); }
+        $ids=array_map(static fn($l)=>(int)$l['rowid'],$basis['lines']);sort($ids,SORT_NUMERIC);
+        foreach (array($modes,$percentages,$reasons) as $values) { $keys=array_keys($values);sort($keys,SORT_NUMERIC);if ($keys!==$ids) { throw new InvalidArgumentException('Line form coverage'); } }
+        $out=array();foreach ($basis['lines'] as $line) {
+            $id=(int)$line['rowid'];$rate=(float)$line['tva_tx'];$mode=$modes[$id];
+            if (!in_array($rate,array(25.0,15.0,12.0),true) || !in_array($mode,array('full','partial','none'),true) || !is_string($percentages[$id]) || !is_string($reasons[$id])) { throw new InvalidArgumentException('Line form scope'); }
+            $out[]=array('line'=>$id,'profile'=>'purchase'.(int)$rate.$mode,'percentage'=>$mode==='partial' ? trim($percentages[$id]) : null,'reason'=>trim($reasons[$id]));
+        }return $out;
     }
     public static function basis($db,$entity,$id,$user,$lock=false)
     {
@@ -84,22 +108,27 @@ class NorwayPurchaseDeduction
     private static function lineChoices($basis,$choice)
     {
         if (!is_array($basis['lines'] ?? null) || !$basis['lines'] || count($basis['lines'])>200) { throw new InvalidArgumentException('Purchase choice lines'); }
-        $rate=NorwayPurchaseAllocation::profiles()[$choice['profile']]['rate'];$lineChoices=array();$net=0;$totalVat=0;$gross=0;
+        $lineMode=$choice['profile']==='purchase_lines';$choices=array();if ($lineMode) { foreach ($choice['lines'] as $c) { $choices[$c['line']]=$c; } }
+        $rate=$lineMode ? null : NorwayPurchaseAllocation::profiles()[$choice['profile']]['rate'];$lineChoices=array();$net=0;$totalVat=0;$gross=0;
         $header=$basis['invoice'] ?? array();$sign=(int)($header['type'] ?? -1)===2 ? -1 : 1;$ids=array();
         foreach ($basis['lines'] as $line) {
+            $id=(int)$line['rowid'];$c=$lineMode ? ($choices[$id] ?? null) : $choice;
+            if (!$c) { throw new InvalidArgumentException('Line assessment missing'); }
+            $profile=$c['profile'];$rate=NorwayPurchaseAllocation::profiles()[$profile]['rate'];$bp=NorwayPurchaseAllocation::deduction($profile,$c['percentage']);
             if ((float)$line['tva_tx']!== (float)$rate || (int)$line['info_bits']!==0 || (float)$line['localtax1_tx']!==0.0 || (float)$line['localtax2_tx']!==0.0 || (float)$line['total_localtax1']!==0.0 || (float)$line['total_localtax2']!==0.0) { throw new InvalidArgumentException('Purchase choice line scope'); }
             $id=(int)$line['rowid'];$n=NorwayInvoiceReconciliation::amount($line['total_ht']);$vat=NorwayInvoiceReconciliation::amount($line['total_tva']);$g=NorwayInvoiceReconciliation::amount($line['total_ttc']);
             if ($id<=0 || (int)$line['fk_facture_fourn']!==(int)$header['rowid'] || isset($ids[$id]) || $n*$sign<0 || $vat*$sign<0 || abs($n+$vat-$g)>1000000 || abs($vat*100-$n*$rate)>100000000) { throw new InvalidArgumentException('Purchase choice amounts'); }
             $ids[$id]=true;$net+=$n;$totalVat+=$vat;$gross+=$g;
-            $deductible=NorwayPurchaseAllocation::deductibleVat($vat,$choice['basis_points']);
-            $lineChoices[]=array('line'=>(int)$line['rowid'],'basis_points'=>$choice['basis_points'],'vat'=>NorwayInvoiceReconciliation::display($vat),'deductible'=>NorwayInvoiceReconciliation::display($deductible),'non_deductible'=>NorwayInvoiceReconciliation::display($vat-$deductible));
+            $deductible=NorwayPurchaseAllocation::deductibleVat($vat,$bp);
+            $lineChoices[]=array('line'=>(int)$line['rowid'],'basis_points'=>$bp,'vat'=>NorwayInvoiceReconciliation::display($vat),'deductible'=>NorwayInvoiceReconciliation::display($deductible),'non_deductible'=>NorwayInvoiceReconciliation::display($vat-$deductible));
         }
+        if ($lineMode) { if (count($ids)!==count($choices)) { throw new InvalidArgumentException('Line assessment coverage'); }foreach ($lineChoices as &$row) { $c=$choices[$row['line']];$row['rate']=NorwayPurchaseAllocation::profiles()[$c['profile']]['rate'];$row['vat_account']=NorwayPurchaseAllocation::profiles()[$c['profile']]['vat'];$row['reason']=$c['reason']; }unset($row); }
         if (abs($net-NorwayInvoiceReconciliation::amount($header['total_ht']))>1000000 || abs($totalVat-NorwayInvoiceReconciliation::amount($header['total_tva']))>1000000 || abs($gross-NorwayInvoiceReconciliation::amount($header['total_ttc']))>1000000) { throw new InvalidArgumentException('Purchase choice totals'); }
         return $lineChoices;
     }
-    public static function preview($db,$entity,$id,$user,$profile,$percentage,$reason,$lock=false)
+    public static function preview($db,$entity,$id,$user,$profile,$percentage,$reason,$lock=false,$lineInputs=null)
     {
-        self::guard($entity,$id,$user,true);$choice=self::choice($profile,$percentage,$reason);$basis=self::basis($db,$entity,$id,$user,$lock);
+        self::guard($entity,$id,$user,true);$choice=self::choice($profile,$percentage,$reason,$lineInputs);$basis=self::basis($db,$entity,$id,$user,$lock);
         $lineChoices=self::lineChoices($basis,$choice);
         $history=self::history($db,$entity,$id,$user);if (count($history)>=100) { throw new RuntimeException('Purchase choice history full'); }
         $data=array('basis'=>$basis,'choice'=>$choice,'lines'=>$lineChoices);
@@ -133,7 +162,7 @@ class NorwayPurchaseDeduction
         if (!is_array($entry) || !is_array($entry['data'] ?? null)) { throw new RuntimeException('Purchase context assessment'); }
         $row=$entry;$row['payload']=self::encode($entry['data']);$data=self::decode($row,$entity,$id);
         $linked=is_array($source) && $source===$data['basis'] && self::samePostingSource($source,$postingBasis);
-        return array('version'=>1,'status'=>$linked ? 'Linked' : 'Changed','assessment'=>$entry,'source'=>$source);
+        return array('version'=>$data['version']===2 ? 2 : 1,'status'=>$linked ? 'Linked' : 'Changed','assessment'=>$entry,'source'=>$source);
     }
     private static function samePostingSource($source,$posting)
     {
@@ -148,14 +177,14 @@ class NorwayPurchaseDeduction
         foreach ($source['settings'] as $row) { if (($settings[$row['entity'].'/'.$row['name']] ?? null)!==$row['value']) { return false; } }
         return true;
     }
-    public static function save($db,$entity,$id,$user,$profile,$percentage,$reason,$fingerprint)
+    public static function save($db,$entity,$id,$user,$profile,$percentage,$reason,$fingerprint,$lineInputs=null)
     {
         self::guard($entity,$id,$user,true);$active=self::rows($db,'SELECT @@in_transaction AS active');
         if ((int)$active[0]['active']!==0 || !$db->query('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE') || $db->begin()<=0) { throw new RuntimeException('Purchase choice transaction'); }
         try {
-            $preview=self::preview($db,$entity,$id,$user,$profile,$percentage,$reason,true);
+            $preview=self::preview($db,$entity,$id,$user,$profile,$percentage,$reason,true,$lineInputs);
             if (!is_string($fingerprint) || !hash_equals($preview['fingerprint'],$fingerprint)) { throw new RuntimeException('Purchase choice changed'); }
-            $data=array('version'=>1,'kind'=>self::TYPE,'entity'=>$entity,'document_id'=>$id,'revision'=>$preview['revision'],'at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$preview['basis'],'choice'=>$preview['choice'],'lines'=>$preview['lines']);
+            $data=array('version'=>$profile==='purchase_lines' ? 2 : 1,'kind'=>self::TYPE,'entity'=>$entity,'document_id'=>$id,'revision'=>$preview['revision'],'at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$preview['basis'],'choice'=>$preview['choice'],'lines'=>$preview['lines']);
             $json=self::encode($data);$hash=hash('sha256',$json);
             if (!$db->query("INSERT INTO ".$db->prefix()."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::TYPE."',".$id.','.$data['revision'].",'".$data['at']."',".$data['user'].",0,'".$db->escape($json)."','".$hash."')")) { throw new RuntimeException('Purchase choice write'); }
             $history=self::history($db,$entity,$id,$user);$last=end($history);if ($last['data']!==$data || $last['payload_sha256']!==$hash || $db->commit()<=0) { throw new RuntimeException('Purchase choice verification'); }
