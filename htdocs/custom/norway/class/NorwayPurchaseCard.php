@@ -27,6 +27,7 @@ class NorwayPurchaseCard
                 catch (InvalidArgumentException $error) { return $html.'<div class="warning">'.$langs->trans('NorwayPurchaseShareInvalid').'</div></details></div>'; }
                 $report=NorwayPostingEvidence::report($db,$entity,(int)$object->id,$user,$profile,'supplier_invoice',$percentage);
                 $html.='<div class="warning">'.$langs->trans('NorwayPurchase'.$report['status']).'</div>';
+                if (!empty($report['correction_revision'])) { $html.='<p>'.$langs->trans('NorwayPurchasePostingCorrectionEffective').' #'.(int)$report['correction_revision'].'</p>'; }
                 if ($report['source_changed']) { $html.='<p>'.$langs->trans('NorwayRetainedAllocationChanged').'</p>'; }
                 if (isset($report['deduction_basis_points'])) { $html.='<p>'.$langs->trans('NorwayPurchaseSelectedShare').' '.dol_escape_htmltag(number_format($report['deduction_basis_points']/100,2,'.','')).' %</p><p>'.$langs->trans('NorwayPurchaseNonDeductible').' '.dol_escape_htmltag($report['non_deductible_vat']).' NOK</p>'; }
                 if ($report['totals']) {
@@ -44,10 +45,10 @@ class NorwayPurchaseCard
         $id=(int)$object->id;
         $r=$db->query("SELECT rowid FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".$entity." AND doc_type='supplier_invoice' AND fk_doc=".$id.' LIMIT 1');
         if (!$r) { return '<p class="warning">'.$langs->trans('NorwayPurchasePostingFailed').'</p>'; }
-        if ($db->fetch_object($r)) { return '<p>'.$langs->trans('NorwayPurchasePostingAlreadyPosted').'</p>'; }
-        $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1);
+        if ($db->fetch_object($r)) { return self::correctionForm($db,$object,$langs,$entity,$pending); }
+        $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1).'?lang='.rawurlencode($langs->defaultlang);
         $html='<h3>'.$langs->trans('NorwayPurchasePostingTitle').'</h3><p>'.$langs->trans('NorwayPurchasePostingScope').'</p>';
-        $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="previewposting"><p><label>'.$langs->trans('NorwayPurchasePostingJournal').' <select name="journal" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+        $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="previewposting"><p><label>'.$langs->trans('NorwayPurchasePostingJournal').' <select name="journal" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
         $r=$db->query('SELECT rowid,code,label FROM '.$db->prefix().'accounting_journal WHERE entity='.$entity.' AND nature=3 AND active=1 ORDER BY code');
         if (!$r) { return '<p class="warning">'.$langs->trans('NorwayPurchasePostingFailed').'</p>'; }
         while ($journal=$db->fetch_object($r)) { $html.='<option value="'.(int)$journal->rowid.'">'.dol_escape_htmltag($journal->code.' — '.$journal->label).'</option>'; }
@@ -57,7 +58,29 @@ class NorwayPurchaseCard
             $html.='<h4>'.$langs->trans('NorwayPurchasePostingPreview').'</h4><p>'.$langs->trans('NorwayDeductionPostingRevision').' #'.(int)$preview['assessment']['revision'].' / '.dol_escape_htmltag($preview['basis']['invoice']['datef']).' / '.dol_escape_htmltag($preview['journal']['code']).'</p><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
             foreach (array('Line','Account','Debit','Credit') as $key) { $html.='<th>'.$langs->trans('NorwayPurchasePosting'.$key).'</th>'; }$html.='</tr>';
             foreach ($preview['rows'] as $row) { $html.='<tr><td>'.($row['line']===0 ? '—' : $row['line']).'</td><td>'.dol_escape_htmltag($row['account'].' — '.$row['label']).'</td><td>'.dol_escape_htmltag($row['debit']).'</td><td>'.dol_escape_htmltag($row['credit']).'</td></tr>'; }
-            $html.='</table></div><form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="writeposting"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayPurchasePostingConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingWrite').'</button></form>';
+            $html.='</table></div><form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="writeposting"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayPurchasePostingConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingWrite').'</button></form>';
+        }
+        return $html;
+    }
+    private static function correctionForm($db,$object,$langs,$entity,$pending)
+    {
+        $id=(int)$object->id;$p=$db->prefix();$r=$db->query("SELECT rowid FROM ".$p."norway_tax_evidence WHERE entity=".$entity." AND document_type='supplier_posting' AND fk_document=".$id.' LIMIT 1');
+        if (!$r || !$db->fetch_object($r)) { return '<p>'.$langs->trans('NorwayPurchasePostingAlreadyPosted').'</p>'; }
+        $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1).'?lang='.rawurlencode($langs->defaultlang);
+        $html='<h3>'.$langs->trans('NorwayPurchasePostingCorrectionTitle').'</h3><p>'.$langs->trans('NorwayPurchasePostingCorrectionScope').'</p>';
+        $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="previewcorrection"><p><label>'.$langs->trans('NorwayPurchasePostingJournal').' <select name="journal" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+        $r=$db->query('SELECT rowid,code,label FROM '.$p.'accounting_journal WHERE entity='.$entity.' AND nature=3 AND active=1 ORDER BY code');
+        if (!$r) { return '<p class="warning">'.$langs->trans('NorwayPurchasePostingFailed').'</p>'; }
+        while ($journal=$db->fetch_object($r)) { $html.='<option value="'.(int)$journal->rowid.'">'.dol_escape_htmltag($journal->code.' — '.$journal->label).'</option>'; }
+        $html.='</select></label></p><p><label>'.$langs->trans('NorwayPurchasePostingCorrectionDateLabel').' <input type="date" name="correction_date" required></label></p><p><label>'.$langs->trans('NorwayPurchasePostingCorrectionReasonLabel').' <textarea name="correction_reason" rows="3" maxlength="2000" required></textarea></label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingCorrectionPreview').'</button></form>';
+        if ($pending && ($pending['mode'] ?? '')==='correction') {
+            $preview=$pending['preview'];$html.='<h4>'.$langs->trans('NorwayPurchasePostingCorrectionPreview').'</h4><p>'.dol_escape_htmltag($preview['date'].' / '.$preview['reason']).'</p><p>'.$langs->trans('NorwayDeductionPostingRevision').' #'.(int)$preview['trail']['assessment_revision'].' → #'.(int)$preview['plan']['assessment']['revision'].'</p>';
+            foreach (array('CorrectionReversal'=>$preview['reversals'],'CorrectionReplacement'=>$preview['plan']['rows']) as $heading=>$rows) {
+                $html.='<h4>'.$langs->trans('NorwayPurchasePosting'.$heading).'</h4><div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+                foreach (array('Line','Account','Debit','Credit') as $column) { $html.='<th>'.$langs->trans('NorwayPurchasePosting'.$column).'</th>'; }$html.='</tr>';
+                foreach ($rows as $row) { $html.='<tr><td>'.($row['line']===0 ? '—' : $row['line']).'</td><td>'.dol_escape_htmltag($row['account'].' — '.$row['label']).'</td><td>'.dol_escape_htmltag($row['debit']).'</td><td>'.dol_escape_htmltag($row['credit']).'</td></tr>'; }$html.='</table></div>';
+            }
+            $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="writecorrection"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="unreported" value="1" required> '.$langs->trans('NorwayPurchasePostingCorrectionUnreportedConfirm').'</label></p><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayPurchasePostingCorrectionConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayPurchasePostingCorrectionWrite').'</button></form>';
         }
         return $html;
     }
@@ -100,14 +123,14 @@ class NorwayPurchaseCard
                 }
             }
             if (!$user->hasRight('fournisseur','facture','creer')) { return $html; }
-            $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1);
-            $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="preview"><p><label>'.$langs->trans('NorwayPurchaseProfile').' <select name="profile" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
+            $endpoint=dol_buildpath('/norway/admin/purchasededuction.php',1).'?lang='.rawurlencode($langs->defaultlang);
+            $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="preview"><p><label>'.$langs->trans('NorwayPurchaseProfile').' <select name="profile" required><option value="">'.$langs->trans('NorwaySavedMappingChoose').'</option>';
             foreach (NorwayPurchaseAllocation::profiles() as $key=>$rule) { $html.='<option value="'.$key.'">'.$rule['rate'].' % – '.$langs->trans('NorwayPurchase'.ucfirst($rule['deduction'])).'</option>'; }
             $html.='</select></label></p><p><label>'.$langs->trans('NorwayPurchaseShare').' <input type="number" name="percentage" min="0.01" max="99.99" step="0.01"></label></p><p><label>'.$langs->trans('NorwayDeductionReason').' <textarea name="reason" rows="3" maxlength="2000" required></textarea></label></p><button class="button" type="submit">'.$langs->trans('NorwayEvidencePreview').'</button></form>';
             $pending=$_SESSION['norway_purchase_deduction'] ?? null;
             if ($pending && $pending['entity']===$entity && $pending['id']===$id && $pending['user']===(int)$user->id && $pending['expires']>=time()) {
                 $html.='<h4>'.$langs->trans('NorwayEvidencePreview').'</h4>'.$render($pending['preview']);
-                $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="save"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayDeductionConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayEvidenceSave').'</button></form>';
+                $html.='<form method="post" action="'.$endpoint.'"><input type="hidden" name="lang" value="'.dol_escape_htmltag($langs->defaultlang).'"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="save"><input type="hidden" name="nonce" value="'.$pending['nonce'].'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayDeductionConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayEvidenceSave').'</button></form>';
             }
         } catch (Throwable $error) { $html.='<div class="warning">'.$langs->trans('NorwayDeductionFailed').'</div>'; }
         return $html;

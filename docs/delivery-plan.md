@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-13. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.55.0.
+Oppdatert 2026-10-14. Planen gjelder en generell norsk modul for varer og
+tjenester. Status er kontrollert mot kode og tester til og med 0.56.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -429,3 +429,34 @@ sporbarhet innen omfanget, ikke fradragsrett eller norsk produksjonsetterlevelse
 Neste arbeid er et uttrykkelig korreksjonsløp med bevarte originalposter og
 vurderingsrevisjoner. Blandede satser, ulike linjeandeler, eiendeler, nullsats,
 utland og øvrig særbehandling gjenstår. Papirløs bilagsflyt ligger sist.
+
+
+## A2 – sporbart fradragskorreksjonsløp i 0.56.0
+
+Bilag fra bekreftet førstegangsbokføring kan få endret fradragsandel gjennom
+full reversering av forrige effektive bokføring og et nytt erstatningsbilag.
+Originalene og alle vurderingsrevisjoner bevares; flere korreksjoner kan kjedes.
+Forhåndsvisning viser begge nye bilag, dato, begrunnelse og vurderingskobling.
+Lagring skjer atomisk via kjernens hovedboks-API, uten skjemaendring.
+
+Første omfang krever uendret fakturagrunnlag og bevarte kildeobservasjoner
+(inkludert fakturastatus), ny fradragsandel, samme
+kalendermåned, åpen regnskapsperiode og poster som ikke er eksportert eller
+endelig validert. Brukeren må uttrykkelig bekrefte at grunnlaget ikke er brukt
+i en innsendt MVA-melding; dette verifiseres ikke mot en innsendingshistorikk.
+Retting av innrapportert grunnlag, andre perioder, beløp eller kontokoblinger
+er ikke kvalifisert. Kjernens returfunksjon er undersøkt; den bevarer ikke alle
+referanser ved opprettingstidspunktet, så kjernens createStd-API gjenbrukes med
+modulens bevarte koblinger og transaksjonskontroll.
+
+Kontrollen validerer hele kjeden og eksakt reversering før erstatningsbilaget
+brukes som effektivt grunnlag. Endrede/fjernede/ekstra poster, korrupte metadata,
+foreldet bekreftelse og gjentatt innsending sperres. Tekniske tester dekker
+konto-/beløpsfordeling, originalbevaring, kreditnota, satser, kjeding, rollback,
+periode-/eksportvern og native HTTP-flyt. Dette er ingen bekreftelse av
+fradragsrett eller norsk regnskapsmessig produksjonsaksept.
+
+Neste A2-arbeid er ulike fradragsandeler per linje og blandede satser, samt
+kvalifisering av videre rettings-/periode- og avgiftsscenarioer. B1/B2 krever
+fortsatt avstemt grunnlag, manuelle bilag, nullsats og registreringshistorikk.
+Papirløs bilagsflyt ligger fortsatt sist.

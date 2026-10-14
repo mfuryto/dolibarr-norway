@@ -6,6 +6,7 @@ require_once __DIR__.'/NorwayPeriodSetup.php';
 class NorwayPurchasePosting
 {
     const TYPE='supplier_posting';
+    const CORRECTION='supplier_correction';
     private static $active=null;
     private static function guard($entity,$id,$user)
     {
@@ -28,11 +29,11 @@ class NorwayPurchasePosting
         $p=$db->prefix();$id=(int)($object->fk_doc ?? 0);
         if (($object->doc_type ?? '')==='supplier_invoice' && $id>0) {
             $markers=self::rows($db,"SELECT rowid FROM ".$p."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::TYPE."' AND fk_document=".$id.' LIMIT 1 FOR UPDATE');
-            if ($markers) { throw new RuntimeException('AlreadyPosted'); }
+            if ($markers && self::$active!==array($entity,$id)) { throw new RuntimeException('AlreadyPosted'); }
         }
-        $piece=(int)($object->piece_num ?? 0);
+        $piece=(int)($object->piece_num ?? 0);$own=self::$active===array($entity,$id) ? ' AND b.fk_doc<>'.$id : '';
         if ($piece>0) {
-            $conflicts=self::rows($db,"SELECT b.rowid FROM ".$p."accounting_bookkeeping b INNER JOIN ".$p."norway_tax_evidence m ON m.entity=b.entity AND m.fk_document=b.fk_doc AND m.document_type='".self::TYPE."' WHERE b.entity=".$entity." AND b.doc_type='supplier_invoice' AND b.piece_num=".$piece.' AND b.rowid<>'.(int)$object->id.' LIMIT 1 FOR UPDATE');
+            $conflicts=self::rows($db,"SELECT b.rowid FROM ".$p."accounting_bookkeeping b INNER JOIN ".$p."norway_tax_evidence m ON m.entity=b.entity AND m.fk_document=b.fk_doc AND m.document_type='".self::TYPE."' WHERE b.entity=".$entity." AND b.doc_type='supplier_invoice' AND b.piece_num=".$piece.' AND b.rowid<>'.(int)$object->id.$own.' LIMIT 1 FOR UPDATE');
             if ($conflicts) { throw new RuntimeException('ProtectedVoucher'); }
         }
     }
@@ -43,11 +44,15 @@ class NorwayPurchasePosting
     }
     public static function preview($db,$entity,$id,$journalId,$user,$lock=false)
     {
+        return self::plan($db,$entity,$id,$journalId,$user,$lock,true);
+    }
+    private static function plan($db,$entity,$id,$journalId,$user,$lock,$first)
+    {
         self::guard($entity,$id,$user);$p=$db->prefix();$suffix=$lock ? ' FOR UPDATE' : '';NorwaySchema::verify($db);
         $existing=self::rows($db,"SELECT rowid FROM ".$p."accounting_bookkeeping WHERE entity=".$entity." AND doc_type='supplier_invoice' AND fk_doc=".$id.' LIMIT 1'.$suffix);
         $markers=self::rows($db,"SELECT rowid FROM ".$p."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::TYPE."' AND fk_document=".$id.' LIMIT 1'.$suffix);
         $archived=self::rows($db,"SELECT rowid FROM ".$p."norway_tax_evidence WHERE entity=".$entity." AND document_type='bookkeeping_event' AND JSON_VALID(payload)=1 AND JSON_UNQUOTE(JSON_EXTRACT(payload,'$.basis.posting.doc_type'))='supplier_invoice' AND CAST(JSON_UNQUOTE(JSON_EXTRACT(payload,'$.basis.posting.fk_doc')) AS UNSIGNED)=".$id.' LIMIT 1'.$suffix);
-        if ($existing || $markers || $archived) { throw new InvalidArgumentException('AlreadyPosted'); }
+        if ($first && ($existing || $markers || $archived)) { throw new InvalidArgumentException('AlreadyPosted'); }
         $history=NorwayPurchaseDeduction::history($db,$entity,$id,$user);if (!$history) { throw new InvalidArgumentException('Assessment'); }$assessment=end($history);
         $basis=NorwayPurchaseDeduction::basis($db,$entity,$id,$user,$lock);
         if ($basis!==$assessment['data']['basis']) { throw new InvalidArgumentException('AssessmentChanged'); }
@@ -117,13 +122,8 @@ class NorwayPurchasePosting
             $numbering=new BookKeeping($db);$numbering->doc_date=$db->jdate($preview['basis']['invoice']['datef']);$piece=(int)$numbering->getNextNumMvt();$ref=$numbering->getNextNumRef();
             if ($piece<=0 || !is_string($ref) || trim($ref)==='') { throw new RuntimeException('Numbering'); }
             unset($GLOBALS['conf']->cache['closed_fiscal_period_cached'],$GLOBALS['conf']->cache['active_fiscal_period_cached']);
-            $ids=array();self::$active=array($entity,$id);
-            foreach ($preview['rows'] as $row) {
-                $o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=$db->jdate($preview['basis']['invoice']['datef']);$o->date_lim_reglement=empty($preview['invoice_state'][0]['date_lim_reglement']) ? null : $db->jdate($preview['invoice_state'][0]['date_lim_reglement']);$o->doc_ref=$preview['basis']['invoice']['ref'];$o->doc_type='supplier_invoice';$o->fk_doc=$id;$o->fk_docdet=$row['line'];
-                $o->thirdparty_code=$preview['party']['code_fournisseur'];$o->subledger_account=$row['account']==='2400' ? $preview['party']['code_compta_fournisseur'] : '';$o->subledger_label=$row['account']==='2400' ? $preview['party']['nom'] : '';
-                $o->numero_compte=$row['account'];$o->label_compte=$row['label'];$o->label_operation=$preview['basis']['invoice']['ref_supplier'];$o->debit=$row['debit'];$o->credit=$row['credit'];$o->montant=$row['debit']!=='0.00' ? $row['debit'] : '-'.$row['credit'];$o->sens=$row['debit']!=='0.00' ? 'D' : 'C';$o->code_journal=$preview['journal']['code'];$o->journal_label=$preview['journal']['label'];$o->piece_num=$piece;$o->ref=$ref;
-                if ($o->createStd($user)<=0) { throw new RuntimeException('Posting'); }$ids[]=(int)$o->id;
-            }
+            self::$active=array($entity,$id);
+            $ids=self::writeBatch($db,$entity,$id,$preview,$preview['rows'],$preview['basis']['invoice']['datef'],$piece,$ref,$user,'');
             $choice=$preview['assessment']['data']['choice'];
             $report=NorwayPurchaseAllocation::evaluate(self::observations($db,$entity,$ids,$preview['assessment']),NorwayInvoiceLedger::report($db,$entity,$id,'supplier_invoice'),$choice['profile'],$choice['percentage']);
             if ($report['status']!=='Match') { throw new RuntimeException('Verification'); }
@@ -133,6 +133,131 @@ class NorwayPurchasePosting
             $stored=self::rows($db,"SELECT payload,payload_sha256 FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::TYPE."' AND fk_document=".$id.' AND revision=1');
             if (count($stored)!==1 || $stored[0]['payload']!==$json || $stored[0]['payload_sha256']!==$hash || $db->commit()<=0) { throw new RuntimeException('Storage'); }
             return $piece;
+        } catch (Throwable $error) { $db->rollback();throw $error; } finally { self::$active=null; }
+    }
+    private static function writeBatch($db,$entity,$id,$plan,$rows,$date,$piece,$ref,$user,$label)
+    {
+        $ids=array();
+        foreach ($rows as $row) {
+            $o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=$db->jdate($date);$due=$row['date_lim_reglement'] ?? ($plan['invoice_state'][0]['date_lim_reglement'] ?? null);$o->date_lim_reglement=empty($due) ? null : $db->jdate($due);$o->doc_ref=$plan['basis']['invoice']['ref'];$o->doc_type='supplier_invoice';$o->fk_doc=$id;$o->fk_docdet=$row['line'];
+            $o->thirdparty_code=$row['thirdparty_code'] ?? $plan['party']['code_fournisseur'];$o->subledger_account=$row['subledger_account'] ?? ($row['account']==='2400' ? $plan['party']['code_compta_fournisseur'] : '');$o->subledger_label=$row['subledger_label'] ?? ($row['account']==='2400' ? $plan['party']['nom'] : '');
+            $o->numero_compte=$row['account'];$o->label_compte=$row['label'];$o->label_operation=$label==='' ? $plan['basis']['invoice']['ref_supplier'] : $label;$o->debit=$row['debit'];$o->credit=$row['credit'];$o->montant=$row['debit']!=='0.00' ? $row['debit'] : '-'.$row['credit'];$o->sens=$row['debit']!=='0.00' ? 'D' : 'C';$o->code_journal=$plan['journal']['code'];$o->journal_label=$plan['journal']['label'];$o->piece_num=$piece;$o->ref=$ref;
+            if ($o->createStd($user)<=0) { throw new RuntimeException('Posting'); }$ids[]=(int)$o->id;
+        }
+        return $ids;
+    }
+    private static function record($row,$entity,$id,$type,$revision)
+    {
+        if (strlen($row['payload'])>1000000 || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('CorrectionIntegrity'); }
+        $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
+        if (($data['version'] ?? null)!==1 || ($data['kind'] ?? null)!==$type || ($data['entity'] ?? null)!==$entity || ($data['document_id'] ?? null)!==$id
+            || ($data['revision'] ?? null)!==$revision || (int)$row['revision']!==$revision || ($data['at'] ?? null)!==$row['captured_at'] || ($data['user'] ?? null)!==(int)$row['fk_user'] || (int)$row['mapping_revision']!==0) { throw new RuntimeException('CorrectionIntegrity'); }
+        $preview=$data['preview'] ?? null;
+        if (!is_array($preview) || !is_string($preview['fingerprint'] ?? null)) { throw new RuntimeException('CorrectionIntegrity'); }
+        $fingerprint=$preview['fingerprint'];unset($preview['fingerprint']);
+        if (!hash_equals($fingerprint,hash('sha256',self::encode($preview)))) { throw new RuntimeException('CorrectionIntegrity'); }
+        return $data;
+    }
+    /** Verify every retained batch and exact reversal before selecting effective postings. */
+    private static function trail($db,$entity,$id,$user,$observations=null)
+    {
+        $p=$db->prefix();$sql="SELECT revision,captured_at,fk_user,mapping_revision,payload,payload_sha256 FROM ".$p."norway_tax_evidence WHERE entity=".$entity." AND fk_document=".$id;
+        $roots=self::rows($db,$sql." AND document_type='".self::TYPE."' ORDER BY revision LIMIT 2");
+        if (count($roots)!==1) { throw new InvalidArgumentException('CorrectionOrigin'); }
+        $root=self::record($roots[0],$entity,$id,self::TYPE,1);$hashes=array($roots[0]['payload_sha256']);$bytes=strlen($roots[0]['payload']);
+        $records=self::rows($db,$sql." AND document_type='".self::CORRECTION."' ORDER BY revision LIMIT 21");
+        if (count($records)>20) { throw new RuntimeException('Capacity'); }
+        $actual=self::rows($db,'SELECT rowid,entity,doc_type,fk_doc,fk_docdet,doc_ref,doc_date,code_journal,piece_num,ref,numero_compte,label_compte,label_operation,subledger_account,subledger_label,thirdparty_code,date_lim_reglement,debit,credit,date_export,date_validated FROM '.$p."accounting_bookkeeping WHERE entity=".$entity." AND doc_type='supplier_invoice' AND fk_doc=".$id.' ORDER BY rowid LIMIT 201');
+        if (count($actual)>200) { throw new RuntimeException('Capacity'); }$byId=array();$finalized=false;foreach ($actual as $row) { $finalized=$finalized || !empty($row['date_export']) || !empty($row['date_validated']);unset($row['date_export'],$row['date_validated']);$byId[(int)$row['rowid']]=$row; }
+        if ($observations===null) {
+            $active=self::rows($db,'SELECT @@in_transaction AS active');
+            $observations=(int)$active[0]['active']===1 ? NorwayPostingEvidence::transactionReport($db,$entity,$id,$user) : NorwayPostingEvidence::report($db,$entity,$id,$user,null,'supplier_invoice');
+        }
+        if (count($observations)!==count($actual)) { throw new RuntimeException('CorrectionIntegrity'); }
+        foreach ($observations as $entry) { if ($entry['status']!=='Same' || !$entry['data'] || ($entry['data']['basis']['source_complete'] ?? null)!==true) { throw new RuntimeException('CorrectionIntegrity'); } }
+        $seen=array();
+        $verify=static function($ids,$rows,$date,$journal,$piece,$ref) use (&$seen,$byId,$db,$entity,$id,$p,$root) {
+            if (!is_array($ids) || !is_array($rows) || count($ids)!==count($rows) || !$ids || !NorwayPeriodSetup::validDate($date) || !is_int($piece) || $piece<=0) { throw new RuntimeException('CorrectionIntegrity'); }
+            $out=array();foreach ($ids as $i=>$key) {
+                if (!is_int($key) || isset($seen[$key]) || !isset($byId[$key])) { throw new RuntimeException('CorrectionIntegrity'); }$r=$byId[$key];$wanted=$rows[$i];
+                if ((int)$r['fk_docdet']!==$wanted['line'] || $r['numero_compte']!==$wanted['account'] || $r['label_compte']!==$wanted['label'] || substr($r['doc_date'],0,10)!==$date
+                    || $r['code_journal']!==$journal || (int)$r['piece_num']!==$piece || $r['ref']!==$ref || $r['doc_ref']!==$root['preview']['basis']['invoice']['ref']
+                    || NorwayInvoiceReconciliation::amount($r['debit'])!==NorwayInvoiceReconciliation::amount($wanted['debit']) || NorwayInvoiceReconciliation::amount($r['credit'])!==NorwayInvoiceReconciliation::amount($wanted['credit'])) { throw new RuntimeException('CorrectionIntegrity'); }
+                $seen[$key]=true;$out[]=$r;
+            }
+            $extra=self::rows($db,'SELECT rowid FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity.' AND piece_num='.$piece." AND (doc_type<>'supplier_invoice' OR doc_type IS NULL OR fk_doc<>".$id.' OR fk_doc IS NULL) LIMIT 1');
+            if ($extra) { throw new RuntimeException('CorrectionIntegrity'); }return $out;
+        };
+        $plan=$root['preview'];$activeIds=$root['postings'];$date=$plan['basis']['invoice']['datef'];
+        $activeRows=$verify($activeIds,$plan['rows'],$date,$plan['journal']['code'],$root['piece'],$root['ref']);$assessment=$plan['assessment'];$previousPiece=$root['piece'];
+        foreach ($records as $index=>$row) {
+            $bytes+=strlen($row['payload']);if ($bytes>5000000) { throw new RuntimeException('Capacity'); }
+            $data=self::record($row,$entity,$id,self::CORRECTION,$index+1);$preview=$data['preview'];
+            if (($preview['trail']['hashes'] ?? null)!==$hashes || ($preview['trail']['active_ids'] ?? null)!==$activeIds || ($preview['trail']['active_rows'] ?? null)!==$activeRows
+                || ($preview['unreported'] ?? null)!==true || ($preview['plan']['basis'] ?? null)!==$root['preview']['basis'] || ($preview['plan']['assessment']['revision'] ?? 0)<=$assessment['revision']) { throw new RuntimeException('CorrectionIntegrity'); }
+            $reverse=self::reversalRows($activeRows);
+            if ($reverse!==$preview['reversals']) { throw new RuntimeException('CorrectionIntegrity'); }
+            $verify($data['reversal_ids'],$reverse,$preview['date'],$preview['plan']['journal']['code'],$data['reversal_piece'],$data['reversal_ref']);
+            $activeIds=$data['replacement_ids'];$activeRows=$verify($activeIds,$preview['plan']['rows'],$preview['date'],$preview['plan']['journal']['code'],$data['replacement_piece'],$data['replacement_ref']);
+            $assessment=$preview['plan']['assessment'];$date=$preview['date'];$previousPiece=$data['replacement_piece'];$hashes[]=$row['payload_sha256'];
+        }
+        if (count($seen)!==count($actual)) { throw new RuntimeException('CorrectionIntegrity'); }
+        return array('hashes'=>$hashes,'revision'=>count($records),'active_ids'=>$activeIds,'active_rows'=>$activeRows,'active_date'=>$date,'assessment_revision'=>$assessment['revision'],'basis_points'=>$assessment['data']['choice']['basis_points'],'basis'=>$root['preview']['basis'],'piece'=>$previousPiece,'count'=>count($actual),'finalized'=>$finalized);
+    }
+    private static function reversalRows($rows)
+    {
+        $out=array();foreach ($rows as $r) {
+            $out[]=array('line'=>(int)$r['fk_docdet'],'account'=>$r['numero_compte'],'label'=>$r['label_compte'],'debit'=>self::money(NorwayInvoiceReconciliation::amount($r['credit'])),'credit'=>self::money(NorwayInvoiceReconciliation::amount($r['debit'])),
+                'thirdparty_code'=>$r['thirdparty_code'],'subledger_account'=>$r['subledger_account'],'subledger_label'=>$r['subledger_label'],'date_lim_reglement'=>$r['date_lim_reglement']);
+        }return $out;
+    }
+    public static function effective($db,$entity,$id,$user,$observations,$ledger)
+    {
+        $r=self::rows($db,"SELECT rowid FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".$entity." AND document_type='".self::CORRECTION."' AND fk_document=".$id.' LIMIT 1');
+        if (!$r) { return array('observations'=>$observations,'ledger'=>$ledger,'date'=>null,'revision'=>0); }
+        $trail=self::trail($db,$entity,$id,$user,$observations);$ids=array_fill_keys($trail['active_ids'],true);
+        return array('observations'=>array_values(array_filter($observations,static fn($r)=>isset($ids[$r['id']]))),'ledger'=>array('truncated'=>false,'rows'=>array_values(array_filter($ledger['rows'],static fn($r)=>isset($ids[(int)$r->rowid])))),'date'=>$trail['active_date'],'revision'=>$trail['revision']);
+    }
+    public static function previewCorrection($db,$entity,$id,$journalId,$date,$reason,$user)
+    {
+        self::guard($entity,$id,$user);
+        if (!is_string($reason) || trim($reason)!==$reason || strlen($reason)<3 || strlen($reason)>2000 || preg_match('/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/',$reason)) { throw new InvalidArgumentException('CorrectionReason'); }
+        $trail=self::trail($db,$entity,$id,$user);if ($trail['finalized']) { throw new InvalidArgumentException('CorrectionFinalized'); }if ($trail['revision']>=20) { throw new RuntimeException('Capacity'); }
+        $plan=self::plan($db,$entity,$id,$journalId,$user,false,false);
+        if ($plan['basis']!==$trail['basis'] || $plan['assessment']['revision']<=$trail['assessment_revision'] || $plan['assessment']['data']['choice']['basis_points']===$trail['basis_points']) { throw new InvalidArgumentException('CorrectionAssessment'); }
+        if (!NorwayPeriodSetup::validDate($date) || substr($date,0,7)!==substr($plan['basis']['invoice']['datef'],0,7) || $date<$trail['active_date']) { throw new InvalidArgumentException('CorrectionDate'); }
+        $period=NorwayPeriodSetup::report($db,$entity,$date,0,'');if ($period['coverage']!=='Open') { throw new InvalidArgumentException('Period'); }
+        $reversals=self::reversalRows($trail['active_rows']);
+        if ($trail['count']+count($reversals)+count($plan['rows'])>200) { throw new RuntimeException('Capacity'); }
+        $preview=array('entity'=>$entity,'id'=>$id,'trail'=>$trail,'plan'=>$plan,'reversals'=>$reversals,'date'=>$date,'reason'=>$reason,'period'=>$period,'unreported'=>true);
+        return $preview+array('fingerprint'=>hash('sha256',self::encode($preview)));
+    }
+    public static function applyCorrection($db,$entity,$id,$journalId,$date,$reason,$fingerprint,$user,$unreported=false)
+    {
+        self::guard($entity,$id,$user);if ($unreported!==true) { throw new InvalidArgumentException('CorrectionUnreported'); }
+        $active=self::rows($db,'SELECT @@in_transaction AS active');
+        if ((int)$active[0]['active']!==0 || !$db->query('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE') || $db->begin()<=0) { throw new RuntimeException('Transaction'); }
+        try {
+            NorwayPurchaseDeduction::lockForPosting($db,$entity,$id);
+            self::rows($db,'SELECT piece_num FROM '.$db->prefix().'accounting_bookkeeping WHERE entity='.$entity.' ORDER BY piece_num DESC LIMIT 1 FOR UPDATE');
+            $preview=self::previewCorrection($db,$entity,$id,$journalId,$date,$reason,$user);
+            if (!is_string($fingerprint) || !hash_equals($preview['fingerprint'],$fingerprint)) { throw new InvalidArgumentException('Changed'); }
+            require_once DOL_DOCUMENT_ROOT.'/accountancy/class/bookkeeping.class.php';self::$active=array($entity,$id);$numbering=new BookKeeping($db);$numbering->doc_date=$db->jdate($date);
+            unset($GLOBALS['conf']->cache['closed_fiscal_period_cached'],$GLOBALS['conf']->cache['active_fiscal_period_cached']);
+            $reversePiece=(int)$numbering->getNextNumMvt();$reverseRef=$numbering->getNextNumRef();
+            if ($reversePiece<=0 || trim($reverseRef)==='') { throw new RuntimeException('Numbering'); }
+            $GLOBALS['langs']->load('norway@norway');
+            $reversalIds=self::writeBatch($db,$entity,$id,$preview['plan'],$preview['reversals'],$date,$reversePiece,$reverseRef,$user,dol_trunc($GLOBALS['langs']->transnoentities('NorwayPurchasePostingCorrectionReversal').' '.$preview['trail']['piece'].' / '.$reason,200));
+            $replacementPiece=(int)$numbering->getNextNumMvt();$replacementRef=$numbering->getNextNumRef();
+            if ($replacementPiece<=$reversePiece || trim($replacementRef)==='') { throw new RuntimeException('Numbering'); }
+            $replacementIds=self::writeBatch($db,$entity,$id,$preview['plan'],$preview['plan']['rows'],$date,$replacementPiece,$replacementRef,$user,dol_trunc($GLOBALS['langs']->transnoentities('NorwayPurchasePostingCorrectionReplacement').' '.$preview['trail']['piece'].' / '.$reason,200));
+            $revision=$preview['trail']['revision']+1;$at=gmdate('Y-m-d H:i:s');
+            $data=array('version'=>1,'kind'=>self::CORRECTION,'entity'=>$entity,'document_id'=>$id,'revision'=>$revision,'at'=>$at,'user'=>(int)$user->id,'preview'=>$preview,'reversal_ids'=>$reversalIds,'replacement_ids'=>$replacementIds,'reversal_piece'=>$reversePiece,'replacement_piece'=>$replacementPiece,'reversal_ref'=>$reverseRef,'replacement_ref'=>$replacementRef);
+            $json=self::encode($data);$hash=hash('sha256',$json);
+            if (!$db->query("INSERT INTO ".$db->prefix()."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::CORRECTION."',".$id.','.$revision.",'".$at."',".(int)$user->id.",0,'".$db->escape($json)."','".$hash."')")) { throw new RuntimeException('Storage'); }
+            $entries=NorwayPostingEvidence::transactionReport($db,$entity,$id,$user);$ledger=NorwayInvoiceLedger::report($db,$entity,$id,'supplier_invoice');$effective=self::effective($db,$entity,$id,$user,$entries,$ledger);$choice=$preview['plan']['assessment']['data']['choice'];
+            if (NorwayPurchaseAllocation::evaluate($effective['observations'],$effective['ledger'],$choice['profile'],$choice['percentage'],$date)['status']!=='Match') { throw new RuntimeException('Verification'); }
+            if ($db->commit()<=0) { throw new RuntimeException('Storage'); }return $revision;
         } catch (Throwable $error) { $db->rollback();throw $error; } finally { self::$active=null; }
     }
     private static function observations($db,$entity,$ids,$assessment)

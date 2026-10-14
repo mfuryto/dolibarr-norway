@@ -232,3 +232,51 @@ endrer ikke eksisterende hovedbok, og sletting/ny overføring er ikke et
 kvalifisert korreksjonsløp. Videre arbeid skal bevare originalpostene og knytte
 rettingen til en ny vurderingsrevisjon. Teknisk verifisert bokføring innen dette
 avgrensede omfanget er ikke norsk regnskapsmessig produksjonsaksept.
+
+
+## Korreksjon av fradragsandel fra 0.56.0
+
+For bilag fra **Bokfør med lagret fradragsvurdering**: lagre først en ny,
+begrunnet vurdering med endret fradragsandel. Velg **Korriger fradragsbokføring**
+på leverandørfakturaen, oppgi kjøpsjournal, dato og rettingsbegrunnelse.
+Forhåndsvis full reversering og ny bokføring. Bekreft både posteringene og at
+grunnlaget ikke er brukt i en innsendt MVA-melding. Originalene blir stående.
+Dette følger prinsippet om ny dokumentert postering og full reversering i
+[bokføringsloven § 9](https://lovdata.no/nav/lov/2004-11-19-73).
+
+Omfanget er endret fradragsandel på uendret fakturagrunnlag, samme kalendermåned
+som fakturaen og en dato som ikke er tidligere enn siste effektive bokføring.
+De bevarte kildeobservasjonene må fortsatt samsvare, også fakturastatus;
+statusendringer etter bokføring kvalifiseres i et senere trinn.
+Begge relevante datoer må ligge i åpne, entydige perioder. Eksporterte eller
+endelig validerte poster sperres. Brukerens bekreftelse om innrapportering
+bevares som en uttrykkelig erklæring; den kontrolleres ikke automatisk mot
+Skatteetatens innsendingshistorikk. Endring av fakturabeløp, linjer eller
+kontokoblinger, retting i andre måneder og endring av innrapportert grunnlag
+gjenstår. Tidligere kjernetransfer uten modulens førstegangsregistrering kan
+ikke adopteres som bekreftet korreksjonsgrunnlag.
+
+En `supplier_correction`-registrering, payloadversjon 1 og stigende revisjon,
+bevarer forrige registreringsavtrykk, reverserte poster, erstatningsposter,
+dato, begrunnelse, vurdering og brukerens erklæring. Det er ingen DDL eller
+oppdatering av originalposter. Hele reverseringen, erstatningen og kildearkivet
+rulles tilbake hvis noe svikter. Maksimalt 20 korreksjoner og 200 samlede
+hovedboksposter per faktura støttes; eksisterende størrelsesgrenser gjelder.
+
+Før kontrollen bruker erstatningsbilaget, valideres hele kjeden: alle poster
+skal være med, tidligere effektiv bokføring skal være nøyaktig opphevet,
+og ingen poster skal være endret, fjernet eller blandet med andre dokumenter.
+Historiske hovedbokslinjer og observasjoner er fortsatt tilgjengelige. Eksport-
+eller valideringsstatus kan sperre ny retting uten å skjule en gyldig lesbar
+korreksjonshistorikk. Vanlig kjernetransfer kan ikke erstatte dette løpet.
+
+Kjernens `newReturnAccount` er gjennomgått i støttet versjon. Den setter enkelte
+faktura-/bilagsreferanser etter opprettingen og dekker ikke modulens krav til
+atomisk kildebevaring. Utvidelsen bruker derfor kjernens `createStd` til nye
+poster, eksisterende nummerering og periodelogikk, med bevart referanse allerede
+ved opprettelsen. Den endrer ikke kjernen og oppretter ikke en ny fakturaoriginal.
+Se [kjernens hovedboks-API](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/accountancy/class/bookkeeping.class.php).
+
+Dette kvalifiserer teknisk sporbar retting innen det avgrensede omfanget.
+Fradragsrett, MVA-rapport/endringsmelding og samlet norsk produksjonsetterlevelse
+må fortsatt kvalifiseres separat.
