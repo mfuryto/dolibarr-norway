@@ -1000,7 +1000,7 @@ NorwayPurchaseNonDeductible=MVA uten fradrag i valgt grunnlag, inkludert i kjøp
 NorwayNumberingPartnerPrefix=Valgfritt prefiks (0–4 store bokstaver, f.eks. K eller L)
 
 NorwayDeductionTitle=Lagret fradragsvurdering
-NorwayDeductionScope=Gjelder innenlandske NOK-kjøp med én sats (25, 15 eller 12 %) og samme fradragsandel på alle linjer. Begrunn valget og forhåndsvis før lagring. Dette dokumenterer vurderingen; det endrer ikke bokføringen og bekrefter ikke fradragsrett.
+NorwayDeductionScope=Gjelder innenlandske NOK-kjøp. Bruk felles vurdering ved én sats og lik fradragsandel, eller «Fradragsvurdering per linje» ved ulike andeler eller blandede satser. Begrunn og forhåndsvis før lagring. Lagringen endrer ikke bokføringen og bekrefter ikke fradragsrett.
 NorwayDeductionReason=Begrunnelse og grunnlag for fradragsandelen
 NorwayDeductionSaved=Fradragsvurderingen er lagret som en ny revisjon. Bokføringen er ikke endret.
 NorwayDeductionFailed=Fradragsvurderingen kunne ikke behandles. Kontroller tilgang, avgrensning og grunnlag, og forhåndsvis på nytt.
@@ -1046,7 +1046,7 @@ NorwayPurchasePostingLine=Fakturalinje
 NorwayPurchasePostingAccount=Konto
 NorwayPurchasePostingDebit=Debet (NOK)
 NorwayPurchasePostingCredit=Kredit (NOK)
-NorwayPurchasePostingUseConfirmed=Dette bilaget har lagret delvis eller intet fradrag. Bruk «Bokfør med lagret fradragsvurdering» på leverandørfakturaen; vanlig kjøpsjournal kan ikke anvende dette valget.
+NorwayPurchasePostingUseConfirmed=Dette bilaget har en lagret linjevurdering, delvis eller intet fradrag. Bruk «Bokfør med lagret fradragsvurdering» på leverandørfakturaen; vanlig kjøpsjournal kan ikke anvende disse valgene.
 
 NorwayPurchasePostingCorrectionTitle=Korriger fradragsbokføring
 NorwayPurchasePostingCorrectionScope=Gjelder bilag bokført med modulens bekreftede flyt. Lagre først en ny vurdering med endret fradragsandel. Korreksjonen reverserer forrige bokføring fullt ut og oppretter et erstatningsbilag. Fakturagrunnlaget må være uendret. Bare samme kalendermåned, åpen periode og grunnlag som ikke er brukt i innsendt MVA-melding støttes her.
@@ -1067,3 +1067,9 @@ NorwayPurchasePostingCorrectionFinalized=Eksporterte eller endelig validerte pos
 NorwayPurchasePostingCorrectionAssessment=Lagre en ny vurdering med endret fradragsandel. Fakturagrunnlaget må være uendret.
 NorwayPurchasePostingCorrectionDate=Datoen må være i samme kalendermåned som fakturaen og ikke tidligere enn siste bokføring.
 NorwayPurchasePostingCorrectionUnreported=Bekreft at grunnlaget ikke er brukt i en innsendt MVA-melding. Retting av innrapportert grunnlag støttes ikke her.
+
+NorwayDeductionLinesTitle=Fradragsvurdering per linje
+NorwayDeductionLinesScope=Velg fradragsomfang og begrunnelse på hver linje. Satser 25, 15 og 12 % kan kombineres på samme innenlandske NOK-faktura. Prosent fylles bare inn ved delvis fradrag. Ingen valg gjøres automatisk. Nullsats og særbehandling inngår ikke.
+NorwayDeductionLinesRate=MVA-sats
+NorwayDeductionLinesSummary=Samlet begrunnelse for linjevurderingen
+NorwayDeductionLinesVatAccounts=Kontroll av hver MVA-konto

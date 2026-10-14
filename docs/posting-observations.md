@@ -234,3 +234,9 @@ Fra 0.54.0 bruker nye kjøpsobservasjoner med fakturareferanse payloadversjon 6.
 Den bevarer i tillegg den uttrykkelige fradragsvurderingen som forelå ved
 hendelsen, med eget kildegrunnlag og status. Versjon 4/5 tilbakefylles ikke.
 Se [kjøpsfordeling](purchase-allocation.md) for omfang og begrensninger.
+
+
+Fra 0.57.0 bruker nye kjøpsobservasjoner med fakturareferanse payload 7.
+Fradragskontekst 2 bevarer linjevurderinger med vurderingspayload 2; eldre
+felles vurderinger bruker fortsatt kontekst 1. Observasjoner 4/5/6 beholdes
+uendret. [Kjøpsfordeling](purchase-allocation.md) beskriver omfang og konto-/linjekontroll.

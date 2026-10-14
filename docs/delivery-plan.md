@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-14. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.56.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.57.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -460,3 +460,28 @@ Neste A2-arbeid er ulike fradragsandeler per linje og blandede satser, samt
 kvalifisering av videre rettings-/periode- og avgiftsscenarioer. B1/B2 krever
 fortsatt avstemt grunnlag, manuelle bilag, nullsats og registreringshistorikk.
 Papirløs bilagsflyt ligger fortsatt sist.
+
+
+## A2 – linjevurdering og blandede satser i 0.57.0
+
+Innenlandske NOK-kostnadskjøp og kreditnotaer kan ha egne uttrykkelige
+fradragsvalg og begrunnelser per linje, med blandede satser 25/15/12.
+Dekningen må være komplett og entydig; manglende, dupliserte, fremmede eller
+satsstridige linjevalg avvises. Vurderingspayload 2 og ny kjøpsobservasjon 7
+bevarer linjegrunnlaget; eldre vurderinger og observasjoner leses uendret.
+Ingen skjemaendring eller automatisk fradragsvurdering.
+
+Bekreftet bokføring grupperer inngående MVA per satskonto. Kontrollen avstemmer
+hver MVA-konto og linjens kostnad, slik at riktig samlet MVA ikke skjuler feil
+kontofordeling. Øreavrunding gjøres per linje. Det eksisterende, avgrensede
+korreksjonsløpet håndterer også nye linjeandeler og overgang fra eldre felles
+vurdering, med bevart original, full reversering og erstatning. Bare endret
+fradragsfordeling, uendret grunnlag og ikke innrapportert grunnlag i samme måned
+støttes fortsatt; øvrige korreksjonsbegrensninger fra 0.56.0 gjelder.
+
+Tekniske tester kvalifiserer linjedekning, eksakte kontobeløp, feilfordeling med
+riktig MVA-total, kreditnota, korreksjon, eldre historikk, HTTP og native vern.
+Dette bekrefter ikke fradragsrett, avgiftskode-/rapporteringsmapping eller samlet
+norsk regnskapsmessig produksjonsetterlevelse. Neste A2-arbeid er uttrykkelig
+nullsats/fritak/unntak, registreringshistorikk og manuelle bilag samt videre
+periode-/rettingsscenarioer før B1/B2. Papirløs bilagsflyt ligger sist.

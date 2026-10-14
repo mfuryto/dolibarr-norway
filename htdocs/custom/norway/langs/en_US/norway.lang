@@ -1000,7 +1000,7 @@ NorwayPurchaseNonDeductible=Non-deducted VAT in the selected basis, included in 
 NorwayNumberingPartnerPrefix=Optional prefix (0–4 uppercase letters, e.g. K or L)
 
 NorwayDeductionTitle=Retained deduction assessment
-NorwayDeductionScope=Domestic NOK purchases with one rate (25, 15 or 12%) and the same deduction share on all lines. Explain the choice and preview before saving. This records an assessment; it does not change postings or establish entitlement.
+NorwayDeductionScope=Domestic NOK purchases. Use a uniform assessment for one rate and share, or “Deduction assessment per line” for different shares or mixed rates. Explain and preview before saving. Saving does not change postings or establish entitlement.
 NorwayDeductionReason=Reason and basis for the deduction share
 NorwayDeductionSaved=Deduction assessment saved as a new revision. Postings have not changed.
 NorwayDeductionFailed=The deduction assessment could not be processed. Check access, scope and source, then preview again.
@@ -1046,7 +1046,7 @@ NorwayPurchasePostingLine=Invoice line
 NorwayPurchasePostingAccount=Account
 NorwayPurchasePostingDebit=Debit (NOK)
 NorwayPurchasePostingCredit=Credit (NOK)
-NorwayPurchasePostingUseConfirmed=This invoice has a retained partial or no-deduction assessment. Use “Post using the retained deduction assessment” on the supplier invoice; the ordinary purchase journal cannot apply this choice.
+NorwayPurchasePostingUseConfirmed=This invoice has a retained line-specific, partial or no-deduction assessment. Use “Post using the retained deduction assessment” on the supplier invoice; the ordinary purchase journal cannot apply these choices.
 
 NorwayPurchasePostingCorrectionTitle=Correct deduction posting
 NorwayPurchasePostingCorrectionScope=For invoices posted through the module’s confirmed workflow. First save a new assessment with a changed deduction share. The correction fully reverses the previous posting and creates a replacement voucher. The invoice source must be unchanged. Only the same calendar month, an open period and a basis not used in a submitted VAT return are supported here.
@@ -1067,3 +1067,9 @@ NorwayPurchasePostingCorrectionFinalized=Exported or finally validated entries a
 NorwayPurchasePostingCorrectionAssessment=Save a new assessment with a changed deduction share. The invoice source must be unchanged.
 NorwayPurchasePostingCorrectionDate=The date must be in the invoice’s calendar month and no earlier than the latest posting.
 NorwayPurchasePostingCorrectionUnreported=Confirm that the basis has not been used in a submitted VAT return. Corrections of submitted bases are not supported here.
+
+NorwayDeductionLinesTitle=Deduction assessment per line
+NorwayDeductionLinesScope=Choose a deduction scope and reason for every line. Rates of 25, 15 and 12% may be combined on one domestic NOK invoice. Enter a percentage only for partial deduction. No choices are made automatically. Zero rates and special treatments are outside scope.
+NorwayDeductionLinesRate=VAT rate
+NorwayDeductionLinesSummary=Overall reason for the line assessment
+NorwayDeductionLinesVatAccounts=Control of each VAT account
