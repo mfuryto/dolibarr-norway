@@ -1,0 +1,62 @@
+# Dokumentasjonsgrunnlag på salgsfaktura
+
+Fra 0.63.0 ligger **Avgiftsgrunnlag** som egen fane på kundens faktura,
+ved siden av fakturakontroll og kontrollkopier. Daglig dokumentasjon er ikke
+lagt i oppstartsveilederen eller i regnskapsinnstillinger.
+
+## Bruk
+
+1. Kontroller eksplisitte, daterte salgskoblinger under regnskapsoppsettet.
+2. Åpne fakturaens Avgiftsgrunnlag. For hver relevant linje, skriv hvorfor
+   avgiftsbehandlingen gjelder og oppgi referanse til underlaget som oppbevares,
+   for eksempel avtale eller dokumentnummer. Ikke legg hemmeligheter i feltene.
+3. Forhåndsvis, les begrunnelsene og bekreft. Lagring oppretter en ny revisjon.
+4. Ved endret faktura eller oppsett, vurder og bekreft et nytt grunnlag.
+   Tidligere revisjoner bevares med bruker, UTC-tid, linjer og rågrunnlag.
+
+Referansen er tekst, ikke automatisk dokumentopplasting, lenkeåpning eller
+kontroll av at dokumentet finnes. Den som fører regnskapet må sikre at
+referansen er forståelig og at underlaget oppbevares og kan fremlegges.
+
+## Avgrensning og vern
+
+Første profil gjelder ordinær type 0, NOK med kurs 1 og norsk kunde/selger,
+i kladd, validert eller betalt tilstand. Innenlandske nullsatslinjer må ha
+konsistent og eksplisitt kobling til SAF-T-kode 5, 6 eller 7. Profilen velger
+ikke kode ut fra 0 % og skiller kategoriene. Positive satslinjer kan inngå
+på samme faktura, men denne funksjonen dokumenterer bare nullsatslinjene.
+Kreditnota, eksport, omvendt avgiftsplikt og spesialavgifter er utenfor profilen.
+
+Begrunnelse og referanse kreves for samtlige aktuelle linjer. Manglende,
+duplikate eller fremmede linjer avvises. Bare intern administrator med faktura-
+og hovedboklesing kan lese; fakturaopprettingsrett kreves i tillegg ved skriving.
+Forhåndsvisningen utløper etter ti minutter og må bekreftes med engangsnonce
+og CSRF-token. Lagring leser grunnlaget på nytt i en serialiserbar transaksjon;
+endringer eller mellomliggende revisjoner avviser bekreftelsen.
+
+Fakturalinjer, dato, beløp, kundeidentitet og relevant konfigurasjon inngår i
+rågrunnlaget. Betalingsstatus og fakturareferanse inngår ikke; vanlig betaling
+eller tildeling av fakturanummer gjør ikke begrunnelsen foreldet. Andre
+endringer, også en ny koblingsrevisjon, krever ny vurdering. Historikken er
+begrenset til 100 revisjoner, 500 kB per revisjon og 5 MB totalt; den avkortes
+ikke automatisk. Hash- og metadatakontroller avviser skadet historikk.
+
+Payload versjon 1 bruker eksisterende evidenstabell med egen dokumenttype
+`sales_tax_basis`. Ingen DDL eller endring av eldre bokføringsobservasjoner.
+Standard databasebackup omfatter tabellen. Hashene oppdager utilsiktet skade;
+de er ikke digital signatur eller vern mot en administrator som endrer databasen.
+
+## Faglig grunnlag og videre arbeid
+
+Skatteetaten skiller fritatt omsetning fra omsetning unntatt MVA-loven;
+lik sats betyr ikke lik behandling. Se [fritak og unntak](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/slik-fungerer-mva/forskjellen-pa-fritak-og-unntak-fra-merverdiavgift/).
+Håndbokens [§ 15-10 annet ledd om dokumentasjon](https://www.skatteetaten.no/en/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-15/M-15-10/M-15-10.3/)
+beskriver dokumentasjonskrav som avhenger av salget og grunnlaget for avgiftsfrihet.
+En intern tekst og referanse erstatter ikke nødvendige salgsdokumenter eller
+særskilt dokumentasjon. Kildene er lest 2026-10-15; profilen er prosjektets
+begrensede dokumentasjonsfunksjon, ikke en påstand om full kravoppfyllelse.
+
+Neste A2-del er å knytte den konkrete begrunnelsesrevisjonen til grunnlaget
+som bevares ved faktisk bokføring. Denne leveransen gjør ikke den koblingen,
+endrer ikke faktura/PDF, avgiftsberegning, kontering eller rapport og sperrer
+ikke kjernens fakturering. Den gir ingen godkjenning av avgiftsbehandlingen.

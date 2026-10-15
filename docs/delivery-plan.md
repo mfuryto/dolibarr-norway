@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.62.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.63.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -592,3 +592,14 @@ Videre A2 gjelder dokumentasjonsgrunnlaget for konkrete avgiftsbehandlinger,
 myndighetsgodkjenning/etterfakturering, manuelle bilag og flere støttede
 rettingsscenarioer. Periodemodellen er ikke full faglig kvalifisering av
 registreringsforhold eller MVA-rapportering.
+
+## A2 – dokumentasjonsgrunnlag i 0.63.0
+
+Egen fakturafane lagrer begrunnelse og dokumentreferanse per innenlandsk
+nullsatslinje med eksplisitt kode 5/6/7. Revisjoner bevares; endret grunnlag,
+foreldet bekreftelse og skadet historikk avvises/synliggjøres. Se
+[omfang og kilder](sales-tax-basis.md). Ingen endring av bokføring eller PDF.
+
+Neste del knytter den bevarte begrunnelsesrevisjonen til faktisk bokføring.
+Deretter gjenstår myndighetsgodkjenning/etterfakturering, manuelle bilag og
+videre rettingsscenarioer før A2 er kvalifisert. Papirløs bilagsflyt er fortsatt sist.

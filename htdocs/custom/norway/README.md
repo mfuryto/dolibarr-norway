@@ -1,4 +1,4 @@
-# Norway 0.62.0
+# Norway 0.63.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -61,3 +61,7 @@ Version 0.62.0 adds optional confirmed VAT registration period history,
 append-only revisions and gap warnings. New sales observations use payload 8
 only when history is configured; earlier interpretations and purchase
 observations remain unchanged. Period coverage is not tax approval.
+
+Version 0.63.0 adds a native invoice tab for domestic zero-rate sales reasons
+and document references, retained revisions and changed-source status. Ordinary
+NOK invoices with explicit codes 5/6/7 only; posting-time linkage remains pending.

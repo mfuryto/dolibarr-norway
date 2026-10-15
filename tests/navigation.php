@@ -75,7 +75,7 @@ try {
             nvAssert(strpos($body,'admin/registration.php?mainmenu=accountancy')===false,'Administrator menu exposed');
         }
     }
-    foreach (array('accounting','registration','taxmappings','numbering','bankdefaults','evidence','invoice','vat','productaccounts','pricing') as $page) { nvDenied('/custom/norway/admin/'.$page.'.php'); }
+    foreach (array('accounting','registration','taxmappings','numbering','bankdefaults','evidence','invoice','salestaxbasis','vat','productaccounts','pricing') as $page) { nvDenied('/custom/norway/admin/'.$page.'.php'); }
     $reader->loadRights('',1);
     nvAssert(NorwayNavigation::canReadLedger($reader),'Reader helper mismatch');
     $reader->socid=999999; nvAssert(!NorwayNavigation::canReadLedger($reader),'External user passed ledger guard'); $reader->socid=0;

@@ -45,3 +45,10 @@
 .norway-page form.norway-standard-accounts { display: block; min-width: 0; max-width: 100%; }
 .norway-standard-accounts details { min-width: 0; max-width: 100%; }
 .norway-standard-accounts select { max-width: 100%; box-sizing: border-box; }
+
+/* Line-bound documentary basis on the invoice. */
+.norway-page form.norway-sales-basis-form { display: block; }
+.norway-sales-basis-form fieldset { min-width: 0; max-width: 100%; box-sizing: border-box; margin: 1rem 0; }
+.norway-page .norway-sales-basis-form label { display: block; }
+.norway-sales-basis-form textarea { width: 100%; max-width: 100%; box-sizing: border-box; }
+.norway-sales-basis-line { overflow-wrap: anywhere; }

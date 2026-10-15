@@ -14,7 +14,7 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.62.0';
+        $this->version = '0.63.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
@@ -36,6 +36,7 @@ class modNorway extends DolibarrModules
         $this->tabs = array(
             'invoice:+norwaycontrol:NorwayInvoiceCheck:norway@norway:'.$invoiceAccess.':/norway/admin/invoice.php?id=__ID__',
             'invoice:+norwayevidence:NorwayEvidenceTitle:norway@norway:'.$invoiceAccess.':/norway/admin/evidence.php?id=__ID__',
+            'invoice:+norwaysalesbasis:NorwaySalesBasisTitle:norway@norway:'.$invoiceAccess.':/norway/admin/salestaxbasis.php?id=__ID__',
             'product:+norwayaccounts:NorwayProductAccountsTitle:norway@norway:$user->admin && !$user->socid && isModEnabled("norway") && isModEnabled("accounting") && $user->hasRight("accounting","chartofaccount"):/norway/admin/productaccounts.php?id=__ID__',
         );
     }
@@ -66,7 +67,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.62.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.63.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';
