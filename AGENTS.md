@@ -30,3 +30,12 @@
 - Eventuelle lisensintegrasjoner skal være valgfrie, generelle adaptere uten
   leverandørnavn, personlige systemreferanser eller avhengighet fra regnskapskjernen.
 - Bruk «kontroll» for validering av regnskapet; ikke omtale slike kontroller som sjekker.
+
+- Gjenbruk kjernens funksjoner før ny tilleggskode. Ny kode skal løse et konkret
+  dokumentert norsk krav eller et uttrykkelig bestilt behov som kjernen eller
+  eksisterende tillegg ikke dekker. Beskriv gapet kort før implementasjon.
+- Ikke legg til egne kontrollsider, historikkmodeller eller bekreftelsesrunder
+  bare fordi de kan gi ekstra trygghet. Skill lovkrav, brukerønsker og intern
+  diagnostikk. «Fortsett» utvider ikke omfanget med nye produktideer.
+- Følg forenklingsprioriteringen i docs/delivery-plan.md. Vurder eksisterende
+  kontrollag før videre utvidelse; bevar regnskapsdata og historikk ved opprydding.

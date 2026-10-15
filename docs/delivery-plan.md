@@ -1,624 +1,89 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.64.0.
-[Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
+Oppdatert 2026-10-15 etter prosjekteiers presisering om forenkling.
+Gjeldende programversjon er 0.64.0. Dette er en endring av arbeidsretning,
+ikke en ny programleveranse. [Leveransehistorikken](delivery-history.md)
+beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
-[Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
-betingede krav med KR01–KR26. Relevante krav skal knyttes til testbevis og
-aksept før et bruksområde erklæres støttet.
+## Styrende beslutning
 
-## Omfang og arbeidsregler
+Dolibarrs eksisterende funksjoner skal brukes. Modulen skal dekke konkrete
+norske mangler og uttrykkelig bestilte behov med minst mulig tilleggskode.
+Et dokumentasjons- eller sporbarhetskrav betyr ikke automatisk at det trengs
+en ny kontrollside, tabell, historikkmodell eller bekreftelsesrunde.
 
-Ett foretak per installasjon; norsk kontoplan, NOK-dokumenter og norsk/engelsk
-på tilbud og faktura. EUR kan vises som veiledende pris. Norske bedriftskunder
-og offentlige kunder er første testprofiler. ENK uten ansatte er første
-foretaksprofil; AS og andre former krever egne scenarioer. Modulen skal ikke
-hardkode en bransje, installasjon eller bruker. Ingen sjekkfunksjoner.
+Videre utvikling av egne kontroll- og historikkfunksjoner stanses mens
+nødvendigheten vurderes. Tidligere prioritering om å fortsette direkte med
+myndighetsgodkjenning/etterfakturering erstattes av oppryddingen nedenfor.
+Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 
-Kjernen gjenbrukes via ekstern modul. Bare main og staging brukes; stabil
-leveranse krever PR og bestått CI på aktuell revisjon. Drift beholder data,
-konfigurasjon og instansnøkkel. Spørsmål fra brukeren endrer ikke automatisk
-prioriteringen. Nye innstillinger skal løse et dokumentert gap i planen.
+## Neste arbeid
 
-## Gjenbruk før ny funksjonalitet
-
-Modulen skal være en norsk tilpasning av Dolibarrs eksisterende system.
-Den skal ikke bli en parallell regnskapsløsning med egne kopier av fakturaer,
-bilag, betalinger, bankavstemming eller årsavslutningsprosesser.
-
-Før hver videre funksjonell leveranse kartlegges og prøves relevant
-funksjonalitet i støttet Dolibarr-versjon. Beslutningen dokumenteres kort:
-
-| Kjernens dekning | Tiltak |
-| --- | --- |
-| Funksjonen finnes og dekker behovet | Gjenbruk den, prøv norsk bruksområde og dokumenter normal arbeidsflyt. |
-| Funksjonen trenger oppsett eller norsk tekst | Konfigurer/tilpass eksisterende funksjon uten å lage en ny parallell side. |
-| Et konkret norsk krav mangler | Dokumenter gapet og bygg minste nødvendige utvidelse via støttede modulpunkter. |
-| Området er ikke undersøkt | Undersøk og test kjernen før ny implementasjon besluttes. |
-
-Kartleggingen gjelder også eksisterende norske kontrollsider. Vurder hvilke
-som skal integreres i kjernens arbeidsflyt, forenkles eller samles, og hvilke
-som bare er intern diagnose. Bevar nødvendig norsk validering og historikk;
-ingen kontroller eller data fjernes automatisk som del av kartleggingen.
-
-Faktura, leverandørbilag, dokumenter, posteringer og betalinger beholder
-Dolibarr som hovedkilde. Egne tabeller brukes bare for dokumenterte norske
-metadata-, sporbarhets- eller rapporteringsgap. En kontrollkopi skal ikke
-bli en ny original eller et konkurrerende regnskap.
-
-Dette er et krav til videre A2/A3/B/C/E/F/G-arbeid og skal avklares før nye
-funksjoner bygges. Kartlegging og integrasjon er del av hver leveranse,
-ikke et eget sluttprosjekt etter at parallelle løsninger er laget.
-
-## Kravgrunnlag og faktisk status
-
-| Område / kilde | Levert | Gjenstående tilpasning og ferdigkriterium |
+| Rekkefølge | Oppgave | Ferdig når |
 | --- | --- | --- |
-| Faktura/kreditnota – bokføringsreglene, Altinn S7 | Maskinelle F/K/T-serier, kontroller, norske/engelske dokumenter, kildefaktura | Kvalifiser PDF-felter, leveringsdato/-sted, differensierte satser, foretaksform og originalreferanse med fullstendige dokumenteksempler. Startnummer er migreringsoppsett, ikke fri nummerering av utstedte dokumenter. |
-| Kontoplan – NS 4102:2023 S14 | Låst lisensiert profil med 745 kontoer; generelle standardkontoforslag og lukkingskontoer. Prosjektaksept dokumentert 2026-10-13 etter sammenligning med SAF-T-listen. | Kontoplanens samsvar er avklart som prosjektbeslutning og blokkerer ikke videre arbeid. Ingen uavhengig NS-sertifisering påstås. Årsoppstilling, SAF-T-klassifisering og avgiftsmapping må fortsatt kvalifiseres separat. Se [kontoplanens aksept](norwegian-chart.md#aksept). |
-| MVA – Skatteetaten S8/S17 | Satsdiagnostikk, én registreringsdato, satskontoer og eksplisitte avgiftskodekoblinger | Kjernen har 0/8/14/25; manglende 15/12 og aktive gamle satser må håndteres i nytt oppsett. Deretter gyldighetsperioder, registreringshistorikk, fritak/unntak, fradrag, NOK-grunnlag og korreksjoner. En sats/konto bekrefter ikke avgiftsbehandling. |
-| Bokført avgiftsgrunnlag – NBS 2 S15, SAF-T S5/S6 | Linjeopplysninger, koblinger til faktisk hovedbok og versjonerte kontrollkopier; bruttokontroll | Kontrollkopi av dagens data er ikke opprinnelig bokføringsøyeblikksbilde. Knytt grunnlag/avgift til faktiske posteringer for både salg og kjøp, inkludert manuelle bilag og korreksjoner. Avstem avgift og grunnlag hver for seg. |
-| Betaling/reskontro/balanse – NBS 5/7 S15 | Bankkoblinger, bilagsbalanse og syntetiske betalingsforløp | Avstem kunder/leverandører mot kontrollkontoene og bank: inngående saldo + bevegelser = utgående saldo. Prøv delbetaling, kreditnota, refusjon, gebyr og åpne poster. |
-| Utenlandshandel – Skatteetaten S17 | Separate kontoforslag for varer/tjenester og eksport/import | Kvalifiser konkrete land/kundetyper og leveranser. Innførsel av varer, fjernleverbare tjenester og omvendt avgiftsplikt er ulike scenarioer. Utenlandsk kunde alene gir ikke fritak. NOK-faktura fjerner ikke utenlandske avgiftsplikter eller bankens vekslingsgebyrer. |
-| E-faktura – DFØ S18, Finansdepartementet S19, NBS 4 S15 | Norske/engelske PDF-er; ingen godkjent EHF-leveranse | Kvalifiser offentlig EHF og utgående e-faktura mellom bokføringspliktige virksomheter etter 2027-reglene. Mottaksplikt og digital bokføring følger 2030-reglene. Kontroller formatforskrift, unntak, referanser, tilgangspunkt, mottak og kvitteringer. PDF er ikke e-faktura. |
-| SAF-T Financial – Skatteetaten S5/S6/S12 | Fast offisiell avgiftskodereferanse og eksternt lagringsgrunnlag | Implementer kontomapping til gjeldende næringsspesifikasjon, fullstendig eksport og avstemming. Mål 1.40, pliktig fra 2027 og tilgjengelig nå. XSD-validering alene er utilstrekkelig. Elektronisk regnskap gir ikke automatisk småforetaksfritak. |
-| Sikring, kontrollspor, oppbevaring – NBS 1/2/3 S15, Altinn S16 | Vedvarende drift, backup og testet restore; begrenset endringshistorikk | Dokumentert risikovurdering, rollevern, låste perioder, retting med spor, lesbarhet og oppbevaring. Primærdokumentasjon normalt 5 år; sekundær normalt 3,5 år; vurder særregler. Backup alene er ikke arkiv eller fullstendig kontrollspor. |
-| Årsavslutning og næringsspesifikasjon | Kontoplan, lukkingskontoforslag og forklaring av skatteordboken | Årsavslutning og rapportgrunnlag for næringsspesifikasjonen er vedtatt videre omfang, men ikke ferdigstilt. Kvalifiser avstemming, periodisering, avskrivninger, resultatdisponering, inngående saldoer og låsing; prøv årsversjon og foretaksform for rapporten. |
-| Skatt/ansatte | Ingen automatisk norsk skatteberegning eller lønn | ENK-skatt er personlig; AS trenger eget årsoppgjørs-/innsendingsløp. Skattekontoer er ikke et utviklingskrav for fakturering. Ansatte/lønn er separat omfang. |
-| Bilag, spesifikasjoner og ajourhold – S15/S20/S22 | Begrensede faktura-/bilagskontroller | Kvalifiser kjøpsbilag, utlegg, manuelle posteringer, pliktige spesifikasjoner, frister og dokumentert retting. Se KR04–KR07; komplette rapporter kan ikke erstattes av en saldobalanse. |
-| Papirløs bilagsflyt | Kjernen har dokumentvedlegg på leverandørfakturaer og utlegg; samlet norsk arbeidsflyt er ikke kvalifisert | Enkel bilagsoversikt, opplasting fra PC, dokumentvisning, duplikat-/mangelvarsler og kobling til bokføring/betaling. Gjenbruk kjernen; mobilopplasting og dokumenttolking inngår ikke. Se [papirløst regnskap](paperless-accounting.md). |
-| Balanse, årsregnskap og særtilfeller – S21/S23/S25/S26 | Begrenset kontooppsett | Avklar varetelling, anleggsmidler, eiertransaksjoner og årsregnskapsplikt. Kontantsalg, lønn, privatkunder og særbransjer får begrunnede egne omfang. Se KR12/KR14/KR21–KR26. |
-| Lagringssted og personvern – S16/S24 | Privat driftsoppsett og backupvern | Avklar land, myndighetstilgang, elektronisk tilgjengelighet, leverandøransvar, innsyn og lagring/sletting uten tap av pliktig materiale. Se KR17–KR20. |
+| 1 | Gjennomgå eksisterende tillegg mot kjernen | Hvert tillegg har en kort beslutning: behold, erstatt med kjernefunksjon, forenkle eller ta ut av vanlig arbeidsflyt. Beslutningen viser faktisk kjernedekning og eventuelt konkret krav som ikke dekkes. Ingen ny kontrollfunksjon bygges for å utføre gjennomgangen. |
+| 2 | Forenkle arbeidsflyten | Overflødige sider, menypunkter og bekreftelser er fjernet eller samlet der dette er avklart. Vanlig arbeid bruker kjernens dokumenter, registrering og bokføring. Eksisterende data og historikk kan fortsatt leses; nødvendig endring av lagring eller bokføringskoblinger har en prøvd overgang. |
+| 3 | Fullføre dokumenterte norske mangler | Bare mangler som står igjen etter kjernetest får egen implementasjon. Prioriter relevante norske dokumentopplysninger, avgiftsbehandling og rapportering. Gjenbruk eksisterende tillegg når de dekker behovet. |
 
-S1–S28 henviser til [kilderegisteret](sources.md). Lov-/forskriftsgrunnlag og
-NBS brukes som kravgrunnlag; dette dokumentet er ingen sertifisering.
-Prosjekteier har akseptert kontoplanen på grunnlag av sammenligningen med
-SAF-T-standardkontolisten; dette er prosjektaksept, ikke uavhengig
-NS-verifikasjon. Referanselisten skal ikke kopieres inn som kontoplan uten
-riktig bruksrett.
+## Første vurdering av eksisterende arbeid
 
-## Prioritert leveranserekkefølge
+Dette er en prioritering for opprydding, ikke en ferdig avgjørelse om å slette kode.
 
-| Prioritet | Konkret leveranse | Aksept og avhengighet |
+| Område | Kjernens dekning og vurdering | Videre tiltak |
 | --- | --- | --- |
-| M0 – leveranser i 0.58.0/0.59.0, videreføres løpende | Plasser eksisterende funksjoner og kontroller i riktig ordinær meny og arbeidsbilde | Kartlegg eksisterende innganger, gjenbruk kjernens menyer og behold integrasjon som allerede fungerer. Daglig bruk skal kunne gjennomføres uten oppstartsveilederen. Test tilgang, navigasjon, avviksoppfølging og visning på PC og smal skjerm. Hver senere funksjonsleveranse inkluderer sin naturlige menyplassering. |
-| A1 – levert i 0.41.0 | Fullfør ordinært MVA-satsoppsett for nye installasjoner | Forhåndsvis manglende 25/15/12 og deaktivering av ordinære 8/14. Bevar nullsats, spesialrader, kontovalg og dokumenter. Historikk, eksisterende bruk og tvetydighet sperrer endring. Test gjentakelse, atomisk rollback og foreldet bekreftelse. Ingen sats velges for fakturalinjer. |
-| A2 | Kvalifiser faktura, kreditnota og konto-/avgiftsfordeling | Salg/kjøp, 25/15/12, nullsats med eksplisitt behandling, retting, fradrag og registreringsperioder. Knyt avgift og grunnlag til faktisk hovedbok; manglende metadata må vises som avvik. |
-| B1 | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
-| B2 | Direkte innrapportering av MVA-melding | Bygger på B1. Kvalifiser Skatteetatens gjeldende grensesnitt, autorisasjon, validering, eksplisitt bekreftet innsending, kvittering/status og endringsmeldinger. Test avbrudd og gjentakelse uten utilsiktet dobbeltinnsending før produksjonsbruk. |
-| C | Reskontro, bank og balanseavstemming | Komplette saldoer og bevegelser, ingen dobbelttelling; inngående saldoer fra tidligere system behandles som egen migrering. Nytt regnskap trenger ingen konstruerte inngående poster. |
-| C2 | Årsavslutning før skattemelding og næringsspesifikasjon | Bygger på kvalifisert bokføring og C. Kontroller saldoer, bank, reskontro og MVA, og håndter dokumenterte periodiseringer, avskrivninger og resultatdisponering. Test overføring av inngående saldoer, gjentakelse uten dobbeltføring, endelig låsing og sporbar retting/etterpostering. |
-| D | Utenlandsscenarioer for varer og tjenester | Konkrete land-/kundetyper og leveringsmodeller; eksportdokumentasjon, importgrunnlag og omvendt avgiftsplikt. Bygger på A2/B1. |
-| E – friststyrt; avklares parallelt med A2 | E-faktura/EHF/Peppol for offentlige kunder og næringslivet | Kvalifiser sending etter 2027-reglene, format og unntak. Planlegg mottak og digital behandling etter 2030-reglene. Skjema/forretningsregler, referanser, arkiv, tilgangspunkt og mottakertest inngår. Sporet skal ikke vente på full MVA-/årsrapport. |
-| F – kontomapping kan utvikles parallelt | SAF-T 1.40 | Låst skjema/kodelisteversjon, datoavgrenset kontomapping, konto-/reskontrosaldoer, sporbar avgift og komplette totaler. Krever A2/B1/C før endelig eksportaksept. |
-| F2 | Rapportgrunnlag for næringsspesifikasjonen | Bygger på avstemt årsgrunnlag fra C2. Knytt regnskapstall til riktig årsversjon og foretaksprofil, med sporbarhet til kontoer/posteringer og eksplisitt behandling av skattemessige forskjeller. Kontroller fullstendighet og totaler før tallene brukes ved levering. |
-| G – vern utvikles gjennom alle trinn | Perioder, retting, arkiv, drift og produksjonsaksept | Rolle-/låsetester, dokumentert gjenoppretting, oppbevaring og en signert scenario-/kravmatrise for konkret støttet omfang. |
-| A3 – til slutt | Papirløs bilagsflyt på Dolibarrs dokumentgrunnlag | Etter øvrige planlagte funksjonsleveranser: kvalifiser enkel bilagsoversikt, PDF/bilde fra PC, dokument ved registreringen, enkel status og duplikat-/mangelvarsler. Originalen kobles til kjøp/utlegg/manuelt bilag og faktisk postering. Bygg videre på kjernen og bevar dokumenter i backup/restore. |
-| C1 – til slutt, etter A3 | Enkel bilagsmatching i nettleseren | Bygger på A3/C. Brukeren kobler tilgjengelig banktransaksjon, dokument og regnskap med bekreftelse. Gjenbruk eksisterende funksjoner. Mobilapp/-opplasting, e-postmottak, OCR og avansert automatisering inngår ikke i bilagsleveransen. |
+| Faktura, kreditnota, tilbud, nummerering og PDF | Kjernen har dokumenter, nummermodeller og dokumentmaler. | Bruk standardoppsett der det dekker valgte serier, språk og norske dokumentopplysninger. Undersøk egne nummermodeller og kontrollsider for overflødig kode. |
+| Kontoplan, standardkontoer, journaler og MVA-kontoer | Kjernen har import/oppsett og kontokoblinger. Norsk profil og norske standardvalg er modulens oppsett. | Behold norsk datagrunnlag og nødvendige standardvalg. Samle oppsetthjelp og fjern dobbeltarbeid mot kjernens innstillinger. |
+| Hovedbok, regnskapsperioder, bank og dokumentvedlegg | Kjernen har grunnfunksjonene. | Bruk og prøv disse før egne rapporter, periodekontroller eller bilagsbilder vurderes. |
+| Faktura-, bilags- og fordelingskontroller | Egne tillegg sammenligner deler av kjernens data med avgrensede profiler. | Vurder konkret nytte og overlapp. En egen profil er ikke i seg selv et norsk krav eller bevis på feil føring. |
+| Kontrollkopier, begrunnelsesrevisjoner og bokføringsobservasjoner | Egen tilleggsarkitektur, senest utvidet i 0.63.0/0.64.0. Nødvendigheten av denne formen er ikke godt nok dokumentert. | Stans videre utvidelse. Undersøk om kjernens dokumenter, låsing, referanser og oppbevaring dekker behovet enklere. Bevar allerede lagret historikk under oppryddingen. |
+| Egen kjøpsbokføring og fradragskorreksjon | Bruker hovedboken, men legger egne handlinger og avhengigheter rundt kjernens flyt. | Prioritert gjennomgang før endring, fordi dette påvirker faktiske posteringer. Prøv kjernens alternativer og planlegg en overgang som bevarer bokførte beløp og historikk. |
+| MVA-rapport, SAF-T og EHF | Norsk dekning må verifiseres mot kjernen og aktuelle eksisterende tillegg. | Avklar mangler før egen rapportmotor, eksport eller integrasjon velges. Skill bestilt direkte innsending fra det underliggende rapporteringskravet. |
 
-Kontoplanens prosjektaksept er gjennomført. Kontomapping under F gjenstår
-og er ikke grunnlag for å bytte allerede brukt kontoplan automatisk.
-Kjerne-/sikkerhetsoppdateringer vurderes løpende på staging med låste images
-og regresjonstester. Støttet kjerne er fortsatt 24.0.1 til en ny versjon er
-kvalifisert; planen lover ingen automatisk versjonsoppgradering.
+Kjernedekningen for nummermodeller og regnskapsoppsett er beskrevet i
+[Dolibarrs fakturaoppsett](https://wiki.dolibarr.org/index.php/Invoice_Configuration)
+og [regnskapsmodul](https://wiki.dolibarr.org/index.php/Module_Accounting_Advanced).
+Den konkrete vurderingen skal prøves i støttet versjon 24.0.1. Dokumentasjon
+for andre versjoner eller tillegg er ikke alene bevis på installert støtte.
 
-## Vedtatt videre omfang – 2026-10-13
+## Videre omfang
 
-Papirløs bilagsflyt er vedtatt som A3/C1 og flyttet til slutt etter
-øvrige planlagte funksjonsleveranser, etter prosjekteiers prioritering. Omfanget er primært for vanlig nettleserbruk på
-PC med manuell opplasting og registrering. Mobilopplasting og ekstra
-automatisering er tatt ut av bilagsomfanget. Løsningen får selvstendig
-utforming og implementasjon. Offentlige produktbeskrivelser kan belyse brukerbehov;
-tredjeparts kode, tekster, skjermbilder, grafikk eller annet materiale
-gjenbrukes bare med dokumentert rett. Biblioteker, modeller og tjenester
-må gjennomgås for lisenskompatibilitet, bruks-/distribusjonsvilkår og
-eventuelle andre rettigheter før innføring. Se
-[omfang og aksept for papirløst regnskap](paperless-accounting.md).
+De avtalte områdene beholdes, men er ikke forhåndsbeslutninger om egen kode:
 
-MVA-perioderapport med direkte innrapportering, årsavslutning og rapport til
-næringsspesifikasjonen inngår i videre utvikling. Rapportproduksjon og
-innsending kvalifiseres som separate leveranser. Dette utvider tidligere
-avgrensning der direkte MVA-innsending var utenfor første leveranse; det
-endrer ikke status for hva som allerede er implementert.
+- A1/A2: norsk avgiftsoppsett, faktura, kreditnota og nødvendige kontokoblinger.
+- B1/B2: norsk MVA-grunnlag og rapportering, med direkte innsending som bestilt funksjon.
+- C/C2: reskontro, bank, avstemming og årsavslutning på kjernens grunnlag.
+- D: relevante utenlandsscenarioer for varer og tjenester.
+- E: EHF/Peppol for offentlige kunder; eksisterende løsninger undersøkes tidlig.
+- F/F2: SAF-T og avtalt rapportgrunnlag for næringsspesifikasjonen.
+- G: nødvendig retting, tilgang, oppbevaring og drift.
+- A3/C1: papirløs bilagsflyt og enkel matching tas fortsatt til slutt.
 
-Rapporten til næringsspesifikasjonen skal gi et kontrollert årsgrunnlag for
-skattemeldingen. Begrepene skattemelding og næringsspesifikasjon brukes
-fremfor de tidligere betegnelsene selvangivelse og næringsoppgave.
-Årsversjoner, foretaksform og skattemessige justeringer må håndteres
-uttrykkelig; en SAF-T-kobling alene bekrefter ikke en ferdig skatterapport.
-Se [Skatteetatens struktur for skattemelding og næringsspesifikasjon](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/innhold-og-struktur-i-skattemeldingen/)
-og [MVA-meldingen](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/mva-melding).
-
-Menyintegrasjon skal ikke utsettes til øvrige funksjoner er ferdige. M0 er
-neste arbeid for eksisterende funksjoner; deretter videreføres A2. Nye
-funksjoner leveres med naturlig menyplassering og integrerte kontroller i
-samme leveranse. Oppstartsveilederen brukes til førstegangsoppsett, status
-for oppsettet og snarveier, og er ikke hovedinngang til daglig regnskapsarbeid.
-
-## Neste arbeid fra 0.57.0
-
-A1 er implementert som [bekreftet satsoppsett](vat-rates.md). Denne
-leveransen endrer ingen fakturalinjer, bokføringsmetadata eller MVA-rapport.
-
-Start med M0: kartlegg hvilke eksisterende funksjoner som bare nås fra
-veilederen eller separate kontrollsider. Plasser daglige funksjoner ved
-oppgaven de gjelder, med rettighetsstyrte menypunkter og tydelige handlinger.
-Behold fungerende integrasjon, blant annet fradragsvurdering på
-leverandørfakturaen. Ikke presenter fremtidige rapporter som ferdige funksjoner.
-
-Fortsett deretter A2 fra dagens linjevurdering og blandede satser: uttrykkelig
-skille mellom nullsats, fritak og unntak, registreringshistorikk, manuelle
-bilag og videre periode-/rettingsscenarioer. Kvalifiser konto-/avgiftsfordeling
-før den brukes til MVA-rapportering. Det er ikke tilstrekkelig at hele bilaget
-balanserer dersom avgift eller grunnlag er ført på feil konto.
-
-Veiledertekster justeres ved behov i samme leveranse. Nye kontrollsider og
-informasjonstekster skal ikke erstatte arbeid med bokført grunnlag,
-avstemming og rapportering.
+Kravgrunnlaget ligger i [kravregisteret](norwegian-requirements.md) og
+[kilderegisteret](sources.md). Lovkrav, uttrykkelige brukerønsker og intern
+teknisk diagnostikk skal skilles. Tekniske tester bekrefter ikke at et tillegg
+er nødvendig eller at norsk regnskapsmessig etterlevelse er oppnådd.
 
 ## Kontroller som del av arbeidsflyten
 
-Vedtatt produktkrav: kontrollene skal ha naturlig eierskap og være integrert
-i oppgavene de beskytter. Brukeren skal møte en forståelig arbeidsflyt med
-avvik og neste handling. Separate diagnosesider kan beholdes for fordypning,
-men skal ikke være den normale måten å gjennomføre regnskapsarbeidet på.
-
-| Arbeidsflyt | Ansvarlig funksjon / rolle | Kontrolltidspunkt og oppfølging |
-| --- | --- | --- |
-| Førstegangsoppsett og endringer | Oppsettsveiviser / administrator | Kontroller foretaksdata, kontoer, satser, journaler og dokumentoppsett ved relevant lagring. Vis hva som gjenstår og lenk direkte til innstillingen. Ferdig gjennomgått oppsett skal ikke kreve samme manuelle runde ved hvert bilag. |
-| Faktura og kreditnota | Fakturabildet / fakturaansvarlig | Kontroller dokumentopplysninger ved klargjøring/validering. Vis avvik ved feltet eller dokumentet, med forklaring og riktig rettingshandling. |
-| Kjøp, kvitteringer og manuelle bilag | Bilagsregistrering / den som bokfører | Kontroller dokumentasjon, dubletter, beløp og kontokoblinger mens bilaget behandles og ved bokføring. Vis mangler i bilagsoversikten og på aktuelt bilag. |
-| Bank og betaling | Avstemmingsbildet / den som avstemmer | Vis manglende koblinger og differanser sammen med transaksjonene. Brukeren følger opp delbetaling, gebyr eller feil kobling der avstemmingen skjer. |
-| MVA-periode og innsending | MVA-arbeidsflyten / rapporteringsansvarlig | Samle avvik i rapportgrunnlaget og gi spor til bilag/postering. Krev nødvendig oppfølging før bekreftet innsending, og vis status/kvittering samme sted. |
-| Årsavslutning og næringsspesifikasjon | Årsavslutningsløpet / årsoppgjørsansvarlig | Samle balanseavstemminger, justeringer, rapportgrunnlag og åpne punkter før avslutning. Vis hvilke forhold som hindrer neste trinn og hvem som skal følge dem opp. |
-
-Rollene beskriver ansvar, ikke krav om flere personer eller en komplisert
-godkjenningskjede. Én person kan ha alle rollene i et enkelt foretak.
-
-Hvert avvik skal forklare hva som er undersøkt, hva som mangler/avviker,
-hvorfor det har betydning og hva brukeren konkret kan gjøre. Skill mellom
-bekreftet feil, nødvendig faglig vurdering og scenarioer som kontrollen
-ikke dekker. Et manglende datagrunnlag skal ikke fremstå som bestått kontroll.
-Sperring brukes når handlingens dokumenterte krav faktisk ikke er oppfylt;
-et avvik fra en begrenset kontrollprofil er ikke alene bevis på ulovlig føring.
-
-Kontroller utføres ved relevante hendelser og i samlede periode-/årsoppgaver.
-En «kjør kontroll»-knapp er støtte ved behov, ikke en ekstra plikt for hvert
-bilag. Kritiske vilkår vurderes på nytt ved lagring/bokføring/innsending;
-tidligere kontrollresultater skal ikke brukes som fersk godkjenning etter
-at grunnlaget er endret. Gjenbruk kjernens arbeidsflyter og norsk kontrollkode
-slik at ulike innganger gir samme resultat.
-
-Arbeidsflyt, menyplassering, ansvar og feilhåndtering beskrives og testes
-sammen med hver funksjonell leveranse. Eksisterende diagnosesider kan beholdes
-som fordypning, men en lenke fra oppstartsveilederen er ikke tilstrekkelig
-integrasjon. Administrasjonsrettigheter skal ikke kreves for vanlig arbeid
-bare fordi en tidligere kontrollside ligger under moduloppsettet; nødvendig
-rettighetsdeling må kvalifiseres uten å gi brukeren flere rettigheter enn oppgaven krever.
-
-### Planlagt plassering i ordinære menyer
-
-Dette er mål for integrasjonen, ikke en påstand om at alle funksjonene er
-implementert. Eksakte menynavn følger aktivert kjernefunksjon og språk.
-Gjenbruk eksisterende menypunkter, faner og dokumentbilder før nye opprettes.
-
-| Område | Funksjoner og kontroller som hører hjemme der |
-| --- | --- |
-| Salg – tilbud, faktura og kreditnota | Dokumentopplysninger, nummerering, språk, avgiftsbehandling og senere EHF-sending/status ved aktuelt dokument. Nummerserieoppsett beholdes i relevant oppsett. |
-| Innkjøp / leverandørfaktura | Fradragsvurdering, kontofordeling, bokføring og støttede korreksjoner ved fakturaen. Behold eksisterende integrasjon og vis avvik med rettingshandling. |
-| Bank | Betalinger, åpne koblinger, differanser og avstemming ved konto og transaksjoner. |
-| Regnskap – hovedbok og bilag | Konto-/avgiftsfordeling, manuelle bilag, sporbarhet, perioder og retting ved registrering og bokføring. |
-| Regnskap – MVA | Periodegrunnlag, avvik, rapport, senere innsending, status og kvittering i samme arbeidsflyt. Gjenbruk kjernens avgiftsfunksjoner der de dekker behovet. |
-| Regnskap – eksport og årsavslutning | SAF-T med mapping og eksportkontroller, årsavstemming og rapportgrunnlag for næringsspesifikasjonen ved de respektive oppgavene. |
-| Relevant oppsett / administrasjon | Foretaksdata, kontoplan, standardkontoer, satser, journaler og nummerserier. Veilederen leder til disse innstillingene ved førstegangsoppsett. |
-
-M0 dokumenterer en konkret liste over eksisterende sider, nåværende inngang,
-målplassering, nødvendige rettigheter og eventuell gjenstående integrasjon.
-Uferdige regnskapsfunksjoner skal beholde tydelig avgrenset status også når
-de blir lettere tilgjengelige fra ordinære menyer.
-
-## Installasjonsspesifikke avklaringer
-
-MVA-registerstatus og faktiske virkningsperioder må dokumenteres per foretak.
-Vare-/tjenestetyper, land, fradrag og offentlige mottakerkrav bestemmer hvilke
-scenarioer som kan godkjennes. Uavklarte scenarioer sperrer deres egen aksept,
-men stopper ikke uavhengig utvikling med syntetiske data.
-
-## Fast ferdigkriterium
-
-Relevant kjernefunksjon skal være undersøkt og gjenbrukt, og eventuell ny
-norsk kode skal ha et konkret dokumentert gap. Leveransen skal vise én
-sammenhengende arbeidsflyt med samme dokumenter, posteringer og rettigheter
-som i Dolibarr, uten unødvendig dobbeltregistrering eller parallelle rutiner.
-
-En kontrollfunksjon skal ha angitt ordinær menyplassering og arbeidsbilde,
-ansvarlig rolle, riktig utløsningstidspunkt og konkret oppfølging av avvik før den regnes som ferdig
-integrert. Normal bruk skal testes uten at brukeren må kjenne interne
-kontrollsider eller manuelt gjenta samme kontroll på flere steder.
-
-Hvert støttet scenario skal gjennomgå relevante KR01–KR26 fra
-[kravregisteret](norwegian-requirements.md), med kilder, testbevis, eventuelle
-eksterne rutiner og begrunnede avgrensninger. Betingede krav som gjelder
-virksomheten må være håndtert før akkurat dette omfanget godkjennes.
-
-Relevant lokal test, dokumentert omfang/begrensninger og bestått CI på aktuell
-revisjon før PR fra staging leveres til main. Skjemaendringer krever versjonert
-migrering, backup og gjenopprettingstest. Bare eksplisitt støttede scenarioer
-kan gis produksjonsaksept; teknisk stabilitet og veiviserens arbeidsstatus er
-ikke norsk regnskapsmessig etterlevelse.
-
-## A2 – første del levert i 0.42.0
-
-[Kunde-/salgs-/MVA-fordeling](invoice-allocation.md) kan sammenlignes med en
-uttrykkelig valgt ordinær innenlandsk profil for 25/15/12 %. Faktiske
-posteringer og forventede beløp vises separat per rolle, også ved kreditnota.
-Feil avgiftsfordeling kan avdekkes selv om bilaget balanserer. Konsistent
-lesing og kontroll av bilagsfullstendighet beskytter resultatet.
-
-Dette fullfører ikke A2. Neste del er koblingen mellom fakturalinjer,
-konkrete kontoer og historisk avgiftsbehandling, deretter kjøp, manuelle
-bilag og korreksjoner. MVA-perioderapporten i B1 venter på kvalifisert bokført
-avgiftsgrunnlag. Ingen kontrollstatus gir avgiftsmessig produksjonsaksept.
-
-## A2 – lagrede linjekontoer i 0.43.0
-
-Fakturalinjens egne lagrede kontokoblinger sammenlignes med bokført netto
-per konkret salgskonto. Direkte linjereferanser og aggregerte kontosummer
-skilles uttrykkelig. Dagens produkt- og standardkontoer brukes ikke som
-reserve, og manglende/fremmede koblinger kan ikke gi samlet samsvar.
-
-Denne delen fullfører linjekontodiagnostikken innenfor de valgte profilene.
-Historisk avgiftsgrunnlag, kontovalgenes opprinnelige gyldighet, kjøp,
-manuelle bilag og rapportering gjenstår. Neste arbeid forblir A2, før B1/B2.
-
-## A2 – kildeobservasjoner ved nye salgsposteringer i 0.44.0
-
-[Hendelseslagring](posting-observations.md) bevarer rå faktura-, linje-,
-kontokoblings-, motparts- og oppsettsopplysninger ved støttede nye
-BOOKKEEPING_CREATE-hendelser. Hendelsen lagres i kjernens transaksjon, uten
-etterfylling av eldre bilag. Dagens kilder kan sammenlignes med observasjonen;
-endret eller fjernet hovedbokspost overskriver ikke lagringen.
-
-Dette er et teknisk lagrings-/sporingsgrunnlag under KR05/KR08/KR09, ikke
-ferdig historisk MVA-kvalifisering. Kjøp, manuelle bilag, øvrige import- og
-korreksjonsveier, fradragsregler og rapportering gjenstår under A2.
-
-## A2 – bevart oppsettskobling for avgiftskoder i 0.45.0
-
-Nye kildeobservasjoner bevarer automatisk den eksakte lokale linjekodens
-kobling til det daterte salgskodeoppsettet ved bokføring. Oppsettets og regelens
-versjoner følger resultatet. Manglende, motstridende eller ufullstendig
-kildegrunnlag forblir uavklart; sats eller kontonummer brukes ikke til å gjette.
-Eldre hendelser etterfylles ikke, og senere oppsettsrettinger overskriver ikke
-bevarte koblinger. Kjernens salgsjournal og eksisterende hendelseslagring gjenbrukes.
-
-Dette er en teknisk kobling til eksplisitt oppsett, ikke ferdig kvalifisert
-avgiftsbehandling. Neste A2-arbeid må knytte registreringsperioder, konkrete
-avgiftsscenarioer og hovedboksfordeling til dette grunnlaget. Kjøp, manuelle
-bilag, korreksjoner og rapportaksept gjenstår før B1/B2.
-
-## A2 – registreringssammenligning i arbeidsflyten i 0.46.0
-
-Kjernens fakturavalidering gir handlingsrettede varsler ved MVA og manglende,
-ugyldig eller avvikende registreringsgrunnlag, dato før virkningsdato og
-kreditnota. Én virkningsdato blir ikke en generell sperre eller avgiftsgodkjenning.
-Den vanlige arbeidsflyten gjenbrukes; ingen ny kontrollside innføres.
-
-Nye salgshendelser bevarer datosammenligning og bekreftelsesopplysninger
-sammen med råkilder og kodekobling. Eldre payloadversjoner leses uten
-etterfylling. Full registreringshistorikk med avregistrering/ny registrering,
-retting, kildefakturaens opprinnelige status, konkret avgiftsbehandling og
-hovedboksfordeling gjenstår under A2, før rapporteringsaksept i B1/B2.
-
-## A2 – fordeling mot bevart grunnlag i 0.47.0
-
-Den eksisterende profilkontrollen sammenligner nå også bevarte fakturalinjer
-og kontokoblinger med faktisk hovedbok i ett konsistent lesebilde. Felles
-beløpsregning, profiler og bilagsfullstendighet gjenbrukes. Manglende,
-fjernede, endrede eller sprikende hendelser/poster gir ikke samsvar; endring
-i dagens fakturakilder erstatter ikke det bevarte grunnlaget. Summerte
-kontoposteringer skilles fra enkeltlinjefordeling.
-
-Dette kvalifiserer den tekniske sammenligningen innen uttrykkelig valgte
-25/15/12-profiler, ikke historisk avgiftsbehandling eller rapportgrunnlaget
-som helhet. Neste A2-arbeid er konkrete avgiftsscenarioer, kilde-/rettingsløp,
-kjøp og manuelle bilag med samme krav til sporbarhet. Full registreringshistorikk,
-fradrag, nullsats og B1/B2-aksept gjenstår.
-
-## A2 – kildebevaring for kjøp i 0.48.0
-
-Kjernens kjøpsjournal bruker samme BOOKKEEPING_CREATE-hendelse som salg.
-Den eksisterende hendelseslagringen utvides til leverandørfaktura og
-leverandørkreditnota, med rå linje-/avgifts-/kontofelt, leverandørreferanse,
-valutafelt og motpart. Kjøp og salg skilles på dokumenttype også når numeriske
-faktura-ID-er er like. Lagring følger kjernens transaksjon og feil stopper
-posteringen uten å etterlate en post uten kildeobservasjon.
-
-Dette er teknisk bevaring, ikke fradragsvurdering eller kvalifisert
-kjøpsfordeling. Salgsprofiler og selgerens registreringsdato brukes ikke
-som avgiftsvurdering av kjøp. Neste A2-arbeid er datert kjøpskodekobling,
-kjøpsfordeling, fradragsomfang og korreksjonsløp. Manuelle bilag, nullsats og
-rapportaksept gjenstår. Papirløs opplasting og matching tas til slutt; krav
-til dokumentasjon og arkiv gjelder fortsatt under de øvrige leveransene.
-
-## A2 – bevart datert kjøpskodekobling i 0.49.0
-
-Nye kjøpshendelser bevarer automatisk eksakt linjekodes daterte kjøpsregel,
-mål og oppsettsversjon. Salgsregler er ingen reserve. Manglende eller
-ufullstendig grunnlag og særmarkører forblir uavklart. Senere retting endrer
-ikke den bevarte koblingen, og eldre rå kjøpshendelser etterfylles ikke.
-Kjernens kjøpsjournal, samme lagring og eksisterende oppsett gjenbrukes.
-
-Dette kvalifiserer teknisk oppsettskobling, ikke fradragsrett eller MVA.
-Neste A2-arbeid er kjøpsfordeling mot hovedbok, uttrykkelig fradragsomfang og
-korreksjonsløp. Manuelle bilag, nullsats, registreringshistorikk og B1/B2-aksept
-gjenstår. Papirløs opplasting og matching er fortsatt prioritert sist.
-
-## A2 – kjøpsfordeling i kjernens leverandørfakturabilde i 0.50.0
-
-En valgfri, lesende [kjøpskontroll](purchase-allocation.md) vises i Dolibarrs
-leverandørfakturabilde. Valgte innenlandske 25/15/12-profiler for fullt fradrag
-sammenligner bevart netto, MVA, brutto og konkrete linjekontoer med hovedbok.
-Kreditnota, summerte poster, endrede kilder og bilagsfullstendighet håndteres
-uten en ny bilagsflyt. Fradragsrett velges eller godkjennes ikke automatisk.
-
-Dette kvalifiserer teknisk sammenligning innen valgt omfang. Neste A2-arbeid
-er uttrykkelig delvis/ingen fradragsbehandling og dokumenterte korreksjonsløp.
-Blandede satser, utenlandskjøp, nullsats, manuelle bilag, registreringshistorikk
-og B1/B2-aksept gjenstår. Papirløs opplasting og matching ligger fortsatt sist.
-
-## A2 – uttrykkelig delvis/ingen fradragssammenligning i 0.51.0
-
-Den eksisterende kjøpskontrollen sammenligner nå også delvis og ingen
-fradragsføring for valgte enkeltsatser. Delvis krever uttrykkelig prosent;
-ørebundet linjeavrunding og kreditnotafortegn kontrolleres. Resterende MVA
-fordeles på bevarte kjøpskontoer i sammenligningen, uten endring i hovedboken.
-Kjernens globale bokføring med avgift på kjøpskonto er undersøkt og testet;
-NPR er uttrykkelig avgrenset og brukes ikke som norsk fradragsmodell.
-
-Dette er teknisk sammenligning av et valgt grunnlag, ikke lagret historisk
-fradragsvalg eller implementert delvis fradragsbokføring. Neste A2-arbeid er
-begrunnede, versjonerte fradragsvalg, linjevis sporbarhet og kvalifisert
-bokførings-/korreksjonsintegrasjon. Blandede satser, utenlandskjøp, nullsats,
-manuelle bilag, registreringshistorikk og B1/B2-aksept gjenstår.
-Papirløs bilagsflyt og matching er fortsatt prioritert sist.
-
-## Valgfrie kunde-/leverandørprefikser i 0.52.0
-
-Nummerserieoppsettet tilbyr valgfrie prefikser foran femsifrede kunde- og
-leverandørkoder, eksempelvis K00001 og L00001. Prefiksbytte fortsetter hver
-rolles teller uten å endre gamle koder. Brukte startnumre forblir låst.
-Kjernens eksisterende allokering, bekreftelsesflyt og eksterne partskodemodul
-gjenbrukes. Tidligere oppsett leses med tomme prefikser; valg endres bare ved
-uttrykkelig bekreftelse. Ingen skjemaendring.
-
-Dette er en avgrenset oppsettsforbedring etter prosjekteiers valg. Videre
-A2-prioritet er uendret: begrunnede historiske fradragsvalg, linjevis sporbarhet
-og bokførings-/korreksjonsintegrasjon. Papirløs bilagsflyt ligger fortsatt sist.
-
-
-## A2 – begrunnede historiske fradragsvalg i 0.53.0
-
-Leverandørfakturabildet tilbyr uttrykkelig forhåndsvisning og bekreftet lagring
-av fullt/delvis/ingen fradrag med begrunnelse. Valget og beregnede linjebeløp
-bevares sammen med fakturagrunnlag, bruker, tidspunkt og stigende revisjon.
-Samme andel gjelder alle linjer; innenlandske NOK-kjøp/kreditnotaer med én sats
-25/15/12 og ørepresisjon støttes. Endret grunnlag gir varsel; gamle revisjoner
-overskrives ikke. Uendret lagret valg brukes i den eksisterende sammenligningen
-når brukeren ikke har valgt en annen profil. Ingen automatisk fradragsvurdering,
-bokføringsendring eller påstand om et historisk bokføringstidspunkt.
-
-Eksisterende versjonert kontrollarkiv gjenbrukes med egen dokumenttype og
-payloadversjon; ingen skjemaendring eller tilbakefylling. Tester kvalifiserer
-lagring/historikk, linjebeløp, endret grunnlag, replay, tilgang og HTTP-bekreftelse.
-Videre A2-arbeid er kobling av valgt revisjon til nye bokføringshendelser,
-kvalifisert fradragsbokføring og korreksjonsløp. Ulike andeler per linje,
-blandede satser og særbehandling gjenstår. Papirløs bilagsflyt ligger sist.
-
-
-## A2 – bevart vurderingsrevisjon ved bokføring i 0.54.0
-
-Nye kjøpsposteringer bevarer siste lagrede fradragsvurdering med kildedata,
-linjebeløp, revisjon og integritetsavtrykk i kjernens egen transaksjon.
-Koblingen skiller mellom samsvarende grunnlag, endret/ikke støttet grunnlag
-og manglende vurdering. Historikken vises i leverandørfakturabildet. Nyere
-vurderinger endrer ikke gamle posteringers kobling. Tidligere payloadversjoner
-leses uten tilbakefylling; ny kjøpspayload har versjon 6.
-
-Dette kvalifiserer teknisk sporbarhet ved nye bokføringshendelser, ikke at
-valgt fradrag er bokført. Kjernens kontofordeling er uendret, og den eksisterende
-sammenligningen viser fortsatt avvik ved eksempelvis valgt delvis fradrag og
-full MVA-postering. Tester dekker kjøpsjournalen, kreditnota, revisjonsbytte,
-kildeendring, manglende valg, semantisk integritet, ikke-administrativ operatør,
-rollback og bevaring av eldre payload. Ingen skjemaendring.
-
-Neste A2-arbeid er kvalifisert fradragsbokføring og korreksjonsløp med bevart
-vurderingsrevisjon. Blandede satser, ulike linjeandeler og øvrig særbehandling
-gjenstår. Papirløs bilagsflyt er fortsatt sist.
-
-
-## A2 – bekreftet førstegangsbokføring i 0.55.0
-
-Leverandørfakturabildet kan forhåndsvise og bokføre et nytt kostnadsbilag med
-siste lagrede, uendrede fradragsvurdering. Fullt, delvis og intet fradrag ved
-25/15/12 støttes for innenlandske NOK-fakturaer og kreditnotaer, med samme andel
-på alle linjer. Beløp avrundes per linje og posteres via kjernens API med
-konkret linjekobling, hovedbokskonto, leverandørreskontro og vurderingsrevisjon.
-
-Omfanget krever aktive kostnadskontoer i klasse 4–7 i valgt kontoplan, standard
-leverandørkonto 2400, støttet inngående MVA-konto, leverandørreskontrokode,
-åpen entydig regnskapsperiode og nøyaktig ørebalanse. Gamle eller fjernede
-posteringer i kontrollarkivet sperrer ny førstegangsbokføring. Bekreftelse
-verner kilde/oppsett/historikk; hele bilaget og arkivet rulles tilbake ved feil.
-En egen versjonert bokføringsregistrering bevarer bekreftet grunnlag og
-posterings-ID-er. Ingen DDL eller endring av tidligere posteringer.
-
-Vanlig kjøpsjournal sperres for nye posteringer med lagret delvis/intet fradrag,
-siden den ikke anvender valget. Bekreftet flyt kan ikke brukes til å erstatte
-allerede bokførte bilag. Tekniske tester kvalifiserer kontofordeling og
-sporbarhet innen omfanget, ikke fradragsrett eller norsk produksjonsetterlevelse.
-Neste arbeid er et uttrykkelig korreksjonsløp med bevarte originalposter og
-vurderingsrevisjoner. Blandede satser, ulike linjeandeler, eiendeler, nullsats,
-utland og øvrig særbehandling gjenstår. Papirløs bilagsflyt ligger sist.
-
-
-## A2 – sporbart fradragskorreksjonsløp i 0.56.0
-
-Bilag fra bekreftet førstegangsbokføring kan få endret fradragsandel gjennom
-full reversering av forrige effektive bokføring og et nytt erstatningsbilag.
-Originalene og alle vurderingsrevisjoner bevares; flere korreksjoner kan kjedes.
-Forhåndsvisning viser begge nye bilag, dato, begrunnelse og vurderingskobling.
-Lagring skjer atomisk via kjernens hovedboks-API, uten skjemaendring.
-
-Første omfang krever uendret fakturagrunnlag og bevarte kildeobservasjoner
-(inkludert fakturastatus), ny fradragsandel, samme
-kalendermåned, åpen regnskapsperiode og poster som ikke er eksportert eller
-endelig validert. Brukeren må uttrykkelig bekrefte at grunnlaget ikke er brukt
-i en innsendt MVA-melding; dette verifiseres ikke mot en innsendingshistorikk.
-Retting av innrapportert grunnlag, andre perioder, beløp eller kontokoblinger
-er ikke kvalifisert. Kjernens returfunksjon er undersøkt; den bevarer ikke alle
-referanser ved opprettingstidspunktet, så kjernens createStd-API gjenbrukes med
-modulens bevarte koblinger og transaksjonskontroll.
-
-Kontrollen validerer hele kjeden og eksakt reversering før erstatningsbilaget
-brukes som effektivt grunnlag. Endrede/fjernede/ekstra poster, korrupte metadata,
-foreldet bekreftelse og gjentatt innsending sperres. Tekniske tester dekker
-konto-/beløpsfordeling, originalbevaring, kreditnota, satser, kjeding, rollback,
-periode-/eksportvern og native HTTP-flyt. Dette er ingen bekreftelse av
-fradragsrett eller norsk regnskapsmessig produksjonsaksept.
-
-Neste A2-arbeid er ulike fradragsandeler per linje og blandede satser, samt
-kvalifisering av videre rettings-/periode- og avgiftsscenarioer. B1/B2 krever
-fortsatt avstemt grunnlag, manuelle bilag, nullsats og registreringshistorikk.
-Papirløs bilagsflyt ligger fortsatt sist.
-
-
-## A2 – linjevurdering og blandede satser i 0.57.0
-
-Innenlandske NOK-kostnadskjøp og kreditnotaer kan ha egne uttrykkelige
-fradragsvalg og begrunnelser per linje, med blandede satser 25/15/12.
-Dekningen må være komplett og entydig; manglende, dupliserte, fremmede eller
-satsstridige linjevalg avvises. Vurderingspayload 2 og ny kjøpsobservasjon 7
-bevarer linjegrunnlaget; eldre vurderinger og observasjoner leses uendret.
-Ingen skjemaendring eller automatisk fradragsvurdering.
-
-Bekreftet bokføring grupperer inngående MVA per satskonto. Kontrollen avstemmer
-hver MVA-konto og linjens kostnad, slik at riktig samlet MVA ikke skjuler feil
-kontofordeling. Øreavrunding gjøres per linje. Det eksisterende, avgrensede
-korreksjonsløpet håndterer også nye linjeandeler og overgang fra eldre felles
-vurdering, med bevart original, full reversering og erstatning. Bare endret
-fradragsfordeling, uendret grunnlag og ikke innrapportert grunnlag i samme måned
-støttes fortsatt; øvrige korreksjonsbegrensninger fra 0.56.0 gjelder.
-
-Tekniske tester kvalifiserer linjedekning, eksakte kontobeløp, feilfordeling med
-riktig MVA-total, kreditnota, korreksjon, eldre historikk, HTTP og native vern.
-Dette bekrefter ikke fradragsrett, avgiftskode-/rapporteringsmapping eller samlet
-norsk regnskapsmessig produksjonsetterlevelse. Neste arbeid er M0, med
-meny-/arbeidsflytintegrasjon av eksisterende funksjoner. Deretter fortsetter
-A2 med uttrykkelig nullsats/fritak/unntak, registreringshistorikk og manuelle
-bilag samt videre periode-/rettingsscenarioer før B1/B2. Papirløs bilagsflyt
-ligger sist.
-
-
-## M0 – første menyintegrasjon i 0.58.0
-
-Bilags- og periodekontroll er tilgjengelig fra Regnskap for interne brukere
-med hovedboklesing. Kundefakturaen får en kontrollfane for eksisterende
-administratorprofil. Fakturaperiodekontroll og relevante oppsettssider får
-ordinære innganger under fakturering, regnskapsoppsett og bank. Daglige
-kontrollinnganger fjernes fra oppstartsveilederen og samles ved oppgaven.
-
-Se [menykartlegging, tilgang og videre arbeid](menu-integration.md). M0 er
-ikke fullført: øvrige oppsettssider, produkt-/prisarbeid, enklere oppfølging
-av fakturaavvik og kvalifisering av ordinære brukerroller gjenstår.
-Menyplassering skal følge hver videre funksjonsleveranse. Dette endrer ikke
-avgrensningene i A2 eller status for norsk regnskapsmessig produksjonsaksept.
-
-
-## M0 – avgiftsoppsett og dokument-/produktfaner i 0.59.0
-
-Avgiftsoppsettet nås fra Regnskap, med samme eksisterende innstillinger for
-satser, kontoer, registerhistorikk og avgiftskodekoblinger. Regnskapskoder får
-en kataloginngang og en fane på varen/tjenesten, avgrenset til valgt element.
-Kundefakturaen får direkte inngang til sine kontrollkopier. Veiledende
-EUR-prising flyttes til tilbudsmenyen og tas ut av veilederen/moduloppsettet.
-Ingen nye regnskapsvurderinger, kurshentinger eller bokføringer skjer ved navigasjon.
-
-Eksisterende administrator-/lagringsvern beholdes. Videre M0 gjelder
-forenkling av avviksoppfølging og kvalifisering av operatørroller ved den
-aktuelle funksjonen. Neste regnskapsfunksjonelle arbeid fortsetter A2:
-nullsats/fritak/unntak, registreringshistorikk, manuelle bilag og videre
-rettingsscenarioer. Ingen endring i faglig produksjonsaksept.
-
-
-## M0 – rettet oppsettsnivå i 0.60.0
-
-Kontoplan-/bokføringsoppsett, MVA-registerhistorikk og avgiftskodekoblinger
-samles under Regnskap → Innstillinger → Norsk regnskapsoppsett. Underpunktene vises
-ved åpnet oppsettsgruppe, ikke under daglig hovedbokarbeid. Den separate
-bankkoblingslenken fjernes fra Bank; funksjonen beholdes fra regnskapsoppsettet.
-Aksept gjelder menynivå, synlighet og bevarte innganger/tilganger. Ingen
-endringer i bokføringsgrunnlag, faglig avgiftsomfang eller produksjonsaksept.
-
-
-## A2 – eksplisitte salgskategorier uten beregnet MVA i 0.61.0
-
-Fakturaens eksisterende kontrollfane skiller eksplisitte salgskategorier med
-nullsats fra omsetning utenfor loven og inntekt som ikke er MVA-omsetning.
-Sats-/beløpskonflikter, manglende datert kodekobling og særmarkeringer får
-konkret oppfølging. Utførsel og omvendt avgiftsplikt vises som egne scenarioer,
-ikke som ordinært innenlands fritak. Kontrollen bruker valgt oppsettsversjon
-for dagens faktura og bare bevart oppsett for bokføringsobservasjoner.
-Se [omfang, kilder og videre arbeid](sales-zero-vat.md).
-
-Dette er en skrivebeskyttet konsistenskontroll, ikke et fullført grunnlag for
-faglig avgiftsbehandling eller rapportering. A2 fortsetter med dokumentert
-behandlingsgrunnlag for leveransen, registreringshistorikk, manuelle bilag
-og videre rettingsscenarioer. Historiske payloads og avgiftskontekster er
-uendret. Ingen endring av produksjonsaksept.
-
-
-## A2 – registreringshistorikk i 0.62.0
-
-Oppsettet støtter bekreftet import av første dato, retting, avslutning, nye
-perioder og historikk ved feilregistrering. Overlapp avvises. Native varsler
-og nye salgsobservasjoner bruker perioder/hull uten å behandle datodekning
-som avgiftsgodkjenning. Payload 8/kontekst 2 brukes bare når historikk finnes;
-eldre payloads og opprinnelig første dato bevares. Backup/gjenoppretting prøver
-rettet og ny periode. Se [omfang og vern](vat-registration-history.md).
-
-Videre A2 gjelder dokumentasjonsgrunnlaget for konkrete avgiftsbehandlinger,
-myndighetsgodkjenning/etterfakturering, manuelle bilag og flere støttede
-rettingsscenarioer. Periodemodellen er ikke full faglig kvalifisering av
-registreringsforhold eller MVA-rapportering.
-
-## A2 – dokumentasjonsgrunnlag i 0.63.0
-
-Egen fakturafane lagrer begrunnelse og dokumentreferanse per innenlandsk
-nullsatslinje med eksplisitt kode 5/6/7. Revisjoner bevares; endret grunnlag,
-foreldet bekreftelse og skadet historikk avvises/synliggjøres. Se
-[omfang og kilder](sales-tax-basis.md). Ingen endring av bokføring eller PDF.
-
-Neste del knytter den bevarte begrunnelsesrevisjonen til faktisk bokføring.
-Deretter gjenstår myndighetsgodkjenning/etterfakturering, manuelle bilag og
-videre rettingsscenarioer før A2 er kvalifisert. Papirløs bilagsflyt er fortsatt sist.
-
-## M0 – menyopprydding i 0.63.1
-
-Nummerserier og dokumentoppsett brukes fra veilederens steg 7. Regnskapskode-
-oversikten ligger under Norsk regnskapsoppsett; individuell katalogfane beholdes.
-Daglige bilags-/periodekontroller følger åpnet Regnskap-gruppe. Denne rettingen
-endrer ingen regnskapsdata. Neste A2-del er fortsatt begrunnelsesrevisjon ved bokføring.
-
-## A2 – begrunnelsesrevisjon ved bokføring i 0.64.0
-
-Native salgsobservasjoner bevarer siste tilgjengelige begrunnelsesrevisjon
-og et låst grunnlag. Endret kilde vises som avvik; eldre observasjoner
-etterutfylles ikke. Fakturafanen og fakturakontrollen viser hendelsens
-begrunnelse ved oppgaven. Backup/gjenoppretting prøver begge revisjoner og
-den opprinnelige koblingen. Ingen ny meny eller oppstartsoppgave.
-
-Neste A2-del avklarer dokumentert myndighetsgodkjenning og etterfakturering;
-deretter manuelle bilag og videre rettingsscenarioer. Full faglig avgifts-
-og rapporteringsaksept gjenstår. Papirløs bilagsflyt er fortsatt sist.
+Nødvendige kontroller brukes ved den ordinære oppgaven. Gjenbruk kjernens
+kontroller først. Oppsett hører til i relevante innstillinger eller
+oppsettsveilederen; daglige oppgaver hører til ved dokument, bank eller regnskap.
+Vanlig bokføring skal ikke få ekstra manuelle kontrollrunder uten et konkret
+behov. Interne diagnoser skal ikke presenteres som lovpålagte brukeroppgaver.
+
+## Arbeidsregler og ferdigkriterium
+
+Ett foretak, NOK som dokumentvaluta, norsk/engelsk på tilbud og faktura og
+valgfri veiledende EUR-prisvisning videreføres. Modulen skal være generell
+for varer og tjenester. Bare main og staging brukes, og kjernen endres ikke.
+
+Før ny tilleggskode skal den korte begrunnelsen vise:
+
+1. Kravet eller det uttrykkelig bestilte behovet.
+2. Hva kjernen eller et eksisterende tillegg faktisk dekker i prøvd versjon.
+3. Det konkrete gapet og den minste endringen som løser det.
+
+Relevant test og dokumentasjon følger endringen. Main krever fortsatt PR,
+bestått CI på aktuell revisjon og tydelig akseptert omfang. Eksisterende
+regnskap, dokumenter, passord, volumer og instansnøkkel bevares. Endring av
+skjema eller historikk krever versjonert overgang og prøvd gjenoppretting.
