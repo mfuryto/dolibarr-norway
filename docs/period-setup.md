@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Kontroll av regnskapsperioder
 
 Fra modul 0.19.0: åpne **Norsk oppsettsveiviser → steg 9 → Kontroll av regnskapsperioder**. Velg datoen du vil undersøke; dagens dato i installasjonens tidssone er standard. Dette er et skrivebeskyttet GET-oppslag.

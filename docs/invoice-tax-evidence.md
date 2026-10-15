@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Lagrede avgiftsopplysninger på fakturalinjer
 
 Fra 0.27.0 viser Norsk fakturakontroll lagret avgiftskildekode og særmarkering på

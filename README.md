@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.64.0 · Under utvikling**
+**Versjon 0.65.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -23,24 +23,9 @@ foretak per installasjon.
   samt kunde- og leverandørnumre med valgfrie prefikser, for eksempel
   K00001 og L00001. Startnummer kan velges ved overgang
   fra et annet system.
-- **Hjelp til MVA-oppsett**, med kontroll av norske satser, salg- og
-  kjøpskontoer, registreringens virkningsdato og avgiftskodekoblinger.
-- **Kontroller av regnskapsgrunnlaget**, blant annet fakturabeløp,
-  hovedboksreferanser, bilagsbalanse og endringer i lagrede kontrollkopier.
-  Nye salgs- og kjøpsposteringer bevarer kildeopplysninger og separate
-  daterte kodekoblinger. Salg bevarer også registreringssammenligning. Valgte fordelingsprofiler kan sammenlignes
-  med bevart grunnlag. En valgfri kjøpskontroll finnes i leverandørfakturabildet
-  for uttrykkelig valgte profiler med fullt, delvis eller ingen fradragsføring.
-  Begrunnede fradragsvurderinger kan lagres med linjebeløp og revisjonshistorikk;
-  dette endrer ikke bokføringen. Nye kjøpsposteringer bevarer også hvilken
-  vurderingsrevisjon som forelå, og om grunnlaget samsvarte ved posteringen.
-  En bekreftet førstegangsbokføring kan anvende lagret fullt, delvis eller intet
-  fradrag på støttede kostnadskjøp og kreditnotaer. Endret fradragsandel kan
-  korrigeres med full reversering og erstatningsbilag innen støttet omfang.
-  Fradragsandel og begrunnelse kan velges per linje, også med blandede
-  satser på 25, 15 og 12 %, med kontroll av hver MVA-konto.
-- **En norsk oppsettsveiviser** som leder gjennom foretaksopplysninger,
-  kontoplan, journaler, bank, varer og tjenester og dokumentoppsett.
+- **Hjelp til MVA-oppsett**, med norske satser og salg- og kjøpskontoer.
+- **En norsk oppsettsveiviser** med veiledning og lenker til innstillingene.
+  Den har ingen egen godkjenningsstatus eller obligatoriske kontrollrunder.
 
 Sjekkbetalinger og sjekkinnskudd er deaktivert. Oppsetthjelperne bruker
 forhåndsvisning og bekreftelse, og har vern for eksisterende valg og historikk.
@@ -99,7 +84,7 @@ oppdatering og sikkerhetskopiering.
 ## Videre utvikling
 
 Videre arbeid prioriterer forenkling og gjenbruk av Dolibarrs funksjoner.
-Eksisterende kontroll- og historikktillegg gjennomgås før nye bygges.
+Overflødige kontroll- og historikktillegg er fjernet i 0.65.0.
 Tilleggskode skal dekke et dokumentert norsk gap eller et uttrykkelig bestilt
 behov. Implementerte ekstrakontroller skal ikke forstås som lovpålagte trinn.
 Se den [oppdaterte arbeidsplanen](docs/delivery-plan.md).
@@ -117,36 +102,15 @@ GPL-3.0-or-later. Se [LICENSE](LICENSE). Den medfølgende norske kontoplanen
 fra Odoo er lisensiert under LGPL-3.0; kilde- og lisensopplysninger følger
 modulen.
 
-Menyer og kontroller plasseres ved den aktuelle oppgaven. Fra 0.58.0 finnes
-bilags- og periodekontroll under Regnskap, fakturakontroll ved kundefakturaen
-og relevante oppsett ved de aktuelle innstillingene. Oppstartsveilederen
-beholder førstegangsoppsettet. Se [menyer og tilgang](docs/menu-integration.md).
+## Forenkling i 0.65.0
 
-Fra 0.59.0 får varer/tjenester en fane for sine regnskapskoder, kundefakturaen
-får direkte inngang til kontrollkopier, og avgiftsoppsettet nås fra Regnskap.
-Veiledende EUR-prising finnes i tilbudsmenyen og er tatt ut av veilederen.
+Egne faktura-, bilags-, periode- og fordelingskontroller, begrunnelsesregistrering
+og egen kjøpsbokføring er fjernet. Bruk kjernens dokumenter, journaler,
+hovedbok, perioder, bank og regnskapskoder på varer og tjenester.
+Norsk regnskapsoppsett har én inngang under Regnskap → Innstillinger.
 
-Fra 0.60.0 samles norsk regnskapsoppsett under Regnskap → Innstillinger.
-MVA-underpunktene vises når gruppen åpnes. Bankkobling nås fra dette oppsettet;
-den separate menylenken under Bank er fjernet.
-
-Fra 0.61.0 viser fakturakontrollen eksplisitte salgskategorier uten beregnet
-MVA og konflikter mellom kode, sats og beløp. Dagens og bevart grunnlag holdes
-atskilt. Kontrollen godkjenner ikke fritak eller unntak. Se
-[nullsatskontrollen](docs/sales-zero-vat.md).
-
-Fra 0.62.0 støtter MVA-oppsettet valgfri [registreringshistorikk](docs/vat-registration-history.md)
-med bevarte rettinger, avslutning og nye perioder. Fakturavarsler og nye
-salgsobservasjoner bruker historikken når den er bekreftet; eldre grunnlag
-beholder sin opprinnelige tolkning.
-
-Fra 0.63.0 har fakturaen en egen fane for [begrunnelse og dokumentreferanse](docs/sales-tax-basis.md)
-per innenlandsk nullsatslinje, med bevarte revisjoner og varsel ved endret grunnlag.
-Faglig avgiftsaksept gjenstår; kobling ved bokføring er videreført i 0.64.0.
-
-Fra 0.63.1 er menyene ryddet: nummerserier/dokumentoppsett i veilederens steg 7,
-regnskapskodeoversikt under regnskapsinnstillinger og daglige kontroller under Regnskap.
-
-Fra 0.64.0 bevares tilgjengelig begrunnelsesrevisjon ved faktisk bokføring,
-med samsvar/avvik og historisk visning på fakturaen. Eldre observasjoner
-etterutfylles ikke. Se [avgiftsgrunnlag](docs/sales-tax-basis.md).
+Eksisterende regnskap og dokumenter endres ikke. Tidligere lagret tilleggshistorikk
+kan leses og lastes ned uendret fra modulinnstillingene når slik historikk finnes.
+Det opprettes ingen nye kontrollkopier. Allerede bokførte kjøp fra den gamle
+særflyten beskyttes mot ny overføring; retting skjer som eget bilag i kjernen.
+Dette er en teknisk forenkling, ikke en bekreftelse på full norsk etterlevelse.

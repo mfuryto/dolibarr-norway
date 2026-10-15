@@ -32,15 +32,13 @@ foreach ($descriptor->menu as $menu) {
 $menuCount = $db->query("SELECT COUNT(*) AS n FROM ".MAIN_DB_PREFIX."menu WHERE module='norway' AND entity=".(int)$conf->entity);
 $menuCount = $menuCount ? $db->fetch_object($menuCount) : null;
 if (!$menuCount || (int)$menuCount->n !== count($descriptor->menu)) { $menusValid = false; }
-$tabsValid = true;
-foreach ($descriptor->tabs as $i => $tab) {
-    if (getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i) !== $tab) { $tabsValid = false; }
-}
+$tabsValid=true;
+for ($i=0;$i<4;$i++) { if (getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i)!=='') { $tabsValid=false; } }
 $checks = array(
     'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.64.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.65.0',
     'norway_module_payload' => $modulePayloadMatches,
     'norway_menu_registration' => $menusValid,
     'norway_document_tabs' => $tabsValid,
@@ -52,7 +50,7 @@ $checks = array(
     'cheque_deposits_disabled' => getDolGlobalInt('BANK_DISABLE_CHECK_DEPOSIT') === 1,
     'norway_dashboard_hook' => in_array('index', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_company_hook' => in_array('admincompany', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
-    'norway_supplier_hook' => in_array('invoicesuppliercard', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
+    'norway_supplier_hook_retired' => !in_array('invoicesuppliercard', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_pdf_hook' => in_array('pdfgeneration', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_numbering_models' => in_array('/norway/', (array) ($conf->modules_parts['models'] ?? array()), true),
     'norway_partner_model' => in_array('/norway/core/modules/societe/', (array) ($conf->modules_parts['societe'] ?? array()), true),

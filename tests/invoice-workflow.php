@@ -127,38 +127,20 @@ foreach (array(array('SYN-SALE-25', 1000, 25, 0), array('SYN-SALE-0', 600, 0, 0)
         insist($invoice->fetch($invoice->id) > 0, 'Invoice reload after corrections failed');
         print "PASS rejected invoice validation rolls back status/reference and corrected draft can proceed\n";
     }
-    $registrationBefore=null;
-    if (!$invoices) {
-        $registrationBefore=$db->fetch_object(sql("SELECT value FROM ".MAIN_DB_PREFIX."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_VAT_REGISTRATION_START'"));
-        setting('NORWAY_VAT_REGISTRATION_START',json_encode(array('version'=>1,'entity'=>(int)$conf->entity,'org'=>'123456785','start'=>'2027-01-01','confirmed_by'=>(int)$user->id,'confirmed_at'=>gmdate('c'))));
-    }
-    unset($_SESSION['dol_events']['warnings']);
-    try {
-    insist($invoice->validate($user) > 0, 'Invoice validation failed: '.$invoice->error);
-        if (!$invoices || (int)$invoice->type===2) {
-            $warning=$langs->trans('NorwayRegistrationWarning'.((int)$invoice->type===2 ? 'Credit' : 'Before'));
-            insist(in_array($warning,$_SESSION['dol_events']['warnings'] ?? array(),true),'Native invoice validation omitted actionable registration warning');
-        }
-    } finally {
-        if (!$invoices) {
-            if ($registrationBefore) { setting('NORWAY_VAT_REGISTRATION_START',$registrationBefore->value); }
-            else { sql("DELETE FROM ".MAIN_DB_PREFIX."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_VAT_REGISTRATION_START'");unset($conf->global->NORWAY_VAT_REGISTRATION_START); }
-        }
-    }
-
+    insist($invoice->validate($user)>0,'Invoice validation failed: '.$invoice->error);
     insist($invoice->fetch($invoice->id) > 0, 'Invoice reload failed');
     $invoices[] = $invoice;
 }
-require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayInvoiceAmounts.php';
 foreach ($invoices as $storedInvoice) {
-    insist(NorwayInvoiceAmounts::report($storedInvoice)['status'] === 'Match', 'Stored core invoice/credit totals differ from lines');
+    $net=0;$vat=0;foreach($storedInvoice->lines as $line){$net+=(float)$line->total_ht;$vat+=(float)$line->total_tva;}
+    insist(abs($net-$storedInvoice->total_ht)<0.01 && abs($vat-$storedInvoice->total_tva)<0.01,'Core line totals differ');
 }
 print "PASS stored core sale, zero-VAT invoice and credit note amount comparison\n";
 $evidenceLine=(int)$invoices[0]->lines[0]->id;
 $oldEvidence=$db->fetch_object(sql('SELECT vat_src_code,info_bits FROM '.MAIN_DB_PREFIX.'facturedet WHERE rowid='.$evidenceLine));
 sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET vat_src_code='SYN<25>',info_bits=8 WHERE rowid=".$evidenceLine);
 insist($invoices[0]->fetch($invoices[0]->id)>0,'Evidence invoice reload failed');
-$storedEvidence=NorwayInvoiceAmounts::report($invoices[0])['rows'][0]['evidence'];
+$storedEvidence=array('code'=>$invoices[0]->lines[0]->vat_src_code,'flags'=>(int)$invoices[0]->lines[0]->info_bits);
 insist($storedEvidence['code']==='SYN<25>' && $storedEvidence['flags']===8,'Core stored source fields not preserved');
 sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET vat_src_code='".$db->escape((string)$oldEvidence->vat_src_code)."',info_bits=".(int)$oldEvidence->info_bits.' WHERE rowid='.$evidenceLine);
 insist($invoices[0]->fetch($invoices[0]->id)>0,'Evidence fixture restore failed');
@@ -270,30 +252,6 @@ try {
     $body = http('/index.php');
     http('/index.php', array('token' => token($body), 'actionlogin' => 'login', 'loginfunction' => 'loginfunction',
         'username' => 'testadmin', 'password' => getenv('DOLI_ADMIN_PASSWORD')));
-    foreach (array('nb_NO', 'en_US') as $language) {
-        $body = http('/custom/norway/admin/invoice.php?id='.$invoices[0]->id.'&lang='.$language);
-        insist(strpos($body, '/compta/facture/card.php?facid='.$invoices[0]->id) !== false,
-            'Invoice check page could not load a real invoice');
-        $text = html_entity_decode($body, ENT_QUOTES, 'UTF-8');
-        insist(strpos($text, 'Må gjennomgås') !== false || strpos($text, 'Review required') !== false,
-            'Invoice check omitted mandatory manual review');
-    }
-    $body = http('/custom/norway/admin/invoice.php');
-    insist(strpos($body, '/norway/admin/invoice.php?id='.$invoices[0]->id) !== false,
-        'Recent invoice selector missing');
-    // Prove entity isolation through HTTP; restore this synthetic invoice afterwards.
-    sql('UPDATE '.MAIN_DB_PREFIX.'facture SET entity=99999 WHERE rowid='.(int) $invoices[0]->id);
-    try {
-        $body = http('/custom/norway/admin/invoice.php?id='.$invoices[0]->id);
-        insist(strpos($body, '/compta/facture/card.php?facid='.$invoices[0]->id) === false,
-            'Invoice check exposed an invoice belonging to another entity');
-        insist(strpos($body, 'Fakturaen kunne ikke leses i aktivt foretak.') !== false
-            || strpos($body, 'Invoice could not be read in the active entity.') !== false,
-            'Wrong-entity invoice was not rejected');
-    } finally {
-        sql('UPDATE '.MAIN_DB_PREFIX.'facture SET entity='.(int) $conf->entity.' WHERE rowid='.(int) $invoices[0]->id);
-    }
-    print "PASS authenticated bilingual invoice checks and entity isolation\n";
     $params = array('id_journal' => $journal, 'date_startday' => 1, 'date_startmonth' => 1, 'date_startyear' => 2026,
         'date_endday' => 31, 'date_endmonth' => 12, 'date_endyear' => 2026, 'in_bookkeeping' => 'notyet');
     $path = '/accountancy/journal/sellsjournal.php?'.http_build_query($params);
@@ -312,39 +270,14 @@ try {
         ksort($actual); ksort($expected[$i]);
         insist($actual === $expected[$i], 'Invoice ledger mismatch: '.$invoice->ref.' '.json_encode($actual));
         insist(array_sum($actual) === 0, 'Invoice voucher does not balance');
-        $events = sql("SELECT e.payload,e.payload_sha256 FROM ".$db->prefix()."norway_tax_evidence e JOIN ".$db->prefix()."accounting_bookkeeping b ON b.rowid=e.fk_document AND b.entity=e.entity WHERE e.document_type='bookkeeping_event' AND b.doc_type='customer_invoice' AND b.entity=".(int) $conf->entity." AND b.fk_doc=".(int) $invoice->id);
-        $eventCount = 0;
-        while ($event = $db->fetch_object($events)) {
-            $payload = json_decode($event->payload, true);
-            insist(hash('sha256', $event->payload) === $event->payload_sha256
-                && ($payload['basis']['posting']['fk_doc'] ?? 0) == $invoice->id
-                && ($payload['basis']['source_complete'] ?? false) === true,
-                'Native sales journal did not preserve a complete source observation');
-            $eventCount++;
-        }
-        insist($eventCount === $db->num_rows($rows), 'Native sales journal omitted posting source observations');
+        $events=sql("SELECT COUNT(*) n FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".(int)$conf->entity);
+        insist((int)$db->fetch_object($events)->n===0,'Ordinary sales created retired evidence');
     }
     $count = (int) $db->fetch_object(sql("SELECT COUNT(*) AS n FROM ".$db->prefix()."accounting_bookkeeping WHERE doc_type='customer_invoice' AND entity=".(int) $conf->entity))->n;
     $body = http($path);
     http($path, $params + array('token' => token($body), 'action' => 'writebookkeeping'));
     insist((int) $db->fetch_object(sql("SELECT COUNT(*) AS n FROM ".$db->prefix()."accounting_bookkeeping WHERE doc_type='customer_invoice' AND entity=".(int) $conf->entity))->n === $count, 'Repeated transfer duplicated postings');
-    require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayPostingEvidence.php';
-    foreach (array($invoices[0],$invoices[2],$invoices[3]) as $postedInvoice) {
-        $retained=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$postedInvoice->id,$user,'domestic25');
-        insist($retained['status']==='Grouped','Native retained allocation failed: '.$retained['status']);
-    }
-    $line=$db->fetch_object(sql('SELECT rowid,total_tva FROM '.MAIN_DB_PREFIX.'facturedet WHERE fk_facture='.(int)$invoices[0]->id.' ORDER BY rowid LIMIT 1'));
-    try {
-        sql('UPDATE '.MAIN_DB_PREFIX.'facturedet SET total_tva=total_tva+1 WHERE rowid='.(int)$line->rowid);
-        $retained=NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoices[0]->id,$user,'domestic25');
-        insist($retained['status']==='Grouped' && $retained['source_changed'],'Current line mutation replaced preserved allocation');
-    } finally { sql("UPDATE ".MAIN_DB_PREFIX."facturedet SET total_tva='".$db->escape($line->total_tva)."' WHERE rowid=".(int)$line->rowid); }
-    $entry=$db->fetch_object(sql("SELECT rowid,credit FROM ".MAIN_DB_PREFIX."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoices[0]->id." AND numero_compte='2700' LIMIT 1"));
-    try {
-        sql('UPDATE '.MAIN_DB_PREFIX.'accounting_bookkeeping SET credit=credit+1 WHERE rowid='.(int)$entry->rowid);
-        insist(NorwayPostingEvidence::report($db,(int)$conf->entity,(int)$invoices[0]->id,$user,'domestic25')['status']==='Review','Changed ledger accepted against preserved posting');
-    } finally { sql("UPDATE ".MAIN_DB_PREFIX."accounting_bookkeeping SET credit='".$db->escape($entry->credit)."' WHERE rowid=".(int)$entry->rowid); }
-    print "PASS native retained allocation, credit note, current-source changes and changed-ledger rejection\n";
+    print "PASS native sales/credit ledger amounts and duplicate-transfer protection without extra observations\n";
     $mysoc->idprof1 = '123456785'; // Artificial checksum fixture, no real business.
     $mysoc->tva_assuj = 1;
     $identityBefore = array($mysoc->idprof1, $mysoc->tva_assuj, $mysoc->tva_intra);

@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Kildeobservasjoner ved nye salgsposteringer
 
 Fra 0.44.0, videre arbeid under A2/KR05/KR08/KR09. Dette er bevaring av rå

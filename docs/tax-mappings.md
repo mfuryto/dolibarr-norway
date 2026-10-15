@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Lagrede koblinger av avgiftskoder
 
 Fra 0.30.0 åpnes siden **Lagrede koblinger av avgiftskoder** fra Norsk

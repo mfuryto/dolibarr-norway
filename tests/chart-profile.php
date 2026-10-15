@@ -3,7 +3,6 @@
 if (PHP_SAPI !== 'cli' || getenv('NORWAY_SYNTHETIC_TEST') !== '1' || getenv('DOLI_DB_NAME') !== 'norway_test') { exit(1); }
 require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartProfile.php';
-require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayAccountingSetup.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayDefaultAccounts.php';
 function profileAssert($ok,$message) { if (!$ok) { throw new RuntimeException($message); } }
 function profileSql($sql) { global $db; $result=$db->query($sql); profileAssert($result!==false,'Synthetic profile query failed: '.$db->lasterror()); return $result; }
@@ -103,22 +102,7 @@ try {
         ." VALUES (".$entity.",1,'2026-01-01','SYN','SYN-DEFAULTS',0,0,'1500','Synthetic',0,0,".(int)$user->id.",'SYN')");
     profileAssert(NorwayDefaultAccounts::preview($db,$entity)['history'],'Ledger history ignored');
     profileSql("DELETE FROM ".$prefix."accounting_bookkeeping WHERE entity=".$entity);
-    $setup = new NorwayAccountingSetup($db, $entity);
-    $suggestions = array_column($setup->suggestions($chart, array('ACCOUNTING_ACCOUNT_CUSTOMER' => '1500')), null, 'key');
-    profileAssert(count($suggestions) === 5, 'Profile suggestions missing');
-    profileAssert($suggestions['ACCOUNTING_ACCOUNT_CUSTOMER']['status'] === 'Available', 'Matching customer default missed');
-    profileAssert($suggestions['ACCOUNTING_SERVICE_SOLD_ACCOUNT']['number'] === '3020'
-        && $suggestions['ACCOUNTING_SERVICE_SOLD_ACCOUNT']['status'] === 'Review', 'Unconfigured service default accepted');
-    profileAssert((new NorwayAccountingSetup($db, $entity + 1))->suggestions($chart, array())[0]['status'] === 'Missing',
-        'Suggestions leaked accounts across entities');
-    profileSql("UPDATE ".$prefix."accounting_account SET active=0 WHERE entity=".$entity." AND account_number='2710'");
-    profileAssert(array_column($setup->suggestions($chart, array()), null, 'key')['ACCOUNTING_VAT_BUY_ACCOUNT']['status'] === 'Inactive',
-        'Inactive suggested VAT account accepted');
-    profileSql("UPDATE ".$prefix."accounting_account SET active=1 WHERE entity=".$entity." AND account_number='2710'");
-
     profileSql("UPDATE ".$prefix."accounting_account SET label='Synthetic conflict' WHERE entity=".$entity." AND fk_pcg_version='".NorwayChartProfile::VERSION."' AND account_number='1500'");
-    profileAssert($setup->suggestions($chart, array('ACCOUNTING_ACCOUNT_CUSTOMER' => '1500'))[0]['status'] === 'Review',
-        'Renamed account treated as verified suggestion');
     try { NorwayChartProfile::preview($db,$entity); throw new LogicException('Profile conflict accepted'); }
     catch (InvalidArgumentException $expected) {}
     profileSql("INSERT INTO ".$prefix."accounting_system (fk_country,pcg_version,label,active) VALUES (173,'".$otherVersion."','Synthetic other plan',1)");

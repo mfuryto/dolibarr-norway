@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Fakturalinjer mot valgt oppsettsversjon
 
 Fra 0.31.0 har Norsk fakturakontroll en valgfri seksjon **Sammenlign med en

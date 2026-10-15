@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Bruk [gjeldende plan](delivery-plan.md) og kjernens arbeidsflyt. Eldre data beholdes i arkivet.
+
 # Dokumentasjonsgrunnlag på salgsfaktura
 
 Fra 0.63.0 ligger **Avgiftsgrunnlag** som egen fane på kundens faktura,
