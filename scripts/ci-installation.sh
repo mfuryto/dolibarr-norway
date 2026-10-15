@@ -73,7 +73,7 @@ export NORWAY_COMPOSE_PROJECT="norway-install-ci-$$"
 export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.63.1/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.64.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
 "${compose[@]}" exec -T web php <<'PHPTEST'
 <?php
@@ -154,7 +154,7 @@ assert 'SYNTHETIC-INTENTIONAL-MISMATCH' not in error + output
 assert 'PASS core version' not in output
 print('PASS stdin verification reports failed checks without fatal errors or credential values')
 PYCODE
-"${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/deployment-smoke.php
+"${compose[@]}" exec -T -e NORWAY_EXPECT_DOCUMENTARY_SENTINEL=1 web php < tests/deployment-smoke.php
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
 "${compose[@]}" exec -T web sh -c 'test "$(cat /var/www/html/custom/synthetic-other-module/retained)" = SYNTHETIC'
 printf 'PASS backup checksums, database, documents, config and custom recovery\n'

@@ -1159,3 +1159,10 @@ NorwaySalesBasisMissing=Ingen lagret begrunnelse.
 NorwaySalesBasisCurrent=Siste begrunnelse gjelder uendret faktura- og oppsettsgrunnlag.
 NorwaySalesBasisChanged=Grunnlaget er endret eller utenfor støttet omfang. Siste begrunnelse kan ikke bekreftes som aktuell.
 NorwaySalesBasisUnsupported=Denne fakturaen er utenfor omfanget. Krever norsk kunde, ordinær NOK-faktura og eksplisitte, konsistente innenlandske nullsatskoder 5, 6 eller 7.
+
+NorwaySalesPostingTitle=Avgiftsgrunnlag ved bokføring
+NorwaySalesPostingScope=Viser begrunnelsesrevisjonen som ble bevart ved hver bokføringshendelse. Samsvar gjelder grunnlaget på dette tidspunktet og bekrefter ikke riktig avgiftsbehandling. Senere begrunnelser fylles ikke inn i eldre observasjoner.
+NorwaySalesPostingLinked=Begrunnelsen samsvarte med grunnlaget ved bokføring
+NorwaySalesPostingChanged=Grunnlaget var endret eller kunne ikke knyttes til begrunnelsen ved bokføring
+NorwaySalesPostingNotRetained=Ingen begrunnelsesrevisjon bevart ved denne hendelsen
+NorwaySalesPostingRevision=Bevart begrunnelsesrevisjon

@@ -1,6 +1,6 @@
 # Menyer og arbeidsflyt
 
-Oppdatert 2026-10-15 for 0.63.1. Dette viderefører M0, ikke ferdig
+Oppdatert 2026-10-15 for 0.64.0. Dette viderefører M0, ikke ferdig
 regnskapsfaglig produksjonsaksept. Ingen nye regnskapsrapporter innføres.
 Menynavn følger språk og aktiverte kjernefunksjoner.
 
@@ -91,3 +91,7 @@ Bilagskontroll og Kontroll av regnskapsperioder vises som vanlige underpunkter
 når Regnskap-gruppen er åpnet; de skjules når Innstillinger eller Overføring
 er åpnet. Kontrollsidene og deres filtre bevarer Regnskap-gruppen. Testene
 prøver både kjernens menynivåer og den faktiske HTML-grupperingen.
+
+Fra 0.64.0 viser Avgiftsgrunnlag også bevart begrunnelsesrevisjon ved faktisk
+bokføring. Fakturakontrollen oppsummerer og lenker til samme fane. Ingen
+ny meny, veilederoppgave eller duplisert redigeringsfunksjon.
