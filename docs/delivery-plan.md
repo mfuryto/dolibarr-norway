@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.58.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.59.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -82,7 +82,7 @@ riktig bruksrett.
 
 | Prioritet | Konkret leveranse | Aksept og avhengighet |
 | --- | --- | --- |
-| M0 – første del i 0.58.0, videreføres løpende | Plasser eksisterende funksjoner og kontroller i riktig ordinær meny og arbeidsbilde | Kartlegg eksisterende innganger, gjenbruk kjernens menyer og behold integrasjon som allerede fungerer. Daglig bruk skal kunne gjennomføres uten oppstartsveilederen. Test tilgang, navigasjon, avviksoppfølging og visning på PC og smal skjerm. Hver senere funksjonsleveranse inkluderer sin naturlige menyplassering. |
+| M0 – leveranser i 0.58.0/0.59.0, videreføres løpende | Plasser eksisterende funksjoner og kontroller i riktig ordinær meny og arbeidsbilde | Kartlegg eksisterende innganger, gjenbruk kjernens menyer og behold integrasjon som allerede fungerer. Daglig bruk skal kunne gjennomføres uten oppstartsveilederen. Test tilgang, navigasjon, avviksoppfølging og visning på PC og smal skjerm. Hver senere funksjonsleveranse inkluderer sin naturlige menyplassering. |
 | A1 – levert i 0.41.0 | Fullfør ordinært MVA-satsoppsett for nye installasjoner | Forhåndsvis manglende 25/15/12 og deaktivering av ordinære 8/14. Bevar nullsats, spesialrader, kontovalg og dokumenter. Historikk, eksisterende bruk og tvetydighet sperrer endring. Test gjentakelse, atomisk rollback og foreldet bekreftelse. Ingen sats velges for fakturalinjer. |
 | A2 | Kvalifiser faktura, kreditnota og konto-/avgiftsfordeling | Salg/kjøp, 25/15/12, nullsats med eksplisitt behandling, retting, fradrag og registreringsperioder. Knyt avgift og grunnlag til faktisk hovedbok; manglende metadata må vises som avvik. |
 | B1 | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
@@ -534,3 +534,19 @@ ikke fullført: øvrige oppsettssider, produkt-/prisarbeid, enklere oppfølging
 av fakturaavvik og kvalifisering av ordinære brukerroller gjenstår.
 Menyplassering skal følge hver videre funksjonsleveranse. Dette endrer ikke
 avgrensningene i A2 eller status for norsk regnskapsmessig produksjonsaksept.
+
+
+## M0 – avgiftsoppsett og dokument-/produktfaner i 0.59.0
+
+Avgiftsoppsettet nås fra Regnskap, med samme eksisterende innstillinger for
+satser, kontoer, registerhistorikk og avgiftskodekoblinger. Regnskapskoder får
+en kataloginngang og en fane på varen/tjenesten, avgrenset til valgt element.
+Kundefakturaen får direkte inngang til sine kontrollkopier. Veiledende
+EUR-prising flyttes til tilbudsmenyen og tas ut av veilederen/moduloppsettet.
+Ingen nye regnskapsvurderinger, kurshentinger eller bokføringer skjer ved navigasjon.
+
+Eksisterende administrator-/lagringsvern beholdes. Videre M0 gjelder
+forenkling av avviksoppfølging og kvalifisering av operatørroller ved den
+aktuelle funksjonen. Neste regnskapsfunksjonelle arbeid fortsetter A2:
+nullsats/fritak/unntak, registreringshistorikk, manuelle bilag og videre
+rettingsscenarioer. Ingen endring i faglig produksjonsaksept.

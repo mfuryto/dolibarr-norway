@@ -8,13 +8,13 @@ class NorwayProductAccounts
         $r=$db->query($sql);if (!$r) { throw new RuntimeException('Product accounts'); }
         $rows=array();while ($row=$db->fetch_object($r)) { $rows[]=(array)$row; }return $rows;
     }
-    public static function report($db,$entity,$chartId,$defaults,$scope='domestic')
+    public static function report($db,$entity,$chartId,$defaults,$scope='domestic',$productId=null)
     {
-        if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !in_array($scope,array('domestic','export','intra'),true)) { throw new InvalidArgumentException('Product account scope'); }
+        if (!is_int($entity) || $entity<=0 || $entity!==(int)$GLOBALS['conf']->entity || !in_array($scope,array('domestic','export','intra'),true) || ($productId!==null && (!is_int($productId) || $productId<=0))) { throw new InvalidArgumentException('Product account scope'); }
         $p=$db->prefix();$suffix=$scope==='domestic' ? '' : '_'.$scope;
         $charts=self::rows($db,'SELECT pcg_version,active FROM '.$p.'accounting_system WHERE rowid='.(int)$chartId);
         $chart=$charts ? $charts[0] : null;
-        $products=self::rows($db,'SELECT rowid,ref,label,fk_product_type,tva_tx,tosell,tobuy,accountancy_code_sell'.$suffix.' AS sell,accountancy_code_buy'.$suffix.' AS buy FROM '.$p.'product WHERE entity='.$entity.' AND fk_product_type IN (0,1) AND (tosell=1 OR tobuy=1) ORDER BY ref,rowid'.$db->plimit(201));
+        $products=self::rows($db,'SELECT rowid,ref,label,fk_product_type,tva_tx,tosell,tobuy,accountancy_code_sell'.$suffix.' AS sell,accountancy_code_buy'.$suffix.' AS buy FROM '.$p.'product WHERE entity='.$entity.($productId===null ? '' : ' AND rowid='.$productId).' AND fk_product_type IN (0,1) AND (tosell=1 OR tobuy=1) ORDER BY ref,rowid'.$db->plimit(201));
         $truncated=count($products)>200;$products=array_slice($products,0,200);$rows=array();$cache=array();
         foreach ($products as $product) {
             $type=(int)$product['fk_product_type']===1 ? 'SERVICE' : 'PRODUCT';

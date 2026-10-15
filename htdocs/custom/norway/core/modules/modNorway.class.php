@@ -14,7 +14,7 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.58.0';
+        $this->version = '0.59.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
@@ -32,7 +32,27 @@ class modNorway extends DolibarrModules
         $this->rights = array();
         require_once __DIR__.'/../../class/NorwayNavigation.php';
         $this->menu = NorwayNavigation::menus();
-        $this->tabs = array('invoice:+norwaycontrol:NorwayInvoiceCheck:norway@norway:$user->admin && !$user->socid && isModEnabled("norway") && isModEnabled("accounting") && $user->hasRight("facture","lire") && $user->hasRight("accounting","mouvements","lire"):/norway/admin/invoice.php?id=__ID__');
+        $invoiceAccess = '$user->admin && !$user->socid && isModEnabled("norway") && isModEnabled("accounting") && $user->hasRight("facture","lire") && $user->hasRight("accounting","mouvements","lire")';
+        $this->tabs = array(
+            'invoice:+norwaycontrol:NorwayInvoiceCheck:norway@norway:'.$invoiceAccess.':/norway/admin/invoice.php?id=__ID__',
+            'invoice:+norwayevidence:NorwayEvidenceTitle:norway@norway:'.$invoiceAccess.':/norway/admin/evidence.php?id=__ID__',
+            'product:+norwayaccounts:NorwayProductAccountsTitle:norway@norway:$user->admin && !$user->socid && isModEnabled("norway") && isModEnabled("accounting") && $user->hasRight("accounting","chartofaccount"):/norway/admin/productaccounts.php?id=__ID__',
+        );
+    }
+
+    public function insert_tabs()
+    {
+        // Core insert_tabs ignores existing values; refresh our own definitions
+        // inside _init's transaction so upgrades retain the current guards/URLs.
+        global $conf;
+        foreach ($this->tabs as $i => $tab) {
+            if (dolibarr_set_const($this->db, $this->const_name.'_TABS_'.$i, $tab,
+                'chaine', 0, '', $conf->entity) <= 0) {
+                $this->error = 'Could not refresh Norwegian document tabs';
+                return 1;
+            }
+        }
+        return 0;
     }
 
     public function insert_menus()
@@ -46,7 +66,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.58.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.59.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';

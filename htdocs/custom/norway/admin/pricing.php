@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require '../../../main.inc.php';
-if (!$user->admin || !isModEnabled('norway')) { accessforbidden(); }
+if (!empty($user->socid) || !$user->admin || !isModEnabled('norway') || !isModEnabled('propal') || !$user->hasRight('propal','read')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayIndicativeEuro.php';
 $langs->load('norway@norway');
 $nok = GETPOST('nok', 'alphanohtml');

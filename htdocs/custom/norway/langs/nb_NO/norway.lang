@@ -1073,3 +1073,6 @@ NorwayDeductionLinesScope=Velg fradragsomfang og begrunnelse på hver linje. Sat
 NorwayDeductionLinesRate=MVA-sats
 NorwayDeductionLinesSummary=Samlet begrunnelse for linjevurderingen
 NorwayDeductionLinesVatAccounts=Kontroll av hver MVA-konto
+
+NorwayProductAccountsOpenItem=Åpne varen eller tjenesten
+NorwayInvoiceBack=Tilbake til fakturaen

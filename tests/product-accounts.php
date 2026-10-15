@@ -15,6 +15,14 @@ try {
   paSql("INSERT INTO ".$p."product (ref,label,entity,fk_product_type,tosell,tobuy,tva_tx,accountancy_code_sell,accountancy_code_buy,accountancy_code_sell_export,accountancy_code_sell_intra) VALUES ('".$a[0]."','Synthetic item',".$a[6].",".$a[1].",".$a[2].",".$a[3].",25,'".$a[4]."','".$a[5]."','3020','9999')");
  }
  $defaults=array('ACCOUNTING_PRODUCT_SOLD_ACCOUNT'=>'3000','ACCOUNTING_PRODUCT_BUY_ACCOUNT'=>'4300','ACCOUNTING_SERVICE_SOLD_ACCOUNT'=>'3020','ACCOUNTING_SERVICE_BUY_ACCOUNT'=>'4300','ACCOUNTING_SERVICE_SOLD_EXPORT_ACCOUNT'=>'3000');
+ $selected=(int)$db->fetch_object(paSql("SELECT rowid FROM ".$p."product WHERE ref='SYN-B' AND entity=".$entity))->rowid;
+ $foreign=(int)$db->fetch_object(paSql("SELECT rowid FROM ".$p."product WHERE ref='SYN-FOREIGN' AND entity=".($entity+1)))->rowid;
+ foreach (array('domestic','export','intra') as $scope) {
+  $single=NorwayProductAccounts::report($db,$entity,$chart,$defaults,$scope,$selected);
+  paAssert($single['products']===1 && count($single['rows'])===1 && $single['rows'][0]['ref']==='SYN-B','Selected product scope leaked other products');
+ }
+ paAssert(NorwayProductAccounts::report($db,$entity,$chart,$defaults,'domestic',$foreign)['products']===0,'Foreign selected product leaked');
+ foreach (array(0,-1,'1') as $badId) { try { NorwayProductAccounts::report($db,$entity,$chart,$defaults,'domestic',$badId);throw new LogicException('Invalid product id broadened scope'); } catch (InvalidArgumentException $expected) {} }
  $report=NorwayProductAccounts::report($db,$entity,$chart,$defaults);paAssert($report['products']===6 && count($report['rows'])===7 && !$report['truncated'],'Item/direction/entity filtering failed');
  $map=array();foreach ($report['rows'] as $row) { $map[$row['ref'].'-'.$row['direction']]=$row; }
  paAssert($map['SYN-A-sell']['source']==='Fallback' && $map['SYN-A-sell']['number']==='3000' && $map['SYN-A-sell']['status']==='Available','Product default missing');

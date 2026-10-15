@@ -37,7 +37,7 @@ class NorwayRegistry
         $body = '';
         curl_setopt_array($curl, array(CURLOPT_CONNECTTIMEOUT => 3, CURLOPT_TIMEOUT => 8,
             CURLOPT_FOLLOWLOCATION => false, CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => 'dolibarr-norway/0.58.0',
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => 'dolibarr-norway/0.59.0',
             CURLOPT_HTTPHEADER => array('Accept: application/vnd.brreg.enhetsregisteret.enhet.v2+json'),
             CURLOPT_WRITEFUNCTION => static function ($handle, $chunk) use (&$body) {
                 if (strlen($body) + strlen($chunk) > 262144) { return 0; }
