@@ -14,7 +14,7 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.57.0';
+        $this->version = '0.58.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
@@ -30,14 +30,23 @@ class modNorway extends DolibarrModules
         $this->dirs = array();
         $this->const = array();
         $this->rights = array();
-        $this->menu = array();
-        $this->tabs = array();
+        require_once __DIR__.'/../../class/NorwayNavigation.php';
+        $this->menu = NorwayNavigation::menus();
+        $this->tabs = array('invoice:+norwaycontrol:NorwayInvoiceCheck:norway@norway:$user->admin && !$user->socid && isModEnabled("norway") && isModEnabled("accounting") && $user->hasRight("facture","lire") && $user->hasRight("accounting","mouvements","lire"):/norway/admin/invoice.php?id=__ID__');
+    }
+
+    public function insert_menus()
+    {
+        // Core inserts menus without replacing existing entries during an upgrade.
+        // _init owns the transaction: a failed replacement restores the old menus.
+        $errors = $this->delete_menus();
+        return $errors ? $errors : parent::insert_menus();
     }
 
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.57.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.58.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';

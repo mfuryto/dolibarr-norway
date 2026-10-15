@@ -21,12 +21,22 @@ if ($modulePayloadMatches) {
 }
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwaySchema.php';
 try { $schemaValid=NorwaySchema::verify($db); } catch (Throwable $error) { $schemaValid=false; }
+$descriptor = new modNorway($db);
+$menusValid = true;
+foreach ($descriptor->menu as $menu) {
+    $result = $db->query("SELECT COUNT(*) AS n FROM ".MAIN_DB_PREFIX."menu WHERE module='norway' AND entity=".(int)$conf->entity
+        ." AND leftmenu='".$db->escape($menu['leftmenu'])."' AND url='".$db->escape($menu['url'])."'");
+    $row = $result ? $db->fetch_object($result) : null;
+    if (!$row || (int)$row->n !== 1) { $menusValid = false; }
+}
 $checks = array(
     'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.57.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.58.0',
     'norway_module_payload' => $modulePayloadMatches,
+    'norway_menu_registration' => $menusValid,
+    'norway_invoice_tab' => getDolGlobalString('MAIN_MODULE_NORWAY_TABS_0') === $descriptor->tabs[0],
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),
     'invoice_module' => isModEnabled('facture'),
