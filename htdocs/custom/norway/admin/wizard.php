@@ -54,7 +54,7 @@ $optional = array(
     4=>array('TaxAccounts'=>'/custom/norway/admin/standardaccounts.php#norway-tax-accounts', 'JournalSettings'=>'/accountancy/admin/journals_list.php', 'AccountingCheck'=>'/custom/norway/admin/accounting.php'),
     5=>array(), 6=>array(),
     7=>array('DocumentCheck'=>'/custom/norway/admin/documents.php'),
-    8=>array('Pricing'=>'/custom/norway/admin/pricing.php'),
+    8=>array(),
     9=>array(),
     10=>array('Coverage'=>'/custom/norway/admin/setup.php'),
     11=>array('AccountingCheck'=>'/custom/norway/admin/accounting.php', 'Coverage'=>'/custom/norway/admin/setup.php'),

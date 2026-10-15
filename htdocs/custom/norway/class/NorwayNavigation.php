@@ -20,6 +20,9 @@ class NorwayNavigation
             array('accountancy', 'accountancy_admin', 'accounting', 'NorwayAccountingSetup', $admin),
             array('accountancy', 'accountancy_admin', 'registration', 'NorwayRegistration', $admin),
             array('accountancy', 'accountancy_admin', 'taxmappings', 'NorwayMappingsTitle', $admin),
+            array('accountancy', 'accountancy_admin', 'vat', 'NorwayVatSetup', $admin),
+            array('products', '', 'productaccounts', 'NorwayProductAccountsTitle', $admin.' && $user->hasRight("accounting","chartofaccount")'),
+            array('commercial', 'propals', 'pricing', 'NorwayPricing', $admin.' && $user->hasRight("propal","read")'),
             array('billing', 'customers_bills', 'invoiceperiod', 'NorwayBatch', $sales),
             array('billing', 'customers_bills', 'numbering', 'NorwayNumberingTitle', $sales),
             array('billing', 'customers_bills', 'documents', 'NorwayDocuments', $sales),
@@ -36,7 +39,9 @@ class NorwayNavigation
                     .($parent === 'accountancy' ? 'accountancy_accountancy' : ($parent ?: 'norway_'.$page)),
                 'position' => 180 + $i, 'enabled' => 'isModEnabled("norway") && isModEnabled("accounting")'
                     .($main === 'billing' ? ' && isModEnabled("invoice")' : '')
-                    .($main === 'bank' ? ' && isModEnabled("bank")' : ''),
+                    .($main === 'bank' ? ' && isModEnabled("bank")' : '')
+                    .($main === 'products' ? ' && (isModEnabled("product") || isModEnabled("service"))' : '')
+                    .($main === 'commercial' ? ' && isModEnabled("propal")' : ''),
                 'perms' => $perms, 'target' => '', 'user' => 0,
             );
         }

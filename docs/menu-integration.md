@@ -1,12 +1,12 @@
 # Menyer og arbeidsflyt
 
-Oppdatert 2026-10-15 for 0.58.0. Dette er første del av M0, ikke ferdig
+Oppdatert 2026-10-15 for 0.59.0. Dette viderefører M0, ikke ferdig
 regnskapsfaglig produksjonsaksept. Ingen nye regnskapsrapporter innføres.
 Menynavn følger språk og aktiverte kjernefunksjoner.
 
 ## Tilgjengelige innganger
 
-| Oppgave / eksisterende side | Ordinær inngang fra 0.58.0 | Tilgang og videre arbeid |
+| Oppgave / eksisterende side | Ordinær inngang | Tilgang og videre arbeid |
 | --- | --- | --- |
 | Bilagskontroll (`audit.php`) | Regnskap → regnskap/hovedbok → Bilagskontroll | Intern bruker med leserett til hovedbok. Skrivebeskyttet, avgrenset kontroll av balanse og fakturakobling; ikke komplett avstemming. |
 | Periodekontroll (`periods.php`) | Regnskap → regnskap/hovedbok → Kontroll av regnskapsperioder | Samme leserett. Endring av perioder krever kjernens egen skriverett; oppsettslenker skjules uten relevant rettighet. |
@@ -29,10 +29,10 @@ innstillinger; funksjoner implementeres ikke en gang til der.
 | Eksisterende side / funksjon | Videre plassering og avgrensning |
 | --- | --- |
 | `setup.php`, `wizard.php`, `registry.php` | Modul-/foretaksoppsett og oppstart. Registeroppslag er oppsett, ikke en regnskapskontroll som skal kjøres for hvert bilag. |
-| `vat.php`, `vataccounts.php`, `vatrates.php`, `taxmappings.php` | Regnskap → relevant avgiftsoppsett. `vat.php` er en kontroll av kontokoblinger, ikke en MVA-melding. Egen direkte plassering av øvrige oppsettssider gjenstår. |
-| `productaccounts.php` | Varer og tjenester / relevant regnskapsoppsett. Eksisterende kontokoder beholdes; direkte integrasjon i produktarbeidsflyten gjenstår. |
-| `pricing.php` | Relevant pris-/tilbudsarbeid. Kun veiledende EUR-beløp; bokføring og fakturering fortsatt i NOK. Direkte integrasjon gjenstår. |
-| `evidence.php` | Ved aktuell kundefaktura som fordypning. Lagring av kontrollkopi er fortsatt administratorstyrt; ingen utvidelse av skriverettigheter i denne leveransen. |
+| `vat.php`, `vataccounts.php`, `vatrates.php`, `registration.php`, `taxmappings.php` | Fra 0.59.0: Regnskap → Oppsett → kontroll av MVA-kontokoblinger, med innganger til satser, salg-/kjøpskontoer, registerhistorikk og avgiftskodekoblinger. Dette er oppsett, ikke en MVA-melding. |
+| `productaccounts.php` | Fra 0.59.0: katalogmeny og egen fane på varen/tjenesten. Fanen viser bare valgt element og bevarer valget ved innenlands-/eksport-/EU-visning. Eksisterende kontokoder og standardkontoer beholdes. Administrator med rett til kontoplanoppsett; ordinær operatørtilgang gjenstår. |
+| `pricing.php` | Fra 0.59.0: tilbudsmenyen, fjernet fra veilederen og moduloppsettet. Administrator med tilbudslesing. Kun veiledende EUR-beløp; bokføring og fakturering fortsatt i NOK. Henting krever fortsatt brukerens beregningshandling. |
+| `evidence.php` | Fra 0.59.0: egen fane ved aktuell kundefaktura og retur til denne. Lagring av kontrollkopi er fortsatt administratorstyrt; ingen utvidelse av skriverettigheter. |
 | Bankavstemming, MVA-rapport/innsending, årsavslutning og SAF-T | Integreres ved sine respektive oppgaver når funksjonene kvalifiseres. Ingen tomme menypunkter eller rapporter som fremstår som ferdige. |
 
 ## Teknisk aksept
@@ -48,3 +48,11 @@ Eksterne brukere er avvist både i menyen og ved direkte tilgang.
 HTTP, bruker uten rettigheter, bruker med bare hovedboklesing, avviste
 administrasjonssider, skjulte skrivehandlinger, faktisk menyplassering,
 fakturafane og fravær av daglige kontrollinnganger i veilederen.
+
+
+Fra 0.59.0 oppdateres også eksisterende fanedefinisjoner atomisk ved
+modulaktivering. Oppdateringskontrollen verifiserer alle tre faner. Produktets
+ID valideres og filtreres i databasespørringen, med samme foretaksavgrensning
+som oversikten. En ugyldig ID utvider aldri rapporten til hele katalogen.
+Testene prøver valgt vare/tjeneste i tre kontekster, fremmed foretak og ugyldig
+ID, gamle fanedefinisjoner og native menyer/faner på norsk og engelsk.

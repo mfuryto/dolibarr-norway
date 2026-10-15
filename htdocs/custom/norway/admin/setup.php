@@ -46,7 +46,6 @@ if (!$result) {
     print '</table></div>';
     print '<p><a href="'.DOL_URL_ROOT.'/admin/company.php">'.$langs->trans('NorwayCompanySettings').'</a></p>';
 }
-print '<p><a href="'.dol_buildpath('/norway/admin/pricing.php', 1).'">'.$langs->trans('NorwayPricing').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/documents.php', 1).'">'.$langs->trans('NorwayDocuments').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/registry.php', 1).'">'.$langs->trans('NorwayRegistry').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/accounting.php', 1).'">'.$langs->trans('NorwayAccountingSetup').'</a></p>';

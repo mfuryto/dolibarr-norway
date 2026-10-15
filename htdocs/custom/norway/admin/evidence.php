@@ -20,6 +20,10 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && $action==='saveevidence') {
 llxHeader('',$langs->trans('NorwayEvidenceTitle'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayEvidenceTitle'),'','bill');
 print '<div class="warning">'.$langs->trans('NorwayEvidenceScope').'</div>';
+if ($id>0) {
+    $visible=$db->query('SELECT rowid FROM '.MAIN_DB_PREFIX.'facture WHERE rowid='.(int)$id.' AND entity='.(int)$conf->entity);
+    if ($visible && $db->num_rows($visible)) { print '<p><a href="'.DOL_URL_ROOT.'/compta/facture/card.php?facid='.(int)$id.'">'.$langs->trans('NorwayInvoiceBack').'</a></p>'; }
+}
 $render=static function ($data) use ($langs) {
     print '<p>'.dol_escape_htmltag($data['invoice']['ref']).' / '.$langs->trans('NorwaySavedMappingRevision').' #'.(int)$data['mapping']['revision'].' / '.count($data['lines']).' '.$langs->trans('NorwayEvidenceLines').' / '.count($data['ledger']).' '.$langs->trans('NorwayEvidenceLedger').'</p>';
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayAmountsLine').'</th><th>'.$langs->trans('NorwayAmountsTaxCode').'</th><th>'.$langs->trans('NorwayAmountsTaxFlags').'</th><th>'.$langs->trans('NorwayMappingResult').'</th><th>'.$langs->trans('NorwayMappingTarget').'</th></tr>';

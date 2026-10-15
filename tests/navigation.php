@@ -9,13 +9,19 @@ require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 function nvAssert($ok, $message) { if (!$ok) { throw new RuntimeException($message); } }
 function nvSql($sql) { global $db; $r=$db->query($sql); nvAssert((bool)$r,$db->lasterror()); return $r; }
 $admin=new User($db); nvAssert($admin->fetch('', 'testadmin')>0,'Admin missing'); $admin->loadRights('',1); $user=$admin;
+foreach (array('modProduct','modService') as $dependency) {
+    $result=activateModule($dependency); nvAssert(empty($result['errors']),'Synthetic catalogue activation failed');
+}
+$conf->setValues($db);
 $module=new modNorway($db);
+nvAssert(dolibarr_set_const($db,'MAIN_MODULE_NORWAY_TABS_0','invoice:+oldtab:Old:norway@norway:1:/old.php','chaine',0,'',$conf->entity)>0,'Legacy tab setup failed');
 foreach (array(1,2) as $attempt) {
     nvAssert($module->init()>0,'Repeated menu activation: '.$module->error);
     $count=$db->fetch_object(nvSql("SELECT COUNT(*) n FROM ".MAIN_DB_PREFIX."menu WHERE module='norway' AND entity=".(int)$conf->entity));
-    nvAssert((int)$count->n===9,'Duplicate or missing module menus');
+    nvAssert((int)$count->n===12,'Duplicate or missing module menus');
 }
 $conf->setValues($db);
+foreach ($module->tabs as $i=>$tab) { nvAssert(getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i)===$tab,'Legacy tab not refreshed'); }
 $langs->load('norway@norway');
 foreach ($module->menu as $menu) { nvAssert($langs->trans($menu['titre'])!==$menu['titre'],'Missing menu translation'); }
 $reader=new User($db); $reader->login='synthetic-menu-'.bin2hex(random_bytes(5));
@@ -56,14 +62,14 @@ try {
             nvAssert(strpos($body,'admin/registration.php?mainmenu=accountancy')===false,'Administrator menu exposed');
         }
     }
-    foreach (array('accounting','registration','taxmappings','numbering','bankdefaults','evidence','invoice') as $page) { nvDenied('/custom/norway/admin/'.$page.'.php'); }
+    foreach (array('accounting','registration','taxmappings','numbering','bankdefaults','evidence','invoice','vat','productaccounts','pricing') as $page) { nvDenied('/custom/norway/admin/'.$page.'.php'); }
     $reader->loadRights('',1);
     nvAssert(NorwayNavigation::canReadLedger($reader),'Reader helper mismatch');
     $reader->socid=999999; nvAssert(!NorwayNavigation::canReadLedger($reader),'External user passed ledger guard'); $reader->socid=0;
     nvLogin('testadmin',getenv('DOLI_ADMIN_PASSWORD'));
-    foreach (array(7,9,11) as $step) {
+    foreach (array(7,8,9,11) as $step) {
         $body=nvPage('/custom/norway/admin/wizard.php?step='.$step);
-        foreach (array('invoiceperiod','invoice','audit','periods') as $daily) {
+        foreach (array('invoiceperiod','invoice','audit','periods','pricing') as $daily) {
             nvAssert(strpos($body,'/norway/admin/'.$daily.'.php')===false,'Daily control retained in wizard');
         }
     }
@@ -71,12 +77,37 @@ try {
     nvAssert(strpos($body,'/norway/admin/invoiceperiod.php?mainmenu=billing')!==false,'Billing menu missing');
     $body=nvPage('/accountancy/index.php?mainmenu=accountancy&leftmenu=accountancy_admin');
     nvAssert(strpos($body,'/norway/admin/registration.php?mainmenu=accountancy')!==false,'Accounting setup menu missing');
+    nvAssert(strpos($body,'/norway/admin/vat.php?mainmenu=accountancy')!==false,'VAT setup menu missing');
+    $body=nvPage('/product/index.php?mainmenu=products');
+    nvAssert(strpos($body,'/norway/admin/productaccounts.php?mainmenu=products')!==false,'Product codes menu missing');
+    $body=nvPage('/comm/propal/index.php?mainmenu=commercial&leftmenu=propals');
+    nvAssert(strpos($body,'/norway/admin/pricing.php?mainmenu=commercial')!==false,'Proposal pricing menu missing');
+    $body=nvPage('/custom/norway/admin/vat.php');
+    foreach (array('vatrates','vataccounts','registration','taxmappings') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'VAT setup action missing'); }
     $body=nvPage('/compta/bank/list.php?mainmenu=bank');
     nvAssert(strpos($body,'/norway/admin/bankdefaults.php?mainmenu=bank')!==false,'Bank setup menu missing');
     $invoice=$db->fetch_object(nvSql('SELECT rowid FROM '.MAIN_DB_PREFIX.'facture WHERE entity='.(int)$conf->entity.' ORDER BY rowid DESC LIMIT 1'));
     nvAssert((bool)$invoice,'Synthetic invoice required');
     $body=nvPage('/compta/facture/card.php?facid='.(int)$invoice->rowid);
     nvAssert(strpos($body,'/norway/admin/invoice.php?id='.(int)$invoice->rowid)!==false,'Native invoice control tab missing');
+    nvAssert(strpos($body,'/norway/admin/evidence.php?id='.(int)$invoice->rowid)!==false,'Native invoice evidence tab missing');
+    $body=nvPage('/custom/norway/admin/evidence.php?id='.(int)$invoice->rowid);
+    nvAssert(strpos($body,'/compta/facture/card.php?facid='.(int)$invoice->rowid)!==false,'Evidence return link missing');
+    $productIds=array();
+    foreach (array(0,1) as $type) {
+        $ref='SYN-MENU-'.bin2hex(random_bytes(6));
+        nvSql("INSERT INTO ".MAIN_DB_PREFIX."product (ref,label,entity,fk_product_type,tosell,tobuy,tva_tx) VALUES ('".$ref."','SYNTHETIC MENU ITEM ONLY',".(int)$conf->entity.",".$type.",1,1,25)");
+        $productId=(int)$db->last_insert_id(MAIN_DB_PREFIX.'product'); $productIds[]=$productId;
+        foreach (array('nb_NO','en_US') as $language) {
+            $body=nvPage('/product/card.php?id='.$productId.'&lang='.$language);
+            nvAssert(strpos($body,'/norway/admin/productaccounts.php?id='.$productId)!==false,'Native product/service tab missing');
+            $body=nvPage('/custom/norway/admin/productaccounts.php?id='.$productId.'&scope=export&lang='.$language);
+            nvAssert(strpos($body,'name="id" value="'.$productId.'"')!==false && strpos($body,$ref)!==false,'Selected product scope lost');
+            nvAssert(strpos($body,'/product/card.php?id='.$productId)!==false,'Product return link missing');
+        }
+    }
+    $body=nvPage('/custom/norway/admin/productaccounts.php?id=0');
+    foreach ($productIds as $productId) { nvAssert(strpos($body,'/product/card.php?id='.$productId)===false,'Invalid id broadened product report'); }
     $body=nvPage('/custom/norway/admin/invoice.php?id='.(int)$invoice->rowid);
     nvAssert(strpos($body,'/compta/facture/card.php?facid='.(int)$invoice->rowid)!==false,'Invoice return link missing');
     nvAssert($module->remove()>0,'Module removal failed');
@@ -84,8 +115,9 @@ try {
     nvAssert((int)$count->n===0,'Disabled module left menus behind');
     nvDenied('/custom/norway/admin/audit.php');
     nvAssert($module->init()>0,'Module reactivation failed');
-    print "PASS native menus, repeated activation, bilingual ledger reader HTTP, denied missing rights/admin actions, external guard, invoice tab and deactivation\n";
+    print "PASS native menus, repeated activation, bilingual ledger reader HTTP, denied missing rights/admin actions, external guard, VAT/catalogue/proposal menus, product/service scope, evidence tab, legacy tab refresh and deactivation\n";
 } finally {
+    foreach ($productIds ?? array() as $productId) { nvSql('DELETE FROM '.MAIN_DB_PREFIX.'product WHERE rowid='.(int)$productId); }
     $user=$admin; $module->init(); if ($reader->id>0) { $reader->delete($admin); }
     curl_close($curl); unlink($cookie);
 }

@@ -1,4 +1,4 @@
-# Norway 0.58.0
+# Norway 0.59.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -41,3 +41,8 @@ Core menu extensions expose ledger and period checks to internal ledger readers.
 Invoice diagnostics remain administrator-only and have a native invoice tab.
 Daily control links have been removed from the setup wizard. Configuration and
 write permissions remain restricted; this is the first menu integration step.
+
+Version 0.59.0 adds scoped product/service account tabs, an invoice evidence
+tab and ordinary VAT setup/catalogue/proposal-pricing entries. Existing
+configuration and evidence write guards remain unchanged. Tab definitions
+refresh during upgrades; invalid product IDs never broaden report scope.

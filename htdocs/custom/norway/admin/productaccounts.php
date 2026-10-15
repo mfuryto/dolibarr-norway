@@ -1,20 +1,26 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require '../../../main.inc.php';
-if (!$user->admin || !isModEnabled('norway') || !isModEnabled('accounting') || !$user->hasRight('accounting','chartofaccount')) { accessforbidden(); }
+if (!empty($user->socid) || !$user->admin || !isModEnabled('norway') || !isModEnabled('accounting') || !$user->hasRight('accounting','chartofaccount')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayProductAccounts.php';
 require_once __DIR__.'/../class/NorwayStandardAccounts.php';
 $langs->load('norway@norway');header('Cache-Control: no-store');
 llxHeader('',$langs->trans('NorwayProductAccountsTitle'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayProductAccountsTitle'),'','accountancy');
 print '<p>'.$langs->trans('NorwayProductAccountsScope').'</p><div class="warning">'.$langs->trans('NorwayProductAccountsLimits').'</div>';
+$productId=GETPOSTISSET('id') ? GETPOSTINT('id') : null;
 $scope=GETPOST('scope','aZ09');if ($scope==='') { $scope='domestic'; }
-print '<form method="get"><label>'.$langs->trans('NorwayProductAccountsContext').' <select name="scope">';
+print '<form method="get">';
+if ($productId!==null) { print '<input type="hidden" name="id" value="'.(int)$productId.'">'; }
+print '<label>'.$langs->trans('NorwayProductAccountsContext').' <select name="scope">';
 foreach (array('domestic','export','intra') as $option) { print '<option value="'.$option.'"'.($scope===$option ? ' selected' : '').'>'.$langs->trans('NorwayProductAccountsScope'.$option).'</option>'; }
 print '</select></label><button class="button" type="submit">'.$langs->trans('NorwayProductAccountsShow').'</button></form>';
 try {
     $defaults=array();foreach (NorwayStandardAccounts::catalog() as $key=>$rule) { $defaults[$key]=getDolGlobalString($key); }
-    $report=NorwayProductAccounts::report($db,(int)$conf->entity,getDolGlobalInt('CHARTOFACCOUNTS'),$defaults,$scope);
+    $report=NorwayProductAccounts::report($db,(int)$conf->entity,getDolGlobalInt('CHARTOFACCOUNTS'),$defaults,$scope,$productId);
+    if ($productId!==null && $report['rows']) {
+        print '<p><a class="butAction" href="'.DOL_URL_ROOT.'/product/card.php?id='.(int)$productId.'">'.$langs->trans('NorwayProductAccountsOpenItem').'</a></p>';
+    }
     if ($report['truncated']) { print '<div class="warning">'.$langs->trans('NorwayProductAccountsTruncated').'</div>'; }
     if (!$report['rows']) { print '<p>'.$langs->trans('NorwayProductAccountsEmpty').'</p>'; }
     else {
@@ -26,5 +32,5 @@ try {
     }
 } catch (Throwable $error) { print '<div class="error">'.$langs->trans('NorwayProductAccountsError').'</div>'; }
 print '<p><a href="'.DOL_URL_ROOT.'/product/list.php?type=0">'.$langs->trans('NorwayStandardProducts').'</a> · <a href="'.DOL_URL_ROOT.'/product/list.php?type=1">'.$langs->trans('NorwayStandardServices').'</a></p>';
-print '<p><a href="'.dol_buildpath('/norway/admin/standardaccounts.php',1).'">'.$langs->trans('NorwayStandardTitle').'</a></p><p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=6">'.$langs->trans('NorwayWizard').'</a></p></div>';
+print '<p><a href="'.dol_buildpath('/norway/admin/standardaccounts.php',1).'">'.$langs->trans('NorwayStandardTitle').'</a></p></div>';
 llxFooter();$db->close();

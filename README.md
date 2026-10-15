@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.58.0 · Under utvikling**
+**Versjon 0.59.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -113,3 +113,7 @@ Menyer og kontroller plasseres ved den aktuelle oppgaven. Fra 0.58.0 finnes
 bilags- og periodekontroll under Regnskap, fakturakontroll ved kundefakturaen
 og relevante oppsett under regnskap, fakturering og bank. Oppstartsveilederen
 beholder førstegangsoppsettet. Se [menyer og tilgang](docs/menu-integration.md).
+
+Fra 0.59.0 får varer/tjenester en fane for sine regnskapskoder, kundefakturaen
+får direkte inngang til kontrollkopier, og avgiftsoppsettet nås fra Regnskap.
+Veiledende EUR-prising finnes i tilbudsmenyen og er tatt ut av veilederen.

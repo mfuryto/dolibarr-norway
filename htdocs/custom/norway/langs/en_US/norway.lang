@@ -1073,3 +1073,6 @@ NorwayDeductionLinesScope=Choose a deduction scope and reason for every line. Ra
 NorwayDeductionLinesRate=VAT rate
 NorwayDeductionLinesSummary=Overall reason for the line assessment
 NorwayDeductionLinesVatAccounts=Control of each VAT account
+
+NorwayProductAccountsOpenItem=Open the product or service
+NorwayInvoiceBack=Back to invoice

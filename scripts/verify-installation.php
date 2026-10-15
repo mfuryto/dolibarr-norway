@@ -29,14 +29,18 @@ foreach ($descriptor->menu as $menu) {
     $row = $result ? $db->fetch_object($result) : null;
     if (!$row || (int)$row->n !== 1) { $menusValid = false; }
 }
+$tabsValid = true;
+foreach ($descriptor->tabs as $i => $tab) {
+    if (getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i) !== $tab) { $tabsValid = false; }
+}
 $checks = array(
     'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.58.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.59.0',
     'norway_module_payload' => $modulePayloadMatches,
     'norway_menu_registration' => $menusValid,
-    'norway_invoice_tab' => getDolGlobalString('MAIN_MODULE_NORWAY_TABS_0') === $descriptor->tabs[0],
+    'norway_document_tabs' => $tabsValid,
     'accounting_module' => isModEnabled('accounting'),
     'proposal_module' => isModEnabled('propal'),
     'invoice_module' => isModEnabled('facture'),
