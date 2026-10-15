@@ -1,6 +1,6 @@
 # Menyer og arbeidsflyt
 
-Oppdatert 2026-10-15 for 0.62.0. Dette viderefører M0, ikke ferdig
+Oppdatert 2026-10-15 for 0.63.0. Dette viderefører M0, ikke ferdig
 regnskapsfaglig produksjonsaksept. Ingen nye regnskapsrapporter innføres.
 Menynavn følger språk og aktiverte kjernefunksjoner.
 
@@ -76,3 +76,6 @@ synlighet før/etter åpning og fravær av oppsettslenker i daglig bank/hovedbok
 Fra 0.62.0 ligger registreringshistorikk på den eksisterende MVA-registreringssiden
 under regnskapsinnstillingene. Fakturavarsler og bevarte datosammenligninger
 bruker historikken ved oppgaven; ingen ny oppstartsoppgave eller meny innføres.
+
+Fra 0.63.0 ligger Avgiftsgrunnlag som egen fakturafane. Det finnes ingen
+duplisert inngang i oppstartsveilederen. Se [dokumentasjonsprofil](sales-tax-basis.md).

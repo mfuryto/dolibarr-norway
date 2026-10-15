@@ -1147,3 +1147,15 @@ NorwayPostingRegistrationHistoryInvalid=Registreringshistorikken er ugyldig elle
 NorwayRegistrationHistoryUnavailable=Registreringshistorikken kunne ikke vurderes.
 NorwayRegistrationWarningHistoryUnavailable=Registreringshistorikken kunne ikke vurderes.
 NorwayPostingRegistrationHistoryUnavailable=Registreringshistorikken kunne ikke vurderes.
+
+NorwaySalesBasisTitle=Avgiftsgrunnlag
+NorwaySalesBasisScope=Innenlandske ordinære NOK-fakturaer: dokumenter begrunnelse og referanse per nullsatslinje med eksplisitt kode 5, 6 eller 7. Referansen må peke til dokumentasjon du oppbevarer. Dette bekrefter ikke fritak, rettslig grunnlag eller hva som forelå ved bokføring.
+NorwaySalesBasisReason=Begrunnelse for avgiftsbehandlingen
+NorwaySalesBasisReference=Dokumentreferanse (avtale, bilag eller annet grunnlag)
+NorwaySalesBasisConfirm=Jeg bekrefter at begrunnelsen og dokumentreferansen gjelder dette grunnlaget.
+NorwaySalesBasisSaved=Begrunnelsene er lagret som en ny revisjon.
+NorwaySalesBasisFailed=Kunne ikke lagre eller lese grunnlaget. Kontroller tilgang, dokumentasjon og faktura; forhåndsvis på nytt.
+NorwaySalesBasisMissing=Ingen lagret begrunnelse.
+NorwaySalesBasisCurrent=Siste begrunnelse gjelder uendret faktura- og oppsettsgrunnlag.
+NorwaySalesBasisChanged=Grunnlaget er endret eller utenfor støttet omfang. Siste begrunnelse kan ikke bekreftes som aktuell.
+NorwaySalesBasisUnsupported=Denne fakturaen er utenfor omfanget. Krever norsk kunde, ordinær NOK-faktura og eksplisitte, konsistente innenlandske nullsatskoder 5, 6 eller 7.

@@ -1147,3 +1147,15 @@ NorwayPostingRegistrationHistoryInvalid=History is invalid or does not match the
 NorwayRegistrationHistoryUnavailable=Registration history could not be assessed.
 NorwayRegistrationWarningHistoryUnavailable=Registration history could not be assessed.
 NorwayPostingRegistrationHistoryUnavailable=Registration history could not be assessed.
+
+NorwaySalesBasisTitle=VAT basis
+NorwaySalesBasisScope=Domestic ordinary NOK invoices: record a reason and reference for each zero-rate line explicitly mapped to code 5, 6 or 7. Retain the referenced documentation. This does not approve an exemption, its legal basis or the information available at posting time.
+NorwaySalesBasisReason=Reason for VAT treatment
+NorwaySalesBasisReference=Document reference (agreement, voucher or other basis)
+NorwaySalesBasisConfirm=I confirm the reason and document reference for this source basis.
+NorwaySalesBasisSaved=Reasons retained as a new revision.
+NorwaySalesBasisFailed=Could not save or read the basis. Check access, documentation and invoice; preview again.
+NorwaySalesBasisMissing=No retained reason.
+NorwaySalesBasisCurrent=Latest reasons match the unchanged invoice and configuration basis.
+NorwaySalesBasisChanged=Source changed or unsupported. Latest reasons cannot be confirmed as current.
+NorwaySalesBasisUnsupported=Invoice outside scope. Requires a Norwegian customer, ordinary NOK invoice and explicit consistent domestic zero-rate codes 5, 6 or 7.
