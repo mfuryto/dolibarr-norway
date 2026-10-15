@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-14. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.57.0.
+Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
+tjenester. Status er kontrollert mot kode og tester til og med 0.58.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -82,6 +82,7 @@ riktig bruksrett.
 
 | Prioritet | Konkret leveranse | Aksept og avhengighet |
 | --- | --- | --- |
+| M0 – første del i 0.58.0, videreføres løpende | Plasser eksisterende funksjoner og kontroller i riktig ordinær meny og arbeidsbilde | Kartlegg eksisterende innganger, gjenbruk kjernens menyer og behold integrasjon som allerede fungerer. Daglig bruk skal kunne gjennomføres uten oppstartsveilederen. Test tilgang, navigasjon, avviksoppfølging og visning på PC og smal skjerm. Hver senere funksjonsleveranse inkluderer sin naturlige menyplassering. |
 | A1 – levert i 0.41.0 | Fullfør ordinært MVA-satsoppsett for nye installasjoner | Forhåndsvis manglende 25/15/12 og deaktivering av ordinære 8/14. Bevar nullsats, spesialrader, kontovalg og dokumenter. Historikk, eksisterende bruk og tvetydighet sperrer endring. Test gjentakelse, atomisk rollback og foreldet bekreftelse. Ingen sats velges for fakturalinjer. |
 | A2 | Kvalifiser faktura, kreditnota og konto-/avgiftsfordeling | Salg/kjøp, 25/15/12, nullsats med eksplisitt behandling, retting, fradrag og registreringsperioder. Knyt avgift og grunnlag til faktisk hovedbok; manglende metadata må vises som avvik. |
 | B1 | MVA-perioderapport fra kvalifisert bokført grunnlag | Spor begge veier mellom rapport og postering; prøv manuelle bilag, korreksjoner, delvis fradrag og periodegrenser. Ingen rapport fra bare dagens fakturasatser. |
@@ -129,20 +130,28 @@ uttrykkelig; en SAF-T-kobling alene bekrefter ikke en ferdig skatterapport.
 Se [Skatteetatens struktur for skattemelding og næringsspesifikasjon](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/innhold-og-struktur-i-skattemeldingen/)
 og [MVA-meldingen](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/mva-melding).
 
-Integrasjon av modulens daglige funksjoner i Dolibarrs ordinære menyer
-utsettes til funksjonene er på plass. Neste funksjonelle arbeid forblir A2;
-disse beslutningene skal ikke avbryte arbeidet med bokført avgiftsgrunnlag.
+Menyintegrasjon skal ikke utsettes til øvrige funksjoner er ferdige. M0 er
+neste arbeid for eksisterende funksjoner; deretter videreføres A2. Nye
+funksjoner leveres med naturlig menyplassering og integrerte kontroller i
+samme leveranse. Oppstartsveilederen brukes til førstegangsoppsett, status
+for oppsettet og snarveier, og er ikke hovedinngang til daglig regnskapsarbeid.
 
-## Neste arbeid etter A1
+## Neste arbeid fra 0.57.0
 
 A1 er implementert som [bekreftet satsoppsett](vat-rates.md). Denne
 leveransen endrer ingen fakturalinjer, bokføringsmetadata eller MVA-rapport.
 
-Neste funksjonelle leveranse er A2: en avgrenset kontroll av bokført
-konto-/avgiftsfordeling, før den brukes som grunnlag for MVA-rapportering.
-Start med ordinære innenlandske NOK-fakturaer/kreditnotaer og utvid eksplisitt
-til kjøp, manuelle bilag og særbehandling. Det er ikke tilstrekkelig at hele
-bilaget balanserer dersom avgift eller grunnlag er ført på feil konto.
+Start med M0: kartlegg hvilke eksisterende funksjoner som bare nås fra
+veilederen eller separate kontrollsider. Plasser daglige funksjoner ved
+oppgaven de gjelder, med rettighetsstyrte menypunkter og tydelige handlinger.
+Behold fungerende integrasjon, blant annet fradragsvurdering på
+leverandørfakturaen. Ikke presenter fremtidige rapporter som ferdige funksjoner.
+
+Fortsett deretter A2 fra dagens linjevurdering og blandede satser: uttrykkelig
+skille mellom nullsats, fritak og unntak, registreringshistorikk, manuelle
+bilag og videre periode-/rettingsscenarioer. Kvalifiser konto-/avgiftsfordeling
+før den brukes til MVA-rapportering. Det er ikke tilstrekkelig at hele bilaget
+balanserer dersom avgift eller grunnlag er ført på feil konto.
 
 Veiledertekster justeres ved behov i samme leveranse. Nye kontrollsider og
 informasjonstekster skal ikke erstatte arbeid med bokført grunnlag,
@@ -181,10 +190,33 @@ tidligere kontrollresultater skal ikke brukes som fersk godkjenning etter
 at grunnlaget er endret. Gjenbruk kjernens arbeidsflyter og norsk kontrollkode
 slik at ulike innganger gir samme resultat.
 
-Arbeidsflyt, ansvar og feilhåndtering beskrives og testes sammen med hver
-funksjonell leveranse. Flytting til ordinære menyer skjer fortsatt senere;
-plassering og integrasjon planlegges nå. Eksisterende diagnosesider er
-teknisk grunnlag, og er ikke i seg selv en ferdig daglig arbeidsflyt.
+Arbeidsflyt, menyplassering, ansvar og feilhåndtering beskrives og testes
+sammen med hver funksjonell leveranse. Eksisterende diagnosesider kan beholdes
+som fordypning, men en lenke fra oppstartsveilederen er ikke tilstrekkelig
+integrasjon. Administrasjonsrettigheter skal ikke kreves for vanlig arbeid
+bare fordi en tidligere kontrollside ligger under moduloppsettet; nødvendig
+rettighetsdeling må kvalifiseres uten å gi brukeren flere rettigheter enn oppgaven krever.
+
+### Planlagt plassering i ordinære menyer
+
+Dette er mål for integrasjonen, ikke en påstand om at alle funksjonene er
+implementert. Eksakte menynavn følger aktivert kjernefunksjon og språk.
+Gjenbruk eksisterende menypunkter, faner og dokumentbilder før nye opprettes.
+
+| Område | Funksjoner og kontroller som hører hjemme der |
+| --- | --- |
+| Salg – tilbud, faktura og kreditnota | Dokumentopplysninger, nummerering, språk, avgiftsbehandling og senere EHF-sending/status ved aktuelt dokument. Nummerserieoppsett beholdes i relevant oppsett. |
+| Innkjøp / leverandørfaktura | Fradragsvurdering, kontofordeling, bokføring og støttede korreksjoner ved fakturaen. Behold eksisterende integrasjon og vis avvik med rettingshandling. |
+| Bank | Betalinger, åpne koblinger, differanser og avstemming ved konto og transaksjoner. |
+| Regnskap – hovedbok og bilag | Konto-/avgiftsfordeling, manuelle bilag, sporbarhet, perioder og retting ved registrering og bokføring. |
+| Regnskap – MVA | Periodegrunnlag, avvik, rapport, senere innsending, status og kvittering i samme arbeidsflyt. Gjenbruk kjernens avgiftsfunksjoner der de dekker behovet. |
+| Regnskap – eksport og årsavslutning | SAF-T med mapping og eksportkontroller, årsavstemming og rapportgrunnlag for næringsspesifikasjonen ved de respektive oppgavene. |
+| Relevant oppsett / administrasjon | Foretaksdata, kontoplan, standardkontoer, satser, journaler og nummerserier. Veilederen leder til disse innstillingene ved førstegangsoppsett. |
+
+M0 dokumenterer en konkret liste over eksisterende sider, nåværende inngang,
+målplassering, nødvendige rettigheter og eventuell gjenstående integrasjon.
+Uferdige regnskapsfunksjoner skal beholde tydelig avgrenset status også når
+de blir lettere tilgjengelige fra ordinære menyer.
 
 ## Installasjonsspesifikke avklaringer
 
@@ -200,8 +232,8 @@ norsk kode skal ha et konkret dokumentert gap. Leveransen skal vise én
 sammenhengende arbeidsflyt med samme dokumenter, posteringer og rettigheter
 som i Dolibarr, uten unødvendig dobbeltregistrering eller parallelle rutiner.
 
-En kontrollfunksjon skal ha angitt arbeidsflyt, ansvarlig rolle, riktig
-utløsningstidspunkt og konkret oppfølging av avvik før den regnes som ferdig
+En kontrollfunksjon skal ha angitt ordinær menyplassering og arbeidsbilde,
+ansvarlig rolle, riktig utløsningstidspunkt og konkret oppfølging av avvik før den regnes som ferdig
 integrert. Normal bruk skal testes uten at brukeren må kjenne interne
 kontrollsider eller manuelt gjenta samme kontroll på flere steder.
 
@@ -482,6 +514,23 @@ støttes fortsatt; øvrige korreksjonsbegrensninger fra 0.56.0 gjelder.
 Tekniske tester kvalifiserer linjedekning, eksakte kontobeløp, feilfordeling med
 riktig MVA-total, kreditnota, korreksjon, eldre historikk, HTTP og native vern.
 Dette bekrefter ikke fradragsrett, avgiftskode-/rapporteringsmapping eller samlet
-norsk regnskapsmessig produksjonsetterlevelse. Neste A2-arbeid er uttrykkelig
-nullsats/fritak/unntak, registreringshistorikk og manuelle bilag samt videre
-periode-/rettingsscenarioer før B1/B2. Papirløs bilagsflyt ligger sist.
+norsk regnskapsmessig produksjonsetterlevelse. Neste arbeid er M0, med
+meny-/arbeidsflytintegrasjon av eksisterende funksjoner. Deretter fortsetter
+A2 med uttrykkelig nullsats/fritak/unntak, registreringshistorikk og manuelle
+bilag samt videre periode-/rettingsscenarioer før B1/B2. Papirløs bilagsflyt
+ligger sist.
+
+
+## M0 – første menyintegrasjon i 0.58.0
+
+Bilags- og periodekontroll er tilgjengelig fra Regnskap for interne brukere
+med hovedboklesing. Kundefakturaen får en kontrollfane for eksisterende
+administratorprofil. Fakturaperiodekontroll og relevante oppsettssider får
+ordinære innganger under fakturering, regnskapsoppsett og bank. Daglige
+kontrollinnganger fjernes fra oppstartsveilederen og samles ved oppgaven.
+
+Se [menykartlegging, tilgang og videre arbeid](menu-integration.md). M0 er
+ikke fullført: øvrige oppsettssider, produkt-/prisarbeid, enklere oppfølging
+av fakturaavvik og kvalifisering av ordinære brukerroller gjenstår.
+Menyplassering skal følge hver videre funksjonsleveranse. Dette endrer ikke
+avgrensningene i A2 eller status for norsk regnskapsmessig produksjonsaksept.

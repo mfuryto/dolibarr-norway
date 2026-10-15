@@ -1,7 +1,8 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require '../../../main.inc.php';
-if (!$user->admin || !isModEnabled('norway')) { accessforbidden(); }
+require_once __DIR__.'/../class/NorwayNavigation.php';
+if (!NorwayNavigation::canReadLedger($user)) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayPeriodSetup.php';
 $langs->load('norway@norway'); header('Cache-Control: no-store');
 $date=GETPOST('date','alphanohtml'); if ($date==='') { $date=dol_print_date(dol_now(),'%Y-%m-%d'); }
@@ -18,10 +19,10 @@ try {
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr class="liste_titre">';
     foreach (array('Label','Start','End','Status') as $key) { print '<th>'.$langs->trans('NorwayPeriods'.$key).'</th>'; } print '</tr>';
     foreach ($report['rows'] as $row) {
-        print '<tr><td><a href="'.DOL_URL_ROOT.'/accountancy/admin/fiscalyear_card.php?id='.$row['id'].'">'.dol_escape_htmltag($row['label']).'</a></td><td>'.dol_escape_htmltag($row['start']).'</td><td>'.dol_escape_htmltag($row['end']).'</td><td>'.$langs->trans('NorwayPeriods'.$row['status']).'</td></tr>';
+        print '<tr><td>'.($user->hasRight('accounting','fiscalyear','write') ? '<a href="'.DOL_URL_ROOT.'/accountancy/admin/fiscalyear_card.php?id='.$row['id'].'">'.dol_escape_htmltag($row['label']).'</a>' : dol_escape_htmltag($row['label'])).'</td><td>'.dol_escape_htmltag($row['start']).'</td><td>'.dol_escape_htmltag($row['end']).'</td><td>'.$langs->trans('NorwayPeriods'.$row['status']).'</td></tr>';
     }
     print '</table></div>';
 } catch (InvalidArgumentException $error) { print '<div class="error">'.$langs->trans('NorwayPeriodsInvalidDate').'</div>'; }
 catch (RuntimeException $error) { print '<div class="error">'.$langs->trans('NorwayPeriodsReadError').'</div>'; }
-foreach (array('/accountancy/admin/fiscalyear.php'=>'NorwayWizardPeriods','/custom/norway/admin/wizard.php?step=9'=>'NorwayWizard') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
+foreach (array_merge($user->hasRight('accounting','fiscalyear','write') ? array('/accountancy/admin/fiscalyear.php'=>'NorwayWizardPeriods') : array(), $user->admin ? array('/custom/norway/admin/wizard.php?step=9'=>'NorwayWizard') : array()) as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
 print '</div>'; llxFooter(); $db->close();

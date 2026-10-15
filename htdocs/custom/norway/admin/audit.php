@@ -1,9 +1,11 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require '../../../main.inc.php';
-if (!$user->admin || !isModEnabled('norway')) { accessforbidden(); }
+require_once __DIR__.'/../class/NorwayNavigation.php';
+if (!NorwayNavigation::canReadLedger($user)) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayLedgerAudit.php';
 $langs->load('norway@norway');
+header('Cache-Control: no-store');
 $start = GETPOSTISSET('date_start') ? GETPOST('date_start', 'alphanohtml') : date('Y-m-01');
 $end = GETPOSTISSET('date_end') ? GETPOST('date_end', 'alphanohtml') : date('Y-m-t');
 llxHeader('', $langs->trans('NorwayAudit'));

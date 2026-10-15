@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.57.0 · Under utvikling**
+**Versjon 0.58.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -108,3 +108,8 @@ alene bekrefter ikke riktig avgiftsbehandling eller fradragsrett.
 GPL-3.0-or-later. Se [LICENSE](LICENSE). Den medfølgende norske kontoplanen
 fra Odoo er lisensiert under LGPL-3.0; kilde- og lisensopplysninger følger
 modulen.
+
+Menyer og kontroller plasseres ved den aktuelle oppgaven. Fra 0.58.0 finnes
+bilags- og periodekontroll under Regnskap, fakturakontroll ved kundefakturaen
+og relevante oppsett under regnskap, fakturering og bank. Oppstartsveilederen
+beholder førstegangsoppsettet. Se [menyer og tilgang](docs/menu-integration.md).

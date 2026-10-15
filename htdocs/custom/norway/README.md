@@ -1,4 +1,4 @@
-# Norway 0.57.0
+# Norway 0.58.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -36,3 +36,8 @@ change VAT rates or produce SAF-T. Provisional module ID: 510173; check collisio
 in System information and reserve with upstream before public distribution.
 
 GPL-3.0-or-later. This is a development foundation, not a production accounting solution.
+
+Core menu extensions expose ledger and period checks to internal ledger readers.
+Invoice diagnostics remain administrator-only and have a native invoice tab.
+Daily control links have been removed from the setup wizard. Configuration and
+write permissions remain restricted; this is the first menu integration step.
