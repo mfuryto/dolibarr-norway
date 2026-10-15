@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.63.0 · Under utvikling**
+**Versjon 0.63.1 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -135,3 +135,6 @@ beholder sin opprinnelige tolkning.
 Fra 0.63.0 har fakturaen en egen fane for [begrunnelse og dokumentreferanse](docs/sales-tax-basis.md)
 per innenlandsk nullsatslinje, med bevarte revisjoner og varsel ved endret grunnlag.
 Kobling til faktisk bokføring og faglig avgiftsaksept gjenstår.
+
+Fra 0.63.1 er menyene ryddet: nummerserier/dokumentoppsett i veilederens steg 7,
+regnskapskodeoversikt under regnskapsinnstillinger og daglige kontroller under Regnskap.

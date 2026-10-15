@@ -18,7 +18,7 @@ nvAssert(dolibarr_set_const($db,'MAIN_MODULE_NORWAY_TABS_0','invoice:+oldtab:Old
 foreach (array(1,2) as $attempt) {
     nvAssert($module->init()>0,'Repeated menu activation: '.$module->error);
     $count=$db->fetch_object(nvSql("SELECT COUNT(*) n FROM ".MAIN_DB_PREFIX."menu WHERE module='norway' AND entity=".(int)$conf->entity));
-    nvAssert((int)$count->n===11,'Duplicate or missing module menus');
+    nvAssert((int)$count->n===9,'Duplicate or missing module menus');
 }
 $conf->setValues($db);
 foreach ($module->tabs as $i=>$tab) { nvAssert(getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i)===$tab,'Legacy tab not refreshed'); }
@@ -36,7 +36,14 @@ function nvCoreMenu($branch) {
 $settings=nvCoreMenu('accountancy_admin_norway'); $levels=array();
 foreach ($settings as $entry) { $levels[$entry['leftmenu']]=$entry['level']; }
 nvAssert(($levels['accountancy_admin'] ?? -1)===0 && ($levels['norway_accounting'] ?? -1)===1,'Settings parent level incorrect: '.json_encode($levels));
-foreach (array('registration','taxmappings','vat') as $page) { nvAssert(($levels['norway_'.$page] ?? -1)===2,'Settings child at wrong level'); }
+foreach (array('registration','taxmappings','vat','productaccounts') as $page) { nvAssert(($levels['norway_'.$page] ?? -1)===2,'Settings child at wrong level'); }
+$ledger=nvCoreMenu('accountancy_accountancy');$levels=array();
+foreach ($ledger as $entry) { $levels[$entry['leftmenu']]=$entry['level']; }
+nvAssert(($levels['accountancy'] ?? -1)===0 && ($levels['norway_audit'] ?? -1)===1 && ($levels['norway_periods'] ?? -1)===1,'Daily controls outside accounting group');
+foreach (array('accountancy_admin','accountancy_admin_norway','accountancy_transfer') as $branch) {
+    $entries=nvCoreMenu($branch);$ids=array_column($entries,'leftmenu');
+    nvAssert(!in_array('norway_audit',$ids,true) && !in_array('norway_periods',$ids,true),'Daily controls shown in collapsed accounting group');
+}
 $reader=new User($db); $reader->login='synthetic-menu-'.bin2hex(random_bytes(5));
 $reader->lastname='SYNTHETIC MENU TEST ONLY'; $reader->pass=bin2hex(random_bytes(16));
 $reader->admin=0; $reader->statut=1; $reader->status=1; $reader->entity=$conf->entity;
@@ -46,6 +53,14 @@ function nvPage($path,$post=null) {
     global $curl; curl_setopt($curl,CURLOPT_URL,'http://localhost'.$path); curl_setopt($curl,CURLOPT_POST,$post!==null);
     if ($post!==null) { curl_setopt($curl,CURLOPT_POSTFIELDS,http_build_query($post)); }
     $body=curl_exec($curl); nvAssert($body!==false && curl_getinfo($curl,CURLINFO_HTTP_CODE)<500,'HTTP request failed'); return $body;
+}
+function nvMenuGroup($body,$page,$heading) {
+    $dom=new DOMDocument();libxml_use_internal_errors(true);$dom->loadHTML($body);libxml_clear_errors();$xpath=new DOMXPath($dom);
+    $link=$xpath->query('//div[@id="id-left"]//a[contains(@href,"/norway/admin/'.$page.'.php")]');
+    nvAssert($link->length===1,'Menu link duplicated or missing: '.$page);
+    $group=$xpath->query('ancestor::div[contains(concat(" ",normalize-space(@class)," ")," blockvmenu ")][1]',$link->item(0))->item(0);
+    nvAssert($group && $xpath->query('.//div[@class="menu_titre"]//a[contains(@href,"'.$heading.'")]',$group)->length===1,'Rendered menu outside parent group: '.$page);
+    nvAssert($link->item(0)->parentNode->getAttribute('class')!=='menu_titre','Child rendered as heading');
 }
 function nvLogin($login,$password) {
     nvPage('/user/logout.php'); $body=nvPage('/index.php');
@@ -67,8 +82,9 @@ try {
     nvLogin($reader->login,$password);
     foreach (array('nb_NO','en_US') as $language) {
         foreach (array('audit','periods') as $page) {
-            $body=nvPage('/custom/norway/admin/'.$page.'.php?mainmenu=accountancy&lang='.$language);
+            $body=nvPage('/custom/norway/admin/'.$page.'.php?mainmenu=accountancy&leftmenu=accountancy_accountancy&lang='.$language);
             nvAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($body,'norway-page')!==false,'Reader page unavailable');
+            nvMenuGroup($body,$page,'leftmenu=accountancy_accountancy');
             nvAssert(strpos($body,'admin/wizard.php?step=9')===false && strpos($body,'fiscalyear_card.php?id=')===false,'Reader offered administrator action');
             nvAssert(strpos($body,'admin/audit.php?mainmenu=accountancy')!==false,'Ledger menu missing');
             nvAssert(strpos($body,'admin/periods.php?mainmenu=accountancy')!==false,'Period menu missing');
@@ -86,15 +102,21 @@ try {
             nvAssert(strpos($body,'/norway/admin/'.$daily.'.php')===false,'Daily control retained in wizard');
         }
     }
+    $body=nvPage('/custom/norway/admin/wizard.php?step=7');
+    foreach (array('numbering','documents') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'Sales settings missing from setup wizard'); }
     $body=nvPage('/compta/facture/index.php?mainmenu=billing&leftmenu=customers_bills');
+    foreach (array('numbering','documents') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')===false,'Sales settings retained in daily invoice menu'); }
     nvAssert(strpos($body,'/norway/admin/invoiceperiod.php?mainmenu=billing')!==false,'Billing menu missing');
     $body=nvPage('/accountancy/index.php?mainmenu=accountancy&leftmenu=accountancy_admin');
     nvAssert(strpos($body,'/norway/admin/accounting.php?mainmenu=accountancy')!==false,'Accounting settings group missing');
     nvAssert(strpos($body,'/norway/admin/registration.php?mainmenu=accountancy')===false,'Settings children shown before group opened');
     $body=nvPage('/custom/norway/admin/accounting.php?mainmenu=accountancy&leftmenu=accountancy_admin_norway');
-    foreach (array('registration','taxmappings','vat','bankdefaults') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'Settings entry missing'); }
+    foreach (array('registration','taxmappings','vat','bankdefaults','productaccounts') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'Settings entry missing'); }
+    nvMenuGroup($body,'productaccounts','leftmenu=accountancy_admin');
+    foreach (array('audit','periods') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php?mainmenu=accountancy')===false,'Daily controls shown under settings'); }
+    foreach (array('audit.php?date_start=2026-01-01&date_end=2026-12-31','periods.php?date=2026-01-01') as $filter) { $filtered=nvPage('/custom/norway/admin/'.$filter);nvMenuGroup($filtered,'audit','leftmenu=accountancy_accountancy');nvMenuGroup($filtered,'periods','leftmenu=accountancy_accountancy'); }
     $body=nvPage('/product/index.php?mainmenu=products');
-    nvAssert(strpos($body,'/norway/admin/productaccounts.php?mainmenu=products')!==false,'Product codes menu missing');
+    nvAssert(strpos($body,'/norway/admin/productaccounts.php?mainmenu=products')===false,'Accounting codes retained as catalogue heading');
     $body=nvPage('/comm/propal/index.php?mainmenu=commercial&leftmenu=propals');
     nvAssert(strpos($body,'/norway/admin/pricing.php?mainmenu=commercial')!==false,'Proposal pricing menu missing');
     $body=nvPage('/custom/norway/admin/vat.php');

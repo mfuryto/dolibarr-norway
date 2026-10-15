@@ -1,4 +1,4 @@
-# Norway 0.63.0
+# Norway 0.63.1
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -65,3 +65,6 @@ observations remain unchanged. Period coverage is not tax approval.
 Version 0.63.0 adds a native invoice tab for domestic zero-rate sales reasons
 and document references, retained revisions and changed-source status. Ordinary
 NOK invoices with explicit codes 5/6/7 only; posting-time linkage remains pending.
+
+Version 0.63.1 moves sales setup links to wizard step 7 and the catalogue account
+overview into accounting settings. Daily controls follow the expanded accounting group.

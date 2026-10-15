@@ -1,5 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Resolve the menu branch before core loads the menu cache.
+$_GET['mainmenu']='accountancy';$_GET['leftmenu']='accountancy_accountancy';
 require '../../../main.inc.php';
 require_once __DIR__.'/../class/NorwayNavigation.php';
 if (!NorwayNavigation::canReadLedger($user)) { accessforbidden(); }
@@ -9,7 +11,7 @@ $date=GETPOST('date','alphanohtml'); if ($date==='') { $date=dol_print_date(dol_
 llxHeader('',$langs->trans('NorwayPeriods'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayPeriods'),'','accountancy');
 print '<div class="warning">'.$langs->trans('NorwayPeriodsScope').'</div>';
-print '<form method="get"><label>'.$langs->trans('NorwayPeriodsDate').' <input type="date" name="date" value="'.dol_escape_htmltag($date).'" required></label> <button class="button" type="submit">'.$langs->trans('NorwayPeriodsShow').'</button></form>';
+print '<form method="get"><input type="hidden" name="mainmenu" value="accountancy"><input type="hidden" name="leftmenu" value="accountancy_accountancy"><label>'.$langs->trans('NorwayPeriodsDate').' <input type="date" name="date" value="'.dol_escape_htmltag($date).'" required></label> <button class="button" type="submit">'.$langs->trans('NorwayPeriodsShow').'</button></form>';
 try {
     $report=NorwayPeriodSetup::report($db,$conf->entity,$date,getDolGlobalInt('ACCOUNTANCY_FISCALYEAR_DEFAULT'),getDolGlobalString('ACCOUNTANCY_FISCAL_PERIOD_MODE'));
     print '<p>'.$langs->trans('NorwayPeriodsCoverage').': '.dol_escape_htmltag($date).' — '.$langs->trans('NorwayPeriods'.$report['coverage']).'</p>';
