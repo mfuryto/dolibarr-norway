@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.61.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.62.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -577,3 +577,18 @@ faglig avgiftsbehandling eller rapportering. A2 fortsetter med dokumentert
 behandlingsgrunnlag for leveransen, registreringshistorikk, manuelle bilag
 og videre rettingsscenarioer. Historiske payloads og avgiftskontekster er
 uendret. Ingen endring av produksjonsaksept.
+
+
+## A2 – registreringshistorikk i 0.62.0
+
+Oppsettet støtter bekreftet import av første dato, retting, avslutning, nye
+perioder og historikk ved feilregistrering. Overlapp avvises. Native varsler
+og nye salgsobservasjoner bruker perioder/hull uten å behandle datodekning
+som avgiftsgodkjenning. Payload 8/kontekst 2 brukes bare når historikk finnes;
+eldre payloads og opprinnelig første dato bevares. Backup/gjenoppretting prøver
+rettet og ny periode. Se [omfang og vern](vat-registration-history.md).
+
+Videre A2 gjelder dokumentasjonsgrunnlaget for konkrete avgiftsbehandlinger,
+myndighetsgodkjenning/etterfakturering, manuelle bilag og flere støttede
+rettingsscenarioer. Periodemodellen er ikke full faglig kvalifisering av
+registreringsforhold eller MVA-rapportering.

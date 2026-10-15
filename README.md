@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.61.0 · Under utvikling**
+**Versjon 0.62.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -126,3 +126,8 @@ Fra 0.61.0 viser fakturakontrollen eksplisitte salgskategorier uten beregnet
 MVA og konflikter mellom kode, sats og beløp. Dagens og bevart grunnlag holdes
 atskilt. Kontrollen godkjenner ikke fritak eller unntak. Se
 [nullsatskontrollen](docs/sales-zero-vat.md).
+
+Fra 0.62.0 støtter MVA-oppsettet valgfri [registreringshistorikk](docs/vat-registration-history.md)
+med bevarte rettinger, avslutning og nye perioder. Fakturavarsler og nye
+salgsobservasjoner bruker historikken når den er bekreftet; eldre grunnlag
+beholder sin opprinnelige tolkning.
