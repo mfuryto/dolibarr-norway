@@ -1076,3 +1076,7 @@ NorwayDeductionLinesVatAccounts=Control of each VAT account
 
 NorwayProductAccountsOpenItem=Open the product or service
 NorwayInvoiceBack=Back to invoice
+NorwayAccountingSettings=Norwegian accounting setup
+NorwayMenuRegistration=VAT registration
+NorwayMenuMappings=Tax code mappings
+NorwayMenuVat=VAT account mappings

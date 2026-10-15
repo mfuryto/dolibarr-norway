@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.59.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.60.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -550,3 +550,13 @@ forenkling av avviksoppfølging og kvalifisering av operatørroller ved den
 aktuelle funksjonen. Neste regnskapsfunksjonelle arbeid fortsetter A2:
 nullsats/fritak/unntak, registreringshistorikk, manuelle bilag og videre
 rettingsscenarioer. Ingen endring i faglig produksjonsaksept.
+
+
+## M0 – rettet oppsettsnivå i 0.60.0
+
+Kontoplan-/bokføringsoppsett, MVA-registerhistorikk og avgiftskodekoblinger
+samles under Regnskap → Innstillinger → Norsk regnskapsoppsett. Underpunktene vises
+ved åpnet oppsettsgruppe, ikke under daglig hovedbokarbeid. Den separate
+bankkoblingslenken fjernes fra Bank; funksjonen beholdes fra regnskapsoppsettet.
+Aksept gjelder menynivå, synlighet og bevarte innganger/tilganger. Ingen
+endringer i bokføringsgrunnlag, faglig avgiftsomfang eller produksjonsaksept.

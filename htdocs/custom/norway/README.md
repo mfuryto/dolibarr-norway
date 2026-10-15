@@ -1,4 +1,4 @@
-# Norway 0.59.0
+# Norway 0.60.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -46,3 +46,8 @@ Version 0.59.0 adds scoped product/service account tabs, an invoice evidence
 tab and ordinary VAT setup/catalogue/proposal-pricing entries. Existing
 configuration and evidence write guards remain unchanged. Tab definitions
 refresh during upgrades; invalid product IDs never broaden report scope.
+
+Version 0.60.0 groups Norwegian accounting configuration under core accounting
+setup. VAT children expand inside that group and remain hidden during daily
+ledger work. The redundant Bank shortcut is removed; the one-time bank
+mapping action remains available from accounting configuration.

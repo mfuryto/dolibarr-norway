@@ -1076,3 +1076,7 @@ NorwayDeductionLinesVatAccounts=Kontroll av hver MVA-konto
 
 NorwayProductAccountsOpenItem=Åpne varen eller tjenesten
 NorwayInvoiceBack=Tilbake til fakturaen
+NorwayAccountingSettings=Norsk regnskapsoppsett
+NorwayMenuRegistration=MVA-registrering
+NorwayMenuMappings=Avgiftskodekoblinger
+NorwayMenuVat=MVA-kontokoblinger

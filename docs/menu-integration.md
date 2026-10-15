@@ -1,6 +1,6 @@
 # Menyer og arbeidsflyt
 
-Oppdatert 2026-10-15 for 0.59.0. Dette viderefører M0, ikke ferdig
+Oppdatert 2026-10-15 for 0.60.0. Dette viderefører M0, ikke ferdig
 regnskapsfaglig produksjonsaksept. Ingen nye regnskapsrapporter innføres.
 Menynavn følger språk og aktiverte kjernefunksjoner.
 
@@ -12,11 +12,11 @@ Menynavn følger språk og aktiverte kjernefunksjoner.
 | Periodekontroll (`periods.php`) | Regnskap → regnskap/hovedbok → Kontroll av regnskapsperioder | Samme leserett. Endring av perioder krever kjernens egen skriverett; oppsettslenker skjules uten relevant rettighet. |
 | Fakturakontroll (`invoice.php`) | Egen fane på kundefakturaen, med retur til fakturaen | Foreløpig administrator med faktura- og hovedboklesing. Detaljdiagnostikk; videre arbeid må forenkle avvik og rettingshandlinger og kvalifisere eventuell ordinær brukertilgang. |
 | Fakturakontroll for periode (`invoiceperiod.php`) | Fakturering → kundefakturaer | Foreløpig administrator med fakturalesing. Dette er ikke MVA-perioderapport. |
-| Kontoplan og bokføringsoppsett (`accounting.php`) | Regnskap → Oppsett | Administrator. Eksisterende innganger herfra til `chart.php`, `profile.php`, `defaults.php`, `journals.php` og `standardaccounts.php` beholdes. |
-| MVA-registerhistorikk (`registration.php`) | Regnskap → Oppsett | Administrator; endrer oppsett, ikke fakturalinjer. |
-| Avgiftskodekoblinger (`taxmappings.php`) | Regnskap → Oppsett | Administrator. Lagrede koblinger med eksisterende forhåndsvisning og bekreftelse. |
+| Kontoplan og bokføringsoppsett (`accounting.php`) | Regnskap → Innstillinger → Norsk regnskapsoppsett | Administrator. Eksisterende innganger herfra til `chart.php`, `profile.php`, `defaults.php`, `journals.php` og `standardaccounts.php` beholdes. |
+| MVA-registerhistorikk (`registration.php`) | Regnskap → Innstillinger → Norsk regnskapsoppsett → virkningsdato | Administrator; endrer oppsett, ikke fakturalinjer. |
+| Avgiftskodekoblinger (`taxmappings.php`) | Regnskap → Innstillinger → Norsk regnskapsoppsett → avgiftskodekoblinger | Administrator. Lagrede koblinger med eksisterende forhåndsvisning og bekreftelse. |
 | Nummerserier (`numbering.php`) og dokumentoppsett (`documents.php`) | Fakturering → kundefakturaer | Administrator med fakturalesing. Dokumentoppsettet omfatter også tilbud. |
-| Bankkontokoblinger (`bankdefaults.php`) | Bank | Administrator med banklesing; oppsettets eksisterende lagringsvern beholdes. |
+| Bankkontokoblinger (`bankdefaults.php`) | Lenke fra Norsk regnskapsoppsett; ingen egen Bank-menylenke fra 0.60.0 | Engangsoppsett for bokføringskonto og journal. Administrator og eksisterende lagringsvern beholdes; ingen koblinger eller data slettes. |
 | Fradragsvurdering, bokføring og korreksjon (`purchasededuction.php`) | Leverandørfakturaens eksisterende arbeidsbilde | Beholdes. Krever fortsatt de dokumenterte administrator-/faktura-/hovedbokrettighetene og skriverett for handlingen; egen operatørtilgang gjenstår. |
 
 Daglige innganger til faktura-, periode- og bilagskontroll er fjernet fra
@@ -29,7 +29,7 @@ innstillinger; funksjoner implementeres ikke en gang til der.
 | Eksisterende side / funksjon | Videre plassering og avgrensning |
 | --- | --- |
 | `setup.php`, `wizard.php`, `registry.php` | Modul-/foretaksoppsett og oppstart. Registeroppslag er oppsett, ikke en regnskapskontroll som skal kjøres for hvert bilag. |
-| `vat.php`, `vataccounts.php`, `vatrates.php`, `registration.php`, `taxmappings.php` | Fra 0.59.0: Regnskap → Oppsett → kontroll av MVA-kontokoblinger, med innganger til satser, salg-/kjøpskontoer, registerhistorikk og avgiftskodekoblinger. Dette er oppsett, ikke en MVA-melding. |
+| `vat.php`, `vataccounts.php`, `vatrates.php`, `registration.php`, `taxmappings.php` | Fra 0.60.0: Regnskap → Innstillinger → Norsk regnskapsoppsett → kontroll av MVA-kontokoblinger, med innganger til satser, salg-/kjøpskontoer, registerhistorikk og avgiftskodekoblinger. Dette er oppsett, ikke en MVA-melding. |
 | `productaccounts.php` | Fra 0.59.0: katalogmeny og egen fane på varen/tjenesten. Fanen viser bare valgt element og bevarer valget ved innenlands-/eksport-/EU-visning. Eksisterende kontokoder og standardkontoer beholdes. Administrator med rett til kontoplanoppsett; ordinær operatørtilgang gjenstår. |
 | `pricing.php` | Fra 0.59.0: tilbudsmenyen, fjernet fra veilederen og moduloppsettet. Administrator med tilbudslesing. Kun veiledende EUR-beløp; bokføring og fakturering fortsatt i NOK. Henting krever fortsatt brukerens beregningshandling. |
 | `evidence.php` | Fra 0.59.0: egen fane ved aktuell kundefaktura og retur til denne. Lagring av kontrollkopi er fortsatt administratorstyrt; ingen utvidelse av skriverettigheter. |
@@ -56,3 +56,19 @@ ID valideres og filtreres i databasespørringen, med samme foretaksavgrensning
 som oversikten. En ugyldig ID utvider aldri rapporten til hele katalogen.
 Testene prøver valgt vare/tjeneste i tre kontekster, fremmed foretak og ugyldig
 ID, gamle fanedefinisjoner og native menyer/faner på norsk og engelsk.
+
+
+## Menynivå og synlighet fra 0.60.0
+
+Norsk regnskapsoppsett er ett underpunkt i kjernens Innstillinger-gruppe. Siden
+samler kontoplan-/bokføringsoppsett og innganger til MVA-registerhistorikk,
+avgiftskodekoblinger, sats-/kontooppsett og bankkobling. MVA-underpunktene
+vises ett nivå dypere når gruppen er åpnet. De legges ikke til i menyen for
+daglig hovedbokarbeid. Kjernens oppsettsmenyer og oppstartsveilederens
+førstegangsoppgaver beholdes.
+
+Den separate bankmenylenken er fjernet. Koblingsfunksjonen er fortsatt
+nyttig for bekreftet førstegangsoppsett, men er ikke en daglig bankoppgave.
+Ingen kontoer, journaler, vurderinger eller regnskapsdata endres av rettingen.
+Regresjonstesten kontrollerer nivåene gjennom kjernens faktiske menybygger,
+synlighet før/etter åpning og fravær av oppsettslenker i daglig bank/hovedbok.

@@ -37,7 +37,7 @@ $checks = array(
     'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.59.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.60.0',
     'norway_module_payload' => $modulePayloadMatches,
     'norway_menu_registration' => $menusValid,
     'norway_document_tabs' => $tabsValid,
