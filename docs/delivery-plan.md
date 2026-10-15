@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.60.0.
+tjenester. Status er kontrollert mot kode og tester til og med 0.61.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -560,3 +560,20 @@ ved åpnet oppsettsgruppe, ikke under daglig hovedbokarbeid. Den separate
 bankkoblingslenken fjernes fra Bank; funksjonen beholdes fra regnskapsoppsettet.
 Aksept gjelder menynivå, synlighet og bevarte innganger/tilganger. Ingen
 endringer i bokføringsgrunnlag, faglig avgiftsomfang eller produksjonsaksept.
+
+
+## A2 – eksplisitte salgskategorier uten beregnet MVA i 0.61.0
+
+Fakturaens eksisterende kontrollfane skiller eksplisitte salgskategorier med
+nullsats fra omsetning utenfor loven og inntekt som ikke er MVA-omsetning.
+Sats-/beløpskonflikter, manglende datert kodekobling og særmarkeringer får
+konkret oppfølging. Utførsel og omvendt avgiftsplikt vises som egne scenarioer,
+ikke som ordinært innenlands fritak. Kontrollen bruker valgt oppsettsversjon
+for dagens faktura og bare bevart oppsett for bokføringsobservasjoner.
+Se [omfang, kilder og videre arbeid](sales-zero-vat.md).
+
+Dette er en skrivebeskyttet konsistenskontroll, ikke et fullført grunnlag for
+faglig avgiftsbehandling eller rapportering. A2 fortsetter med dokumentert
+behandlingsgrunnlag for leveransen, registreringshistorikk, manuelle bilag
+og videre rettingsscenarioer. Historiske payloads og avgiftskontekster er
+uendret. Ingen endring av produksjonsaksept.

@@ -1,4 +1,4 @@
-# Norway 0.60.0
+# Norway 0.61.0
 
 External module foundation for Dolibarr 24.0.1 / PHP 8.2 or newer.
 Copy `norway/` into `htdocs/custom/`, enable **Norwegian localisation** in
@@ -51,3 +51,8 @@ Version 0.60.0 groups Norwegian accounting configuration under core accounting
 setup. VAT children expand inside that group and remain hidden during daily
 ledger work. The redundant Bank shortcut is removed; the one-time bank
 mapping action remains available from accounting configuration.
+
+Version 0.61.0 adds a read-only sales zero-VAT consistency control at the
+invoice. Explicit dated mappings distinguish categories and conflicting
+amounts; retained sources are interpreted independently of current setup.
+No historical payloads, posting rules or tax contexts are modified.

@@ -89,3 +89,6 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/company-vat-http.php
 
 "${compose[@]}" exec -T web php /opt/norway-tests/navigation.php
+
+"${compose[@]}" exec -T web php /opt/norway-tests/sales-zero-vat.php
+"${compose[@]}" exec -T web php /opt/norway-tests/sales-zero-vat-http.php

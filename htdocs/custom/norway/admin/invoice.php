@@ -6,6 +6,7 @@ require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once __DIR__.'/../class/NorwayInvoiceCheck.php';
 require_once __DIR__.'/../class/NorwayInvoiceAmounts.php';
+require_once __DIR__.'/../class/NorwaySalesZeroVat.php';
 require_once __DIR__.'/../class/NorwayTaxReference.php';
 require_once __DIR__.'/../class/NorwayTaxMappingPreview.php';
 require_once __DIR__.'/../class/NorwayInvoiceMapping.php';
@@ -15,6 +16,18 @@ require_once __DIR__.'/../class/NorwayInvoiceAllocation.php';
 require_once __DIR__.'/../class/NorwayPostingEvidence.php';
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
 $langs->load('norway@norway');
+$renderZeroVat=static function ($report,$source) use ($langs) {
+    print '<section class="norway-zero-vat"><h3>'.$langs->trans('NorwayZeroVatTitle').'</h3><p>'.$langs->trans('NorwayZeroVatScope').'</p><p>'.$langs->trans('NorwayZeroVat'.$source).'</p>';
+    if ($report['status']!=='Evaluated') { print '<div class="warning">'.$langs->trans('NorwayZeroVatUnsupported').'</div></section>';return; }
+    $rows=array_values(array_filter($report['rows'],static fn($row)=>$row['status']!=='NotApplicable'));
+    if (!$rows) { print '<p>'.$langs->trans('NorwayZeroVatEmpty').'</p></section>';return; }
+    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr>';
+    foreach (array('Line','Target','Category','Result','Action') as $key) { print '<th>'.$langs->trans('NorwayZeroVat'.$key).'</th>'; }print '</tr>';
+    foreach ($rows as $row) {
+        print '<tr><td>'.(int)$row['line'].'</td><td>'.dol_escape_htmltag($row['target']).'</td><td>'.$langs->trans('NorwayZeroVat'.$row['category']).'</td><td>'.$langs->trans('NorwayZeroVat'.$row['status']).'</td><td>'.$langs->trans('NorwayZeroVatAction'.$row['status']).'</td></tr>';
+    }
+    print '</table></div></section>';
+};
 $id = GETPOSTINT('id');
 header('Cache-Control: no-store');
 llxHeader('', $langs->trans('NorwayInvoiceCheck'));
@@ -149,6 +162,7 @@ if (GETPOSTISSET('id')) {
                         print '<tr><td>'.(int)$observation['id'].'</td><td>'.dol_escape_htmltag($observation['captured_at']).'</td><td>'.$langs->trans('NorwayPosting'.$observation['status']);
                         if ($observation['data']) {
                             $basis=$observation['data']['basis'];
+                            $renderZeroVat(NorwaySalesZeroVat::captured($basis,(int)$conf->entity),'Captured');
                             $registrationContext=$observation['data']['registration_context'] ?? null;
                             print '<p>'.$langs->trans('NorwayPostingRegistration'.($registrationContext ? $registrationContext['status'] : 'Legacy'));
                             if ($registrationContext && $registrationContext['start']!=='') { print ' '.dol_escape_htmltag($registrationContext['invoice_date'].' / '.$registrationContext['start']); }
@@ -188,6 +202,7 @@ if (GETPOSTISSET('id')) {
                 if (GETPOSTISSET('mapping_revision')) {
                     $date=empty($invoice->date) ? '' : dol_print_date($invoice->date,'%Y-%m-%d');
                     $comparison=NorwayInvoiceMapping::report($mappingState['record'],$selectedRevision,$invoice,$date);
+                    $renderZeroVat(NorwaySalesZeroVat::invoice($invoice,$comparison),'Current');
                     print '<p>'.$langs->trans('NorwaySavedMappingSelected').' #'.(int)$comparison['revision'].' / '.dol_escape_htmltag($comparison['at']).'</p>';
                     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayAmountsLine').'</th><th>'.$langs->trans('NorwayMappingResult').'</th><th>'.$langs->trans('NorwaySavedMappingRule').'</th><th>'.$langs->trans('NorwayMappingTarget').'</th></tr>';
                     foreach ($comparison['rows'] as $index=>$row) {
