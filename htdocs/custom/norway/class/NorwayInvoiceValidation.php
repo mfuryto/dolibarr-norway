@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayInvoiceCheck.php';
 require_once __DIR__.'/NorwayVatRegistration.php';
+require_once __DIR__.'/NorwayVatHistory.php';
 /** Minimum field validation only; does not approve VAT treatment or legal compliance. */
 class NorwayInvoiceValidation
 {
@@ -31,9 +32,8 @@ class NorwayInvoiceValidation
         if (!self::hasVat($invoice)) { return ''; }
         if ((int)$invoice->type===2) { return 'Credit'; }
         try {
-            $record=NorwayVatRegistration::read($db,$entity,$seller->idprof1 ?? '');
-            $status=NorwayVatRegistration::compare($record,dol_print_date($invoice->date,'dayrfc'));
-            return $status==='After' ? '' : $status;
+            $status=NorwayVatHistory::current($db,$entity,$seller->idprof1 ?? '',dol_print_date($invoice->date,'dayrfc'));
+            return in_array($status,array('After','HistoryCovered'),true) ? '' : $status;
         } catch (Throwable $error) { return 'Unavailable'; }
     }
 

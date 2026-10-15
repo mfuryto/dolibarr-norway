@@ -9,6 +9,7 @@ require '/var/www/html/master.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayChartImport.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRegistration.php';
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatHistory.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayWizardProgress.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayTaxMappings.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwaySchema.php';
@@ -65,6 +66,20 @@ if (NorwayNumbering::record($db,(int)$conf->entity)['input']!==$numberingInput
     || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'proposal')!=='T000301'
     || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'customer')!=='K00001'
     || NorwayNumbering::next($db,(int)$conf->entity,$numberingInput,'supplier')!=='L00001') { throw new RuntimeException('Numbering/start offsets lost through update/restore'); }
+if (getenv('NORWAY_CREATE_SENTINEL') === '1') {
+    foreach (array(NorwayVatHistory::input(1,'2024-03-01','2025-12-31','Synthetic documented date correction',false),
+        NorwayVatHistory::input(0,'2026-02-01','','Synthetic new documented registration',false)) as $historyInput) {
+        $historyPreview=NorwayVatHistory::preview($db,(int)$conf->entity,'123456785',$historyInput);
+        NorwayVatHistory::save($db,(int)$conf->entity,'123456785',$historyInput,NorwayVatHistory::fingerprint($historyPreview),$user);
+    }
+}
+$history=NorwayVatHistory::read($db,(int)$conf->entity,'123456785');
+if ($history['status']!=='History' || $history['revision']!==3 || $history['record']['events'][0]['start']!=='2024-02-29'
+    || $history['active'][1]['start']!=='2024-03-01' || $history['active'][1]['end']!=='2025-12-31'
+    || $history['active'][2]['start']!=='2026-02-01'
+    || NorwayVatHistory::compare($history,'2026-01-31')['status']!=='HistoryGap') {
+    throw new RuntimeException('Registration history lost through update/restore');
+}
 $syntheticPayload='{"synthetic":true,"purpose":"backup-restore-only","version":1}';
 $syntheticHash=hash('sha256',$syntheticPayload);
 if (getenv('NORWAY_CREATE_SENTINEL') === '1') {

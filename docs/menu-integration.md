@@ -1,6 +1,6 @@
 # Menyer og arbeidsflyt
 
-Oppdatert 2026-10-15 for 0.60.0. Dette viderefører M0, ikke ferdig
+Oppdatert 2026-10-15 for 0.62.0. Dette viderefører M0, ikke ferdig
 regnskapsfaglig produksjonsaksept. Ingen nye regnskapsrapporter innføres.
 Menynavn følger språk og aktiverte kjernefunksjoner.
 
@@ -72,3 +72,7 @@ nyttig for bekreftet førstegangsoppsett, men er ikke en daglig bankoppgave.
 Ingen kontoer, journaler, vurderinger eller regnskapsdata endres av rettingen.
 Regresjonstesten kontrollerer nivåene gjennom kjernens faktiske menybygger,
 synlighet før/etter åpning og fravær av oppsettslenker i daglig bank/hovedbok.
+
+Fra 0.62.0 ligger registreringshistorikk på den eksisterende MVA-registreringssiden
+under regnskapsinnstillingene. Fakturavarsler og bevarte datosammenligninger
+bruker historikken ved oppgaven; ingen ny oppstartsoppgave eller meny innføres.

@@ -240,3 +240,14 @@ Fra 0.57.0 bruker nye kjøpsobservasjoner med fakturareferanse payload 7.
 Fradragskontekst 2 bevarer linjevurderinger med vurderingspayload 2; eldre
 felles vurderinger bruker fortsatt kontekst 1. Observasjoner 4/5/6 beholdes
 uendret. [Kjøpsfordeling](purchase-allocation.md) beskriver omfang og konto-/linjekontroll.
+
+## Registreringshistorikk fra 0.62.0
+
+Nye salgshendelser med eksplisitt registreringshistorikk bruker payload 8,
+med uendret salgskodekontekst 1 og registreringskontekst 2. Kildegrunnlaget
+bevarer historikkoppsettet og originalregistreringen. Valgt periode,
+historikkversjon, datoer og bekreftelse avledes bare fra disse kildene.
+Ugyldig historikk gir uavklart/ugyldig kontekst, uten første-dato-reserve.
+Uten historikk brukes fortsatt salgspayload 3. Payloads 1–7 og kjøpskontekster
+beholder sine tidligere regler. Ingen eldre observasjoner tilbakefylles.
+Se [registreringshistorikk](vat-registration-history.md).

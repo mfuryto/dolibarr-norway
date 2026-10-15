@@ -5,7 +5,9 @@ require '../../../main.inc.php';
 if (GETPOST('errorcode','aZ09')==='InvalidToken') { httponly_accessforbidden('Invalid security token'); }
 if (!$user->admin || !isModEnabled('norway')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayVatRegistration.php';
+require_once __DIR__.'/../class/NorwayVatHistoryView.php';
 $langs->load('norway@norway'); header('Cache-Control: no-store');
+NorwayVatHistoryView::handle($db,(int)$conf->entity,$mysoc->idprof1,$user,$langs);
 $action=GETPOST('action','aZ09'); $date=GETPOST('start','alphanohtml');
 if ($_SERVER['REQUEST_METHOD']==='POST' && $action==='saveregistration') {
     $pending=$_SESSION['norway_registration'] ?? null; unset($_SESSION['norway_registration']);
@@ -27,7 +29,7 @@ try {
         print '<p>'.$langs->trans('NorwayRegistrationStart').': '.dol_escape_htmltag($record['start']).'<br>'.$langs->trans('NorwayRegistrationConfirmedAt').': '.dol_escape_htmltag($record['confirmed_at']).'</p>';
         $check=GETPOST('date','alphanohtml');
         print '<form method="get"><label>'.$langs->trans('NorwayRegistrationCheckDate').' <input type="date" name="date" value="'.dol_escape_htmltag($check).'" required></label> <button class="button" type="submit">'.$langs->trans('NorwayRegistrationCompare').'</button></form>';
-        if ($check!=='') { print '<p>'.$langs->trans('NorwayRegistration'.NorwayVatRegistration::compare($record,$check)).'</p>'; }
+        if ($check!=='') { print '<p>'.$langs->trans('NorwayRegistration'.NorwayVatHistory::current($db,(int)$conf->entity,$mysoc->idprof1,$check)).'</p>'; }
     }
     if ($record['status']==='Missing') {
         print '<form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="previewregistration"><label>'.$langs->trans('NorwayRegistrationStart').' <input type="date" name="start" value="'.dol_escape_htmltag($date).'" required></label> <button class="button" type="submit">'.$langs->trans('NorwayRegistrationPreview').'</button></form>';
@@ -43,5 +45,6 @@ try {
     }
 } catch (InvalidArgumentException $error) { print '<div class="error">'.$langs->trans('NorwayRegistrationInvalidDate').'</div>'; }
 catch (RuntimeException $error) { print '<div class="error">'.$langs->trans('NorwayRegistrationFailed').'</div>'; }
-print '<p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=3">'.$langs->trans('NorwayWizard').'</a></p></div>';
+NorwayVatHistoryView::render($db,(int)$conf->entity,$mysoc->idprof1,$record??array('status'=>'Invalid'),$langs);
+print '</div>';
 llxFooter(); $db->close();

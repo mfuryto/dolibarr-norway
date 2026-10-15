@@ -37,7 +37,7 @@ class NorwayPostingEvidence
         $parties=$invoices ? self::rows($db,'SELECT s.rowid,s.entity,s.nom,s.address,s.zip,s.town,s.siren,s.tva_intra,s.fk_pays,c.code AS country FROM '.$p.'societe s LEFT JOIN '.$p.'c_country c ON c.rowid=s.fk_pays WHERE s.entity='.$entity.' AND s.rowid='.(int)$invoices[0]['fk_soc']) : array();
         $complete=(bool)$parties && (bool)$invoices && (bool)$lines && count($lines)<=200;
         if (count($lines)>200) { array_pop($lines); }
-        $constants=self::rows($db,"SELECT entity,name,value FROM ".$p."const WHERE entity IN (0,".$entity.") AND name IN ('MAIN_INFO_SIREN','MAIN_INFO_SOCIETE_COUNTRY','MAIN_INFO_SOCIETE_NOM','MAIN_INFO_SOCIETE_ADDRESS','MAIN_INFO_SOCIETE_ZIP','MAIN_INFO_SOCIETE_TOWN','NORWAY_VAT_REGISTRATION_START','NORWAY_TAX_MAPPINGS_V1') ORDER BY entity,name");
+        $constants=self::rows($db,"SELECT entity,name,value FROM ".$p."const WHERE entity IN (0,".$entity.") AND name IN ('MAIN_INFO_SIREN','MAIN_INFO_SOCIETE_COUNTRY','MAIN_INFO_SOCIETE_NOM','MAIN_INFO_SOCIETE_ADDRESS','MAIN_INFO_SOCIETE_ZIP','MAIN_INFO_SOCIETE_TOWN','NORWAY_VAT_REGISTRATION_START','NORWAY_TAX_MAPPINGS_V1'".($supplier ? '' : ",'NORWAY_VAT_REGISTRATION_HISTORY_V1'").") ORDER BY entity,name");
         return array('source_complete'=>$complete,'posting'=>$posting,'invoice'=>$invoices ? $invoices[0] : null,'lines'=>$lines,'party'=>$parties ? $parties[0] : null,'settings'=>$constants);
     }
     /** Called only inside the core transaction; commits/rollbacks are owned by the core. */
@@ -63,7 +63,8 @@ class NorwayPostingEvidence
             if ($data['basis']!==$basis) { throw new RuntimeException('Posting observation replay changed'); }return 0;
         }
         $supplier=$basis['posting']['doc_type']==='supplier_invoice';
-        $data=array('version'=>$supplier ? ((int)$basis['posting']['fk_doc']>0 ? 7 : 5) : 3,'kind'=>self::TYPE,'entity'=>$entity,'posting_id'=>$id,'event'=>'BOOKKEEPING_CREATE','captured_at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$basis,'tax_context'=>$supplier ? NorwayPostingTaxContext::evaluatePurchase($basis,$entity) : NorwayPostingTaxContext::evaluate($basis,$entity),'registration_context'=>$supplier ? null : NorwayPostingRegistrationContext::evaluate($basis,$entity));
+        $history=!$supplier && NorwayPostingRegistrationContext::usesHistory($basis,$entity);
+        $data=array('version'=>$supplier ? ((int)$basis['posting']['fk_doc']>0 ? 7 : 5) : ($history ? 8 : 3),'kind'=>self::TYPE,'entity'=>$entity,'posting_id'=>$id,'event'=>'BOOKKEEPING_CREATE','captured_at'=>gmdate('Y-m-d H:i:s'),'user'=>(int)$user->id,'basis'=>$basis,'tax_context'=>$supplier ? NorwayPostingTaxContext::evaluatePurchase($basis,$entity) : NorwayPostingTaxContext::evaluate($basis,$entity),'registration_context'=>$supplier ? null : ($history ? NorwayPostingRegistrationContext::history($basis,$entity) : NorwayPostingRegistrationContext::evaluate($basis,$entity)));
         if ($supplier && $data['version']===7) { $data['deduction_context']=NorwayPurchaseDeduction::captureContext($db,$entity,(int)$basis['posting']['fk_doc'],$basis);NorwayPurchasePosting::assertAllocationPath($data['deduction_context'],$entity,(int)$basis['posting']['fk_doc']); }
         $json=self::encode($data);$hash=hash('sha256',$json);
         $sql="INSERT INTO ".$p."norway_tax_evidence (entity,document_type,fk_document,revision,captured_at,fk_user,mapping_revision,payload,payload_sha256) VALUES (".$entity.",'".self::TYPE."',".$id.",1,'".$data['captured_at']."',".(int)$user->id.",0,'".$db->escape($json)."','".$hash."')";
@@ -73,14 +74,15 @@ class NorwayPostingEvidence
     {
         if (strlen($row['payload'])>self::BYTES || !hash_equals($row['payload_sha256'],hash('sha256',$row['payload']))) { throw new RuntimeException('Posting observation integrity'); }
         $data=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);
-        if (!in_array($data['version'] ?? null,array(1,2,3,4,5,6,7),true) || ($data['kind'] ?? null)!==self::TYPE || ($data['event'] ?? null)!=='BOOKKEEPING_CREATE'
+        if (!in_array($data['version'] ?? null,array(1,2,3,4,5,6,7,8),true) || ($data['kind'] ?? null)!==self::TYPE || ($data['event'] ?? null)!=='BOOKKEEPING_CREATE'
             || ($data['entity'] ?? null)!==$entity || ($data['posting_id'] ?? null)!==$id || !is_array($data['basis'] ?? null)
             || !is_int($data['user'] ?? null) || $data['user']<=0 || !is_string($data['captured_at'] ?? null)
             || !is_bool($data['basis']['source_complete'] ?? null) || !is_array($data['basis']['lines'] ?? null) || count($data['basis']['lines'])>200 || !is_array($data['basis']['settings'] ?? null)
-            || !array_key_exists('invoice',$data['basis']) || ($data['basis']['posting']['doc_type'] ?? null)!==($data['version']>=4 ? 'supplier_invoice' : 'customer_invoice')
+            || !array_key_exists('invoice',$data['basis']) || ($data['basis']['posting']['doc_type'] ?? null)!==(in_array($data['version'],array(4,5,6,7),true) ? 'supplier_invoice' : 'customer_invoice')
             || (int)($data['basis']['posting']['rowid'] ?? 0)!==$id || (int)($data['basis']['posting']['entity'] ?? 0)!==$entity) { throw new RuntimeException('Posting observation metadata'); }
-        if (in_array($data['version'],array(2,3),true) && ($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting tax context integrity'); }
+        if (in_array($data['version'],array(2,3,8),true) && ($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting tax context integrity'); }
         if ($data['version']===3 && ($data['registration_context'] ?? null)!==NorwayPostingRegistrationContext::evaluate($data['basis'],$entity)) { throw new RuntimeException('Posting registration context integrity'); }
+        if ($data['version']===8 && (!NorwayPostingRegistrationContext::usesHistory($data['basis'],$entity) || ($data['registration_context'] ?? null)!==NorwayPostingRegistrationContext::history($data['basis'],$entity))) { throw new RuntimeException('Posting history context integrity'); }
         if ($data['version']===4 && (!array_key_exists('tax_context',$data) || $data['tax_context']!==null || !array_key_exists('registration_context',$data) || $data['registration_context']!==null)) { throw new RuntimeException('Supplier observation is not tax qualification'); }
         if (in_array($data['version'],array(5,6,7),true) && (($data['tax_context'] ?? null)!==NorwayPostingTaxContext::evaluatePurchase($data['basis'],$entity) || !array_key_exists('registration_context',$data) || $data['registration_context']!==null)) { throw new RuntimeException('Purchase tax context integrity'); }
         if (in_array($data['version'],array(6,7),true)) {

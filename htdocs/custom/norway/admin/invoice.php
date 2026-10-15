@@ -166,6 +166,7 @@ if (GETPOSTISSET('id')) {
                             $registrationContext=$observation['data']['registration_context'] ?? null;
                             print '<p>'.$langs->trans('NorwayPostingRegistration'.($registrationContext ? $registrationContext['status'] : 'Legacy'));
                             if ($registrationContext && $registrationContext['start']!=='') { print ' '.dol_escape_htmltag($registrationContext['invoice_date'].' / '.$registrationContext['start']); }
+                            if ($registrationContext && ($registrationContext['version'] ?? 1)===2) { print ' / #'.(int)$registrationContext['history_revision'].' / '.dol_escape_htmltag($registrationContext['end']); }
                             if ($registrationContext && $registrationContext['credit']) { print ' '.$langs->trans('NorwayPostingRegistrationCredit'); }print '</p>';
                             $context=$observation['data']['tax_context'] ?? null;
                             print '<p>'.$langs->trans('NorwayPostingTax'.($context ? $context['status'] : 'Legacy')).'</p>';
@@ -241,8 +242,7 @@ if (GETPOSTISSET('id')) {
             } catch (InvalidArgumentException $error) { print '<div class="error">'.$langs->trans('NorwayMappingInvalid').'</div>'; }
         }
         try {
-            $registration=NorwayVatRegistration::read($db,$conf->entity,$mysoc->idprof1);
-            $result=NorwayVatRegistration::compare($registration,dol_print_date($invoice->date,'%Y-%m-%d'));
+            $result=NorwayVatHistory::current($db,(int)$conf->entity,$mysoc->idprof1,dol_print_date($invoice->date,'%Y-%m-%d'));
             print '<div class="warning">'.$langs->trans('NorwayRegistration'.$result).'</div>';
         } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayRegistrationFailed').'</div>'; }
     }

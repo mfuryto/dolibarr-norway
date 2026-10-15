@@ -50,3 +50,12 @@ foretaksidentitet og eldre payloadversjoner. Skatteetatens
 beskriver skillet mellom avgiftspliktig omsetning og tidspunktet avgift kan
 anføres, samt etterfakturering og kreditnota med ny faktura. Derfor innføres
 ikke en generell datosperre fra én virkningsdato.
+
+## Videreføring fra 0.62.0
+
+Den opprinnelige første datoen beholdes. Valgfri, bekreftet
+[registreringshistorikk](vat-registration-history.md) støtter retting, avslutning
+og ny periode uten å erstatte tidligere versjoner. Oppsettet nås fra
+Regnskap → Innstillinger → Norsk regnskapsoppsett → MVA-registrering.
+Når historikk er aktivert, brukes denne til nye datosammenligninger; eldre
+observasjoner beholder første-dato-tolkningen sin.
