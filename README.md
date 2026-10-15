@@ -96,6 +96,14 @@ oppdatering og gjenoppretting.
 Se [installasjonsveiledningen](docs/vps-installation.md) for proxyoppsett,
 oppdatering og sikkerhetskopiering.
 
+## Videre utvikling
+
+Videre arbeid prioriterer forenkling og gjenbruk av Dolibarrs funksjoner.
+Eksisterende kontroll- og historikktillegg gjennomgås før nye bygges.
+Tilleggskode skal dekke et dokumentert norsk gap eller et uttrykkelig bestilt
+behov. Implementerte ekstrakontroller skal ikke forstås som lovpålagte trinn.
+Se den [oppdaterte arbeidsplanen](docs/delivery-plan.md).
+
 ## Regnskapsmessig omfang
 
 Modulen gir norsk oppsett og kontroller, men full norsk MVA-rapportering,
