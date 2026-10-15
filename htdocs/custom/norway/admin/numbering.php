@@ -63,6 +63,6 @@ try {
         }
     }
 } catch (Throwable $error) { print '<div class="error">'.$langs->trans('NorwayNumberingFailed').'</div>'; }
-print '<p><a href="'.dol_buildpath('/norway/admin/documents.php',1).'">'.$langs->trans('NorwayDocuments').'</a></p>';
+print '<p><a href="'.dol_buildpath('/admin/invoice.php',1).'">'.$langs->trans('NorwayDocuments').'</a></p>';
 print '<p><a href="'.dol_buildpath('/norway/admin/wizard.php',1).'?step=7">'.$langs->trans('NorwayWizard').'</a></p></div>';
 llxFooter(); $db->close();

@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Lesekontroll av fakturaens MVA-beløp
 
 Fra 0.22.0 viser Norsk fakturakontroll lagret netto, MVA-sats og MVA-beløp per linje,

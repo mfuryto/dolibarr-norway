@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Bruk [gjeldende plan](delivery-plan.md) og kjernens arbeidsflyt. Eldre data beholdes i arkivet.
+
 # Kontroll av salg uten beregnet MVA
 
 Fra 0.61.0 finnes en skrivebeskyttet konsistenskontroll i fakturaens eksisterende

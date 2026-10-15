@@ -1,8 +1,6 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayInvoiceCheck.php';
-require_once __DIR__.'/NorwayVatRegistration.php';
-require_once __DIR__.'/NorwayVatHistory.php';
 /** Minimum field validation only; does not approve VAT treatment or legal compliance. */
 class NorwayInvoiceValidation
 {
@@ -24,17 +22,6 @@ class NorwayInvoiceValidation
         $tax=(float)($invoice->total_tva ?? 0)!==0.0;
         foreach ($invoice->lines ?? array() as $line) { $tax=$tax || (float)($line->tva_tx ?? 0)!==0.0 || (float)($line->total_tva ?? 0)!==0.0; }
         return $tax;
-    }
-
-    /** Advisory in the native validation workflow, never an inferred permission to charge VAT. */
-    public static function registrationWarning($db,$invoice,$seller,$entity)
-    {
-        if (!self::hasVat($invoice)) { return ''; }
-        if ((int)$invoice->type===2) { return 'Credit'; }
-        try {
-            $status=NorwayVatHistory::current($db,$entity,$seller->idprof1 ?? '',dol_print_date($invoice->date,'dayrfc'));
-            return in_array($status,array('After','HistoryCovered'),true) ? '' : $status;
-        } catch (Throwable $error) { return 'Unavailable'; }
     }
 
     public static function loadAndCheck($db, $invoice, $seller, $entity)

@@ -36,6 +36,6 @@ try {
         print '<form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="savevataccounts"><input type="hidden" name="preview_nonce" value="'.$nonce.'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayVatAccountsConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayDefaultsConfirm').'</button></form>';
     } else { unset($_SESSION['norway_vat_accounts']);print '<p>'.$langs->trans($blocked ? 'NorwayDefaultsBlocked' : 'NorwayDefaultsNothing').'</p>'; }
 } catch (Throwable $error) { unset($_SESSION['norway_vat_accounts']);print '<div class="error">'.$langs->trans('NorwayDefaultsFailed').'</div>'; }
-foreach (array('/custom/norway/admin/vat.php'=>'NorwayVatSetup','/custom/norway/admin/standardaccounts.php'=>'NorwayStandardTitle','/admin/dict.php?id=10'=>'NorwayVatSetupDictionary') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
+foreach (array('/admin/dict.php?id=10'=>'NorwayVatSetup','/custom/norway/admin/standardaccounts.php'=>'NorwayStandardTitle','/admin/dict.php?id=10'=>'NorwayVatSetupDictionary') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
 print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/vat-accounts.md" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayStandardSources').'</a></p>';
 print '</div>';llxFooter();$db->close();

@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Kjøpsfordeling i leverandørfakturabildet
 
 Fra 0.50.0, utvidet i 0.51.0 og 0.53.0, videre arbeid under A2. Dolibarrs leverandørfakturaer må være

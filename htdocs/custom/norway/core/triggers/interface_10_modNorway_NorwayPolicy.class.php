@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.64.0';
+        $this->version = '0.65.0';
         $this->picto = 'accountancy';
     }
 
@@ -17,9 +17,9 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
     {
         if (!isModEnabled('norway')) { return 0; }
         if ($action==='BOOKKEEPING_CREATE') {
-            require_once __DIR__.'/../../class/NorwayPostingEvidence.php';
-            try { NorwayPostingEvidence::capture($this->db,(int)$conf->entity,$object,$user); }
-            catch (Throwable $error) { $langs->load('norway@norway');$message=$error->getMessage()==='ConfirmedDeductionRequired' ? 'NorwayPurchasePostingUseConfirmed' : (in_array($error->getMessage(),array('AlreadyPosted','ProtectedVoucher'),true) ? 'NorwayPurchasePostingAlreadyPosted' : 'NorwayPostingCaptureFailed');$this->error=$langs->trans($message);$object->error=$this->error;return -1; }
+            require_once __DIR__.'/../../class/NorwayLegacyArchive.php';
+            try { NorwayLegacyArchive::guardPosting($this->db,(int)$conf->entity,$object); }
+            catch (Throwable $error) { $langs->load('norway@norway');$this->error=$langs->trans('NorwayArchiveProtected');$object->error=$this->error;return -1; }
             return 0;
         }
         $reason = '';
@@ -48,10 +48,6 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
                 $object->error = $this->error;
                 return -1;
             }
-        }
-        if ($reason==='' && $action==='BILL_VALIDATE') {
-            $warning=NorwayInvoiceValidation::registrationWarning($this->db,$object,$GLOBALS['mysoc'],$conf->entity);
-            if ($warning!=='') { $langs->load('norway@norway');setEventMessages($langs->trans('NorwayRegistrationWarning'.$warning),null,'warnings'); }
         }
         if ($reason !== '') {
             $langs->load('norway@norway');

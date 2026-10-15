@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Bruk [gjeldende plan](delivery-plan.md) og kjernens arbeidsflyt. Eldre data beholdes i arkivet.
+
 # Kontrollkopier av fakturagrunnlag
 
 Fra modul 0.34.0 har fakturakontrollen lenken **Kontrollkopier av fakturagrunnlag**.

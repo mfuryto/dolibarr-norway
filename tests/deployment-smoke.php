@@ -27,27 +27,14 @@ if (getenv('NORWAY_EXPECT_EMPTY') === '1') {
         verify((bool) $result && (int) $db->fetch_object($result)->n === 0, 'New installation contains accounting data');
     }
 }
-if (getenv('NORWAY_EXPECT_DOCUMENTARY_SENTINEL')==='1') {
-    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('DOLI_DB_NAME')==='accounting','Synthetic documentary guard missing');
-    foreach (array('facture'=>1,'facture_fourn'=>0,'accounting_bookkeeping'=>2) as $table=>$count) {
-        $r=$db->query('SELECT COUNT(*) n FROM '.$db->prefix().$table);verify($r && (int)$db->fetch_object($r)->n===$count,'Unexpected accounting data outside documentary fixture');
-    }
-    $r=$db->query("SELECT rowid FROM ".$db->prefix()."facture WHERE entity=".(int)$conf->entity." AND ref='SYN-DOCUMENTARY-BACKUP'");$invoice=$r ? $db->fetch_object($r) : null;
-    verify((bool)$invoice,'Documentary fixture invoice missing');
-    $r=$db->query("SELECT COUNT(*) n FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoice->rowid." AND doc_ref='SYN-DOCUMENTARY-BACKUP'");
-    verify($r && (int)$db->fetch_object($r)->n===2,'Documentary fixture posting source changed');
-}
+
 if (getenv('NORWAY_TEST_JOURNALS') === '1') {
     verify(getenv('DOLI_COMPANY_NAME') === 'SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY') === '1', 'Synthetic journal guard missing');
     $banks=$db->query('SELECT COUNT(*) AS n FROM '.$db->prefix().'bank_account');
     verify($banks && (int)$db->fetch_object($banks)->n===0,'Journal fixture requires no bank accounts');
     verify((bool)$db->query('DELETE FROM '.$db->prefix().'accounting_journal WHERE entity='.(int)$conf->entity),'Journal fixture reset failed');
 }
-if (getenv('NORWAY_TEST_REGISTRATION')==='1') {
-    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY')==='1','Synthetic registration guard missing');
-    require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
-    verify(dolibarr_set_const($db,'MAIN_INFO_SIREN','123456785','chaine',0,'Synthetic identity',(int)$conf->entity)>0,'Registration fixture identity failed');
-}
+
 $cookie = tempnam(sys_get_temp_dir(), 'norway-deploy-http-');
 $curl = curl_init();
 $proxyCookies = array();
@@ -92,8 +79,7 @@ try {
         'loginfunction' => 'loginfunction', 'username' => getenv('DOLI_ADMIN_LOGIN'), 'password' => getenv('DOLI_ADMIN_PASSWORD')));
     forwardProxyCookies();
     $body = page('/custom/norway/admin/setup.php');
-    verify(strpos($body, 'Ikke klart for produksjonsregnskap.') !== false
-        || strpos($body, 'Not ready for production accounting.') !== false, 'Authenticated module page missing');
+    verify(strpos($body,'/norway/admin/wizard.php')!==false && strpos($body,'SAF-T')!==false,'Authenticated module page missing');
     $company=page('/admin/company.php');
     verify(strpos(html_entity_decode($company,ENT_QUOTES,'UTF-8'),'ENK — Enkeltpersonforetak')!==false
         && strpos($company,'Organisasjonsnummer')!==false && strpos($company,'Organisasjonsform')!==false,'Norwegian company fields or legal forms missing');
@@ -104,14 +90,6 @@ try {
         }
     }
     verify($secure, 'Session cookie is not Secure behind HTTPS proxy');
-    $registration=page('/custom/norway/admin/registration.php');
-    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($registration,'NorwayRegistration')===false,'Registration page missing or untranslated');
-    $vat=page('/custom/norway/admin/vat.php');
-    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($vat,'NorwayVatSetup')===false && strpos($vat,'<form')===false && strpos($vat,'dict.php?id=10')!==false,'VAT report missing or writable');
-    $periods=page('/custom/norway/admin/periods.php?date=2024-02-29');
-    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($periods,'NorwayPeriods')===false && strpos($periods,'method="post"')===false && strpos($periods,'fiscalyear.php')!==false,'Period report missing or writable');
-    $documents=page('/custom/norway/admin/documents.php');
-    verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && strpos($documents,'NorwayDocuments')===false && strpos($documents,'<form')===false && strpos($documents,'admin/invoice.php')!==false,'Document setup report missing or writable');
     $profile = page('/custom/norway/admin/profile.php');
     verify(strpos($profile, 'NORWAY-NO-1') !== false && strpos($profile, 'value="installprofile"') !== false,
         'Norwegian chart preview or confirmation missing');
@@ -133,16 +111,7 @@ try {
         $defaults = page('/custom/norway/admin/defaults.php');
         verify(strpos($defaults,'Lagringen kunne ikke bekreftes')!==false || strpos($defaults,'Saving could not be confirmed')!==false, 'Defaults confirmation replay accepted');
     }
-    if (getenv('NORWAY_EXPECT_DOCUMENTARY_SENTINEL')==='1') {
-    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('DOLI_DB_NAME')==='accounting','Synthetic documentary guard missing');
-    foreach (array('facture'=>1,'facture_fourn'=>0,'accounting_bookkeeping'=>2) as $table=>$count) {
-        $r=$db->query('SELECT COUNT(*) n FROM '.$db->prefix().$table);verify($r && (int)$db->fetch_object($r)->n===$count,'Unexpected accounting data outside documentary fixture');
-    }
-    $r=$db->query("SELECT rowid FROM ".$db->prefix()."facture WHERE entity=".(int)$conf->entity." AND ref='SYN-DOCUMENTARY-BACKUP'");$invoice=$r ? $db->fetch_object($r) : null;
-    verify((bool)$invoice,'Documentary fixture invoice missing');
-    $r=$db->query("SELECT COUNT(*) n FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoice->rowid." AND doc_ref='SYN-DOCUMENTARY-BACKUP'");
-    verify($r && (int)$db->fetch_object($r)->n===2,'Documentary fixture posting source changed');
-}
+
 if (getenv('NORWAY_TEST_JOURNALS') === '1') {
         $journals=page('/custom/norway/admin/journals.php');
         verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$journals,$journalToken)===1
@@ -183,47 +152,7 @@ if (getenv('NORWAY_TEST_JOURNALS') === '1') {
             verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Bank mapping CSRF guard missing');
         } finally { verify((bool)$db->query('DELETE FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture),'Bank fixture cleanup failed'); }
     }
-    if (getenv('NORWAY_TEST_REGISTRATION')==='1') {
-        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php');
-        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$registration,$registrationToken)===1,'Registration preview missing');
-        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php',array('action'=>'previewregistration','token'=>html_entity_decode($registrationToken[1]),'start'=>'2024-02-29'));
-        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$registration,$registrationToken)===1 && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$registration,$registrationNonce)===1,'Registration confirmation missing');
-        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>html_entity_decode($registrationToken[1]),'preview_nonce'=>$registrationNonce[1],'confirmed'=>'1'));
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Registration save did not redirect');
-        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php?date=2024-02-28');
-        verify(strpos($registration,'2024-02-29')!==false && (strpos(html_entity_decode($registration,ENT_QUOTES,'UTF-8'),'før lagret virkningsdato')!==false || strpos($registration,'precedes the recorded effective date')!==false),'Recorded registration date/comparison missing');
-        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>html_entity_decode($registrationToken[1]),'preview_nonce'=>$registrationNonce[1],'confirmed'=>'1'));
-        forwardProxyCookies(); $registration=page('/custom/norway/admin/registration.php');
-        verify(strpos($registration,'kunne ikke bekreftes')!==false || strpos($registration,'could not be confirmed')!==false,'Registration replay accepted');
-        forwardProxyCookies(); page('/custom/norway/admin/registration.php',array('action'=>'saveregistration','token'=>'invalid','confirmed'=>'1'));
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Registration CSRF rejection missing');
-        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US');
-        verify(strpos($mapping,'NorwayMappings')===false && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping form missing');
-        $mapInput=array('action'=>'previewmapping','token'=>html_entity_decode($mapToken[1]),'rule'=>'0','source'=>'SYNMAP','target'=>'3','start'=>'2026-01-01','end'=>'2026-12-31','direction'=>'sale');
-        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US',$mapInput);
-        verify(preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$mapping,$mapNonce)===1 && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping confirmation missing');
-        $mapSave=array('action'=>'savemapping','token'=>html_entity_decode($mapToken[1]),'preview_nonce'=>$mapNonce[1],'confirmed'=>'1');
-        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Mapping save did not redirect');
-        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?rule=1&lang=en_US');
-        verify(strpos($mapping,'SYNMAP')!==false && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Stored mapping edit missing');
-        $mapInput['rule']='1'; $mapInput['target']='31'; $mapInput['token']=html_entity_decode($mapToken[1]);
-        forwardProxyCookies(); $mapping=page('/custom/norway/admin/taxmappings.php?lang=en_US',$mapInput);
-        verify(strpos($mapping,'Previous version')!==false && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$mapping,$mapNonce)===1 && preg_match('/name="token"[^>]*value="([^"]+)"/',$mapping,$mapToken)===1,'Mapping correction preview missing');
-        $mapSave['token']=html_entity_decode($mapToken[1]); $mapSave['preview_nonce']=$mapNonce[1];
-        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Mapping correction did not redirect');
-        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',$mapSave);
-        // Core CSRF can reject before the consumed nonce is evaluated. Both paths must preserve history.
-        verify(in_array(curl_getinfo($curl,CURLINFO_HTTP_CODE),array(302,403),true),'Mapping replay was not rejected or redirected');
-        $mapRows=$db->query("SELECT value FROM ".$db->prefix()."const WHERE entity=".(int)$conf->entity." AND name='NORWAY_TAX_MAPPINGS_V1'");
-        $mapRecord=$mapRows ? $db->fetch_object($mapRows) : null;
-        $mapHistory=$mapRecord ? json_decode($mapRecord->value,true) : null;
-        verify(is_array($mapHistory) && count($mapHistory['events'])===2,'Mapping replay changed stored history');
-        forwardProxyCookies(); page('/custom/norway/admin/taxmappings.php',array('action'=>'savemapping','token'=>'invalid','confirmed'=>'1'));
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Mapping CSRF guard bypassed');
 
-    }
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";
 } finally {
     $db->close();

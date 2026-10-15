@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Prøve en avgiftsmapping uten lagring
 
 Fra 0.29.0 har Norsk fakturakontroll en egen forhåndsvisning under linjebeløpene.

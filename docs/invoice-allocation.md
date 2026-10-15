@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Kontroll av bokført kunde-, salgs- og MVA-fordeling
 
 Fra 0.42.0, første avgrensede del av A2 i [arbeidsplanen](delivery-plan.md).

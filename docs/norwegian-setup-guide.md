@@ -1,10 +1,14 @@
 # Samlet veiledning for norsk oppsett
 
-Kontrollert 2026-10-11 mot modul 0.25.0 og støttet Dolibarr 24.0.1. Start her etter [teknisk installasjon](vps-installation.md). Åpne Norway-moduloppsettet → Norsk oppsettsveiviser for elleve veiledningssteg inne i Dolibarr. Veiviseren viser én oppgaverekkefølge per steg med forklarte knapper til innstillingssidene. Knapper åpner ny fane; lagring skjer på siden som åpnes. Dagens innstillinger og tilleggskontroller har egne sammenfoldede seksjoner. Foretaksvalg lagres på innstillingssidene. Fra 0.24.0 kan administrator lagre egen arbeidsstatus per steg; den er ikke en regnskapsfaglig godkjenning. Se [veiviserens omfang](setup-wizard.md).
+Oppdatert for modul 0.65.0 og støttet Dolibarr 24.0.1. Start etter
+[teknisk installasjon](vps-installation.md). Oppsettsveilederen viser
+forklaringer og lenker til innstillingene. Lagring skjer på innstillingssiden;
+veilederen har ingen egen status eller godkjenning. Bruk kjernens dokumenter
+og regnskap i det daglige. Se [veilederens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
-Dette dokumentet samler norske oppsettforhold, men erklærer ikke komplett lovdekning. Omfanget er ett norsk foretak, NOK-salgsdokumenter og norsk/engelsk. ENK og programvaresalg er første utviklingsprofil. Andre foretaksformer, ansatte, kontantsalg og særregler må vurderes særskilt. Full norsk MVA-rapport, SAF-T, kvalifisert EHF og produksjonsaksept gjenstår.
+Dette dokumentet samler norske oppsettforhold, men erklærer ikke komplett lovdekning. Omfanget er ett norsk foretak, NOK-salgsdokumenter og norsk/engelsk. Modulen er generell for varer og tjenester. Andre foretaksformer, ansatte, kontantsalg og særregler må vurderes særskilt. Full norsk MVA-rapport, SAF-T, kvalifisert EHF og produksjonsaksept gjenstår.
 
 ## 1. Avklar virksomheten før oppsett
 
@@ -26,7 +30,7 @@ Uklarheter merkes «må avklares», ikke automatisk «ikke relevant». Lagre ikk
 
 **Manuelt:** Åpne Dolibarrs oppsett for firma/organisasjon. Lagre Norge som land før landavhengige felt fylles inn. Se [feltforklaring og norske organisasjonsformer](company-setup.md). Fyll inn registrert navn, organisasjonsnummer, adresse, postnummer, sted, land Norge og kontaktopplysninger. Velg NOK som basisvaluta. Kontroller faktiske registreringer; en kontrollsifferkontroll bekrefter bare nummerformat.
 
-Åpne Norway → foretaks-/moduloppsett og gjennomgå kontrollresultatene. Registeroppslaget sammenligner dagens opplysninger med Brønnøysundregistrene, men endrer ikke MVA-innstillinger. Se [registerkontroll](registry.md).
+Åpne foretaksoppsettet og gjennomgå opplysningene. Registeroppslaget sammenligner dagens opplysninger med Brønnøysundregistrene, men endrer ikke MVA-innstillinger. Se [registerkontroll](registry.md).
 
 Opprett personlige brukere og avgrens rettigheter for administrasjon, fakturavalidering, bank, bokføring og eksport. Bruk HTTPS og privat oppbevaring av passord og sikkerhetskopier. Regnskapsfører kan gis nødvendige rettigheter uten deling av administratorkonto.
 
@@ -38,13 +42,15 @@ Opprett personlige brukere og avgrens rettigheter for administrasjon, fakturaval
 
 Velg behandling for hver aktuell type salg og kjøp: norsk avgiftspliktig omsetning, fritak, unntak, salg før registrering, utenlandssalg og kjøp med omvendt avgiftsplikt. Disse kan ikke slås sammen til én generell «0 %»-regel. Fradragsrett og eventuell delvis fradragsrett må vurderes separat fra satsen. Se [avgiftssatser](https://www.skatteetaten.no/satser/merverdiavgift) og [fjernleverbare tjenester kjøpt fra utlandet](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-3/M-3-30/M-3-30.3/).
 
-**Delvis levert:** modulen kontrollerer satsdekning og hindrer enkelte feil ved fakturavalidering. En kontroll som etterlyser 15 eller 12 prosent betyr ikke at programvaresalg skal bruke disse satsene. Kjernens gamle norske satser må ikke brukes ukritisk.
+**Delvis levert:** modulen kontrollerer satsdekning og hindrer enkelte feil ved fakturavalidering. Velg bare satsene som gjelder dine varer og tjenester. Kjernens gamle norske satser må ikke brukes ukritisk.
 
-Fra 0.20.0 viser [MVA-kontokontrollen](vat-setup.md) aktive norske satsrader, egne satskontoer og standardkontoer som reserve. Den kontrollerer kontoenes tilgjengelighet, ikke avgiftsbehandling eller rapporteringskoder.
+MVA-kontoer velges under Regnskap → Innstillinger. Modulen har oppsetthjelp
+for norske satsrader i nye regnskap. Det er ingen egen registreringshistorikk
+eller avgiftskodekobling å vedlikeholde i modulen. Bevar vedtak og annet
+registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
-Fra 0.21.0 kan [én MVA-virkningsdato lagres etter eksplisitt bekreftelse](vat-registration.md). Den endrer ingen MVA-status eller bilag. Flere perioder og retting av registreringsgrunnlaget er ikke implementert.
-
-**Gjenstår:** historiske registreringsperioder, komplett avgiftskode-/kontomapping, fradragsbehandling og sporbar norsk MVA-rapport. Ikke endre gamle bilag ved å omskrive dagens satser. En grønn satskontroll er ikke aksept av MVA-oppsettet.
+**Gjenstår:** komplett norsk MVA-rapportering, eksport og faglig kvalifisering
+av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
 
 ## 4. Kontoplan, standardkontoer og journaler
 
@@ -58,7 +64,7 @@ i ENK uten ansatte. Se [veiledning for skattekontoer](tax-accounts.md).
 
 **Eksplisitt installering:** Norway → Installer norsk kontoplan oppretter og velger den medfølgende planen etter forhåndsvisning og bekreftelse. Oppsett med andre kontoer/historikk erstattes ikke. Planen har 745 kontoer fra en dokumentert, lisensiert Odoo-kilde; dette er ikke en sertifisert kopi av en norsk standardpublikasjon. Se [kontoplaninstallering](norwegian-chart.md).
 
-**Manuelt:** Åpne Norway → Kontroll av kontoplan og bokføringsoppsett, deretter standardkontoene via lenken. Vurder forslagene samlet:
+**Manuelt:** Åpne Regnskap → Innstillinger → Norsk regnskapsoppsett, deretter standardkontoene. Vurder forslagene samlet:
 
 | Kobling | Forslag fra medfølgende plan | Avgrensning |
 |---|---|---|
@@ -79,7 +85,7 @@ Fra 0.14.0 kan [manglende journaltyper opprettes etter bekreftelse](journal-setu
 
 Fra 0.17.0 finnes [bekreftet utfylling av manglende bankkoblinger](bank-defaults.md) for én ny ordinær NOK-bankkonto uten historikk. Eksisterende koblinger beholdes; øvrige oppsett gjennomgås manuelt.
 
-Bankdelen i Norway-kontrollen viser åpne konti og konto-/journal-/valutakoblinger. Feil journaltype, manglende kobling og delte bokføringskontoer fremgår. Lukkede konti og historiske bevegelser undersøkes ikke.
+Bruk kjernens bankkontooppsett og hovedbok for konto-/journal-/valutakoblinger og avstemming.
 
 **Automatisk:** sjekkfunksjoner deaktiveres i støttet norsk oppsett. **Gjenstår:** full bank- og reskontroavstemming. Bankgebyr, kort-/formidleroppgjør, delbetaling, refusjon og underbetaling må behandles særskilt. Ikke marker en faktura fullt betalt bare fordi et nettobeløp er mottatt.
 
@@ -87,7 +93,7 @@ Bankdelen i Norway-kontrollen viser åpne konti og konto-/journal-/valutakobling
 
 **Manuelt:** Registrer korrekt navn, adresse, organisasjons-/avgiftsidentitet der relevant, land, kunde-/leverandørrolle og språk. Et prospekt er en mulig kunde; samme motpart kan være både kunde og leverandør. Velg norsk eller engelsk per kunde og kontroller dokumentets språk ved generering.
 
-Opprett programvaren som den leveransetypen som faktisk brukes. Angi tydelig beskrivelse, NOK-pris, relevant avgiftsbehandling og salgskonto. Kontroller produkt- og motpartskoblinger som kan overstyre standardkontoene. For abonnement: dokumenter avtale-/leveringsperiode og faktureringsrytme; faktureringsdato er ikke alene grunnlag for periodisering.
+Opprett varer og tjenester som den leveransetypen som faktisk brukes. Angi tydelig beskrivelse, NOK-pris, relevant avgiftsbehandling og salgskonto. Kontroller produkt- og motpartskoblinger som kan overstyre standardkontoene. For abonnement: dokumenter avtale-/leveringsperiode og faktureringsrytme; faktureringsdato er ikke alene grunnlag for periodisering.
 
 **Automatisk:** nye salgsdokumenter begrenses til NOK. EUR-kalkulatoren gir bare veiledende pris. Utenlandske leverandørbilag og bankens veksling er ikke dermed løst regnskapsmessig. Se [salgsdokumenter](sales-documents.md).
 
@@ -97,7 +103,7 @@ Opprett programvaren som den leveransetypen som faktisk brukes. Angi tydelig bes
 
 Kontroller på det faktiske dokumentet: dato og nummer, selgeridentitet og korrekt MVA-merking, kjøperidentitet, konkret leveransebeskrivelse, leveringstid/-sted der relevant, grunnlag/avgift og totalsum i NOK, betalingsfrist og kreditnotareferanse. Ulike avgiftsbehandlinger må kunne skilles. Foretaksform kan kreve ytterligere registertekst. Se [Altinns fakturakrav](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/faktura-salgsdokumentasjon/).
 
-Fra 0.18.0 samler [kontroll av dokumentoppsett](document-setup.md) gjeldende nummereringsmoduler, nummermasker, effektive PDF-valg og språk uten å reservere numre eller endre dokumenter.
+Velg nummerserier i veilederens steg 7 og dokumentmodeller i kjernens faktura- og tilbudsoppsett.
 
 **Delvis levert:** fakturatrigger og PDF-tilpasninger dekker deler av dette. De garanterer ikke alle opplysninger på alle dokumentmodeller. Prøvde modeller er azur for tilbud og sponge for faktura. Fritekst oversettes ikke automatisk. Rett utstedte feil gjennom dokumentert kreditnota-/rettingsflyt, ikke sletting av historikk.
 
@@ -116,11 +122,11 @@ kunder. Se KR16 og fristene i [norsk kravregister](norwegian-requirements.md).
 
 **Manuelt:** Ved overgang avstemmes bank, åpne kundefordringer, leverandørgjeld, MVA, eiendeler, gjeld og egenkapital mot gammelt system på samme dato. Bevar kildedokumenter og revisjonsspor. Import av kontoer er ikke import av saldoer eller åpne poster. Oppsettveiledningen skal ikke foreslå syntetiske startbilag i drift.
 
-Fra 0.19.0 gir [kontroll av regnskapsperioder](period-setup.md) oversikt over datodekning, overlapp og eksisterende periodestatus. Den åpner/lukker ingen perioder.
+Bruk kjernens regnskapsperioder for datodekning og periodestatus.
 
 Avklar regnskapsår, bilagsdatoer, periodisering, godkjenning, periodelåsing og retting. Dokumenter rutiner for faktura, kjøp, betaling, gebyr, kreditnota, manuelle bilag og månedlig avstemming. For ENK skilles private bevegelser fra virksomhetens kostnader og eiertransaksjoner vurderes særskilt. Andre foretaksformer krever egne vurderinger.
 
-**Gjenstår:** kvalifisering av hele avslutnings-/låseflyten og alle pliktige norske spesifikasjoner. Norway-bilagskontrollen kontrollerer debet/kredit og enkelte dokumentkoblinger; den erstatter ikke reskontro-, bank- eller MVA-avstemming.
+**Gjenstår:** kvalifisering av hele avslutnings-/låseflyten og alle pliktige norske spesifikasjoner. Bruk kjernens hovedbok og rapporter for avstemming av reskontro, bank og MVA.
 
 ## 10. Rapportering, oppbevaring og sikker drift
 

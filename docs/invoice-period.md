@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Fakturakontroll for periode
 
 Fra 0.26.0: åpne Norsk oppsettsveiviser → steg 7 → Flere kontroller og innstillinger

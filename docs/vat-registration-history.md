@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Bruk [gjeldende plan](delivery-plan.md) og kjernens arbeidsflyt. Eldre data beholdes i arkivet.
+
 # MVA-registreringshistorikk
 
 Fra 0.62.0: Regnskap → Innstillinger → Norsk regnskapsoppsett →

@@ -1,3 +1,6 @@
+> Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
+> Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
+
 # Kontroll av faktura- og tilbudsoppsett
 
 Fra modul 0.18.0 finnes en skrivebeskyttet side via **Norsk oppsettsveiviser → steg 7 → Kontroll av faktura- og tilbudsoppsett** og modulens oppsettsside. Den samler valgene som ellers ligger i separate innstillinger for faktura og tilbud.

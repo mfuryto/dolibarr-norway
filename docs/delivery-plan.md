@@ -1,8 +1,8 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15 etter prosjekteiers presisering om forenkling.
-Gjeldende programversjon er 0.64.0. Dette er en endring av arbeidsretning,
-ikke en ny programleveranse. [Leveransehistorikken](delivery-history.md)
+Gjeldende programversjon er 0.65.0. Oppryddingen er gjennomført;
+videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
 ## Styrende beslutning
@@ -12,12 +12,11 @@ norske mangler og uttrykkelig bestilte behov med minst mulig tilleggskode.
 Et dokumentasjons- eller sporbarhetskrav betyr ikke automatisk at det trengs
 en ny kontrollside, tabell, historikkmodell eller bekreftelsesrunde.
 
-Videre utvikling av egne kontroll- og historikkfunksjoner stanses mens
-nødvendigheten vurderes. Tidligere prioritering om å fortsette direkte med
+Egne kontroll- og historikkfunksjoner er fjernet fra vanlig arbeidsflyt. Tidligere prioritering om å fortsette direkte med
 myndighetsgodkjenning/etterfakturering erstattes av oppryddingen nedenfor.
 Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 
-## Neste arbeid
+## Prioritering
 
 | Rekkefølge | Oppgave | Ferdig når |
 | --- | --- | --- |
@@ -25,25 +24,26 @@ Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 | 2 | Forenkle arbeidsflyten | Overflødige sider, menypunkter og bekreftelser er fjernet eller samlet der dette er avklart. Vanlig arbeid bruker kjernens dokumenter, registrering og bokføring. Eksisterende data og historikk kan fortsatt leses; nødvendig endring av lagring eller bokføringskoblinger har en prøvd overgang. |
 | 3 | Fullføre dokumenterte norske mangler | Bare mangler som står igjen etter kjernetest får egen implementasjon. Prioriter relevante norske dokumentopplysninger, avgiftsbehandling og rapportering. Gjenbruk eksisterende tillegg når de dekker behovet. |
 
-## Første vurdering av eksisterende arbeid
+## Utført forenkling i 0.65.0
 
-Dette er en prioritering for opprydding, ikke en ferdig avgjørelse om å slette kode.
-
-| Område | Kjernens dekning og vurdering | Videre tiltak |
+| Beholdt | Fjernet | Overgang |
 | --- | --- | --- |
-| Faktura, kreditnota, tilbud, nummerering og PDF | Kjernen har dokumenter, nummermodeller og dokumentmaler. | Bruk standardoppsett der det dekker valgte serier, språk og norske dokumentopplysninger. Undersøk egne nummermodeller og kontrollsider for overflødig kode. |
-| Kontoplan, standardkontoer, journaler og MVA-kontoer | Kjernen har import/oppsett og kontokoblinger. Norsk profil og norske standardvalg er modulens oppsett. | Behold norsk datagrunnlag og nødvendige standardvalg. Samle oppsetthjelp og fjern dobbeltarbeid mot kjernens innstillinger. |
-| Hovedbok, regnskapsperioder, bank og dokumentvedlegg | Kjernen har grunnfunksjonene. | Bruk og prøv disse før egne rapporter, periodekontroller eller bilagsbilder vurderes. |
-| Faktura-, bilags- og fordelingskontroller | Egne tillegg sammenligner deler av kjernens data med avgrensede profiler. | Vurder konkret nytte og overlapp. En egen profil er ikke i seg selv et norsk krav eller bevis på feil føring. |
-| Kontrollkopier, begrunnelsesrevisjoner og bokføringsobservasjoner | Egen tilleggsarkitektur, senest utvidet i 0.63.0/0.64.0. Nødvendigheten av denne formen er ikke godt nok dokumentert. | Stans videre utvidelse. Undersøk om kjernens dokumenter, låsing, referanser og oppbevaring dekker behovet enklere. Bevar allerede lagret historikk under oppryddingen. |
-| Egen kjøpsbokføring og fradragskorreksjon | Bruker hovedboken, men legger egne handlinger og avhengigheter rundt kjernens flyt. | Prioritert gjennomgang før endring, fordi dette påvirker faktiske posteringer. Prøv kjernens alternativer og planlegg en overgang som bevarer bokførte beløp og historikk. |
-| MVA-rapport, SAF-T og EHF | Norsk dekning må verifiseres mot kjernen og aktuelle eksisterende tillegg. | Avklar mangler før egen rapportmotor, eksport eller integrasjon velges. Skill bestilt direkte innsending fra det underliggende rapporteringskravet. |
+| Norsk kontoplan, standardkontoer, MVA-kontoer, foretaksopplysninger, nummermodeller, NOK og språk, valgfri EUR-visning og sperring av sjekker | Egne faktura-, bilags-, periode- og fordelingskontroller, begrunnelsesregistrering, nye kontrollkopier og særskilt kjøpsbokføring | Regnskap og dokumenter beholdes. Gammel tilleggshistorikk kan leses og lastes ned uendret. Tidligere særposterte kjøp sperres mot dobbeltføring; separat rettingsbilag i kjernen er mulig. |
 
-Kjernedekningen for nummermodeller og regnskapsoppsett er beskrevet i
-[Dolibarrs fakturaoppsett](https://wiki.dolibarr.org/index.php/Invoice_Configuration)
-og [regnskapsmodul](https://wiki.dolibarr.org/index.php/Module_Accounting_Advanced).
-Den konkrete vurderingen skal prøves i støttet versjon 24.0.1. Dokumentasjon
-for andre versjoner eller tillegg er ikke alene bevis på installert støtte.
+Oppsettsveilederen gir forklaringer og lenker uten egen godkjenningsstatus.
+Daglig arbeid bruker kjernens dokumenter, journaler, hovedbok, perioder,
+bank og produktkontoer. Norsk regnskapsoppsett har én menyinngang under
+Regnskap → Innstillinger. De tidligere løsningene var tillegg, ikke
+lovpålagte brukeroppgaver. Det gamle lagringsskjemaet beholdes for lesing
+og vern av allerede særposterte kjøp; nye historikkposter opprettes ikke.
+
+Leveransen prøves med ordinær salgs- og kjøpsbokføring, gammel historikk,
+oppgradering, backup og gjenoppretting. Dette dokumenterer teknisk overgang,
+ikke full norsk regnskapsmessig etterlevelse.
+
+Neste arbeid er å avklare faktisk dekning i kjernen og eksisterende tillegg
+for MVA-rapportering, SAF-T og EHF. Ingen ny rapportmotor eller kontrollflate
+skal bygges før det konkrete norske gapet er dokumentert. Papirløs flyt tas sist.
 
 ## Videre omfang
 

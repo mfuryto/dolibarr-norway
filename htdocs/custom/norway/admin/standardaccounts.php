@@ -21,7 +21,7 @@ llxHeader('',$langs->trans('NorwayStandardTitle'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayStandardTitle'),'','accountancy').'<p>'.$langs->trans('NorwayStandardScope').'</p>';
 try {
     print '<h2>'.$langs->trans('NorwayStandardProductCodes').'</h2><p>'.$langs->trans('NorwayStandardProductCodesHelp').'</p><p><a href="'.DOL_URL_ROOT.'/product/list.php?type=0">'.$langs->trans('NorwayStandardProducts').'</a> · <a href="'.DOL_URL_ROOT.'/product/list.php?type=1">'.$langs->trans('NorwayStandardServices').'</a></p>';
-    print '<p><a href="'.dol_buildpath('/norway/admin/productaccounts.php',1).'">'.$langs->trans('NorwayProductAccountsTitle').'</a></p>';
+    print '<p><a href="'.dol_buildpath('/accountancy/admin/productaccount.php',1).'">'.$langs->trans('NorwayProductAccountsTitle').'</a></p>';
     $catalog=NorwayStandardAccounts::catalog();
     $labels=array_column(NorwayChartPreview::parse(NorwayChartProfile::csv()),'label','number');
     print '<form method="post" class="norway-standard-accounts"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="previewstandard">';
