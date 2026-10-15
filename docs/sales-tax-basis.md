@@ -56,7 +56,40 @@ En intern tekst og referanse erstatter ikke nødvendige salgsdokumenter eller
 særskilt dokumentasjon. Kildene er lest 2026-10-15; profilen er prosjektets
 begrensede dokumentasjonsfunksjon, ikke en påstand om full kravoppfyllelse.
 
-Neste A2-del er å knytte den konkrete begrunnelsesrevisjonen til grunnlaget
-som bevares ved faktisk bokføring. Denne leveransen gjør ikke den koblingen,
-endrer ikke faktura/PDF, avgiftsberegning, kontering eller rapport og sperrer
-ikke kjernens fakturering. Den gir ingen godkjenning av avgiftsbehandlingen.
+## Kobling til faktisk bokføring fra 0.64.0
+
+Ved en ny native bokføringshendelse for kundefaktura bevares siste tilgjengelige
+begrunnelsesrevisjon i observasjonen når slik historikk finnes. Payload 9
+bevarer begrunnelsen og, innenfor profilen, et eget låst dokumentgrunnlag.
+Utenfor profilen bevares kildegrunnlaget som utilgjengelig og status som avvik. Samsvar krever
+uendret begrunnelsesgrunnlag og samsvar med de felles faktura-, linje-, kunde-
+og oppsettsfeltene i bokføringsobservasjonen. Mengde, pris og beskrivelse
+bevares i det separate dokumentgrunnlaget; de er ikke nye felter i eldre
+observasjoners rågrunnlag. Endret eller ikke støttet grunnlag vises som avvik.
+
+Fakturafanen Avgiftsgrunnlag viser hver hendelse, tidspunkt, bevart revisjon,
+begrunnelse og dokumentreferanse. Fakturakontrollen viser en oppsummering med
+lenke hit. Hendelsens historiske samsvar og dagens endringsstatus er separate:
+en begrunnelse som samsvarte da, kan fortsatt være historisk korrekt bevart
+selv om dagens faktura eller oppsett er endret.
+
+Uten lagret begrunnelse brukes fortsatt eksisterende payload 3/8; visningen
+sier at ingen begrunnelsesrevisjon er bevart ved hendelsen. Det er ikke bevis
+på at underlag ikke fantes utenfor systemet. Eldre payloads 1–8 tolkes som før,
+og senere begrunnelser fylles aldri inn i dem. Registreringskontekst 1/2
+beholdes også inne i payload 9, avhengig av oppsettet ved hendelsen.
+
+Native transaksjon eier både postering og observasjon. Ingen separat commit
+foretas av dokumentasjonskoblingen. Skadet begrunnelseshistorikk eller
+overskredet kapasitet gir feil og rollback, ikke et stille bortfall av bevis.
+Eksisterende grense på 1 MB per observasjon og 5 MB per fakturarapport gjelder
+også de nye kopiene; store underlag kan kreve at omfanget reduseres eller at
+kapasitetsmodellen videreutvikles før bokføring. Ingen automatisk avkorting.
+
+Oppdaterings-/gjenopprettingstesten bevarer to begrunnelsesrevisjoner og to
+native observasjoner som fortsatt peker på revisjon 1 etter revisjon 2.
+Ingen DDL, endring av faktura/PDF, avgiftsberegning eller konteringsvalg.
+Koblingen gjelder dokumentgrunnlag ved hver enkelt hendelse, ikke godkjenning
+av komplett bilag, dokumentets rettslige tilstrekkelighet eller MVA-melding.
+Videre A2 gjelder myndighetsgodkjenning/etterfakturering, manuelle bilag og
+flere rettingsscenarioer. Den gir ingen godkjenning av avgiftsbehandlingen.

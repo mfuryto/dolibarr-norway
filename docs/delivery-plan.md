@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-15. Planen gjelder en generell norsk modul for varer og
-tjenester. Status er kontrollert mot kode og tester til og med 0.63.1.
+tjenester. Status er kontrollert mot kode og tester til og med 0.64.0.
 [Leveransehistorikken](delivery-history.md) holdes separat fra videre arbeid.
 
 [Norsk kravregister](norwegian-requirements.md) konkretiserer felles og
@@ -610,3 +610,15 @@ Nummerserier og dokumentoppsett brukes fra veilederens steg 7. Regnskapskode-
 oversikten ligger under Norsk regnskapsoppsett; individuell katalogfane beholdes.
 Daglige bilags-/periodekontroller følger åpnet Regnskap-gruppe. Denne rettingen
 endrer ingen regnskapsdata. Neste A2-del er fortsatt begrunnelsesrevisjon ved bokføring.
+
+## A2 – begrunnelsesrevisjon ved bokføring i 0.64.0
+
+Native salgsobservasjoner bevarer siste tilgjengelige begrunnelsesrevisjon
+og et låst grunnlag. Endret kilde vises som avvik; eldre observasjoner
+etterutfylles ikke. Fakturafanen og fakturakontrollen viser hendelsens
+begrunnelse ved oppgaven. Backup/gjenoppretting prøver begge revisjoner og
+den opprinnelige koblingen. Ingen ny meny eller oppstartsoppgave.
+
+Neste A2-del avklarer dokumentert myndighetsgodkjenning og etterfakturering;
+deretter manuelle bilag og videre rettingsscenarioer. Full faglig avgifts-
+og rapporteringsaksept gjenstår. Papirløs bilagsflyt er fortsatt sist.

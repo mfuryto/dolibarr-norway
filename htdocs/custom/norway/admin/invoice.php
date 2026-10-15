@@ -163,6 +163,10 @@ if (GETPOSTISSET('id')) {
                         if ($observation['data']) {
                             $basis=$observation['data']['basis'];
                             $renderZeroVat(NorwaySalesZeroVat::captured($basis,(int)$conf->entity),'Captured');
+                            $salesBasis=$observation['data']['sales_basis_context'] ?? null;
+                            print '<p>'.$langs->trans('NorwaySalesPosting'.($salesBasis ? $salesBasis['status'] : 'NotRetained'));
+                            if ($salesBasis) { print ' / '.$langs->trans('NorwaySalesPostingRevision').' #'.(int)$salesBasis['assessment']['revision']; }
+                            print ' · <a href="'.dol_buildpath('/norway/admin/salestaxbasis.php',1).'?id='.(int)$invoice->id.'">'.$langs->trans('NorwaySalesBasisTitle').'</a></p>';
                             $registrationContext=$observation['data']['registration_context'] ?? null;
                             print '<p>'.$langs->trans('NorwayPostingRegistration'.($registrationContext ? $registrationContext['status'] : 'Legacy'));
                             if ($registrationContext && $registrationContext['start']!=='') { print ' '.dol_escape_htmltag($registrationContext['invoice_date'].' / '.$registrationContext['start']); }

@@ -251,3 +251,16 @@ Ugyldig historikk gir uavklart/ugyldig kontekst, uten første-dato-reserve.
 Uten historikk brukes fortsatt salgspayload 3. Payloads 1–7 og kjøpskontekster
 beholder sine tidligere regler. Ingen eldre observasjoner tilbakefylles.
 Se [registreringshistorikk](vat-registration-history.md).
+
+## Dokumentert salgsgrunnlag fra 0.64.0
+
+Nye kundefakturaobservasjoner med eksisterende begrunnelseshistorikk bruker
+payload 9 og `sales_basis_context` versjon 1. Konteksten bevarer hele den
+valgte revisjonen, dens hash og et separat låst kildegrunnlag; status er
+`Linked` eller `Changed`. Avvik gir ingen automatisk avgiftsendring. Uten
+historikk beholdes payload 3/8; eldre observasjoner etterutfylles ikke.
+
+Lesing kontrollerer den innebygde revisjonen og beregner konteksten på nytt
+fra bevarte opplysninger. Dagens begrunnelser leses ikke inn i gamle kopier.
+Registreringskontekst 1/2 kontrolleres fortsatt etter den fangede konfigurasjonen.
+Se [bruk, grenser og gjenoppretting](sales-tax-basis.md).

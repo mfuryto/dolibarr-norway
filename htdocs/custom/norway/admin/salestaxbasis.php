@@ -5,6 +5,7 @@ require '../../../main.inc.php';
 if (GETPOST('errorcode','aZ09')==='InvalidToken') { httponly_accessforbidden('Invalid security token'); }
 if (!$user->admin || $user->socid || !isModEnabled('norway') || !isModEnabled('accounting') || !$user->hasRight('facture','lire') || !$user->hasRight('accounting','mouvements','lire')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwaySalesTaxBasis.php';
+require_once __DIR__.'/../class/NorwayPostingEvidence.php';
 $langs->load('norway@norway');header('Cache-Control: no-store');
 $id=GETPOSTINT('id');$action=GETPOST('action','aZ09');$key='norway_sales_basis';
 if ($_SERVER['REQUEST_METHOD']==='POST' && $action==='save') {
@@ -57,6 +58,20 @@ try {
             print '<form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="id" value="'.$id.'"><input type="hidden" name="action" value="save"><input type="hidden" name="nonce" value="'.$nonce.'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwaySalesBasisConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayEvidenceSave').'</button></form>';
         }
     } elseif (!$basis) { print '<div class="warning">'.$langs->trans('NorwaySalesBasisUnsupported').'</div>'; }
+    print '<h2>'.$langs->trans('NorwaySalesPostingTitle').'</h2><p>'.$langs->trans('NorwaySalesPostingScope').'</p>';
+    try {
+        $observations=NorwayPostingEvidence::report($db,(int)$conf->entity,$id,$user);
+        if (!$observations) { print '<p>'.$langs->trans('NorwayInvoiceLedgerEmpty').'</p>'; }
+        foreach ($observations as $observation) {
+            $context=$observation['data']['sales_basis_context'] ?? null;
+            print '<details class="norway-sales-posting"><summary>'.$langs->trans('NorwayPostingID').' #'.(int)$observation['id'].' · '.dol_escape_htmltag($observation['captured_at']).' UTC · '.$langs->trans('NorwaySalesPosting'.($context ? $context['status'] : 'NotRetained')).'</summary>';
+            print '<p>'.$langs->trans('NorwayPosting'.$observation['status']).'</p>';
+            if ($context) {
+                $entry=$context['assessment'];print '<p>'.$langs->trans('NorwaySalesPostingRevision').' #'.(int)$entry['revision'].' · '.dol_escape_htmltag($entry['captured_at']).' UTC · '.$langs->trans('NorwayEvidenceUser').' #'.(int)$entry['fk_user'].'</p>';
+                $render($entry['data']['choices'],$entry['data']['basis']);
+            }print '</details>';
+        }
+    } catch (Throwable $error) { print '<div class="warning">'.$langs->trans('NorwayPostingUnavailable').'</div>'; }
     print '<h2>'.$langs->trans('NorwayEvidenceHistory').'</h2>';
     foreach (array_reverse($history) as $entry) {
         print '<details><summary>'.dol_escape_htmltag('#'.$entry['revision'].' / '.$entry['captured_at'].' UTC / '.$langs->trans('NorwayEvidenceUser').' #'.$entry['fk_user']).'</summary>';

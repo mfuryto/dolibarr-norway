@@ -27,6 +27,16 @@ if (getenv('NORWAY_EXPECT_EMPTY') === '1') {
         verify((bool) $result && (int) $db->fetch_object($result)->n === 0, 'New installation contains accounting data');
     }
 }
+if (getenv('NORWAY_EXPECT_DOCUMENTARY_SENTINEL')==='1') {
+    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('DOLI_DB_NAME')==='accounting','Synthetic documentary guard missing');
+    foreach (array('facture'=>1,'facture_fourn'=>0,'accounting_bookkeeping'=>2) as $table=>$count) {
+        $r=$db->query('SELECT COUNT(*) n FROM '.$db->prefix().$table);verify($r && (int)$db->fetch_object($r)->n===$count,'Unexpected accounting data outside documentary fixture');
+    }
+    $r=$db->query("SELECT rowid FROM ".$db->prefix()."facture WHERE entity=".(int)$conf->entity." AND ref='SYN-DOCUMENTARY-BACKUP'");$invoice=$r ? $db->fetch_object($r) : null;
+    verify((bool)$invoice,'Documentary fixture invoice missing');
+    $r=$db->query("SELECT COUNT(*) n FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoice->rowid." AND doc_ref='SYN-DOCUMENTARY-BACKUP'");
+    verify($r && (int)$db->fetch_object($r)->n===2,'Documentary fixture posting source changed');
+}
 if (getenv('NORWAY_TEST_JOURNALS') === '1') {
     verify(getenv('DOLI_COMPANY_NAME') === 'SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY') === '1', 'Synthetic journal guard missing');
     $banks=$db->query('SELECT COUNT(*) AS n FROM '.$db->prefix().'bank_account');
@@ -123,7 +133,17 @@ try {
         $defaults = page('/custom/norway/admin/defaults.php');
         verify(strpos($defaults,'Lagringen kunne ikke bekreftes')!==false || strpos($defaults,'Saving could not be confirmed')!==false, 'Defaults confirmation replay accepted');
     }
-    if (getenv('NORWAY_TEST_JOURNALS') === '1') {
+    if (getenv('NORWAY_EXPECT_DOCUMENTARY_SENTINEL')==='1') {
+    verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('DOLI_DB_NAME')==='accounting','Synthetic documentary guard missing');
+    foreach (array('facture'=>1,'facture_fourn'=>0,'accounting_bookkeeping'=>2) as $table=>$count) {
+        $r=$db->query('SELECT COUNT(*) n FROM '.$db->prefix().$table);verify($r && (int)$db->fetch_object($r)->n===$count,'Unexpected accounting data outside documentary fixture');
+    }
+    $r=$db->query("SELECT rowid FROM ".$db->prefix()."facture WHERE entity=".(int)$conf->entity." AND ref='SYN-DOCUMENTARY-BACKUP'");$invoice=$r ? $db->fetch_object($r) : null;
+    verify((bool)$invoice,'Documentary fixture invoice missing');
+    $r=$db->query("SELECT COUNT(*) n FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".(int)$conf->entity." AND doc_type='customer_invoice' AND fk_doc=".(int)$invoice->rowid." AND doc_ref='SYN-DOCUMENTARY-BACKUP'");
+    verify($r && (int)$db->fetch_object($r)->n===2,'Documentary fixture posting source changed');
+}
+if (getenv('NORWAY_TEST_JOURNALS') === '1') {
         $journals=page('/custom/norway/admin/journals.php');
         verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$journals,$journalToken)===1
             && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$journals,$journalNonce)===1,'Journal confirmation missing');

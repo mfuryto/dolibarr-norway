@@ -103,4 +103,47 @@ if (!$account || $account->label !== 'Synthetic imported backup account' || (int
 $result = $db->query("SELECT COUNT(*) AS total FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='NORWAY-NO-1' AND active=1");
 if (!$result || (int) $db->fetch_object($result)->total !== 745) { throw new RuntimeException('Norwegian chart was not preserved'); }
 print "PASS synthetic persistent content, Norwegian chart and imported chart account\n";
+require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayPostingEvidence.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/accountancy/class/bookkeeping.class.php';
+function salesSentinelQuery($db,$sql){$r=$db->query($sql);if(!$r){throw new RuntimeException('Synthetic documentary restore query: '.$db->lasterror());}return $r;}
+function salesSentinel($db,$entity,$user,$create)
+{
+    $p=$db->prefix();$sql=static fn($q)=>salesSentinelQuery($db,$q);
+    if($create){
+        $saved=$db->fetch_object($sql("SELECT value FROM ".$p."const WHERE entity=".$entity." AND name='NORWAY_TAX_MAPPINGS_V1'"))->value;
+        $rule=array('revision'=>1,'user'=>(int)$user->id,'at'=>'2026-01-01T00:00:00+00:00','source'=>'SYNRETAIN','target'=>'5','start'=>'2026-01-01','end'=>'2026-12-31','direction'=>'sale','id'=>1,'retire'=>false);
+        $record=array('version'=>1,'entity'=>$entity,'org'=>'123456785','reference'=>NorwayTaxReference::SOURCE,'events'=>array($rule));
+        try{
+            $sql("INSERT INTO ".$p."accounting_fiscalyear (label,date_start,date_end,statut,entity,datec) VALUES ('Synthetic documentary period','2026-01-01','2026-12-31',0,".$entity.",NOW())");
+            $period=(int)$db->last_insert_id($p.'accounting_fiscalyear');
+            if(dolibarr_set_const($db,'ACCOUNTANCY_FISCALYEAR_DEFAULT',$period,'chaine',0,'',$entity)<=0){throw new RuntimeException('Synthetic documentary active period');}
+            $sql("UPDATE ".$p."const SET value='".$db->escape(json_encode($record))."' WHERE entity=".$entity." AND name='NORWAY_TAX_MAPPINGS_V1'");
+            $country=(int)$db->fetch_object($sql("SELECT rowid FROM ".$p."c_country WHERE code='NO'"))->rowid;
+            $sql("INSERT INTO ".$p."societe (nom,entity,fk_pays) VALUES ('SYNTHETIC DOCUMENTARY RESTORE ONLY',".$entity.','.$country.')');$party=(int)$db->last_insert_id($p.'societe');
+            $sql("INSERT INTO ".$p."facture (ref,entity,type,fk_statut,fk_soc,datef,multicurrency_code,multicurrency_tx,total_ht,total_tva,total_ttc) VALUES ('SYN-DOCUMENTARY-BACKUP',".$entity.",0,1,".$party.",'2026-01-01','NOK',1,100,0,100)");$id=(int)$db->last_insert_id($p.'facture');
+            $sql("INSERT INTO ".$p."facturedet (fk_facture,description,product_type,qty,subprice,tva_tx,vat_src_code,info_bits,localtax1_tx,localtax2_tx,total_ht,total_tva,total_ttc,total_localtax1,total_localtax2) VALUES (".$id.",'SYNTHETIC DOCUMENTARY BACKUP ONLY',0,1,100,0,'SYNRETAIN',0,0,0,100,0,100,0,0)");$line=(int)$db->last_insert_id($p.'facturedet');
+            $input=array(array('line'=>$line,'target'=>'5','reason'=>'Synthetic retained reason before posting','reference'=>'SYN-DOCUMENT-001'));
+            $preview=NorwaySalesTaxBasis::preview($db,$entity,$id,$user,$input);NorwaySalesTaxBasis::save($db,$entity,$id,$user,$input,$preview['fingerprint']);
+            $db->begin();foreach(array('1500'=>array(100,0),'3100'=>array(0,100)) as $account=>$amount){
+                $o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=strtotime('2026-01-01');$o->doc_type='customer_invoice';$o->doc_ref='SYN-DOCUMENTARY-BACKUP';$o->fk_doc=$id;$o->fk_docdet=0;$o->numero_compte=(string)$account;$o->label_compte='Synthetic retention';$o->label_operation='Synthetic';$o->debit=$amount[0];$o->credit=$amount[1];$o->montant=$amount[0]-$amount[1];$o->sens=$amount[0]?'D':'C';$o->code_journal='SYNRETAIN';$o->journal_label='Synthetic';$o->piece_num=987790;$o->ref='SYNRETAIN';
+                if($o->createStd($user)<=0){throw new RuntimeException('Synthetic native documentary backup capture: '.$o->errorsToString());}
+            }$db->commit();
+            $input[0]['reason']='Synthetic later reason retained independently';$input[0]['reference']='SYN-DOCUMENT-002';$preview=NorwaySalesTaxBasis::preview($db,$entity,$id,$user,$input);NorwaySalesTaxBasis::save($db,$entity,$id,$user,$input,$preview['fingerprint']);
+        }finally{
+            $db->rollback();$sql("UPDATE ".$p."const SET value='".$db->escape($saved)."' WHERE entity=".$entity." AND name='NORWAY_TAX_MAPPINGS_V1'");
+        }
+    }
+    $invoice=$db->fetch_object($sql("SELECT rowid FROM ".$p."facture WHERE entity=".$entity." AND ref='SYN-DOCUMENTARY-BACKUP'"));if(!$invoice){throw new RuntimeException('Documentary invoice lost');}$id=(int)$invoice->rowid;
+    $history=NorwaySalesTaxBasis::history($db,$entity,$id,$user);
+    if(count($history)!==2 || $history[0]['data']['choices'][0]['reference']!=='SYN-DOCUMENT-001' || $history[1]['data']['choices'][0]['reference']!=='SYN-DOCUMENT-002'){throw new RuntimeException('Documentary revisions lost');}
+    $observations=NorwayPostingEvidence::report($db,$entity,$id,$user);if(count($observations)!==2){throw new RuntimeException('Documentary observations lost');}
+    foreach($observations as $entry){$context=$entry['data']['sales_basis_context'] ?? null;
+        if($entry['data']['version']!==9 || !$context || $context['status']!=='Linked' || $context['assessment']['data']['revision']!==1 || $context['assessment']['data']!==$history[0]['data']){throw new RuntimeException('Documentary posting link lost or backfilled');}
+    }
+    print "PASS persistent documentary revisions and native v9 links survive update/restore without backfill\n";
+}
+
+if ($user->fetch('',getenv('DOLI_ADMIN_LOGIN'))<=0) { throw new RuntimeException('Synthetic retention reader'); }$user->loadRights('',1);
+salesSentinel($db,(int)$conf->entity,$user,getenv('NORWAY_CREATE_SENTINEL')==='1');
 $db->close();

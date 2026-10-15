@@ -1159,3 +1159,10 @@ NorwaySalesBasisMissing=No retained reason.
 NorwaySalesBasisCurrent=Latest reasons match the unchanged invoice and configuration basis.
 NorwaySalesBasisChanged=Source changed or unsupported. Latest reasons cannot be confirmed as current.
 NorwaySalesBasisUnsupported=Invoice outside scope. Requires a Norwegian customer, ordinary NOK invoice and explicit consistent domestic zero-rate codes 5, 6 or 7.
+
+NorwaySalesPostingTitle=VAT basis at posting
+NorwaySalesPostingScope=Shows the documentary revision retained at each posting event. A match concerns the source at that time and does not approve VAT treatment. Later reasons are not backfilled into earlier observations.
+NorwaySalesPostingLinked=Reasons matched the source at posting
+NorwaySalesPostingChanged=Source changed or could not be linked to reasons at posting
+NorwaySalesPostingNotRetained=No documentary revision retained at this event
+NorwaySalesPostingRevision=Retained documentary revision
