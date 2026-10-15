@@ -1,5 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
+// The collection belongs to accounting setup; item tabs retain their own context.
+if (!isset($_GET['id']) && !isset($_POST['id'])) { $_GET['mainmenu']='accountancy';$_GET['leftmenu']='accountancy_admin_norway'; }
 require '../../../main.inc.php';
 if (!empty($user->socid) || !$user->admin || !isModEnabled('norway') || !isModEnabled('accounting') || !$user->hasRight('accounting','chartofaccount')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayProductAccounts.php';
@@ -11,6 +13,7 @@ print '<p>'.$langs->trans('NorwayProductAccountsScope').'</p><div class="warning
 $productId=GETPOSTISSET('id') ? GETPOSTINT('id') : null;
 $scope=GETPOST('scope','aZ09');if ($scope==='') { $scope='domestic'; }
 print '<form method="get">';
+if ($productId===null) { print '<input type="hidden" name="mainmenu" value="accountancy"><input type="hidden" name="leftmenu" value="accountancy_admin_norway">'; }
 if ($productId!==null) { print '<input type="hidden" name="id" value="'.(int)$productId.'">'; }
 print '<label>'.$langs->trans('NorwayProductAccountsContext').' <select name="scope">';
 foreach (array('domestic','export','intra') as $option) { print '<option value="'.$option.'"'.($scope===$option ? ' selected' : '').'>'.$langs->trans('NorwayProductAccountsScope'.$option).'</option>'; }

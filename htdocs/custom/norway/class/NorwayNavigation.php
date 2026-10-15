@@ -21,11 +21,9 @@ class NorwayNavigation
             array('accountancy', 'norway_accounting', 'registration', 'NorwayMenuRegistration', $admin),
             array('accountancy', 'norway_accounting', 'taxmappings', 'NorwayMenuMappings', $admin),
             array('accountancy', 'norway_accounting', 'vat', 'NorwayMenuVat', $admin),
-            array('products', '', 'productaccounts', 'NorwayProductAccountsTitle', $admin.' && $user->hasRight("accounting","chartofaccount")'),
+            array('accountancy', 'norway_accounting', 'productaccounts', 'NorwayProductAccountsTitle', $admin.' && $user->hasRight("accounting","chartofaccount")'),
             array('commercial', 'propals', 'pricing', 'NorwayPricing', $admin.' && $user->hasRight("propal","read")'),
             array('billing', 'customers_bills', 'invoiceperiod', 'NorwayBatch', $sales),
-            array('billing', 'customers_bills', 'numbering', 'NorwayNumberingTitle', $sales),
-            array('billing', 'customers_bills', 'documents', 'NorwayDocuments', $sales),
         );
         $menus = array();
         foreach ($specs as $i => $spec) {
@@ -39,9 +37,10 @@ class NorwayNavigation
                         : (in_array($parent,array('accountancy_admin','norway_accounting'),true) ? 'accountancy_admin_norway' : ($parent ?: 'norway_'.$page))),
                 'position' => 180 + $i, 'enabled' => 'isModEnabled("norway") && isModEnabled("accounting")'
                     .($main === 'billing' ? ' && isModEnabled("invoice")' : '')
+                    .($parent === 'accountancy' ? ' && ($leftmenu=="accountancy_accountancy" || $leftmenu=="accountancy_accountancy_closure" || $leftmenu=="accountancy_accountancy_report" || $leftmenu=="all")' : '')
                     .($parent === 'accountancy_admin' ? ' && ($leftmenu=="accountancy_admin" || $leftmenu=="accountancy_admin_norway" || $leftmenu=="all")' : '')
                     .($parent === 'norway_accounting' ? ' && ($leftmenu=="accountancy_admin_norway" || $leftmenu=="all")' : '')
-                    .($main === 'products' ? ' && (isModEnabled("product") || isModEnabled("service"))' : '')
+                    .($page === 'productaccounts' ? ' && (isModEnabled("product") || isModEnabled("service"))' : '')
                     .($main === 'commercial' ? ' && isModEnabled("propal")' : ''),
                 'perms' => $perms, 'target' => '', 'user' => 0,
             );

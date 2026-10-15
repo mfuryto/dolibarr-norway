@@ -1,5 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Resolve the menu branch before core loads the menu cache.
+$_GET['mainmenu']='accountancy';$_GET['leftmenu']='accountancy_accountancy';
 require '../../../main.inc.php';
 require_once __DIR__.'/../class/NorwayNavigation.php';
 if (!NorwayNavigation::canReadLedger($user)) { accessforbidden(); }
@@ -13,6 +15,7 @@ print '<div class="norway-page">';
 print load_fiche_titre($langs->trans('NorwayAudit'), '', 'accountancy');
 print '<div class="warning">'.$langs->trans('NorwayAuditScope').'</div>';
 print '<form method="get" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
+print '<input type="hidden" name="mainmenu" value="accountancy"><input type="hidden" name="leftmenu" value="accountancy_accountancy">';
 print '<label>'.$langs->trans('NorwayAuditFrom').' <input type="date" name="date_start" value="'.dol_escape_htmltag($start).'"></label> ';
 print '<label>'.$langs->trans('NorwayAuditUntil').' <input type="date" name="date_end" value="'.dol_escape_htmltag($end).'"></label> ';
 print '<input class="button" type="submit" value="'.$langs->trans('NorwayAuditRun').'"></form>';
