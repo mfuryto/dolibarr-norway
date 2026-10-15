@@ -17,16 +17,15 @@ class NorwayNavigation
         $specs = array(
             array('accountancy', 'accountancy', 'audit', 'NorwayAudit', $read),
             array('accountancy', 'accountancy', 'periods', 'NorwayPeriods', $read),
-            array('accountancy', 'accountancy_admin', 'accounting', 'NorwayAccountingSetup', $admin),
-            array('accountancy', 'accountancy_admin', 'registration', 'NorwayRegistration', $admin),
-            array('accountancy', 'accountancy_admin', 'taxmappings', 'NorwayMappingsTitle', $admin),
-            array('accountancy', 'accountancy_admin', 'vat', 'NorwayVatSetup', $admin),
+            array('accountancy', 'accountancy_admin', 'accounting', 'NorwayAccountingSettings', $admin),
+            array('accountancy', 'norway_accounting', 'registration', 'NorwayMenuRegistration', $admin),
+            array('accountancy', 'norway_accounting', 'taxmappings', 'NorwayMenuMappings', $admin),
+            array('accountancy', 'norway_accounting', 'vat', 'NorwayMenuVat', $admin),
             array('products', '', 'productaccounts', 'NorwayProductAccountsTitle', $admin.' && $user->hasRight("accounting","chartofaccount")'),
             array('commercial', 'propals', 'pricing', 'NorwayPricing', $admin.' && $user->hasRight("propal","read")'),
             array('billing', 'customers_bills', 'invoiceperiod', 'NorwayBatch', $sales),
             array('billing', 'customers_bills', 'numbering', 'NorwayNumberingTitle', $sales),
             array('billing', 'customers_bills', 'documents', 'NorwayDocuments', $sales),
-            array('bank', '', 'bankdefaults', 'NorwayBankDefaults', $admin.' && $user->hasRight("banque","lire")'),
         );
         $menus = array();
         foreach ($specs as $i => $spec) {
@@ -36,10 +35,12 @@ class NorwayNavigation
                 'mainmenu' => $main, 'leftmenu' => 'norway_'.$page, 'type' => 'left',
                 'titre' => $title, 'langs' => 'norway@norway',
                 'url' => '/norway/admin/'.$page.'.php?mainmenu='.$main.'&leftmenu='
-                    .($parent === 'accountancy' ? 'accountancy_accountancy' : ($parent ?: 'norway_'.$page)),
+                    .($parent === 'accountancy' ? 'accountancy_accountancy'
+                        : (in_array($parent,array('accountancy_admin','norway_accounting'),true) ? 'accountancy_admin_norway' : ($parent ?: 'norway_'.$page))),
                 'position' => 180 + $i, 'enabled' => 'isModEnabled("norway") && isModEnabled("accounting")'
                     .($main === 'billing' ? ' && isModEnabled("invoice")' : '')
-                    .($main === 'bank' ? ' && isModEnabled("bank")' : '')
+                    .($parent === 'accountancy_admin' ? ' && ($leftmenu=="accountancy_admin" || $leftmenu=="accountancy_admin_norway" || $leftmenu=="all")' : '')
+                    .($parent === 'norway_accounting' ? ' && ($leftmenu=="accountancy_admin_norway" || $leftmenu=="all")' : '')
                     .($main === 'products' ? ' && (isModEnabled("product") || isModEnabled("service"))' : '')
                     .($main === 'commercial' ? ' && isModEnabled("propal")' : ''),
                 'perms' => $perms, 'target' => '', 'user' => 0,

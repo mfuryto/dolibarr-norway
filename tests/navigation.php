@@ -18,12 +18,25 @@ nvAssert(dolibarr_set_const($db,'MAIN_MODULE_NORWAY_TABS_0','invoice:+oldtab:Old
 foreach (array(1,2) as $attempt) {
     nvAssert($module->init()>0,'Repeated menu activation: '.$module->error);
     $count=$db->fetch_object(nvSql("SELECT COUNT(*) n FROM ".MAIN_DB_PREFIX."menu WHERE module='norway' AND entity=".(int)$conf->entity));
-    nvAssert((int)$count->n===12,'Duplicate or missing module menus');
+    nvAssert((int)$count->n===11,'Duplicate or missing module menus');
 }
 $conf->setValues($db);
 foreach ($module->tabs as $i=>$tab) { nvAssert(getDolGlobalString('MAIN_MODULE_NORWAY_TABS_'.$i)===$tab,'Legacy tab not refreshed'); }
 $langs->load('norway@norway');
 foreach ($module->menu as $menu) { nvAssert($langs->trans($menu['titre'])!==$menu['titre'],'Missing menu translation'); }
+require_once DOL_DOCUMENT_ROOT.'/core/menus/standard/eldy.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/menu.class.php';
+function nvCoreMenu($branch) {
+    global $db;
+    $menu=new Menu(); $tree=new Menubase($db,'eldy'); $tab=array();
+    nvAssert($tree->menuLoad('accountancy',$branch,0,'eldy',$tab)>0,'Core menu load failed');
+    get_left_menu_accountancy('accountancy',$menu,0,$branch,0);
+    return $tree->menuLeftCharger($menu,'accountancy',$branch,0,'eldy',$tab)->liste;
+}
+$settings=nvCoreMenu('accountancy_admin_norway'); $levels=array();
+foreach ($settings as $entry) { $levels[$entry['leftmenu']]=$entry['level']; }
+nvAssert(($levels['accountancy_admin'] ?? -1)===0 && ($levels['norway_accounting'] ?? -1)===1,'Settings parent level incorrect: '.json_encode($levels));
+foreach (array('registration','taxmappings','vat') as $page) { nvAssert(($levels['norway_'.$page] ?? -1)===2,'Settings child at wrong level'); }
 $reader=new User($db); $reader->login='synthetic-menu-'.bin2hex(random_bytes(5));
 $reader->lastname='SYNTHETIC MENU TEST ONLY'; $reader->pass=bin2hex(random_bytes(16));
 $reader->admin=0; $reader->statut=1; $reader->status=1; $reader->entity=$conf->entity;
@@ -76,8 +89,10 @@ try {
     $body=nvPage('/compta/facture/index.php?mainmenu=billing&leftmenu=customers_bills');
     nvAssert(strpos($body,'/norway/admin/invoiceperiod.php?mainmenu=billing')!==false,'Billing menu missing');
     $body=nvPage('/accountancy/index.php?mainmenu=accountancy&leftmenu=accountancy_admin');
-    nvAssert(strpos($body,'/norway/admin/registration.php?mainmenu=accountancy')!==false,'Accounting setup menu missing');
-    nvAssert(strpos($body,'/norway/admin/vat.php?mainmenu=accountancy')!==false,'VAT setup menu missing');
+    nvAssert(strpos($body,'/norway/admin/accounting.php?mainmenu=accountancy')!==false,'Accounting settings group missing');
+    nvAssert(strpos($body,'/norway/admin/registration.php?mainmenu=accountancy')===false,'Settings children shown before group opened');
+    $body=nvPage('/custom/norway/admin/accounting.php?mainmenu=accountancy&leftmenu=accountancy_admin_norway');
+    foreach (array('registration','taxmappings','vat','bankdefaults') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'Settings entry missing'); }
     $body=nvPage('/product/index.php?mainmenu=products');
     nvAssert(strpos($body,'/norway/admin/productaccounts.php?mainmenu=products')!==false,'Product codes menu missing');
     $body=nvPage('/comm/propal/index.php?mainmenu=commercial&leftmenu=propals');
@@ -85,7 +100,9 @@ try {
     $body=nvPage('/custom/norway/admin/vat.php');
     foreach (array('vatrates','vataccounts','registration','taxmappings') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php')!==false,'VAT setup action missing'); }
     $body=nvPage('/compta/bank/list.php?mainmenu=bank');
-    nvAssert(strpos($body,'/norway/admin/bankdefaults.php?mainmenu=bank')!==false,'Bank setup menu missing');
+    nvAssert(strpos($body,'/norway/admin/bankdefaults.php')===false,'One-time bank setup retained in daily bank menu');
+    $body=nvPage('/accountancy/bookkeeping/listbyaccount.php?mainmenu=accountancy&leftmenu=accountancy_accountancy');
+    foreach (array('accounting','registration','taxmappings','vat') as $page) { nvAssert(strpos($body,'/norway/admin/'.$page.'.php?mainmenu=accountancy')===false,'Setup entry leaked into daily accounting menu'); }
     $invoice=$db->fetch_object(nvSql('SELECT rowid FROM '.MAIN_DB_PREFIX.'facture WHERE entity='.(int)$conf->entity.' ORDER BY rowid DESC LIMIT 1'));
     nvAssert((bool)$invoice,'Synthetic invoice required');
     $body=nvPage('/compta/facture/card.php?facid='.(int)$invoice->rowid);
@@ -115,7 +132,7 @@ try {
     nvAssert((int)$count->n===0,'Disabled module left menus behind');
     nvDenied('/custom/norway/admin/audit.php');
     nvAssert($module->init()>0,'Module reactivation failed');
-    print "PASS native menus, repeated activation, bilingual ledger reader HTTP, denied missing rights/admin actions, external guard, VAT/catalogue/proposal menus, product/service scope, evidence tab, legacy tab refresh and deactivation\n";
+    print "PASS native menus, repeated activation, bilingual ledger reader HTTP, denied missing rights/admin actions, external guard, settings hierarchy and visibility, removed bank shortcut, VAT/catalogue/proposal menus, product/service scope, evidence tab, legacy tab refresh and deactivation\n";
 } finally {
     foreach ($productIds ?? array() as $productId) { nvSql('DELETE FROM '.MAIN_DB_PREFIX.'product WHERE rowid='.(int)$productId); }
     $user=$admin; $module->init(); if ($reader->id>0) { $reader->delete($admin); }
