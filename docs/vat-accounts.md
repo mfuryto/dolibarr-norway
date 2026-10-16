@@ -31,7 +31,9 @@ Kilder kontrollert 2026-10-13.
    [bekreftet satsoppsett for nye regnskap](vat-rates.md). Eksisterende
    regnskap og særvalg må fortsatt gjennomgås manuelt.
 2. Åpne utfyllingssiden og gjennomgå hver rad. Bare tomme felt på ordinære,
-   aktive norske satser uten kode eller særinnstillinger foreslås fylt.
+   aktive norske satser uten særinnstillinger foreslås fylt. Fra 0.67.0
+   gjenkjennes også kodene 3/31/33 for salg og 1/11/13 for kjøp, når sats
+   og bruk samsvarer. Andre kodede behandlinger bevares for manuell vurdering.
 3. Bekreft at radene gjelder ordinære innenlandske avgiftspliktige salg/kjøp,
    og at de viste kontoene er riktige. Lagre med bekreftelsesknappen.
 4. Åpne «MVA-kontoer» under Regnskap og kontroller salg- og kjøpskolonnene.

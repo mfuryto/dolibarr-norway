@@ -8,6 +8,48 @@ class ActionsNorway
 
     public function __construct($db) {}
 
+    private $renderingVat = false;
+
+    /** Core default detection ignores sale/purchase type; keep its widget and fix only an unselected domestic default. */
+    public function load_tva($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db,$conf;
+        $this->resprints='';
+        $selected=(string)($parameters['selectedrate'] ?? '');$type=(int)($parameters['type_vat'] ?? 0);
+        $seller=$parameters['seller'] ?? null;$buyer=$parameters['buyer'] ?? null;
+        $script=str_replace('\\','/',$_SERVER['SCRIPT_FILENAME'] ?? '');
+        $productForm=$type===0 && in_array($script,array(DOL_DOCUMENT_ROOT.'/product/card.php',DOL_DOCUMENT_ROOT.'/product/price.php'),true)
+            && preg_match('/^tva_tx(?:\[|$)/D',$parameters['htmlname'] ?? '')===1;
+        $productDefault=$productForm && $script===DOL_DOCUMENT_ROOT.'/product/card.php'
+            && GETPOST('action','aZ09')==='create' && !GETPOSTISSET('tva_tx');
+        if($productForm){$type=1;}
+        $buyerForDefault=is_object($buyer)?$buyer:($productForm?$seller:null);
+        if($this->renderingVat || !isModEnabled('norway') || !in_array($type,array(1,2),true) || !empty($parameters['is_npr'])
+            || !is_object($seller) || !is_object($buyerForDefault) || ($seller->country_code ?? '')!=='NO' || ($buyerForDefault->country_code ?? '')!=='NO'){return 0;}
+        $unselected=in_array($selected,array('','-1'),true);
+        if(!$unselected && !$productForm){return 0;}
+        // Preserve a saved or explicitly posted incoming code on an existing product for manual review.
+        if($productForm && preg_match('/\(([^)]+)\)/',$selected,$chosen)
+            && !in_array($chosen[1],array('3','31','33'),true)
+            && (!$productDefault || !in_array($chosen[1],array('1','11','13'),true))){return 0;}
+        $default=$selected;
+        if($unselected || $productDefault){
+            $native=$unselected?(string)get_default_tva($seller,$buyerForDefault,(int)($parameters['idprod'] ?? 0)):$selected;
+            if(preg_match('/^(25|15|12)(?:\.0+)?(?:\s*\((1|11|13|3|31|33)\))?$/D',$native,$match)){
+                require_once __DIR__.'/NorwayVatRates.php';
+                try{$mapped=NorwayVatRates::defaultCode($db,(int)$conf->entity,(int)$match[1],$type);}catch(Throwable $error){return 0;}
+                if($mapped===null){return 0;}$default=$mapped;
+            }elseif(!$productForm || preg_match('/[(*]/',$native)){return 0;}
+        }
+        $this->renderingVat=true;
+        try {
+            $form=new Form($db);
+            $html=$form->load_tva($parameters['htmlname'],$default,$seller,$buyer,(int)($parameters['idprod'] ?? 0),
+                0,$parameters['type'] ?? '',$parameters['options_only'] ?? false,(int)($parameters['mode'] ?? 0),$type);
+        } finally {$this->renderingVat=false;}
+        $this->resprints=$html;return 1;
+    }
+
     private function companyPage()
     {
         global $user;

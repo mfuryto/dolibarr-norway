@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-16. Modul 0.66.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-16. Modul 0.67.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -119,6 +119,38 @@ for den prøvde arbeidsflyten. Norsk rapportering må likevel bruke faktiske
 bokførte fradrag og håndtere kode/grunnlag for manuelle bilag. Dette løses
 ikke ved å slå på global kostnadsføring av all kjøps-MVA. Nullsatskategorier,
 utenlandstransaksjoner og komplett norsk melding er fortsatt egne gap.
+
+## Native norske avgiftskoder i 0.67.0
+
+Kjernen har `c_tva.code`, `type_vat` og salg-/kjøpskontoer. Fakturalinjer har
+`vat_src_code`. Disse feltene gjenbrukes til seks ordinære koder i samme
+MVA-oppsett: salg 3/31/33 og kjøp 1/11/13 for 25/15/12 prosent. Kontooppsettet
+gjenkjenner bare riktig kombinasjon av kode, sats og bruk. Ingen egen
+kodekoblingsmodell eller historikk lagres.
+
+Native standardvalg tar ikke hensyn til `type_vat` i
+`get_product_vat_for_country()`/`get_default_tva()`. En tom salgsvalgliste
+kan derfor få et standardforslag med kjøpskode, som ikke finnes blant
+salgsalternativene. Produktsalgsfeltene bruker også valglister uten angitt
+retning. En smal `commonobject`/`load_tva`-hook gjenbruker kjernens widget
+med riktig ordinær standardretning. Eksplisitte linjevalg, fremmed land,
+nullsats, NPR og særkoder omklassifiseres ikke. Et eksplisitt/lagret kjøpskodevalg
+på eksisterende produkt bevares for manuell vurdering.
+
+`tests/vat-rates.php` prøver faktisk lagring av alle seks koder gjennom
+native salgs-/leverandørfakturalinjer, kontoer og kjernens rendring av
+salgs-/kjøpsvalglister og nytt produktkort. Konflikt, feil retning, eksisterende
+kontovalg, produkter, dokumenter, samtidige endringer, rettigheter og
+transaksjonsfeil sperrer automatisk omlegging. Deaktiverte ukodede rader,
+0-prosent-rader og utenlandske rader beholdes.
+
+**Gjenstående gap:** hovedboken har ikke et eget norsk kode-/grunnlagsfelt
+på manuelle linjer. Kontonummer og bilagstekst alene er ikke en tilstrekkelig
+erstatning. Rapportering og eventuell minimal metadatautvidelse må løse dette
+uten kopier av hele dokumenter eller en ny bokføringsflyt. Det er ikke laget
+en delvis rapport som fremstilles som komplett MVA-melding. Generelle API-kall
+til standardoppslaget går ikke gjennom widget-hooken; integrasjoner skal angi
+riktig kode uttrykkelig.
 
 ## SAF-T: kjerneeksport og kandidater
 

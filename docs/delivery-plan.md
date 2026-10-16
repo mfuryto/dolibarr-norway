@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-16 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.66.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.67.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -43,12 +43,17 @@ presisert fordi valget er en fransk særordning som påvirker prisberegningen.
 En konkret manuell fradragsflyt står i oppsettsveiledningen. Ingen egen
 kjøpsmotor eller fradragshistorikk skal gjeninnføres for dette behovet.
 
-Neste leveranse avgrenser norsk MVA-rapportering: hvordan norske koder og
-grunnlag kan knyttes til faktiske hovedboksposter og manuelle bilag, samt
-relevante nullsats-/utlandstilfeller. Gjenbruk eksisterende felt og rapporter
-før nødvendig tilpasning velges. Rapporteringen må ta med fradragsomposteringer;
-fakturauttrekket alene er utilstrekkelig. Ingen ny lagring eller bokføringsflyt
-er forhåndsbesluttet. Tekniske prøver er interne, ikke nye brukeroppgaver.
+0.67.0 gjenbruker kjernens satsregister og fakturalinjefelt til ordinære norske
+koder: salg 3/31/33 og kjøp 1/11/13. MVA-kontohjelpen og de prøvde native
+standardvalgene støtter skillet. Det er ingen ny kodemodell eller meny.
+Eksisterende regnskap og produkter konverteres ikke automatisk.
+
+Neste arbeid er avgiftskode og grunnlag på manuelle hovedbokslinjer, etterfulgt
+av et avstembart norsk MVA-uttrekk. Kjernen mangler disse manuelle feltene.
+En eventuell minste metadatautvidelse må løse akkurat dette gapet og ha
+versjonert overgang og gjenopprettingsprøve. Ikke kopier fakturaer eller
+bygg egen kjøpsbokføring. Relevante nullsats-/utlandstilfeller må inngå før
+full norsk melding godkjennes. Ingen av de nå leverte delene er innsending.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
 avtale eller installasjon. Norsk dokumentvalidering og faktisk transport

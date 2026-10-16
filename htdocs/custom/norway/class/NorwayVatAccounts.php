@@ -1,6 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayDefaultAccounts.php';
+require_once __DIR__.'/NorwayVatRates.php';
 /** Confirmed fill-only ordinary domestic VAT dictionary accounts; never change rates. */
 class NorwayVatAccounts
 {
@@ -24,7 +25,8 @@ class NorwayVatAccounts
         foreach ($rates as $rate) {
             $key=(string)(float)$rate['taux'];
             // Coded or special rows may describe imports, reverse charge or another purpose.
-            $ordinary=isset($map[$key]) && trim((string)$rate['code'])==='' && (int)$rate['recuperableonly']===0
+            $coded=false;foreach(NorwayVatRates::codes() as $spec){if((string)$rate['code']===$spec['code'] && (int)$rate['type_vat']===$spec['type'] && (float)$rate['taux']===(float)$spec['rate']){$coded=true;}}
+            $ordinary=isset($map[$key]) && (trim((string)$rate['code'])==='' || $coded) && (int)$rate['recuperableonly']===0
                 && empty($rate['fk_department_buyer']) && empty($rate['einvoice_vatex'])
                 && (float)$rate['localtax1']==0 && (float)$rate['localtax2']==0
                 && empty($rate['localtax1_type']) && empty($rate['localtax2_type'])

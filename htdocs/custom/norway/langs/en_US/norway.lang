@@ -875,18 +875,18 @@ NorwayTaxAccountsGuide=Read the tax account guide
 NorwayWizardExtraTaxAccounts=Guide: Tax accounts
 NorwayWizardExtraTaxAccountsHelp=Explains when the list can remain unchanged, the distinction from VAT accounts and tax accounts for sole proprietorships. Changes no settings.
 
-NorwayVatRatesTitle=Set up ordinary Norwegian VAT rates
-NorwayVatRatesScope=For an unused accounting setup with the shipped Norwegian chart: Create missing ordinary 25, 15 and 12% sales/purchase rates and deactivate ordinary unused 8 and 14% after confirmation. Existing rates, account codes and defaults are not overwritten. 0% is preserved.
-NorwayVatRatesLimits=Rates alone do not select tax treatment. Exemptions, registration periods, deductions and imports require separate assessment. Historical document rates are unchanged. Fill the rate accounts separately after this setup.
+NorwayVatRatesTitle=Norwegian VAT rates and codes
+NorwayVatRatesScope=For an unused setup: create separate sales (3/31/33) and purchase (1/11/13) rows at 25/15/12 percent. Codes use the existing core VAT dictionary. Unused uncoded ordinary rows are deactivated after confirmation; their records are retained.
+NorwayVatRatesLimits=These codes cover ordinary domestic sales and deductible purchases. Zero rates, exemptions, foreign trade and deduction entitlement require separate assessment. Historical invoice lines stay unchanged. Fill the rate accounts afterwards.
 NorwayVatRatesConfirm=I confirm that this is an unused accounting setup without documents or ledger history and that the displayed changes are correct. No invoice lines or VAT registration status change.
-NorwayVatRatesCreate=Create ordinary sales/purchase rate
-NorwayVatRatesDeactivate=Deactivate old ordinary rate; retain its row
+NorwayVatRatesCreate=Create coded rate row
+NorwayVatRatesDeactivate=Deactivate unused uncoded row; retain its record
 NorwayVatRatesKeep=Preserve active ordinary rate and account choices
 NorwayVatRatesReview=Existing rate or special choice requires manual review
-NorwayVatRatesBlocked=Changes cannot be confirmed. Check the selected active Norwegian chart. Documents (including drafts/quotes/orders), ledger history, products with 8/14%, inactive or special rate rows and old default choices require manual review. No data changed.
-NorwayVatRatesSource=Source: current Norwegian Tax Administration rates
+NorwayVatRatesBlocked=Automatic setup is blocked. Documents, ledger entries, products or existing account/default choices require manual review in the core VAT dictionary. No data changed.
+NorwayVatRatesSource=Source: Norwegian Tax Administration VAT codes
 NorwayWizardTaskVatRates=Set up ordinary Norwegian VAT rates
-NorwayWizardTaskVatRatesHelp=For an unused setup: review 25/15/12 and old 8/14 before confirming. Documents, history and special choices block changes. Fill VAT accounts in the following task.
+NorwayWizardTaskVatRatesHelp=For an unused setup: preview Norwegian sales codes (3/31/33) and purchase codes (1/11/13) in the core rate dictionary. Existing documents, products and special choices require manual review. Fill the VAT accounts afterwards.
 
 NorwayAllocationTitle=Posted customer, sales and VAT allocation
 NorwayAllocationScope=Explicitly select an ordinary domestic profile from the shipped chart. Compare stored invoice net/VAT/gross with actual ledger entries on 1500, the displayed sales accounts and the rate VAT account. Positive amounts are debit, negative credit. A match applies only to this profile; it does not approve tax treatment, historical accounting choices or a VAT report. Current default-account settings are not used. Data is read on opening; refresh after concurrent changes.
@@ -1179,3 +1179,7 @@ NorwaySimpleAccounting=Norwegian setup fills missing defaults. Continue using na
 NorwaySimpleWizard=The wizard collects setup and guidance. It has no separate approval status and creates no extra accounting controls.
 NorwaySimpleRegistration=VAT status and effective date must match the company registration. Retain the registration decision as documentation; no separate reason registration is required by this module.
 NorwaySimpleLimits=Norwegian VAT reporting, SAF-T and EHF/Peppol are unfinished. See the work plan for remaining Norwegian support.
+
+NorwayNativeVatCode=Norwegian VAT code
+
+NorwayNativeVatBoth=Sales and purchases

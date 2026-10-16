@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Oppdatert for modul 0.66.0 og støttet Dolibarr 24.0.1. Start etter
+Oppdatert for modul 0.67.0 og støttet Dolibarr 24.0.1. Start etter
 [teknisk installasjon](vps-installation.md). Oppsettsveilederen viser
 forklaringer og lenker til innstillingene. Lagring skjer på innstillingssiden;
 veilederen har ingen egen status eller godkjenning. Bruk kjernens dokumenter
@@ -51,6 +51,13 @@ registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
 **Gjenstår:** komplett norsk MVA-rapportering, eksport og faglig kvalifisering
 av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
+
+Fra 0.67.0 kan [MVA-oppsettet](vat-rates.md) legge ordinære norske salgskoder
+3/31/33 og kjøpskoder 1/11/13 på kjernens satsrader i et ubrukt oppsett.
+Kjernen bevarer kodevalget på fakturalinjen. Eksisterende regnskap og produkter
+krever manuell gjennomgang i kjernens register. Nullsats og utenlandshandel
+får ingen automatisk klassifisering. Dette er grunnlag for videre rapportering,
+ikke en ferdig MVA-melding.
 
 ### Fradrag ved kjøp
 

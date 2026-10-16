@@ -101,3 +101,11 @@ NPR-begrepet er kontrollert mot S2: `install/mysql/tables/llx_c_tva.sql`,
 `core/lib/price.lib.php`, `fourn/class/fournisseur.facture.class.php` og
 `accountancy/journal/purchasesjournal.php`. Native blandede satser,
 kreditnotaer og manuelle omposteringer er prøvd i `tests/core-purchases.php`.
+
+0.67.0: Ordinære salgskoder 3/31/33 og kjøpskoder 1/11/13 er kontrollert mot
+S6s `Standard Tax Codes/CSV/Standard_Tax_Codes.csv` og S29s meldingsmodell.
+Bare numeriske kodeidentifikatorer og egne sats-/bruksvalg distribueres.
+Kjernen S2 er undersøkt i `core/lib/functions.lib.php` (standardoppslag),
+`core/class/html.form.class.php` (`load_tva` og `type_vat`),
+`core/tpl/objectline_create.tpl.php` og produkt-/prisbildene.
+Native widgetvalg og kodelagring er prøvd i `tests/vat-rates.php`.
