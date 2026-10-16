@@ -1,202 +1,113 @@
-# Teknisk dekningsanalyse
+# Dekningsanalyse etter forenkling
 
-Oppdatert status og prioritering 2026-10-13 finnes i
-[arbeidsplanen](delivery-plan.md). Analysen nedenfor bevarer tidligere
-kilde-/datakart; formuleringer om «neste del» er historiske og er ikke dagens
-leveransestatus. Programvare og valutaføring er ikke generelle begrensninger
-i kontoplanen; salgsdokumenter er avgrenset til NOK med valgfri EUR-prisvisning.
+Kontrollert 2026-10-16. Modul 0.65.0, støttet Dolibarr 24.0.1 ved
+[kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
+Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
+nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
+følger av gjennomgangen. Nye leveranser følger [arbeidsplanen](delivery-plan.md).
+Tidligere forslag om egne kontrollkopier og historikkmodeller videreføres ikke.
 
-Vurdert 2026-10-11. Status: første kildekontroll og kjørbart modulgrunnlag, ikke
-bekreftelse på norsk etterlevelse. Kildereferanser S1–S12 finnes i
-[kilderegisteret](sources.md). Testbevis og begrensninger står i
-[test- og driftsdokumentet](test-and-operations.md).
+## Beslutninger
 
-## Versjonsvalg og metode
+| Område | Hva som faktisk er funnet | Beslutning og gjenstående gap |
+| --- | --- | --- |
+| Ordinær regnskapsflyt | Kjernen har faktura, kreditnota, kjøpsjournal, hovedbok, reskontro, bank og perioder. Salgs-/kjøpsflyt, kreditnotaer og vern mot dobbeltføring inngår i 0.65-testene. | Behold kjernens arbeidsflyt. Dette kvalifiserer ikke alle avgiftsscenarioer eller årsavslutningen. |
+| Norsk MVA-melding | Kjernen har faktura-/betalingsbaserte MVA-uttrekk, men ingen norsk melding eller innsendingsadapter ble identifisert i undersøkte kataloger. | Prøv uttrekk mot bokføringen før en avgrenset norsk rapporteringsutvidelse velges. En oversikt over MVA-satser eller saldo på MVA-kontoer er ikke komplett meldingsgrunnlag. |
+| Norsk SAF-T | Kjernen har hovedbokseksport. Ingen norsk SAF-T-generator ble funnet i regnskaps-, MVA- eller modulkatalogene. | Norsk eksport er fortsatt et gap. Gjenbruk hovedbok og kildekoblinger; velg eksportutvidelse før egen generator. Ingen ny regnskapsmotor. |
+| EHF/Peppol | Det finnes eksterne Peppol-moduler med dokumentgenerering og sending. | Prøv eksisterende løsning før egen integrasjon. Norsk profil, aktuelle PHP-/Dolibarr-versjoner, tilgangspunkt, lisens og kostnader må kvalifiseres. |
+| Næringsspesifikasjon og skattemelding | Kjernen gir regnskapsdata, men ingen norsk årsoppgjørs-/skattemeldingsleveranse ble identifisert i gjennomgangen. Skatteetaten publiserer modeller og integrasjonsdokumentasjon. | Egen leveranse: årsversjon og foretaksform, kontokoblinger, skattemessige forskjeller, avstemming og konkret leveringsvei. Ikke anta at SAF-T eller en kontoplan utfører skatteberegningen. |
 
-Støttet testversjon er **Dolibarr 24.0.1**, publisert
-2026-09-07 (S1). Kildecommit `b7958385f00a92219f76a4dfea67dae93df97a25`.
-Ikke bruk den bevegelige grenen `24.0` eller `develop` som støtteavtale.
-Gjeldende modul avviser aktivering på andre versjoner inntil regresjonstesting er gjort.
-Kjernen har PHP 7.2 som historisk minimum; vårt grunnlag krever PHP 8.2 og
-containerens faktiske PHP-versjon registreres ved test. MariaDB 10.11 brukes.
+## MVA: konkret kjernedekning
 
-Repoet hadde bare README og GPLv3-lisens; ingen tidligere modul eller regnskapsdata.
-Kontrollen omfatter SQL-skjema, installasjonsdata, fakturaklasse, regnskapsklasse,
-modulmal, eksportkataloger og Skatteetatens XSD 1.40. Standard kjøring og modulens
-livssyklus er testet i Docker. Faktura→salgsjournal→hovedbok, delkreditnota og norsk/engelsk PDF for
-tilbud og faktura er prøvd med syntetiske NOK-data. Avslutning, betaling,
-utenlandsk avgiftsbehandling, EHF og SAF-T er ikke ferdig funksjonstestet. Funn fra fraværssøk er avgrenset til undersøkt kode.
+I fast kjerneversjon bruker
+[`compta/tva/index.php`](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/compta/tva/index.php)
+`tax_by_rate()` for salg og kjøp. Funksjonen i
+[`core/lib/tax.lib.php`](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/core/lib/tax.lib.php#L669)
+leser fakturaer og linjer, med separate produkt-/tjenestegrener og valg av
+faktura- eller betalingsgrunnlag. Den beholder lokale `vat_src_code` i
+satsgrupperingen. Det gir gjenbrukbare kildeopplysninger; det skal ikke
+feilaktig beskrives som om kjernen bare kjenner satsen.
 
-## Omfang og installasjonsspesifikke avklaringer
+Funksjonen leser også reiseregninger, men ikke `accounting_bookkeeping`.
+Et manuelt bilag i hovedboken blir derfor ikke i seg selv med i denne
+funksjonens MVA-uttrekk. Utslaget på en konkret norsk rapport og riktig
+håndtering av datoer og fradrag må prøves med syntetiske data. Det er ikke
+gjort en ny ende-til-ende-kvalifisering av MVA-meldingen i denne leveransen.
 
-Første testprofil dekker ett syntetisk foretak, NOK som basisvaluta og norske
-transaksjoner før og etter MVA-registrering. Programvaresalg, utenlandshandel,
-EUR og offentlige kunder er relevante utvidede scenarioer. Støtte må verifiseres
-for konkrete leveringsmodeller og transaksjoner før produksjonsbruk.
+[Skatteetatens meldingsmodell](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/)
+bruker norske MVA-koder og egne spesifikasjoner, med intern kode som mulig
+referanse. Den skiller hvilke felt som brukes for inngående og utgående
+avgift. Lokal kode og sats må derfor kvalifiseres mot aktuell behandling.
+[Innsendings-API-et](https://skatteetaten.github.io/mva-meldingen/documentation/api/)
+har validering, innsending og tilbakemelding. En XML-fil alene er ikke
+bekreftet innsending. Gjeldende tilgang og API-versjon må verifiseres før bruk.
 
-Hver installasjon må avklare faktisk MVA-registerstatus og virkningsdato,
-land, vare-/tjenestetype, leveringsmodell, kundetype, ansatte og EHF-behov.
-Registrering og eventuell forhåndsregistrering følger egne vilkår og kan ikke
-utledes av første faktura (S8). Før/etter registrering er separate testprofiler.
+**Neste prøve:** ordinære varer/tjenester, betalt/ubetalt, kreditnota,
+flere koder på samme sats og manuelt avgiftsbilag. Sammenlign med hovedbok og
+kildedokumenter. Ikke aktiver nye globale MVA-valg i driftsinstallasjonen.
 
-## Dekningsmatrise
+## SAF-T: kjerneeksport og kandidater
 
-| Område | Standard / nødvendig oppsett | Norsk modul / datagap | Før produksjon |
-|---|---|---|---|
-| Kunder, leverandører, produkter, priser, tilbud, ordre | Standard moduler; land NO, NOK som basis, norske språk/ID-felt | ID-validering og frys av relevante historiske opplysninger | Org.nr., adresser og kunde-/leverandørreskontro kontrolleres |
-| Faktura og kreditnota | Standard faktura, nummermodeller, kildefaktura og PDF | Kontroller ved validering; eventuelt PDF-utvidelse for manglende norske opplysninger | Maskinell nummerering, leveringssted/-tid, MVA-tekst, avgift i NOK, kreditreferanse (S7) |
-| Bank og betaling | Standard bank, betaling og fakturakoblinger | Avstemmingsrapport mot reskontro/hovedbok | Delbetaling, refusjon, gebyr og kursdifferanse testes |
-| Dobbelt bokholderi | Advanced Accounting, journaler, kontoer, hovedbok og saldo | Ikke ny regnskapsmotor | Kontroller bokføringsdato, godkjenning og bilagsnøkler |
-| Norsk kontoplan | Kontoimport og kontokoblinger finnes | Eget avgrenset kontoutvalg, oppsett, versjonert næringsspesifikasjonsmapping | Ikke kopier SAF-T-standardkontolisten som kontoplan (S11) |
-| MVA-satser og koder | `c_tva` har sats, kode og kjøp-/salgskonto | Gyldighetsperioder, norsk behandling og historisk registreringsstatus | Sats er ikke avgiftskode; 0 %/fritak/unntak/uregistrert skilles |
-| MVA-grunnlag | Fakturalinjer har netto, avgift, kode og dokumentlenke | Sporbar rapport fra bokført grunnlag inkl. manuelle bilag, korreksjoner og fradragsandel | Avstem både grunnlag og avgiftskontoer; betalingsdato brukes ikke ukritisk |
-| SAF-T Financial | Generelle regnskapseksporter finnes | Norsk eksport, mapping, metadata, saldokontroller, datavalidering | Mål 1.40; XSD alene er utilstrekkelig (S5–S6) |
-| Valuta og utenlandshandel | Multicurrency og utenlandske motparter finnes | Kurskilde/-dato, NOK-MVA og norsk avgiftsbehandling må sikres | Test EUR-oppgjør, agio/disagio og aktuelle import-/eksporttyper |
-| Offentlige kunder | Faktura/ordre kan gjenbrukes | EHF/Peppol-tillegg og tilgangspunkt må kvalifiseres | En PDF er ikke EHF; mottakerkrav må avklares (S7, S10) |
-| Spesifikasjoner og avslutning | Journal, hovedbok, reskontro, saldo og regnskapsperioder finnes | Norsk rapportdekning og rutiner kontrolleres; avvik utvides | Dokumenter hvilke lovpålagte spesifikasjoner hver rapport dekker |
-| Retting og oppbevaring | Validering, låsing og dokumentlagring finnes | Rutiner, sikkerhetskopi og gjenopprettingsbevis | Ingen sletting av historikk som korrigeringsmetode |
+[`BookKeeping::export_bookkeeping()`](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/class/bookkeeping.class.php#L2182)
+henter konto, beløp, bilags-/dokumentreferanser, journal og valideringsdato,
+men ikke et ferdig norsk avgiftsgrunnlag og norske avgiftskoder.
+[Regnskapsmodulens eksportoversikt](https://wiki.dolibarr.org/index.php/Module_Accounting_Advanced)
+er et startpunkt for gjenbruk; generell TSV/FEC-eksport er ikke norsk SAF-T.
 
-## Bekreftede kildefunn i 24.0.1
+[Offisiell SAF-T-dokumentasjon](https://www.skatteetaten.no/en/business-and-organisation/start-and-run/rutiner-regnskap-og-kassasystem/saf-t-financial/documentation/)
+angir 1.40 som format fra 2027. Det tidligere undersøkte
+[1.40-skjemaet ved fast revisjon](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/SAF-T_Financial_1.4/Norwegian_SAF-T_Financial_Schema_v_1.40.xsd)
+har kontoenes `GroupingCategory`/`GroupingCode` og avgiftsklassifisering.
+Kontokoblinger til dette formatet må holdes atskilt fra en komplett
+skattemelding med næringsspesifikasjon.
 
-Alle filbaner i dette avsnittet gjelder S2 med fast commit.
+[Dolibarr SAF-T Portugal](https://github.com/cialinux/dolibarr-saft/tree/91dc9aed1a7783b18ac4d14dd5289e1558befc93)
+beskriver portugisisk validering/import via en kommersiell API-tjeneste.
+Den er ikke dokumentert som norsk Financial-eksport og velges ikke som løsning.
+Det er ikke kopiert kode. Avgrensede søk på GitHub/DoliStore fant ingen
+bekreftet norsk eksportmodul; dette beviser ikke at ingen eksisterer.
 
-- `htdocs/install/mysql/data/llx_c_tva.sql:264–268`: Norge (land-ID 173) har
-  0, 14, 8, 25. Dagens generelle norske kategorier er 25, 15 og 12 prosent
-  (S8). Historiske bilag skal ikke omskrives ved satsoppdatering.
-- `htdocs/install/mysql/tables/llx_c_tva.sql`: `code`, `type_vat`, `taux`,
-  `accountancy_code_sell/buy`, men ingen gyldig-fra/-til. `code` er kun 10 tegn.
-- Ingen norsk `llx_accounting_account_no.sql` finnes blant kontoplanfilene.
-  Fravær her utelukker ikke eksterne leverandører eller manuell import.
-- `htdocs/accountancy/class/bookkeeping.class.php:2181` henter hovedbok for
-  generisk eksport. Den forespørselen tar ikke med norsk avgiftsgrunnlag/-kode.
-  Ingen norsk SAF-T-eksport ble identifisert i regnskaps-/eksportkatalogene.
-- `htdocs/compta/facture/class/facture.class.php` har `BILL_VALIDATE`,
-  `BILL_MODIFY`, `BILL_UNVALIDATE` og `invoicedao`-hooks. Hovedbokklassen har
-  `BOOKKEEPING_CREATE`. Disse er kandidater for kontroller og metadata, men en
-  fakturatrigger alene dekker ikke manuelle posteringer, innkjøp og alle importer.
-- `date_validated` i hovedboken brukes som låsemarkør. Regnskapsperioder styres
-  også av `ACCOUNTANCY_FISCAL_PERIOD_MODE`. Standardvalg og rettigheter må
-  prøves før vi lover at en avsluttet norsk periode ikke kan endres.
+## EHF: gjenbruk først
 
-## Konkret datakart for SAF-T og MVA
+[CAP-REL Peppol](https://doc.cap-rel.fr/peppol/) beskriver BIS Billing 3.0,
+generering, sending/mottak, status og flere tilgangspunkt. Dokumentasjonen
+krever en tilgangspunktavtale. DoliStore-søket viste nyere opplysninger enn
+den åpnete produktsiden; eksakt versjon, PHP-støtte, pris og norsk dekning
+regnes derfor som uavklart. Tillegget er en kandidat, ikke en valgt avhengighet.
 
-Kilde: Dolibarrs tabellfiler i S2 sammenholdt med XSD 1.40 i S6. Dette er et
-prioritert kart, ikke en ferdig felt-for-felt-sertifisering av hele skjemaet.
+To åpne kandidater er også funnet:
 
-| Eksportbehov | Tilgjengelig data | Gap og foreslått behandling |
-|---|---|---|
-| Header, foretak, periode, valuta, programversjon | Foretaksinnstillinger, `conf->entity`, NOK og modul-/kjerneversjon | Eksportprofil må validere org.nr., kontakt, periode og regnskapsår; ingen oppdiktede verdier |
-| Konto-ID og navn | `accounting_account.account_number/label` | Kontoplanversjon og `GroupingCategory`/`GroupingCode` lagres eksplisitt per konto/gyldighet |
-| Konto- og reskontrosaldo ved periodestart/-slutt | Historiske `accounting_bookkeeping.debit/credit`, `subledger_account`, snapshots | Beregn fra komplett bokført historikk; inngående saldoer og migrering fra Akaunting må avstemmes; unngå dobbelttelling av årsavslutning |
-| Kunde/leverandør-ID og organisasjonsdata | `societe` med `siren`, `tva_intra`, adresse og reskontrokoder | Tredjeparts-ID må knyttes entydig til bokført reskontro. Nåværende adresse er ikke automatisk historisk adresse |
-| Journal, transaksjon og linje | `code_journal`, `piece_num`, `ref`, `rowid` | Eksportnøkkel inkluderer entity og journal der nødvendig; bevar original bilagsreferanse |
-| Datoer og registreringsspor | `doc_date`, `date_creation`, `date_validated`, `tms`, bruker-ID | Skill dokument-, bokførings-, system- og avgiftsdato. `tms` er siste endring, ikke komplett historikk; dokumenter tillatte fallback-regler fra S6 |
-| Dokumentkobling | `doc_type`, `doc_ref`, `fk_doc`, `fk_docdet` | `fk_docdet` kan være 0 ved aggregering. Import/manuell postering kan mangle faktisk kildedokument; krev bilagsmetadata før godkjenning |
-| Fakturalinjens avgift | `facturedet.vat_src_code`, `tva_tx`, `total_ht`, `total_tva`, tjenesteperiode | Ingen norsk, historisk behandling garanteres av kode/sats. Innkjøpslinjer undersøkes tilsvarende; fradragsandel og NOK-beløp må valideres |
-| Avgift på hovedbokslinje | Hovedbok har beløp og dokumentkobling | Ingen egne `TaxCode`/`TaxBase`-felt. Bevar avgiftsmetadata i eksterne tabeller og håndter sammenhengen til flere fakturalinjer eksplisitt |
-| Kreditnota og retting | `facture.fk_facture_source`, type, negative linjepriser | Test fortegn og originalreferanse i PDF, hovedbok, MVA og eksport; bytte av nåværende kontokobling skal ikke endre historikk |
-| Betaling | Betalings-/fakturakobling og bankposter | Avstem reskontro og bank. `paye`/lukket status alene beviser ikke fullt oppgjør |
-| Valuta | Fakturaens multicurrency-beløp/-kurs; hovedbok har `multicurrency_amount/code` | Eksportmetoden ovenfor og `BookKeeping::create()` skriver ikke automatisk alle valutafeltene. Ende-til-ende-verifisering og ekstra metadata kan bli nødvendig |
-| Eiere/egenkapital | Egenkapitalkontoer kan konfigureres | ENK-eiermetadata og kontoer i Owners må spesifiseres særskilt |
+- [marcrant1/dolibarr-peppol-export](https://github.com/marcrant1/dolibarr-peppol-export/tree/c8d965b1cfc4080880e4a9b51439e4f1a39eceff): README beskriver UBL, kreditnota og Peppyrus, testet på eldre Dolibarr-versjoner. Lisensfil og faktisk 24.0.1-kompatibilitet må undersøkes.
+- [cedric-marcoux/dolibarr_peppol-peppyrus](https://github.com/cedric-marcoux/dolibarr_peppol-peppyrus/tree/cede93ae75730d56cbb472e3e2cf6f896b9d54d9): GPL-3.0-repo som beskriver XML, sending og status via Peppyrus. Norske identifikatorer, kreditnotaer og støttet versjon er ikke kvalifisert her.
 
-**Viktig endring fra eldre SAF-T-råd:** I 1.30/1.40 er kontoens
-`GroupingCategory` og `GroupingCode` obligatoriske. `StandardAccountID` er ikke
-feltet som skal designes som hovedløsning; XSD-kommentaren under AccountType
-inneholder fortsatt en eldre referanse til dette feltet. Mapping må følge
-næringsspesifikasjonen, ikke bare like kontonumre (S6). Standard MVA-koder er
-separate fra lokale satser og krever eksplisitt mapping.
+Ikke legg README-påstander om gratis tilgang til grunn for en driftsavtale.
+Ingen konto, kjøp, abonnement, mottakerregistrering eller sending er utført.
+[DFØs EHF-veiledning](https://www.anskaffelser.no/verktoy/veiledere/ehf-fakturering)
+er formatreferansen for norsk faktura/kreditnota. Før valg må XML og norsk
+profil valideres separat fra transportprøven med et tilgangspunkt.
 
-### Foreslått ekstern lagring, ennå ikke implementert
+## Næringsspesifikasjon og skattemelding
 
-1. Kontomapping med `entity`, konto-ID, regnskaps-/kodelisteversjon,
-   `GroupingCategory`, `GroupingCode`, gyldighet og endringsspor.
-2. Avgiftsregel med lokal kode, norsk standardkode, retning, sats, gyldighet,
-   fradragsandel og behandling; registreringsstatus har egen tidslinje.
-3. Uforanderlig bokført avgiftsgrunnlag knyttet til entity, hovedbokslinje og
-   kildedokument/-linje, med NOK-grunnlag/-avgift, valuta/kurs og korreksjonslenke.
-4. Eksportkjøring med periode, versjoner, totalsummer, hash og avviksrapport.
+[Skatteetaten om ENK](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/enk/)
+skiller levering via nettsiden fra levering gjennom regnskaps-/årsoppgjørssystem;
+ENK med regnskaps- eller revisjonsplikt må bruke system. Installasjonen må
+avklare hvilken leveringsvei som gjelder. Det er ikke ett generelt krav om
+at denne modulen selv skal være innsendingssystem.
 
-Bruk Dolibarrs transaksjoner og støttede hooks/triggere. Uttrekk skal filtrere
-på eksakt entity og bokført periode, avvise manglende mapping/spor og avstemme
-mot hele hovedboken. Ikke konstruer eksport fra dagens fakturasatser alene.
-Migreringer må være repeterbare, versjonerte og bevare data ved deaktivering.
+[Skatteetatens leverandørrepo](https://github.com/Skatteetaten/skattemeldingen)
+har modeller, kodelister, test- og API-dokumentasjon. README har historiske
+inntektsårseksempler; riktig inntektsårs modell må velges før implementasjon.
+API-tilgang må bestilles og vilkår avklares ved eventuell direkte integrasjon.
 
-## Undersøkt gjenbruk
+Leveransen skal omfatte kontokoblinger, relevante skattemessige forskjeller
+og avskrivninger, tilleggsopplysninger og avstemming mot årsavslutningen.
+Velg en konkret overføring til egnet årsoppgjørsløsning eller integrasjon.
+En summering av regnskapskontoene eller SAF-T-eksport er ikke tilstrekkelig
+bevis på at hele næringsspesifikasjonen er ferdig.
 
-Søk 2026-10-11: GitHub og DoliStore med kombinasjonene Dolibarr/Norway/Norwegian/
-SAF-T samt Peppol. Ingen offentlig vedlikeholdt samlet norsk modul ble funnet.
-Dette er ikke dokumentasjon på at ingen finnes. Før egen stor implementering
-bør relevante utgivere spørres om norsk støtte, API, lisens og vedlikehold.
+## Avgrensning
 
-- Standard regnskapsmotor, kontoimport, journaler og fakturaklasser gjenbrukes.
-  Oppdatering av norske standard satser kan foreslås upstream separat, med
-  installasjons-/oppgraderingshensyn og uten å omskrive eksisterende bilag.
-- SAF-T PT: produktet er utilgjengelig; oppført versjon 1.0.3, Dolibarr 3.5,
-  AGPL (S9). Kilde er ikke undersøkt. Ingen kode gjenbrukes. Et eventuelt
-  gjenbruk krever både teknisk vurdering og lisensvurdering.
-- CAP-REL Peppol 1.4.0 oppgis for Dolibarr V18–V24 og PHP 7.4–8.3, GPLv3+.
-  Tilgangspunktavtale er separat (S10). Kilde, norsk EHF-profil, mottakerstøtte
-  og totale kostnader er ikke kvalifisert. Ikke anta at den passer testmiljøets
-  PHP-versjon eller gir en løsning uten løpende kostnad.
-- Skatteetatens skjema/kodelister brukes som spesifikasjon og ekstern
-  valideringsreferanse. Standardkontolisten har særskilt opphavsrett og
-  begrensning til SAF-T-mapping (S11); den distribueres ikke som kontoplan.
-- Lisensportalen er senere integrasjon. Ingen lesing eller endring av et
-  separat integrasjonsrepo er nødvendig for denne leveransen.
-
-## Avgjørelser før produksjon
-
-MVA-registerstatus/dato, historiske saldoer og uoppgjorte poster fra inaktiv
-periode, faktisk land-/transaksjonsliste, veiledende EUR-prisvisning, fradragsrett,
-offentlige mottakeres EHF-/ordrereferansekrav og oppbevarings-/driftsansvar er
-åpne. Direkte MVA-/skatteinnsending, bankintegrasjon og lisensutstedelse er
-fortsatt utenfor første leveranse. Lavt bilagstall brukes ikke som SAF-T-fritak
-når regnskapet føres elektronisk (S12).
-
-## Implementert neste del: kontroll av foretaksoppsett
-
-Modulens innstillingsside har nå en skrivebeskyttet kontroll av foretaksnavn,
-organisasjonsnummerets format/kontrollsiffer, land NO, basisvaluta NOK og utfylt
-adresse. Nummerkontrollen følger Brønnøysundregistrenes vekter/modulus 11;
-den gjør ikke registeroppslag og bekrefter verken at foretaket finnes eller
-at det er MVA-registrert.
-
-MVA-kontrollen leser bare norske `c_tva`-rader for aktiv entity. Den kontrollerer
-aktive satser 25, 15 og 12 for både kjøp og salg, og varsler aktive gamle satser
-8/14. Den endrer ingen satser, kontokoblinger eller historiske bilag. Dette er
-en kontroll av oppsettets dekning, ikke krav om at foretaket skal bruke alle
-satser eller at satsene er gyldige for et gitt bilag. Gyldighetsperioder,
-fradragsrett, avgiftskoder og registreringshistorikk er fortsatt datagap.
-
-Kontoplan/mapping, MVA-registerstatus/-dato, bokført avgiftsgrunnlag/rapport,
-SAF-T, EHF og valuta/utenlandshandel vises eksplisitt som uferdig eller
-uverifisert. Ingen samlet «produksjonsklar»-status beregnes. Kontrollen
-stopper med en synlig feil ved mislykket databaseforespørsel.
-
-Kilder kontrollert 2026-10-11:
-[Brønnøysundregistrenes kontrollsiffer](https://www.brreg.no/om-oss/registrene-vare/om-enhetsregisteret/organisasjonsnummeret/)
-og [Skatteetatens satser](https://www.skatteetaten.no/satser/merverdiavgift?pageid=1500).
-
-
-## Neste implementerte del: salgsdokumenter og bilagskontroll
-
-Standard tilbud, faktura og språkvalg aktiveres ved installasjon og oppdatering.
-Nye salgsdokumenter begrenses til NOK; MultiCurrency deaktiveres uten sletting av
-historikk. Separat EUR-kalkulator henter kun veiledende kurs fra Norges Bank.
-Se sales-documents.md for arbeidsflyt og avgrensninger.
-
-Den nye skrivebeskyttede bilagskontrollen avstemmer debet/kredit per
-foretak/journal/bilagsnummer og viser manglende kundefakturakoblinger. Summer
-beregnes med åtte desimaler i DB, uten avrunding som skjuler små differanser.
-Andre kildetyper og aggregerte fakturaposter fremgår eksplisitt. Dette gir ikke
-bokført avgiftskode/-grunnlag eller komplett historisk endringsspor; disse
-lagringsgapene, MVA-rapport og SAF-T gjenstår. Fordringer og betalinger er ikke
-avstemt av denne kontrollen.
-
-Lisensintegrasjoner er en senere, valgfri adapter uten leverandørspesifikke
-navn, adresser eller avhengigheter i regnskapsmodulen. Ingen integrasjonskode
-eller lisenskrav inngår i denne leveransen.
-
-## Status etter modul 0.6.0
-
-Manuell kontroll av dagens MVA-registerstatus er levert i 0.5.0; registreringshistorikk og virkningsdato gjenstår. Modul 0.6.0 legger til skrivebeskyttet kontroll av kontoplan, standardkontoer og journaler, uten import eller mapping. Den oppdaterte arbeidsrekkefølgen og resterende avklaringer står i [leveranseplanen](delivery-plan.md). Tidligere kildefunn ovenfor er analysegrunnlag, ikke status for alle senere leveranser.
+Ingen ny rapportmotor, kontrollside, databaseendring eller integrasjon er
+implementert i denne gjennomgangen. Foretaksformer og bransjer får bare
+støtte etter konkrete prøver. Lønn, kassasystem og andre betingede områder
+utvider ikke automatisk leveransen. Papirløs flyt tas fortsatt til slutt.
