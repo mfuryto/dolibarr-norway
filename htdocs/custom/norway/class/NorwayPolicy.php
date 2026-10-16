@@ -35,8 +35,8 @@ class NorwayPolicy
         if (!$db->query("UPDATE ".MAIN_DB_PREFIX."c_paiement SET active=0 WHERE code='CHQ' AND entity=".(int) $conf->entity)) {
             throw new RuntimeException('Could not disable cheque payment selection');
         }
-        // Use the core translation override table, scoped to this entity and Norwegian.
-        foreach (array('ProfId1NO' => 'Organisasjonsnummer', 'ProfId1ShortNO' => 'Org.nr.',
+        // Use core translation overrides scoped to the active entity and language.
+        $translations=array('nb_NO'=>array('ProfId1NO' => 'Organisasjonsnummer', 'ProfId1ShortNO' => 'Org.nr.',
             'VATIntra' => 'MVA-nummer (ved registrering)', 'JuridicalStatus' => 'Organisasjonsform',
             'MenuNewThirdParty' => 'Ny kunde/leverandør', 'NewThirdParty' => 'Ny kunde eller leverandør',
             'Prospects' => 'Potensielle kunder', 'Prospect' => 'Potensiell kunde',
@@ -46,17 +46,22 @@ class NorwayPolicy
             'ThirdPartiesArea' => 'Kunder og leverandører / Kontakter', 'ThirdPartyName' => 'Kunde-/leverandørnavn',
             'ThirdPartyType' => 'Kunde-/leverandørtype', 'ThirdPartyAddress' => 'Kunde-/leverandøradresse',
             'ThirdPartyContacts' => 'Kunde-/leverandørkontakter', 'ThirdPartyContact' => 'Kunde-/leverandørkontakt',
-            'ThirdPartyEmail' => 'Kunde-/leverandørens e-post') as $key => $value) {
-            $where = "entity=".(int) $conf->entity." AND lang='nb_NO' AND transkey='".$db->escape($key)."'";
-            $res = $db->query('SELECT rowid FROM '.MAIN_DB_PREFIX.'overwrite_trans WHERE '.$where);
-            if (!$res) { throw new RuntimeException('Could not read Norwegian terminology'); }
-            if ($db->num_rows($res)) {
-                $sql = "UPDATE ".MAIN_DB_PREFIX."overwrite_trans SET transvalue='".$db->escape($value)."' WHERE ".$where;
-            } else {
-                $sql = "INSERT INTO ".MAIN_DB_PREFIX."overwrite_trans (entity,lang,transkey,transvalue) VALUES (".
-                    (int) $conf->entity.",'nb_NO','".$db->escape($key)."','".$db->escape($value)."')";
+            'ThirdPartyEmail' => 'Kunde-/leverandørens e-post',
+            'NonPercuRecuperable' => 'Fransk NPR-ordning', 'VATNPR' => 'Fransk NPR-ordning'),
+            'en_US'=>array('NonPercuRecuperable'=>'French NPR scheme','VATNPR'=>'French NPR scheme'));
+        foreach ($translations as $locale => $entries) {
+            foreach ($entries as $key => $value) {
+                $where = "entity=".(int) $conf->entity." AND lang='".$db->escape($locale)."' AND transkey='".$db->escape($key)."'";
+                $res = $db->query('SELECT rowid FROM '.MAIN_DB_PREFIX.'overwrite_trans WHERE '.$where);
+                if (!$res) { throw new RuntimeException('Could not read Norwegian terminology'); }
+                if ($db->num_rows($res)) {
+                    $sql = "UPDATE ".MAIN_DB_PREFIX."overwrite_trans SET transvalue='".$db->escape($value)."' WHERE ".$where;
+                } else {
+                    $sql = "INSERT INTO ".MAIN_DB_PREFIX."overwrite_trans (entity,lang,transkey,transvalue) VALUES (".
+                        (int) $conf->entity.",'".$db->escape($locale)."','".$db->escape($key)."','".$db->escape($value)."')";
+                }
+                if (!$db->query($sql)) { throw new RuntimeException('Could not configure Norwegian terminology'); }
             }
-            if (!$db->query($sql)) { throw new RuntimeException('Could not configure Norwegian terminology'); }
         }
         if (isModEnabled('multicurrency')) {
             $error = unActivateModule('modMultiCurrency');

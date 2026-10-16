@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-16. Modul 0.65.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-16. Modul 0.66.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -70,15 +70,55 @@ registreres særskilt i prøven; øvrige feil undertrykkes ikke, og kjernen endr
 **Beslutning:** gjenbruk fakturaenes kode, sats, beløp og dokumentkobling,
 og kjernens hovedbok som avstemmingsgrunnlag. Kjernens fakturauttrekk kan ikke
 alene være norsk MVA-melding når manuelle avgiftsbilag eller omposteringer
-inngår. Ingen ny historikkmodell er besluttet av den grunn. Før en minste
-rapporteringsutvidelse velges, prøves kjernens konkrete fradragsbehandling,
-blandede satser, nullsatskategorier og aktuelle utenlandstransaksjoner.
+inngår. Ingen ny historikkmodell er besluttet av den grunn. Fradragsbehandling og blandede satser er fulgt opp nedenfor. Nullsatskategorier
+og aktuelle utenlandstransaksjoner må fortsatt avklares.
 
-25 prosent og de beskrevne syntetiske tilfellene er prøvd her. Delvis/intet
-fradrag, manuelle bilags norske avgiftskoder/grunnlag, registreringsovergang,
+Den første prøven ovenfor dekker 25 prosent. Utvidelsen nedenfor dekker
+blandede satser og separate fradragsbilag. Manuelle bilags norske
+avgiftskoder/grunnlag, registreringsovergang,
 periodisering på grensedatoer, import/eksport og komplett norsk melding er
 fortsatt uavklart. En regnskapsmessig ompostering er ikke i seg selv en
 faglig godkjenning av fradragsrett.
+
+## Blandede satser og fradrag prøvd i 0.66.0
+
+`tests/core-purchases.php` er utvidet med faktura og kreditnota for varer og
+tjenester, hver med tre ordinære linjer på 25, 15 og 12 prosent. Kjøpsjournalen
+fører 25/15/12 til henholdsvis 2710/2711/2713 ut fra syntetiske, eksplisitte
+satskontoer. Kostnad og leverandørgjeld balanserer. Testen velger ikke hvilke
+varer/tjenester som faglig skal ha hver sats.
+
+For netto 100 per linje blir kostnad 300, inngående MVA 52 og gjeld 352.
+Et separat kjernebilag omposterer den valgte ikke-fradragsførbare andelen:
+
+| Prøvd andel | Kostnad etter ompostering | Inngående MVA | Leverandørgjeld |
+| --- | --- | --- | --- |
+| Fullt fradrag | 300 | 52 | 352 |
+| 50 prosent | 326 | 26 | 352 |
+| Intet fradrag | 352 | 0 | 352 |
+
+Kreditnotaene har netto -20 per linje og prøves med tilsvarende motsatt
+fortegn. Kildens beløp og opprinnelig hovedbokspostering endres ikke; nye
+bilag ligger separat med referanse til fakturaen. Gjentatt overføring lager
+ikke duplikater, og ingen nye kontrollkopier skrives. Dette prøver teknisk
+kontering av en oppgitt andel, ikke fastsettelse av fradragsrett eller komplett
+MVA-rapportering. Arbeidsflyten er manuell, ingen ny automatisk funksjon.
+
+**NPR-funnet:** kjernens `c_tva.recuperableonly` er merket «VAT NPR for France»
+i skjemaet. `info_bits & 1` styrer en annen prisberegning i `core/lib/price.lib.php`.
+En syntetisk NPR-linje på 100 + 25 prosent beholder MVA-felt 25, men får total
+100. Den vanlige oversettelsen «Kan ikke dekkes inn»/«Non-recoverable» kan
+villede ved norsk fradragsbehandling. 0.66.0 bruker kjernens eksisterende
+oversettelsestabell for «Fransk NPR-ordning»/«French NPR scheme», avgrenset til
+aktivt foretak og nb_NO/en_US. Ingen prisberegning, historiske dokumenter eller
+kjerneregler endres. NPR-eksemplet beholdes som utkast og journalføres ikke.
+
+**Beslutning:** behold kjernens kjøpsjournal og separate manuelle bilag.
+Det trengs ingen egen kjøpsmotor, fradragsprosentmodell eller begrunnelsesside
+for den prøvde arbeidsflyten. Norsk rapportering må likevel bruke faktiske
+bokførte fradrag og håndtere kode/grunnlag for manuelle bilag. Dette løses
+ikke ved å slå på global kostnadsføring av all kjøps-MVA. Nullsatskategorier,
+utenlandstransaksjoner og komplett norsk melding er fortsatt egne gap.
 
 ## SAF-T: kjerneeksport og kandidater
 

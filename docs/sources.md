@@ -92,3 +92,12 @@ MVA-kildegjennomgangen er fulgt opp med kjøring av kjernens `tax_by_rate()`
 i `tests/core-vat-report.php`, mot syntetiske, journalførte salgs-/kjøpsbilag.
 Resultat og begrensninger står i dekningsanalysen. Testen verifiserer oppførsel
 i 24.0.1; den godkjenner ikke norsk avgiftsbehandling eller komplett melding.
+
+Fradrag og NPR fulgt opp i 0.66.0: [Skatteetatens gjeldende håndbok kapittel 8](https://oppslag.rettskilder.skatteetaten.no/rettskilder2/type/handboker/merverdiavgiftshandboken/gjeldende/MVA2025_M-8)
+og [Finansdepartementets tolkningsuttalelse om fellesanskaffelser](https://www.regjeringen.no/no/dokumenter/-8-2-fradrag-for-inngaende-merverdiavgift-pa-fellesanskaffelser/id2828446/)
+er faglige referanser for behovet for å vurdere fradragsrett og fordeling.
+Eksempelandelene 50/0 prosent i prøven er syntetiske valg, ikke generelle regler.
+NPR-begrepet er kontrollert mot S2: `install/mysql/tables/llx_c_tva.sql`,
+`core/lib/price.lib.php`, `fourn/class/fournisseur.facture.class.php` og
+`accountancy/journal/purchasesjournal.php`. Native blandede satser,
+kreditnotaer og manuelle omposteringer er prøvd i `tests/core-purchases.php`.

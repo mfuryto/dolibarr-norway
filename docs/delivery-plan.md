@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-16 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.65.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.66.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -37,12 +37,18 @@ kreditnotaer, lokale kodegrupper og betalinger er prøvd. Manuelle MVA-bilag
 og separate omposteringer påvirker hovedboken uten å inngå i fakturauttrekket.
 Dette er et konkret rapporteringsgap, ikke en begrunnelse for nye kontrollflater.
 
-Neste arbeid er å prøve kjernens behandling av fullt/delvis/intet fradrag,
-blandede satser og relevante nullsats-/utlandstilfeller. Avklar også hvordan
-norsk avgiftskode og grunnlag kan angis for manuelle bilag med eksisterende
-funksjoner. Deretter velges den minste rapporteringsutvidelsen som kan
-avstemmes mot hele bokføringen. Ingen ny lagring eller egen bokføringsflyt
-er forhåndsbesluttet. Prøvene er interne tester, ikke nye brukeroppgaver.
+Blandede 25/15/12-satser, kreditnotaer og separate bilag for 50/0-prosent
+fradrag er nå prøvd gjennom kjernen i 0.66.0. Norsk/engelsk NPR-tekst er
+presisert fordi valget er en fransk særordning som påvirker prisberegningen.
+En konkret manuell fradragsflyt står i oppsettsveiledningen. Ingen egen
+kjøpsmotor eller fradragshistorikk skal gjeninnføres for dette behovet.
+
+Neste leveranse avgrenser norsk MVA-rapportering: hvordan norske koder og
+grunnlag kan knyttes til faktiske hovedboksposter og manuelle bilag, samt
+relevante nullsats-/utlandstilfeller. Gjenbruk eksisterende felt og rapporter
+før nødvendig tilpasning velges. Rapporteringen må ta med fradragsomposteringer;
+fakturauttrekket alene er utilstrekkelig. Ingen ny lagring eller bokføringsflyt
+er forhåndsbesluttet. Tekniske prøver er interne, ikke nye brukeroppgaver.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
 avtale eller installasjon. Norsk dokumentvalidering og faktisk transport

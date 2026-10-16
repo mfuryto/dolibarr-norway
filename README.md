@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.65.0 · Under utvikling**
+**Versjon 0.66.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -114,3 +114,17 @@ kan leses og lastes ned uendret fra modulinnstillingene når slik historikk finn
 Det opprettes ingen nye kontrollkopier. Allerede bokførte kjøp fra den gamle
 særflyten beskyttes mot ny overføring; retting skjer som eget bilag i kjernen.
 Dette er en teknisk forenkling, ikke en bekreftelse på full norsk etterlevelse.
+
+## MVA og fradrag i 0.66.0
+
+Blandede kjøpssatser på 25, 15 og 12 prosent og kreditnotaer er prøvd gjennom
+kjernens kjøpsjournal med separate MVA-kontoer. Delvis og intet fradrag er
+prøvd som separate omposteringsbilag i kjernen, med bevaring av faktura og
+opprinnelig postering. Dette er en dokumentert manuell arbeidsflyt, ikke
+ny automatisk fradragsberegning.
+
+Den misvisende NPR-teksten er rettet til «Fransk NPR-ordning» på norsk og
+«French NPR scheme» på engelsk. NPR er ikke et valg for norsk fradragsandel.
+Se [oppsettsveiledningen](docs/norwegian-setup-guide.md) for et regneeksempel.
+Norsk MVA-melding gjenstår; kjernens fakturauttrekk tar ikke automatisk med
+separate fradragsomposteringer.

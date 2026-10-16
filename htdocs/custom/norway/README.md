@@ -1,6 +1,6 @@
-# Norway 0.65.0
+# Norway 0.66.0
 
-**Versjon 0.65.0 · Under utvikling**
+**Versjon 0.66.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -27,3 +27,9 @@ løsning for norsk produksjonsregnskap.
 
 Se prosjektets README, docs/norwegian-setup-guide.md og docs/delivery-plan.md.
 GPL-3.0-or-later; kontoplanens egne kilde- og lisensopplysninger følger dataene.
+
+0.66.0 retter NPR-begrepet på norsk/engelsk og prøver native kjøp/kreditnotaer
+med blandede 25/15/12-satser samt separate 50/0-prosent-omposteringer.
+Fradragsandel avgjøres faglig og bokføres manuelt i kjernen; NPR er en fransk
+særordning og endrer prisberegningen. Ingen egen kjøpsflyt eller fradragshistorikk
+innføres. Fakturauttrekket er fortsatt ikke en komplett norsk MVA-melding.
