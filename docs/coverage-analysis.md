@@ -42,9 +42,43 @@ avgift. Lokal kode og sats må derfor kvalifiseres mot aktuell behandling.
 har validering, innsending og tilbakemelding. En XML-fil alene er ikke
 bekreftet innsending. Gjeldende tilgang og API-versjon må verifiseres før bruk.
 
-**Neste prøve:** ordinære varer/tjenester, betalt/ubetalt, kreditnota,
-flere koder på samme sats og manuelt avgiftsbilag. Sammenlign med hovedbok og
-kildedokumenter. Ikke aktiver nye globale MVA-valg i driftsinstallasjonen.
+## Resultat fra kjernens MVA-prøve
+
+`tests/core-vat-report.php` kjøres etter ordinær salgs- og kjøpsflyt i den
+isolerte integrasjonen. Fem fakturaer/kreditnotaer er først opprettet,
+validert og overført gjennom kjernens journaler av `invoice-workflow.php`
+og `core-purchases.php`. Testen prøver deretter vare-/tjenestegrenene,
+koder og datoer som midlertidige varianter av disse syntetiske kildene.
+Den er en karakterisering av kjernen, ikke en ny rapporteringsfunksjon.
+
+| Prøve | Resultat i Dolibarr 24.0.1 |
+| --- | --- |
+| Fakturagrunnlag, varer og tjenester, uten betaling | Salg netto 1800/MVA 450 og kjøp netto 80/MVA 20, inkludert kreditnotaer, stemmer med de aktuelle hovedbokspostene. |
+| Samme sats med to lokale koder | Kodene holdes i separate grupper; faktura og kreditnota med samme kode samles med riktig fortegn. |
+| Fakturadato og betaling | Fakturagrunnlaget ligger i februar selv om betaling skjer senere. Betaling endrer ikke denne prøvens fakturabaserte avgift. |
+| Betalingsgrunnlag | Ubetalte fakturaer utelates. Native halve betalinger i februar/mars gir 125 i salgsmva og 12,50 i kjøpsmva per måned for den betalte fakturaen. Dette prøver kjernens oppførsel, ikke at betalingsgrunnlag er riktig norsk valg. |
+| Manuelt balansert MVA-bilag | +7 på inngående MVA vises i hovedboken, men fakturauttrekket forblir 20. |
+| Separat balansert ompostering | -25 på inngående MVA endrer hovedboken ytterligere, men fakturauttrekket forblir 20. Netto inngående MVA i de valgte bilagene er nå 2. En ompostering blir ikke automatisk en oppdatert fradragsvurdering i fakturauttrekket. |
+| Bevaring | Betalinger, bilag, kilder og datovarianter rulles tilbake. Antall rader og hash av de opprinnelige faktura-/linje-/hovedboksdataene kontrolleres etterpå. Ingen nye kontrollkopier opprettes. |
+
+Kjernens dashboard beregner betalingsandel fra uttrekkets linjer. Testen
+anvender samme formel ved prøven av betalingsgrunnlag; den er ikke en
+nettlesertest av dashboardet. Kjerneversjonen gir også et kjent PHP-varsel
+om manglende `datep` i tjeneste-/fakturagrenen. Bare dette eksakte varselet
+registreres særskilt i prøven; øvrige feil undertrykkes ikke, og kjernen endres ikke.
+
+**Beslutning:** gjenbruk fakturaenes kode, sats, beløp og dokumentkobling,
+og kjernens hovedbok som avstemmingsgrunnlag. Kjernens fakturauttrekk kan ikke
+alene være norsk MVA-melding når manuelle avgiftsbilag eller omposteringer
+inngår. Ingen ny historikkmodell er besluttet av den grunn. Før en minste
+rapporteringsutvidelse velges, prøves kjernens konkrete fradragsbehandling,
+blandede satser, nullsatskategorier og aktuelle utenlandstransaksjoner.
+
+25 prosent og de beskrevne syntetiske tilfellene er prøvd her. Delvis/intet
+fradrag, manuelle bilags norske avgiftskoder/grunnlag, registreringsovergang,
+periodisering på grensedatoer, import/eksport og komplett norsk melding er
+fortsatt uavklart. En regnskapsmessig ompostering er ikke i seg selv en
+faglig godkjenning av fradragsrett.
 
 ## SAF-T: kjerneeksport og kandidater
 

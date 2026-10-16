@@ -31,12 +31,18 @@ Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 
 ## Neste konkrete arbeid
 
-Prøv kjernens MVA-uttrekk mot bokførte beløp med syntetiske eksempler:
-ordinært vare- og tjenestesalg/kjøp, ubetalt og betalt faktura, kreditnota,
-flere lokale koder på samme sats og et manuelt avgiftsbilag. Gjennomgå faktisk
-datogrunnlag og fradragsbehandling. Resultatet skal vise hva som kan gjenbrukes,
-hva som mangler, og den minste nødvendige løsningen. Det skal ikke opprettes
-nye brukerrettede kontrollsider eller historikkmodeller for å utføre prøven.
+Første MVA-prøve er gjennomført i `tests/core-vat-report.php` og dokumentert
+i [dekningsanalysen](coverage-analysis.md). Fakturabaserte varer/tjenester,
+kreditnotaer, lokale kodegrupper og betalinger er prøvd. Manuelle MVA-bilag
+og separate omposteringer påvirker hovedboken uten å inngå i fakturauttrekket.
+Dette er et konkret rapporteringsgap, ikke en begrunnelse for nye kontrollflater.
+
+Neste arbeid er å prøve kjernens behandling av fullt/delvis/intet fradrag,
+blandede satser og relevante nullsats-/utlandstilfeller. Avklar også hvordan
+norsk avgiftskode og grunnlag kan angis for manuelle bilag med eksisterende
+funksjoner. Deretter velges den minste rapporteringsutvidelsen som kan
+avstemmes mot hele bokføringen. Ingen ny lagring eller egen bokføringsflyt
+er forhåndsbesluttet. Prøvene er interne tester, ikke nye brukeroppgaver.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
 avtale eller installasjon. Norsk dokumentvalidering og faktisk transport

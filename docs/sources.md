@@ -87,3 +87,8 @@ S5 ble kontrollert på nytt: 1.40 er angitt som format fra 2027.
 Søk etter `dolibarr saft`, `dolibarr norway` og `dolibarr peppol` på GitHub
 og avgrensede web-/DoliStore-søk er dokumentert som kandidatfunn, ikke som
 bevis på et uttømmende markedssøk.
+
+MVA-kildegjennomgangen er fulgt opp med kjøring av kjernens `tax_by_rate()`
+i `tests/core-vat-report.php`, mot syntetiske, journalførte salgs-/kjøpsbilag.
+Resultat og begrensninger står i dekningsanalysen. Testen verifiserer oppførsel
+i 24.0.1; den godkjenner ikke norsk avgiftsbehandling eller komplett melding.
