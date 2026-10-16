@@ -14,12 +14,12 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.66.0';
+        $this->version = '0.67.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
         $this->picto = 'accountancy';
-        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('main', 'index', 'pdfgeneration', 'admincompany'));
+        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('commonobject', 'main', 'index', 'pdfgeneration', 'admincompany'));
         $this->config_page_url = array('setup.php@norway');
         $this->langfiles = array('norway@norway');
         $this->phpmin = array(8, 2);
@@ -61,7 +61,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.66.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.67.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';

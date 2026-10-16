@@ -875,18 +875,18 @@ NorwayTaxAccountsGuide=Les veiledning for skattekontoer
 NorwayWizardExtraTaxAccounts=Veiledning: Skattekontoer
 NorwayWizardExtraTaxAccountsHelp=Forklarer når listen kan stå urørt, forskjellen fra MVA-kontoer og bruk av skattekontoer for ENK. Ingen innstillinger endres.
 
-NorwayVatRatesTitle=Sett opp ordinære norske MVA-satser
-NorwayVatRatesScope=For nytt bokføringsoppsett med den medfølgende norske kontoplanen: Oppretter manglende ordinære satser 25, 15 og 12 % for salg og kjøp, og deaktiverer ordinære, ubrukte 8 og 14 % etter bekreftelse. Eksisterende satser, kontokoder og standardvalg overskrives ikke. 0 % beholdes.
-NorwayVatRatesLimits=Satser alene velger ikke avgiftsbehandling. Fritak, unntak, registreringsperioder, fradrag og import må vurderes separat. Gyldige eldre satser i historiske dokumenter endres ikke. Etter satsoppsettet fylles satskontoene via egen lenke.
+NorwayVatRatesTitle=Norske MVA-satser og koder
+NorwayVatRatesScope=For et ubrukt oppsett: opprett egne satsrader for salg (3/31/33) og kjøp (1/11/13) på 25/15/12 prosent. Kodene lagres i kjernens eksisterende MVA-register. Ubrukte, ukodede standardsatser deaktiveres etter bekreftelse; radene beholdes.
+NorwayVatRatesLimits=Kodene gjelder ordinært innenlandsk salg og fradragsberettigede kjøp. Nullsats, unntak, utland og fradragsrett vurderes separat. Historiske fakturalinjer endres ikke. Fyll satskontoene etter dette oppsettet.
 NorwayVatRatesConfirm=Jeg bekrefter at dette er et nytt bokføringsoppsett uten dokumenter eller bokføringshistorikk, og at de viste endringene er riktige. Ingen fakturalinjer eller MVA-status endres.
-NorwayVatRatesCreate=Opprett ordinær sats for salg og kjøp
-NorwayVatRatesDeactivate=Deaktiver gammel ordinær sats; behold raden
+NorwayVatRatesCreate=Opprett kodet satsrad
+NorwayVatRatesDeactivate=Deaktiver ubrukt, ukodet satsrad; behold historikken
 NorwayVatRatesKeep=Behold eksisterende aktiv ordinær sats og kontovalg
 NorwayVatRatesReview=Krever manuell gjennomgang av eksisterende sats eller særvalg
-NorwayVatRatesBlocked=Ingen endringer kan bekreftes. Kontroller valgt aktiv norsk kontoplan. Dokumenter (også utkast/tilbud/ordre), hovedbok, produkter med 8/14 %, inaktive eller spesielle satsrader og gamle standardvalg krever manuell gjennomgang. Ingen data er endret.
-NorwayVatRatesSource=Kilde: Skatteetatens gjeldende satser
+NorwayVatRatesBlocked=Automatisk oppsett er sperret. Dokumenter, hovedbok, produkter eller eksisterende konto-/standardvalg krever manuell gjennomgang i kjernens MVA-register. Ingen data er endret.
+NorwayVatRatesSource=Kilde: Skatteetatens MVA-koder
 NorwayWizardTaskVatRates=Sett opp ordinære norske MVA-satser
-NorwayWizardTaskVatRatesHelp=I nytt bokføringsoppsett: gjennomgå forhåndsvisningen av 25/15/12 og gamle 8/14 før bekreftelse. Dokumenter, historikk og særvalg sperrer endring. Fyll deretter MVA-kontoene i neste punkt.
+NorwayWizardTaskVatRatesHelp=I nytt oppsett: forhåndsvis norske koder for salg (3/31/33) og kjøp (1/11/13). De lagres på kjernens satsrader. Eksisterende dokumenter, produkter og særvalg krever manuell gjennomgang. Fyll deretter MVA-kontoene.
 
 NorwayAllocationTitle=Bokført fordeling på kunde, salg og MVA
 NorwayAllocationScope=Velg uttrykkelig en ordinær innenlandsk profil fra den medfølgende kontoplanen. Kontrollen sammenligner fakturaens lagrede netto/MVA/brutto med faktiske hovedboksposter på 1500, viste salgskontoer og satsens MVA-konto. Positive beløp er debet, negative er kredit. Match gjelder bare denne profilen og er ingen godkjenning av avgiftsbehandling, historisk kontering eller MVA-rapport. Dagens standardkontovalg brukes ikke. Data leses ved åpning; oppdater etter samtidige endringer.
@@ -1179,3 +1179,7 @@ NorwaySimpleAccounting=Norsk oppsett fyller på manglende standardvalg. Kjernens
 NorwaySimpleWizard=Veilederen samler oppsett og veiledning. Den har ingen egen godkjenningsstatus og oppretter ikke ekstra regnskapskontroller.
 NorwaySimpleRegistration=MVA-status og virkningsdato må samsvare med foretakets registrering. Oppbevar registreringsvedtaket som dokumentasjon; det kreves ingen egen begrunnelsesregistrering i modulen.
 NorwaySimpleLimits=Norsk MVA-rapportering, SAF-T og EHF/Peppol er ikke ferdigstilt. Se arbeidsplanen for gjenstående norsk støtte.
+
+NorwayNativeVatCode=Norsk MVA-kode
+
+NorwayNativeVatBoth=Salg og kjøp

@@ -9,12 +9,32 @@ class NorwayVatRates
         $result=$db->query($sql);if (!$result) { throw new RuntimeException('VAT rate setup'); }
         $rows=array();while ($row=$db->fetch_object($result)) { $rows[]=(array)$row; }return $rows;
     }
-    private static function ordinary($r)
+    /** Ordinary domestic codes only; zero-rate/import/deduction choices are separate. */
+    public static function codes()
     {
-        return trim((string)$r['code'])==='' && (int)$r['type_vat']===0 && (int)$r['recuperableonly']===0
-            && empty($r['fk_department_buyer']) && empty($r['einvoice_vatex'])
+        return array(
+            array('rate'=>25,'type'=>1,'code'=>'3'),array('rate'=>25,'type'=>2,'code'=>'1'),
+            array('rate'=>15,'type'=>1,'code'=>'31'),array('rate'=>15,'type'=>2,'code'=>'11'),
+            array('rate'=>12,'type'=>1,'code'=>'33'),array('rate'=>12,'type'=>2,'code'=>'13'),
+        );
+    }
+    private static function plain($r)
+    {
+        return (int)$r['recuperableonly']===0 && empty($r['fk_department_buyer']) && empty($r['einvoice_vatex'])
             && (float)$r['localtax1']==0 && (float)$r['localtax2']==0
             && empty($r['localtax1_type']) && empty($r['localtax2_type']);
+    }
+    private static function ordinary($r)
+    {
+        return trim((string)$r['code'])==='' && (int)$r['type_vat']===0 && self::plain($r);
+    }
+    public static function defaultCode($db,$entity,$rate,$type)
+    {
+        if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
+        foreach(self::codes() as $spec){if((float)$rate!==(float)$spec['rate'] || $type!==$spec['type']){continue;}
+            $rows=self::rows($db,"SELECT t.* FROM ".$db->prefix()."c_tva t JOIN ".$db->prefix()."c_country c ON c.rowid=t.fk_pays WHERE t.entity=".(int)$entity." AND c.code='NO' AND c.active=1 AND t.code='".$spec['code']."'");
+            if(count($rows)===1 && (string)$rows[0]['code']===$spec['code'] && (int)$rows[0]['active']===1 && (int)$rows[0]['type_vat']===$type && (float)$rows[0]['taux']===(float)$spec['rate'] && self::plain($rows[0])){return $spec['rate'].' ('.$spec['code'].')';}
+        }return null;
     }
     public static function preview($db,$entity)
     {
@@ -33,22 +53,25 @@ class NorwayVatRates
             $usage[$table]=self::rows($db,'SELECT rowid FROM '.$p.$table.' WHERE entity='.$entity.' ORDER BY rowid'.$db->plimit(1));
             $blocked=$blocked || (bool)$usage[$table];
         }
-        $usage['products']=self::rows($db,'SELECT rowid FROM '.$p.'product WHERE entity='.$entity.' AND tva_tx IN (8,14) ORDER BY rowid'.$db->plimit(1));
+        $usage['products']=self::rows($db,'SELECT rowid FROM '.$p.'product WHERE entity='.$entity.' ORDER BY rowid'.$db->plimit(1));
         $blocked=$blocked || (bool)$usage['products'];
         $changes=array();
-        foreach (array(25,15,12) as $rate) {
-            $matches=array_values(array_filter($rates,static fn($r)=>(float)$r['taux']===$rate*1.0));
-            $ordinary=array_values(array_filter($matches,static fn($r)=>self::ordinary($r)));
-            $action=!$matches ? 'Create' : (count($ordinary)===1 && (int)$ordinary[0]['active']===1 ? 'Keep' : 'Review');
+        foreach (self::codes() as $spec) {
+            $matches=array_values(array_filter($rates,static fn($r)=>trim((string)$r['code'])===$spec['code']));
+            $valid=count($matches)===1 && (string)$matches[0]['code']===$spec['code'] && (int)$matches[0]['type_vat']===$spec['type']
+                && (float)$matches[0]['taux']===(float)$spec['rate'] && self::plain($matches[0]) && (int)$matches[0]['active']===1;
+            $action=!$matches ? 'Create' : ($valid ? 'Keep' : 'Review');
             $blocked=$blocked || $action==='Review';
-            $changes[]=array('id'=>$ordinary ? (int)$ordinary[0]['rowid'] : 0,'rate'=>$rate,'action'=>$action);
+            $changes[]=$spec+array('id'=>$matches ? (int)$matches[0]['rowid'] : 0,'action'=>$action);
         }
         foreach ($rates as $r) {
-            if (!in_array((float)$r['taux'],array(8.0,14.0),true) || (int)$r['active']!==1) { continue; }
+            if (!in_array((float)$r['taux'],array(8.0,14.0,25.0,15.0,12.0),true) || (int)$r['active']!==1) { continue; }
+            // Preserve other coded treatments; never infer their purpose from the rate.
+            if(trim((string)$r['code'])!=='' && in_array((float)$r['taux'],array(25.0,15.0,12.0),true)){continue;}
             $plain=self::ordinary($r) && trim((string)$r['accountancy_code_sell'])==='' && trim((string)$r['accountancy_code_buy'])==='';
             $action=$plain && (int)$r['use_default']===0 ? 'Deactivate' : 'Review';
             $blocked=$blocked || $action==='Review';
-            $changes[]=array('id'=>(int)$r['rowid'],'rate'=>(int)$r['taux'],'action'=>$action);
+            $changes[]=array('id'=>(int)$r['rowid'],'rate'=>(int)$r['taux'],'type'=>(int)$r['type_vat'],'code'=>(string)$r['code'],'action'=>$action);
         }
         return array('entity'=>$entity,'base'=>$base,'country'=>$country,'usage'=>$usage,'rates'=>$rates,'changes'=>$changes,'blocked'=>$blocked);
     }
@@ -70,7 +93,7 @@ class NorwayVatRates
             $saved=0;$country=(int)$preview['country'][0]['rowid'];
             foreach ($preview['changes'] as $change) {
                 if ($change['action']==='Create') {
-                    $sql='INSERT INTO '.$p."c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES (".$entity.','.$country.','.$change['rate'].",0,'',0,1,0,'Norwegian ordinary VAT ".$change['rate']."%')";
+                    $sql='INSERT INTO '.$p."c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES (".$entity.','.$country.','.$change['rate'].','.$change['type'].",'".$db->escape($change['code'])."',0,1,0,'Norwegian ordinary VAT ".$change['rate']."%')";
                 } elseif ($change['action']==='Deactivate') {
                     $sql='UPDATE '.$p.'c_tva SET active=0 WHERE entity='.$entity.' AND rowid='.$change['id'].' AND active=1';
                 } else { continue; }
