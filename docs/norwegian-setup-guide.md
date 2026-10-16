@@ -1,6 +1,6 @@
 # Samlet veiledning for norsk oppsett
 
-Oppdatert for modul 0.65.0 og støttet Dolibarr 24.0.1. Start etter
+Oppdatert for modul 0.66.0 og støttet Dolibarr 24.0.1. Start etter
 [teknisk installasjon](vps-installation.md). Oppsettsveilederen viser
 forklaringer og lenker til innstillingene. Lagring skjer på innstillingssiden;
 veilederen har ingen egen status eller godkjenning. Bruk kjernens dokumenter
@@ -51,6 +51,45 @@ registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
 **Gjenstår:** komplett norsk MVA-rapportering, eksport og faglig kvalifisering
 av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
+
+### Fradrag ved kjøp
+
+Fradragsrett og eventuell andel vurderes ut fra anskaffelsen, bruken og
+dokumentasjonen. Se [Skatteetatens håndbok, kapittel 8](https://oppslag.rettskilder.skatteetaten.no/rettskilder2/type/handboker/merverdiavgiftshandboken/gjeldende/MVA2025_M-8).
+Modulen beregner ikke en fradragsandel for deg.
+
+For et ordinært kostnadskjøp kan du bruke kjernens kjøpsjournal og, når
+nødvendig, et separat manuelt omposteringsbilag. Bevar leverandørfakturaen
+med originalbeløp og vedlegg. Om det først er bokført fullt fradrag, flyttes
+den ikke-fradragsførbare delen fra inngående MVA til riktig kostnadskonto.
+Bilaget skal vise til den opprinnelige fakturaen og ha dokumentert grunnlag.
+Før i riktig periode; stengte eller allerede rapporterte perioder krever
+vurdering av retting.
+
+Eksempel: en kostnadsfaktura på 100 kroner pluss 25 kroner MVA, totalt 125.
+50 prosent er bare en valgt eksempelandel; det er ikke en standardregel.
+
+| Fradrag | Kostnad etter ompostering | Inngående MVA etter ompostering | Separat ompostering etter førstegangsføring med fullt fradrag |
+| --- | --- | --- | --- |
+| Fullt | 100,00 | 25,00 | Ingen |
+| 50 prosent | 112,50 | 12,50 | Debet kostnad 12,50; kredit inngående MVA 12,50 |
+| Intet | 125,00 | 0,00 | Debet kostnad 25,00; kredit inngående MVA 25,00 |
+
+Leverandørgjelden er fortsatt 125 i alle tre eksemplene. Velg kostnadskonto
+etter anskaffelsen; eksemplet gjelder ikke automatisk eiendeler eller alle
+særregler. Ved kreditnota må fortegn og eventuell tidligere fradragsfordeling
+følges opp. Arbeidsflyten er prøvd teknisk med blandede 25/15/12-satser,
+varer/tjenester og tilhørende kreditnotaer; faglig fradragsrett avgjøres separat.
+
+**NPR er en fransk særordning.** Den skal ikke brukes som et valg for norsk
+«ingen fradragsrett». Den påvirker kjernens prisberegning. Teksten er presisert
+på norsk og engelsk fra 0.66.0. Ikke slå på den globale innstillingen som
+kostnadsfører all kjøps-MVA for å løse fradraget på én faktura.
+
+**Rapportering gjenstår:** kjernens fakturabaserte MVA-uttrekk tar ikke med
+separate manuelle omposteringer. Avstem mot hovedboken og bruk en konkret,
+faglig avklart rapporteringsrutine; uttrekket er ikke godkjent som komplett
+norsk MVA-melding. Se [prøver og begrensninger](coverage-analysis.md).
 
 ## 4. Kontoplan, standardkontoer og journaler
 
