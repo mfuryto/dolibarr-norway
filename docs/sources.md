@@ -66,3 +66,24 @@ funksjonsaksept for modulen.
 | S26 | [Altinn: regnskap før oppstart](https://info.altinn.no/starte-og-drive/starte/for-oppstart/regnskap-for-oppstart/) og [Skatteetaten: dokumentasjon av kontantsalg](https://www.skatteetaten.no/rettskilder/type/handboker/skatteforvaltningshandboken/gjeldende/kapittel-14-administrative-reaksjoner-og-straff/ID-14-7.001/ID-14-7.003/) | Avklar kontantsalg, kassasystem og aktuelle bransjekrav. Ingen generell norsk kvalifisering av Dolibarrs POS følger av at funksjonen finnes. |
 | S27 | [Finanstilsynet: forsinkelsesrente](https://www.finanstilsynet.no/analyser-og-statistikk/forsinkelsesrente-og-standardkompensasjon/forsinkelsesrente/) og [inkassovirksomhet](https://www.finanstilsynet.no/forbrukerinformasjon/inkassovirksomhet/) | Hvis purring/innkreving brukes: gjeldende vilkår, frister, kundetype, satser og tillegg vurderes før automatisering. Ingen fast sats hardkodes som varig standard. |
 | S28 | [Forbrukertilsynet: standardvilkår for forbrukerkjøp over internett](https://www.forbrukertilsynet.no/wp-content/uploads/2017/12/Standard-salgsbetingelser-for-forbrukerkj%C3%B8p-av-varer-over-internett.pdf) og [veiledning for digitale tjenester](https://www.forbrukertilsynet.no/wp-content/uploads/2021/11/veiledning-om-avtalevilkar-norsk.pdf) | Identifiserer forbrukerscenarioer som må vurderes separat. Eldre veiledninger er ikke komplett kontroll av gjeldende 2026-regler; lovvilkår og eventuelle nye krav verifiseres før funksjonsaksept. |
+
+## Gjenbruk og rapportering kontrollert 2026-10-16
+
+Denne kontrollen gjelder [dekningsanalysen](coverage-analysis.md). Ingen
+nye tillegg er installert, og ingen tidligere lov-/API-kontroll erstattes
+utenfor disse områdene.
+
+| ID | Primærkilde | Kontroll og begrensning |
+| --- | --- | --- |
+| S29 | [MVA-modell](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/) og [innsending](https://skatteetaten.github.io/mva-meldingen/documentation/api/) | Norske koder, spesifikasjoner, validering og tilbakemelding. Dokumentasjonen har eldre endringslogg; aktuell tilgang og versjon må prøves før integrasjon. |
+| S30 | [ENK-skattemelding](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/enk/) og [leverandørrepo](https://github.com/Skatteetaten/skattemeldingen) | Leveringsveier og årsversjon er egne avklaringer. README-eksempler er ikke automatisk gjeldende modell. |
+| S31 | [CAP-REL Peppol](https://doc.cap-rel.fr/peppol/) | Funksjonsdokumentasjon undersøkt; versjon/PHP-støtte og norsk profil ikke funksjonstestet. Produktside og søkeindeks ga ulike versjonsopplysninger. |
+| S32 | [SAF-T PT-repo](https://github.com/cialinux/dolibarr-saft/tree/91dc9aed1a7783b18ac4d14dd5289e1558befc93) | README: portugisisk import/validering med kommersiell API. Ikke norsk eksport. |
+| S33 | [Åpen Peppol-kandidat](https://github.com/marcrant1/dolibarr-peppol-export/tree/c8d965b1cfc4080880e4a9b51439e4f1a39eceff) og [Peppyrus-kandidat](https://github.com/cedric-marcoux/dolibarr_peppol-peppyrus/tree/cede93ae75730d56cbb472e3e2cf6f896b9d54d9) | README/repometadata undersøkt. Kilde, lisensvilkår, norsk støtte, aktuelle tjenestevilkår og kompatibilitet må kvalifiseres før valg. Ingen kode kopiert. |
+
+Kjernefunn er lest mot S2, særlig `core/lib/tax.lib.php`,
+`compta/tva/index.php` og `accountancy/class/bookkeeping.class.php`.
+S5 ble kontrollert på nytt: 1.40 er angitt som format fra 2027.
+Søk etter `dolibarr saft`, `dolibarr norway` og `dolibarr peppol` på GitHub
+og avgrensede web-/DoliStore-søk er dokumentert som kandidatfunn, ikke som
+bevis på et uttømmende markedssøk.

@@ -1,6 +1,6 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-15 etter prosjekteiers presisering om forenkling.
+Oppdatert 2026-10-16 etter opprydding og presisering av næringsspesifikasjonen.
 Gjeldende programversjon er 0.65.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
@@ -12,17 +12,36 @@ norske mangler og uttrykkelig bestilte behov med minst mulig tilleggskode.
 Et dokumentasjons- eller sporbarhetskrav betyr ikke automatisk at det trengs
 en ny kontrollside, tabell, historikkmodell eller bekreftelsesrunde.
 
-Egne kontroll- og historikkfunksjoner er fjernet fra vanlig arbeidsflyt. Tidligere prioritering om å fortsette direkte med
-myndighetsgodkjenning/etterfakturering erstattes av oppryddingen nedenfor.
+Egne kontroll- og historikkfunksjoner er fjernet fra vanlig arbeidsflyt.
 Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 
-## Prioritering
+## Gjenstående leveranser
 
 | Rekkefølge | Oppgave | Ferdig når |
 | --- | --- | --- |
-| 1 | Gjennomgå eksisterende tillegg mot kjernen | Hvert tillegg har en kort beslutning: behold, erstatt med kjernefunksjon, forenkle eller ta ut av vanlig arbeidsflyt. Beslutningen viser faktisk kjernedekning og eventuelt konkret krav som ikke dekkes. Ingen ny kontrollfunksjon bygges for å utføre gjennomgangen. |
-| 2 | Forenkle arbeidsflyten | Overflødige sider, menypunkter og bekreftelser er fjernet eller samlet der dette er avklart. Vanlig arbeid bruker kjernens dokumenter, registrering og bokføring. Eksisterende data og historikk kan fortsatt leses; nødvendig endring av lagring eller bokføringskoblinger har en prøvd overgang. |
-| 3 | Fullføre dokumenterte norske mangler | Bare mangler som står igjen etter kjernetest får egen implementasjon. Prioriter relevante norske dokumentopplysninger, avgiftsbehandling og rapportering. Gjenbruk eksisterende tillegg når de dekker behovet. |
+| 1 | Avklare kjernedekning og gjenbruk | Første kildegjennomgang er dokumentert i [dekningsanalysen](coverage-analysis.md). Aktuelle tillegg er kandidater, ikke installert eller godkjent støtte. Kompatibilitet og faktisk norsk dekning prøves før valg. |
+| 2 | Norsk MVA-behandling og dokumenter | Ordinært salg/kjøp, kreditnota, fritak/unntak, registreringsovergang, fradrag og relevante utenlandstransaksjoner er prøvd mot kjernen. Bare påviste mangler får nødvendig tilpasning. Varer og tjenester inngår. |
+| 3 | MVA-grunnlag og melding | Grunnlag og avgift kan avstemmes mot bokføringen per periode og norsk avgiftsbehandling, inkludert manuelle bilag og retting. Direkte innsending er et eget bestilt behov med autorisasjon, status og kvittering; rapportgrunnlag må være riktig først. |
+| 4 | EHF faktura og kreditnota | Eksisterende tillegg og tilgangspunkt er kvalifisert med norske identifikatorer, mottakerreferanser, validering, sending og status. Undersøkelse starter parallelt med punkt 2. Ingen avtale eller kjøp er gjort. |
+| 5 | SAF-T Financial | Norsk eksport med kontoklassifisering, avgiftskoder, motparter, saldoer og bilag er validert mot aktuelt skjema og avstemt mot komplett regnskap. Eksisterende eksportutvidelser undersøkes før egen kode. |
+| 6 | Avstemming og årsavslutning | Kjernens reskontro, bank, saldoovergang, periodisering, låsing og retting er prøvd for støttet omfang. Rutiner og rapporter er dokumentert; egne kontrollflater er ikke standardløsningen. |
+| 7 | Næringsspesifikasjon og skattemelding | Regnskapskontoer og saldoer er koblet til relevante opplysninger for riktig inntektsår og foretaksform. Skattemessige forskjeller, avskrivninger og tilleggsopplysninger håndteres. Grunnlaget avstemmes mot årsavslutningen, og en konkret leveringsvei er kvalifisert: egnet årsoppgjørssystem, overføring/eksport eller integrasjon. SAF-T alene dekker ikke leveransen. |
+| 8 | Samlet produksjonsaksept og drift | Hele kjeden dokument–bokføring–betaling/kreditnota–avstemming–rapport/eksport er prøvd. Tilgang, retting, bevaring og gjenoppretting inngår. Støttet bruk og gjenværende avvik beskrives eksplisitt. |
+| 9 | Papirløs bilagsflyt og matching | Eksisterende mottak og vedlegg er brukt først; nødvendig forenkling av registrering og matching er prøvd. Tas til slutt som avtalt. |
+
+## Neste konkrete arbeid
+
+Prøv kjernens MVA-uttrekk mot bokførte beløp med syntetiske eksempler:
+ordinært vare- og tjenestesalg/kjøp, ubetalt og betalt faktura, kreditnota,
+flere lokale koder på samme sats og et manuelt avgiftsbilag. Gjennomgå faktisk
+datogrunnlag og fradragsbehandling. Resultatet skal vise hva som kan gjenbrukes,
+hva som mangler, og den minste nødvendige løsningen. Det skal ikke opprettes
+nye brukerrettede kontrollsider eller historikkmodeller for å utføre prøven.
+
+EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
+avtale eller installasjon. Norsk dokumentvalidering og faktisk transport
+prøves hver for seg. Ingen mottakerregistrering eller kontakt med leverandører
+gjøres uten uttrykkelig bestilling.
 
 ## Utført forenkling i 0.65.0
 
@@ -37,7 +56,7 @@ Regnskap → Innstillinger. De tidligere løsningene var tillegg, ikke
 lovpålagte brukeroppgaver. Det gamle lagringsskjemaet beholdes for lesing
 og vern av allerede særposterte kjøp; nye historikkposter opprettes ikke.
 
-Leveransen prøves med ordinær salgs- og kjøpsbokføring, gammel historikk,
+Oppryddingen er prøvd med ordinær salgs- og kjøpsbokføring, gammel historikk,
 oppgradering, backup og gjenoppretting. Dette dokumenterer teknisk overgang,
 ikke full norsk regnskapsmessig etterlevelse.
 
@@ -54,7 +73,8 @@ De avtalte områdene beholdes, men er ikke forhåndsbeslutninger om egen kode:
 - C/C2: reskontro, bank, avstemming og årsavslutning på kjernens grunnlag.
 - D: relevante utenlandsscenarioer for varer og tjenester.
 - E: EHF/Peppol for offentlige kunder; eksisterende løsninger undersøkes tidlig.
-- F/F2: SAF-T og avtalt rapportgrunnlag for næringsspesifikasjonen.
+- F: SAF-T Financial.
+- F2: næringsspesifikasjon og skattemelding som egen leveranse etter årsavslutning.
 - G: nødvendig retting, tilgang, oppbevaring og drift.
 - A3/C1: papirløs bilagsflyt og enkel matching tas fortsatt til slutt.
 
