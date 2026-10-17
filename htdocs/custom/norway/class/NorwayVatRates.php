@@ -49,10 +49,11 @@ class NorwayVatRates
             $country=self::rows($db,"SELECT rowid FROM ".$db->prefix()."c_country WHERE code='NO' AND active=1 FOR UPDATE");
             if(count($country)!==1){throw new RuntimeException('Norwegian country');}
             $country=(int)$country[0]['rowid'];$p=$db->prefix();
-            $existing=self::rows($db,'SELECT code FROM '.$p.'c_tva WHERE entity='.(int)$entity.' AND fk_pays='.$country.' FOR UPDATE');
-            $codes=array_map(static fn($r)=>trim((string)$r['code']),$existing);$created=0;
+            self::rows($db,'SELECT code FROM '.$p.'c_tva WHERE entity='.(int)$entity.' AND fk_pays='.$country.' FOR UPDATE');
+            $created=0;
             foreach(self::zeroCodes() as $spec){
-                if(in_array($spec['code'],$codes,true)){continue;}
+                // Use the register's collation: preserve case/space-equivalent user choices too.
+                if(self::rows($db,'SELECT code FROM '.$p.'c_tva WHERE entity='.(int)$entity.' AND fk_pays='.$country." AND code='".$spec['code']."'")){continue;}
                 if(!$db->query('INSERT INTO '.$p.'c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES ('
                     .(int)$entity.','.$country.",0,".$spec['type'].",'".$spec['code']."',0,1,0,'Norwegian VAT code ".$spec['code']."')")){throw new RuntimeException('Norwegian zero code');}$created++;
             }

@@ -87,6 +87,7 @@ try {
  }
  // Append-only upgrade is safe even with documents: existing choices and their references stay unchanged.
  vrSql("UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='NO0'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['NO0']),'Inactive purchase zero reactivated');vrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND code='NO0'");
+ vrSql("UPDATE ".$p."c_tva SET code='no0' WHERE entity=".$entity." AND code='NO0'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['NO0']),'Case-equivalent user choice overwritten or trusted');vrSql("UPDATE ".$p."c_tva SET code='NO0' WHERE entity=".$entity." AND code='no0'");
  $zeroBefore=NorwayVatRates::zeroChoices($db,$entity);vrAssert(count($zeroBefore)===4,'Zero classifications missing');
  vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0,'Repeat zero seed duplicated rows');
  vrSql("UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='7'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['7']),'Inactive zero code reactivated');vrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND code='7'");
