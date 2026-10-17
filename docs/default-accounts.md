@@ -1,6 +1,7 @@
 # Bekreftet utfylling av kunde- og leverandørkonto
 
-Fra 0.13.0: Åpne norsk oppsettsveiviser → steg 4 → **Lagre kunde- og leverandørkonto**. Siden finnes også fra kontoplan-/bokføringskontrollen. Administrator og aktiv Norway-modul kreves.
+Den eldre utfyllingshjelperen finnes fra **Norsk regnskapsoppsett**.
+Oppstartsoversikten lenker til kjernens standardkontoer som normalvei. Administrator og aktiv Norway-modul kreves.
 
 Forhåndsvisningen viser lagret og eventuell avvikende effektiv verdi, forslag og handling for kunde (1500 Kundefordringer) og leverandør (2400 Leverandørgjeld). Disse to reskontrostandardene er hele lagringsomfanget. Salgs-, kjøps- og MVA-kontoer, journaler, bankkontoer, produkter, motparter og bilag endres ikke. Kundens eller leverandørens egen kobling kan overstyre standarden.
 
@@ -10,7 +11,7 @@ Kontroller forhåndsvisningen og ha fersk backup før du bekrefter. Ingenting la
 
 Ved ukjent resultat eller tilkoblingsfeil: åpne siden på nytt og kontroller lagrede verdier før nytt forsøk. En fersk forhåndsvisning etter vellykket utfylling viser bevarte valg og ingen ny lagringsknapp. Når utfylling er sperret av historikk eller kontoplan, brukes lenken til manuelle standardkontoer etter vurdering av virkningen; funksjonen tilbyr ingen overstyringsknapp.
 
-Det finnes ingen samlet regnskapsmessig produksjonsgodkjenning. Eksisterende valg som bevares er ikke automatisk riktige. Fullt endringsspor for regnskapet, øvrige standardkontoer er fortsatt videre arbeid. Veiviserens manuelle arbeidsstatus er levert separat i 0.24.0.
+Det finnes ingen samlet regnskapsmessig produksjonsgodkjenning. Eksisterende valg som bevares er ikke automatisk riktige. Fullt endringsspor for regnskapet, øvrige standardkontoer er fortsatt videre arbeid. Oppstartsoversikten lagrer ingen arbeidsstatus.
 
 ## Verifikasjon
 

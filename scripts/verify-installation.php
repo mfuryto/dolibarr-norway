@@ -19,6 +19,15 @@ if ($modulePayloadMatches) {
         }
     }
 }
+// An old executable left beside the new payload must not pass verification.
+if ($modulePayloadMatches) {
+    $activeRoot=DOL_DOCUMENT_ROOT.'/custom/norway/';
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($activeRoot, FilesystemIterator::SKIP_DOTS)) as $file) {
+        if (!$file->isFile() || strtolower($file->getExtension())!=='php') { continue; }
+        $relative=substr($file->getPathname(),strlen($activeRoot));
+        if (!is_file('/opt/norway-module/'.$relative)) { $modulePayloadMatches=false;break; }
+    }
+}
 require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwaySchema.php';
 try { $schemaValid=NorwaySchema::verify($db); } catch (Throwable $error) { $schemaValid=false; }
 $descriptor = new modNorway($db);
@@ -38,7 +47,7 @@ $checks = array(
     'norway_schema_version' => $schemaValid,
     'core_version' => DOL_VERSION === '24.0.1',
     'norway_module' => isModEnabled('norway'),
-    'norway_module_version' => (new modNorway($db))->version === '0.75.0',
+    'norway_module_version' => (new modNorway($db))->version === '0.76.0',
     'norway_module_payload' => $modulePayloadMatches,
     'norway_menu_registration' => $menusValid,
     'norway_document_tabs' => $tabsValid,

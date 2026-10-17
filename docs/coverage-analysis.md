@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.75.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.76.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -333,3 +333,14 @@ betalingsoppfølging og tilsvarende behandling ved kreditnota. Før flere
 importtilfeller prioriteres, gjennomgås disse rutinene mot kjernen og aktuelle
 tillegg. En eventuell endring skal bevare regnskapsdata og lesing av tidligere
 klassifiserte bilag. Ingen runtime-endring eller ny funksjon innføres her.
+
+
+## Oppfølging i 0.76.0
+
+[Den fullstendige gjennomgangen](review-0.75.0.md) samler R01–R17.
+[Leveranseplanen](delivery-plan.md) erstatter fortløpende enkeltplaner med
+én rekkefølge og en felles akseptmatrise for hele arbeidsflyter. Oppstarts-
+veilederen er nå én lesende statustabell med lenker til kjernens verktøy og
+tydelig uferdig støtte. Ingen ny godkjenningsmodell eller kontrollhistorikk.
+Filutrullingen fjerner eksplisitt utgåtte eide PHP-filer; installasjonskontrollen
+avviser ekstra kjørbar kode. Øvrige funn lukkes først med bevis i relevant flyt.

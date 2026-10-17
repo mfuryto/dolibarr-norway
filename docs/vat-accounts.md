@@ -1,6 +1,6 @@
 # MVA-kontoer for salg og innkjøp
 
-Fra 0.40.0 finnes «Fyll MVA-kontoer for salg og innkjøp» i veiviserens steg 4,
+Fra 0.40.0 finnes «Fyll MVA-kontoer for salg og innkjøp» i norsk regnskapsoppsett,
 fra standardkontosiden og fra kontrollen av MVA-kontokoblinger.
 
 Dolibarr lagrer to separate innstillinger:

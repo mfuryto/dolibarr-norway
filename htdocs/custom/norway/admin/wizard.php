@@ -2,27 +2,59 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 require '../../../main.inc.php';
 if (!$user->admin || !empty($user->socid) || !isModEnabled('norway')) { accessforbidden(); }
-$langs->load('norway@norway');$step=GETPOSTINT('step');if ($step<1 || $step>11) { $step=1; }
-$tasks=array(
-    1=>array(),
-    2=>array('Company'=>'/admin/company.php','Users'=>'/user/list.php'),
-    3=>array('VATCompany'=>'/admin/company.php'),
-    4=>array('Chart'=>'/custom/norway/admin/profile.php','Defaults'=>'/custom/norway/admin/defaults.php','OtherAccounts'=>'/custom/norway/admin/standardaccounts.php','VatRates'=>'/custom/norway/admin/vatrates.php','VatAccounts'=>'/custom/norway/admin/vataccounts.php','Journals'=>'/custom/norway/admin/journals.php'),
-    5=>array('Bank'=>'/compta/bank/list.php','BankLink'=>'/custom/norway/admin/bankdefaults.php'),
-    6=>array('Partners'=>'/societe/list.php','Products'=>'/product/list.php'),
-    7=>array('Numbering'=>'/custom/norway/admin/numbering.php','Invoice'=>'/admin/invoice.php','Proposal'=>'/admin/propal.php'),
-    8=>array(),9=>array('Periods'=>'/accountancy/admin/fiscalyear.php'),10=>array(),11=>array(),
+require_once __DIR__.'/../class/NorwayReadiness.php';
+require_once __DIR__.'/../class/NorwayVatRates.php';
+$langs->load('norway@norway');
+header('Cache-Control: no-store');
+$guide='https://github.com/mfuryto/dolibarr-norway/blob/main/docs/norwegian-setup-guide.md';
+$e=static fn($text)=>dol_escape_htmltag((string)$text);
+$company=($mysoc->country_code??'')==='NO' && NorwayReadiness::validOrganisationNumber($mysoc->idprof1??'')
+    && trim((string)($mysoc->name??''))!=='' && trim((string)($mysoc->address??''))!==''
+    && trim((string)($mysoc->zip??''))!=='' && trim((string)($mysoc->town??''))!=='' && !empty($mysoc->forme_juridique_code);
+$chartStatus='Missing';$ratesStatus='Missing';
+try {
+    $r=$db->query('SELECT s.rowid FROM '.$db->prefix().'accounting_system s JOIN '.$db->prefix().'c_country c ON c.rowid=s.fk_country'
+        .' WHERE s.rowid='.(int)getDolGlobalInt('CHARTOFACCOUNTS')." AND s.active=1 AND c.code='NO'");
+    if(!$r){throw new RuntimeException('Setup read failed');}
+    // Selecting a chart is not proof that its accounts, groups or year-end setup are complete.
+    if($db->num_rows($r)>0){$chartStatus='Partial';}
+    $ratesStatus='Set';
+    foreach(NorwayVatRates::codes() as $spec){if(NorwayVatRates::defaultCode($db,(int)$conf->entity,$spec['rate'],$spec['type'])===null){$ratesStatus='Missing';break;}}
+} catch(Throwable $error){$chartStatus='Unknown';$ratesStatus='Unknown';}
+$rows=array(
+    'Company'=>array($company?'Set':'Missing',array('/admin/company.php'=>'NorwayCompanySettings','/user/list.php'=>'NorwaySetupLinkUsers')),
+    'Currency'=>array($conf->currency==='NOK' && getDolGlobalInt('MAIN_MULTILANGS')===1?'Set':'Missing',array('/admin/company.php'=>'NorwayCompanySettings','/admin/ihm.php'=>'NorwaySetupLinkLanguage')),
+    'Registration'=>array('Review',array('/admin/company.php'=>'NorwayCompanySettings')),
+    'Chart'=>array($chartStatus,array('/custom/norway/admin/profile.php'=>'NorwaySetupLinkInstallChart','/accountancy/admin/account.php'=>'NorwaySetupLinkChart')),
+    'Accounts'=>array(getDolGlobalString('ACCOUNTING_ACCOUNT_CUSTOMER')!=='' && getDolGlobalString('ACCOUNTING_ACCOUNT_SUPPLIER')!=='' && getDolGlobalString('ACCOUNTING_ACCOUNT_CUSTOMER')!=='-1' && getDolGlobalString('ACCOUNTING_ACCOUNT_SUPPLIER')!=='-1'?'Set':'Missing',array('/accountancy/admin/defaultaccounts.php'=>'NorwaySetupLinkAccounts','/accountancy/admin/journals_list.php'=>'NorwayJournals')),
+    'Rates'=>array($ratesStatus,array('/custom/norway/admin/vatrates.php'=>'NorwaySetupLinkNorwegianRates','/admin/dict.php?id=10'=>'NorwaySetupLinkVatAccounts')),
+    'Bank'=>array('Review',array('/compta/bank/list.php'=>'NorwayWizardTaskBank')),
+    'Trade'=>array('Review',array('/societe/list.php'=>'NorwayWizardTaskPartners','/product/list.php'=>'NorwayWizardTaskProducts')),
+    'Numbering'=>array(getDolGlobalString('FACTURE_ADDON')!=='' && getDolGlobalString('PROPALE_ADDON')!=='' && getDolGlobalString('SOCIETE_CODECLIENT_ADDON')!==''?'Set':'Missing',array('/custom/norway/admin/numbering.php'=>'NorwayNumberingTitle')),
+    'Documents'=>array('Review',array('/admin/invoice.php'=>'NorwayWizardTaskInvoice','/admin/propal.php'=>'NorwayWizardTaskProposal')),
+    'Periods'=>array('Review',array('/accountancy/admin/fiscalyear.php'=>'NorwayWizardTaskPeriods','/accountancy/bookkeeping/list.php'=>'NorwaySetupLinkBookkeeping')),
+    'Foreign'=>array('Partial',array($guide.'#8-offentlige-kunder-og-utenlandshandel'=>'NorwayWizardGuide','/fourn/facture/list.php'=>'NorwaySetupLinkPurchases')),
+    'VatReport'=>array('Partial',array('/custom/norway/vat.php'=>'NorwayVatReportTitle')),
+    'Ehf'=>array('Unavailable',array($guide.'#8-offentlige-kunder-og-utenlandshandel'=>'NorwayWizardGuide')),
+    'Saft'=>array('Unavailable',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
+    'YearEnd'=>array('Partial',array('/accountancy/admin/closure.php'=>'NorwaySetupLinkYearEnd',$guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
+    'Tax'=>array('Unavailable',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
+    'Retention'=>array('Review',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
 );
-$base=dol_buildpath('/norway/admin/wizard.php',1);llxHeader('',$langs->trans('NorwayWizard'));
+llxHeader('',$langs->trans('NorwayWizard'));
 print '<div class="norway-page norway-wizard">'.load_fiche_titre($langs->trans('NorwayWizard'),'','accountancy');
-print '<p>'.$langs->trans('NorwaySimpleWizard').'</p><details><summary>'.$langs->trans('NorwayWizardOverview').'</summary><ol>';
-for ($i=1;$i<=11;$i++) { print '<li><a href="'.$base.'?step='.$i.'">'.$langs->trans('NorwayWizardTitle'.$i).'</a></li>'; }print '</ol></details>';
-print '<h2>'.$step.' / 11 — '.$langs->trans('NorwayWizardTitle'.$step).'</h2><p>'.$langs->trans('NorwayWizardBody'.$step).'</p><ol class="norway-wizard-tasks">';
-foreach ($tasks[$step] as $key=>$path) {
-    print '<li><h3>'.$langs->trans('NorwayWizardTask'.$key).'</h3><p>'.$langs->trans('NorwayWizardTask'.$key.'Help').'</p><a href="'.DOL_URL_ROOT.$path.'" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayWizardOpen').' '.$langs->trans('NorwayWizardTask'.$key).'</a></li>';
-}print '</ol><p>'.$langs->trans('NorwayWizardBefore'.$step).'</p>';
-if ($step===2) { print '<p>'.$langs->trans('NorwayCompanyFieldsHelp').'</p><p>'.$langs->trans('NorwayVatAutoHelp').'</p>'; }
-if ($step===3) { print '<p>'.$langs->trans('NorwaySimpleRegistration').'</p>'; }
-print '<nav class="norway-wizard-nav">';if ($step>1) { print '<a class="butAction" href="'.$base.'?step='.($step-1).'">'.$langs->trans('NorwayWizardPrevious').'</a> '; }if ($step<11) { print '<a class="butAction" href="'.$base.'?step='.($step+1).'">'.$langs->trans('NorwayWizardNext').'</a>'; }print '</nav>';
-print '<p><a href="https://github.com/mfuryto/dolibarr-norway/blob/main/docs/norwegian-setup-guide.md">'.$langs->trans('NorwayWizardGuide').'</a></p></div>';
+print '<p>'.$e($langs->trans('NorwaySetupOverviewIntro')).'</p><p class="opacitymedium">'.$e($langs->trans('NorwaySetupOverviewStatusHelp')).'</p>';
+print '<table class="noborder centpercent norway-setup-overview"><thead><tr>';
+foreach(array('Task','Status','Action') as $column){print '<th scope="col">'.$e($langs->trans('NorwaySetupColumn'.$column)).'</th>';}
+print '</tr></thead><tbody>';
+foreach($rows as $key=>[$status,$links]){
+    print '<tr class="oddeven" data-setup-task="'.$key.'"><th scope="row">'.$e($langs->trans('NorwaySetupTask'.$key)).'</th>'
+        .'<td data-setup-status="'.$status.'"><strong>'.$e($langs->trans('NorwaySetupStatus'.$status)).'</strong>';
+    if($key==='Registration'){print '<br>'.$e($langs->trans(!empty($mysoc->tva_assuj)?'NorwaySetupVatOn':'NorwaySetupVatOff'));}
+    print '</td><td><p>'.$e($langs->trans('NorwaySetupHelp'.$key)).'</p><p class="norway-setup-links">';
+    foreach($links as $path=>$label){$url=strpos($path,'https://')===0?$path:DOL_URL_ROOT.$path;print '<a href="'.$e($url).'">'.$e($langs->trans($label)).'</a> ';}
+    print '</p></td></tr>';
+}
+print '</tbody></table><p>'.$e($langs->trans('NorwaySetupScopeHelp')).'</p>';
+print '<p><a href="'.$guide.'">'.$e($langs->trans('NorwayWizardGuide')).'</a></p></div>';
 llxFooter();$db->close();

@@ -1,266 +1,117 @@
 # Testmiljø, installasjon og drift
 
-Kontrollert 2026-10-11. Kun syntetiske testdata. Dette dokumentet beskriver også
-planlagte produksjonsrutiner; det er ikke bevis på ferdig produksjonsdrift.
+Oppdatert 2026-10-17 for modul 0.76.0. Kjernen er fortsatt **Dolibarr 24.0.1**,
+med låst image-digest og MariaDB 10.11. En moduloppdatering oppgraderer ikke
+kjernen til 24.0.2. Kjerneoppgraderinger krever egen kompatibilitetsprøve.
 
-## Lokalt testmiljø
+## Testene som brukes nå
 
-`compose.test.yaml` låser Dolibarr 24.0.1 og MariaDB 10.11 til konkrete image-digests.
-Testet PHP-versjon: **8.2.34**. Databasen har ingen publisert port og ligger på
-internt nettverk. Web har egen nettverkstilkobling og er bundet til
-`127.0.0.1:8087`. Ingen cron, lisensportal eller eksterne integrasjoner aktiveres.
-Miljøet er isolert fra produksjonsdata, men webcontainerens frontend-nettverk
-kan nå internett. Dette er ikke et herdet produksjonsoppsett.
+```sh
+python3 -m unittest discover -s tests -v
+python3 scripts/package.py
+bash scripts/ci-integration.sh
+bash scripts/ci-installation.sh
+```
+
+De to siste skriptene oppretter egne midlertidige miljøer med syntetiske data,
+uten delte driftsvolumer eller publiserte webporter. De rydder bare sine egne
+miljøer. Regnskapsprøvene har testmarkører og databasenavn som avviser vanlig
+drift. Ingen reelle bilag eller personopplysninger skal brukes.
+
+Kildejobben kjører Python-prøver, grenpolicy, hemmelighetsskanning av hentet
+historikk og pakkebygging. Integrasjonsjobben kjører fersk Dolibarr,
+PHP-syntaks, modul-/migreringsprøver, norsk oppsett og native dokument-,
+bokførings-, betalings- og rapportprøver. Den kjører også installasjonsprøven.
+Se skriptene og [leveranseplanens akseptmatrise](delivery-plan.md) for faktisk
+omfang. Grønn CI er ikke i seg selv norsk regnskapsmessig produksjonsaksept.
+
+Modulpakken heter `dist/module_norway-0.76.0.zip`. Pakkebyggingen krever at
+README-versjonene stemmer med modulversjonen, og tar med modul og lisens.
+Testdata og driftshemmeligheter pakkes ikke inn.
+
+## Interaktivt utviklingsmiljø
 
 ```sh
 python3 scripts/init-test-env.py
-python3 -m unittest discover -s tests -v
 docker compose -f compose.test.yaml config --quiet
 docker compose -f compose.test.yaml up -d
-docker compose -f compose.test.yaml logs --tail 20 web
-# Etter at førstegangsinstallasjonen er ferdig:
-docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/integration.php
-docker compose -f compose.test.yaml exec -T web php /opt/norway-tests/http-smoke.php
 ```
 
-Miljøfilen `.env` opprettes med tilfeldige testpassord og filmodus 0600.
-Skriptet nekter å overskrive en eksisterende fil. Filen er ignorert av Git.
-Åpne http://localhost:8087; brukernavn `testadmin`, passord fra
-`TEST_ADMIN_PASSWORD` i den lokale `.env`-filen. Ikke del eller sjekk inn filen.
-Installasjonen og dokumentene ligger i navngitte Docker-volumer. Stoppe uten
-å slette data: `docker compose -f compose.test.yaml stop`. Starte igjen: `docker compose -f compose.test.yaml start`.
+Dette miljøet bruker bare syntetiske data og egen webport på localhost.
+Testpassord opprettes tilfeldig i en lokal ignorert miljøfil med modus 0600.
+Filen skal ikke overskrives, deles eller lagres i Git. Standard Compose er
+vedvarende drift; velg alltid `compose.test.yaml` uttrykkelig for dette miljøet.
+Testmiljøet kan stoppes og startes uten å slette volumer.
 
-Integrasjonstesten skriver syntetiske importbilag via Dolibarrs
-`BookKeeping::create()`, aktiverer/deaktiverer/reaktiverer modulen, avstemmer
-inngående/utgående saldo og hver bilagsbalanse, og kontrollerer at alle importerte
-linjer kan spores til testdokumentet. Den nekter kjøring uten egne testmarkører,
-DB-navnet `norway_test` og syntetisk foretaksnavn. Testbilag har `SYN-`-referanser.
-Gjenta på en ny testdatabase; samme seed avvises for å unngå dobbel bokføring.
-For bevisst nullstilling av **bare dette syntetiske miljøet** kan
-`docker compose -f compose.test.yaml down --volumes` brukes; dette sletter testdata og er ikke en
-backup-/oppgraderingsrutine. Start på nytt og kjør testene etter nullstilling.
+## Oppstartsoversikt og nettleserprøve
 
-## Hva testene beviser
+`tests/http-smoke.php` prøver norsk og engelsk oppstartsoversikt med 18 oppgaver,
+lenker til standardverktøy, uttrykkelig uferdig støtte og gamle steg-bokmerker.
+Status følger faktiske endringer av standardkontoer; testinnstillingene
+føres tilbake. Før/etter-fingeravtrykk av fakturaer, bokføring og metadata
+kontrollerer at lesing av oversikten og tilknyttede GET-sider ikke endrer
+regnskapsdata. Det finnes ingen fullførings- eller godkjenningslagring.
 
-- Modulens livssyklus fungerer mot den faktiske Dolibarr-databasen.
-- Webtesten kontrollerer at statusen krever innlogging og vises etter innlogging.
-- Python-testene avstemmer dokumentbeløp, debet/kredit, åpnings-/sluttsaldo,
-  25 % avgiftsgrunnlag, delkreditnota, inn-/utbetaling og bilagsreferanser.
-  Uregistrert profil kostnadsfører innkjøpet brutto. Mutasjoner kontrollerer
-  at ubalanse, feil avgift, manglende kreditreferanse, feil betaling, feil
-  saldo og urettmessig fradrag faktisk avvises.
-- Samme syntetiske regnskap er importert i standard hovedbok og kontosaldoene
-  stemmer med uavhengig oppgitte forventninger. Import er bevisst brukt for
-  å få et lite regnskap uten å implementere en parallell fakturamotor.
+`tests/browser-layout.cjs` bruker Playwright 1.58.2/Chromium i et separat
+utviklingsmiljø. Den krever `NORWAY_SYNTHETIC_TEST=1` og testadministratorens
+passord i prosessmiljøet, avviser eksterne verter, og skriver ingen regnskapsdata.
+Aktuelle sider prøves ved 390/768/1024/1440 piksler på norsk og engelsk.
+Prøven kontrollerer bredde, synlige lenker og at oppstartsoversiktens innhold
+ikke overlapper neste oppgave. Den bruker ikke de utgåtte kontrollsidene og
+registrerer ingen kontrollhistorikk. Nettleserprøven kjøres separat fra den
+pålagte CI-en; resultatet skal beskrives ved relevante layoutendringer.
 
-**Begrensninger:** Testdokumentene er JSON-fixtures, ikke fakturaer opprettet
-og validert av standard fakturamodul. Ingen faktisk faktura→hovedbok-, PDF-,
-EUR-, EHF- eller SAF-T-eksporttest er gjennomført. MVA-grunnlag er kontrollert
-mot fixture-beløp og hovedbokens avgiftssaldo, ikke en ferdig norsk rapport.
-Importene er testposter, ikke låste produksjonsbilag. Full feltmatrise,
-reskontro med ekte syntetiske motparter, delbetaling, fakturavalidering,
-årsskifte og negativ tilgangstest for innlogget ikke-admin gjenstår.
+## Oppgradering og utgåtte filer
 
-## Installerbar modul
+Det offisielle imaget har et vedvarende custom-volum. Nye filer i imaget
+må derfor oppdatere modulfilene i dette volumet. Fra 0.76.0 fjerner oppstarten
+bare eksplisitt utgåtte, eide PHP-filer fra `data/retired-files.txt` før nye
+modulfiler kopieres inn. Andre moduler og regnskapsdata beholdes.
 
-```sh
-python3 scripts/package.py
-```
+Sluttkontrollen krever riktig kjerne-/modulversjon, SHA-256-samsvar for leverte
+filer, og avviser ekstra PHP-filer i modulområdet. Dermed kan ikke en gammel
+skriveflate bli stående bare fordi menylenken er fjernet. Ukjent ekstra kode
+slettes ikke automatisk; oppdateringen feiler og krever undersøkelse.
 
-Bygger `dist/module_norway-0.1.0.zip`, kun modul og lisens, uten testdata og
-lokale hemmeligheter. Kopier alternativt `htdocs/custom/norway` til
-Dolibarr-installasjonens `htdocs/custom/norway`. Aktiver norsk lokalisering i
-Innstillinger → Moduler. Advanced Accounting aktiveres som avhengighet.
-Modulens innstillingsside er begrenset til administrator.
+Installasjonsprøven legger alle 42 utgåtte PHP-filer tilbake i et syntetisk
+custom-volum før oppdatering og krever at de forsvinner. Den prøver også en
+uventet PHP-fil og krever konkret feil i sluttkontrollen. En annen modul og
+lagrede bevaringsmarkører skal overleve. Tidligere lagret kontrollhistorikk
+beholdes i lesearkivet; oppryddingen sletter ikke denne.
 
-Modul-ID 510173 er lokal/provisorisk; kontroller kollisjon og reserver ID før
-distribusjon. Ingen kjernetabeller eller satser endres av modulen. Det følger
-ikke med kontoplan, MVA-regler eller SAF-T-eksport i versjon 0.1.0.
+## Backup og gjenoppretting
 
-## Backup, gjenoppretting og oppbevaring før produksjon
+Oppdateringsskriptet krever main, ren arbeidskopi, eksisterende privat miljøfil
+og eksklusiv oppdateringslås. Det tar backup før bygging og containerbytte.
+Kopien omfatter database, dokumenter, konfigurasjon, custom-filer, miljøfil,
+kilde-/imageidentitet og det faktiske kjørende imaget. Backupmappen er privat;
+komplettmerke skrives først etter arkiver og kontrollsummer.
 
-Ansvarlig og lagringssted må fastsettes før produksjon. Ta daglig konsistent
-backup og før oppgraderinger: database (inkludert modulens tabeller), alle
-bilags-/dokumentfiler, nødvendig konfigurasjon og eksakte program-/modulversjoner.
-Oppbevar hemmeligheter separat kryptert. Bruk vedlikeholdsvindu eller dokumentert
-snapshotmetode så DB og dokumenter representerer samme tidspunkt.
+Installasjonsprøven prøver migrering fra navngitte volumer til prosjektlokale
+datamapper, oppdatering og gjenoppretting av database, dokumenter, konfigurasjon,
+custom og syntetiske markører. Kontoplan, innstillinger, modulmetadata,
+instansnøkkel og tidligere arkivinnhold skal bevares. Dette beviser den
+syntetiske prøven, ikke at en bestemt driftsservers backup er komplett.
 
-Oppbevar krypterte kopier utenfor driftsmaskinen med begrenset tilgang,
-versjonshistorikk og overvåket resultat. Dokumenter oppbevaringskategorier og
-frister etter gjeldende regler for faktisk materiale; fem års hovedregel er
-ikke en universell slettefrist for alle dokumenttyper. Ingen backup skal i Git.
-Avtal gjenopprettingstid og maksimalt datatap ut fra faktisk drift.
+Et kjent driftsgap er at backupskriptet starter web igjen før oppdateringen
+bygger og erstatter containeren. Eventuelle skriv i mellomrommet er nyere enn
+backupen. [R13](review-0.75.0.md) må håndteres ved kvalifisering av et sammenhengende
+vedlikeholdsvindu og gjenoppretting. Ikke gjør automatisk rollback som kan
+slette nye regnskapsposter.
 
-Minst kvartalsvis og før produksjonsaksept: gjenopprett DB, dokumenter og
-konfigurasjon til separat isolert instans med samme programversjoner. Verifiser
-antall bilag, vedleggshasher, inngående/utgående saldo, reskontro, MVA-rapport og
-SAF-T-totalsummer. Dokumenter tidspunkt, ansvarlig, avvik og målt tid.
-Ikke kall en backup godkjent før restore er prøvd. **Full restore-prøve er ikke
-gjennomført i denne leveransen.**
+Backup ved oppdatering erstatter ikke regelmessig backup. Driften må også ha
+en separat sikret kopi, avklart oppbevaring/lagringsland, overvåket resultat og
+jevnlig isolert gjenopprettingsprøve. Ingen backup eller hemmelighet skal i Git.
 
-Ved oppgradering: lag backup, prøv ny versjon på kopi, kjør funksjons-/eksport-
-og migreringstester og dokumenter reverseringsplan før endring av driftsinstans.
-Modulens nøyaktige versjonskontroll utvides først etter bestått regresjonstest.
+## Ved feil
 
-## Kontrollside for foretaksoppsett
+Sluttkontrollen bruker `php://stderr` og skriver bare konkrete `FAIL`-navn,
+ikke konfigurasjonsverdier eller hemmeligheter. Oppdateringen markeres ikke
+ferdig ved feil. Behold backup og eksisterende innstillinger; undersøk årsaken.
+Ikke regenerer passord/instansnøkkel, slett volumer eller hopp over kontrollene.
 
-`tests/readiness.php` tester kontrollsiffer (inkludert 0 og ugyldig 10),
-feil lengde/innhold, tomt foretaksoppsett, satser bare for salg, inaktive
-kjøpssatser, separate kjøps-/salgssatser og aktive/inaktive historiske satser.
-Numeriske test-ID-er er kunstige og representerer ikke bekreftede foretak.
-HTTP-testen kontrollerer at administrator får kontrolltabellen uten SQL-feil,
-og at uferdig SAF-T/EHF fortsatt vises. CI kjører disse i den isolerte
-Dolibarr-installasjonen. Ingen regnskapsdata endres av kontrollsiden.
-
-## Vedvarende drift og oppdatering
-
-Standard Compose gjelder drift; utviklingstestene krever `compose.test.yaml`.
-CI sammenligner fullt oppløst standardoppsett med `deploy/compose.yaml` uten å
-skrive hemmeligheter til logg. Serveroppdateringen testes fra en ren main-checkout,
-med privat backup og helse-/versjonskontroll. Backupens kontrollsummer kontrolleres;
-konfigurasjonstabellen fjernes og gjenopprettes fra SQL-dumpen, og en slettet
-dokumentmarkør gjenopprettes sammen med conf før innlogging/instansnøkkel prøves.
-Det konkrete kjørende web-imaget arkiveres også. En backup merkes COMPLETE først
-når arkiver og kontrollsummer er skrevet. Første backup kan ha ukjent kildecommit
-for eldre installasjoner; image-ID og selve imaget bevares likevel.
-
-Negative tester bekrefter at manglende miljøfil, staging-gren, skitten checkout
-og parallell oppdatering avvises før Docker kjøres. Dette er teknisk driftsprøve,
-ikke økonomisk produksjonsaksept eller full restore-prøve av faktisk server.
-
-## Migrering til prosjektlokale datamapper
-
-Installasjonstesten starter med navngitte volumer og oppdaterer til bind-monterte
-`data/database`, `data/documents` og `data/config`. En syntetisk DB-verdi og et
-syntetisk vedlegg må bevares både ved migrering og ved senere restore. Testen
-kontrollerer monteringsstedene og at ny migreringskjøring er idempotent.
-Blandet lagring og utviklingsdatabase avvises før stopp eller kopiering.
-Originalvolumer beholdes i drift; CI fjerner bare sitt eget isolerte testprosjekt.
-Datamappene og standard backupmappe er ekskludert fra Git og Docker-byggekontekst.
-
-
-## Faktura og tilbud gjennom standard arbeidsflyt
-
-`invoice-workflow.php` oppretter og validerer fakturaer med Dolibarrs klasser og
-overfører dem gjennom den faktiske HTTP-salgsjournalen med innlogging/CSRF.
-Det kontrollerer 25 prosent, nullsats, delkreditnota, NOK i
-hovedboken og at ny overføring ikke gir dubletter. Nullsats er ikke i seg selv
-en test av MVA-registerstatus. Fakturaer bruker påtvungne syntetiske referanser;
-produksjonens fakturanummerserie er ikke kvalifisert her. Tilbud bruker kjernens
-nummermodell. Egne syntetiske kontoer representerer ikke en ferdig norsk kontoplan.
-
-Tilbud og faktura genereres på begge språk i NOK. Testen kontrollerer
-oversatt tittel og valutaetikett i PDF-innholdsstrømmene, ikke bare metadata,
-samt kildebeløp. Full PDF-layout, NOK-avgiftsvisning og alle norske dokumentkrav
-krever videre kontroll. Ingen produksjonsdokumenter regenereres i disse testene.
-
-`ledger-audit.php` prøver balanse med åtte desimaler, fakturakobling, negativt
-ubalansert bilag med manglende kilde, foretaksskille, datovalidering og varsling
-ved avkortet liste. HTTP-testen prøver siden og feil på ugyldig periode.
-
-NOK-begrensning, avvisning/rollback av sjekkbetaling og fortsatt fungerende
-bankoverføring testes gjennom kjernens triggere. HTTP-testen prøver skjult
-sjekkmeny og 403 på direkte sjekkinnskuddssider. EUR-kalkulatoren testes med
-syntetiske API-svar for kursretning, helg, dato, enhet og ugyldige/gamle svar.
-CI er ikke avhengig av Norges Banks tilgjengelighet.
-
-Valutamigrering prøves i tomt syntetisk grunnoppsett med den tidligere
-informasjonsinnstillingen NOK og faktisk EUR i kjernen. Testen krever at
-`MAIN_MONNAIE` blir NOK. Et utfylt regnskap med annen basisvaluta skal avvises,
-og prøves separat gjennom fakturaarbeidsflyten.
-
-## Feil i sluttkontrollen ved oppdatering
-
-Sluttkontrollen kjøres via standard input til PHP. Ved feil brukes
-`php://stderr`, og kontrollen skriver navn på alle punkter som feiler, uten
-konfigurasjonsverdier eller hemmeligheter. Oppdateringen avsluttes med feil og
-markeres ikke som ferdig. En tidligere `Undefined constant "STDERR"` maskerte
-den egentlige feilen; den betyr ikke at kontrollene kan hoppes over.
-
-`FAIL instance_key_match` betyr at den lagrede instansnøkkelen og containerens
-forventede nøkkel ikke stemmer, eller at forventet nøkkel mangler. Bevar backup
-og undersøk samsvaret mellom privat miljøfil og eksisterende konfigurasjon.
-Ikke regenerer nøkler eller slett konfigurasjonen som en automatisk løsning.
-Andre `FAIL`-navn identifiserer modul, basisvaluta, språkvalg eller installatørlås.
-CI fremprovoserer en nøkkelfeil i separat syntetisk prosess med samme PHP-stdin-
-kjøremåte og krever exitkode 1, konkret kontrollnavn og ingen hemmelige verdier.
-
-Forsidens Bankkonto-gruppe testes med en faktisk syntetisk bankkonto som kan
-avstemmes. Testen krever at bankgruppen finnes, og avviser både sjekkinnskudds-
-tekst og lenker. En egen hook-test krever at sjekkraden fjernes mens bankkonto,
-direktebelastning og bankoverføring beholdes. Moduloppgradering prøves fra den
-eldre hook-registreringen med bare `main` til `main` og `index`.
-
-PDF-testleseren bruker strømmenes deklarerte bytelengde. En regex som fjernet
-valgfri CR før linjeskift kunne fjerne en gyldig komprimert sjekksumbyte og gi
-sporadisk feil om manglende valutaetikett. En deterministisk regresjonsfixture
-med komprimert strøm som slutter i CR beskytter mot dette.
-
-## Oppdatering av modul i kjernens custom-volum
-
-Det offisielle imaget deklarerer `/var/www/html/custom` som volum. Compose
-bevarer normalt dette ved containerbytte, og gamle modulfilene kan dermed
-overstyre filer som er kopiert inn i det nye imaget. Fra 0.2.2 ligger en egen
-modulkopi også i `/opt/norway-module`, utenfor volumet. Oppstart kopierer disse
-filene til Norway-modulen før den opprinnelige entrypointen starter Dolibarr.
-Andre moduler og øvrige filer beholdes. Ingen anonymvolumer fornyes eller slettes.
-
-Sluttkontrollen krever riktig modulversjon og SHA-256-samsvar for alle leverte
-modulfiler. Backup inkluderer nå `custom.tar.gz` i tillegg til database, dokumenter
-og konfigurasjon. CI etterligner en gammel entrypoint med modul 0.1.0 i gjenbrukt
-volum, og krever at oppdateringen bruker ny modul og beholder en annen modul.
-Gjenoppretting av custom inngår også i testen.
-
-[Dolibarr 24.0.2](https://github.com/Dolibarr/dolibarr/tree/7e927764767343334aaa067ca5ec054cfea0a26b) er utgitt som kildekode, men den offisielle Docker-taggen var
-ikke tilgjengelig ved kontroll 2026-10-11. Driftsimaget forblir 24.0.1 med låst
-digest inntil en egen versjonsoppgradering er kvalifisert.
-
-### Fakturakontroll 0.3.0
-
-Integrasjonstesten bruker automatisk nummerering av fakturaer og kreditnota,
-to fortløpende salgsnumre, ekte kreditnotakobling og norsk/engelsk kontrollside.
-Negativ HTTP-test flytter kun en syntetisk testfaktura midlertidig til annet
-foretak, kontrollerer avvisning og gjenoppretter den i finally før videre tester.
-Feltkontroller dekker feil organisasjonskontrollsiffer, tom HTML-beskrivelse,
-utenlandsk kundeidentifikator og ugyldig kreditnotakobling (kunde, foretak,
-status, dokumenttype og ID). Rapporten må alltid kreve separat gjennomgang av
-nummerering, levering, MVA og faktisk PDF. Ingen opplysninger skrives av kontrollen.
-
-### Organisasjonsnummer i PDF 0.3.1
-
-PDF-integrasjonen prøver ekte sponge-faktura og kreditnota samt azur-tilbud på
-nb_NO/en_US. Med MVA aktivert skal organisasjonsnummer etterfølges av MVA;
-uten aktivert MVA skal modulens linje ha nummeret uten suffiks. Nummer og
-MVA-felter i avsenderobjektet skal være uendret etter generering. Negative
-hook-tester dekker ugyldig kontrollsiffer, mottakeradresse, annen kildetype,
-utenlandsk avsender og annet foretak. Oppdateringskontrollen krever nå
-registrert `pdfgeneration`-hook også ved oppgradering av aktivert modul.
-
-### Fakturavalidering og layout 0.4.0
-
-Integrasjonstesten prøver ekte validering med feil selgerkontrollsiffer,
-MVA deaktivert, manglende kundeidentitet og tom linjebeskrivelse. Hvert avslag
-skal ha riktig feilårsak og bevare utkastets lagrede status og referanse.
-Etter korrigering skal samme utkast kunne valideres. Pure feltkontroller prøver
-også null-MVA-faktura før registrering, produktetikett og koblet historisk
-MVA-kreditnota etter deaktivert MVA. Dette godkjenner ikke avgiftsbehandlingen
-på kreditnotaen. Installasjonskontrollen krever ny CSS-registrering, og HTTP-testen
-kontrollerer at stilen lastes.
-
-Manuell Chromium-kontroll i syntetisk lokal installasjon sammenligner dokument-
-og skjermbredde ved 390, 768, 1024 og 1440 piksler: forside, bankoversikt,
-ny bankkonto, bankposteringer, overføring, bankrapport, bankgraf, kunder,
-fakturaliste og modulens fire kontroll-/hjelpesider (52 kombinasjoner).
-Den bekrefter også at stilfilen faktisk lastes fra modulregistreringen, uten
-innsprøyting i nettleseren. Testen bygger på Eldy og testdata; alle mulige
-skjemaer, lange egne tekster, nettlesere, zoomnivåer og eksterne temaer er ikke
-kvalifisert. Dette er en nettleserkontroll utenom de påkrevde CI-jobbene.
-
-Nettlesertesten er lagret i `tests/browser-layout.cjs`. Den krever Playwright
-1.58.2 med Chromium, en lokal syntetisk installasjon, testadministrator og
-syntetisk bankkonto med ID 1. Sett `NORWAY_SYNTHETIC_TEST=1` og
-`TEST_ADMIN_PASSWORD` i prosessmiljøet. `NORWAY_LAYOUT_BASE_URL` kan overstyre
-lokal testadresse. Eksterne verter avvises. Testen leser sider og skriver ingen
-regnskapsdata. Den kontrollerer HTTP 200, registrert stilfil, dokumentbredde og
-innhold utenfor skjermen; brede tabellers interne rulling er tillatt. Nettleser-
-avhengigheten er et utviklingsverktøy og installeres ikke i driftscontaineren.
+`FAIL norway_module_payload` betyr at leverte filer ikke stemmer eller at ekstra
+PHP-kode ligger igjen. `FAIL instance_key_match` betyr avvik mellom bevart nøkkel
+og forventet miljøkonfigurasjon. Andre navn viser hvilken teknisk forutsetning
+som svikter. En bestått sluttkontroll gjelder driftsegenskaper, ikke fullstendig
+MVA-behandling, SAF-T, EHF, årsoppgjør eller skattemelding.

@@ -1,7 +1,6 @@
 # Enkle nummerserier
 
-Fra modul 0.35.0 finnes **Nummerserier** i oppsettsveiviserens steg 7 og fra
-kontrollen av dokumentoppsett. Oppdatering alene bytter ikke eksisterende
+Fra modul 0.35.0 finnes **Nummerserier** fra oppstartsoversikten under **Nummerserier**. Oppdatering alene bytter ikke eksisterende
 nummerering. Administrator forhåndsviser og bekrefter overgangen.
 
 | Serie | Standard | Eksempel på neste nummer |
@@ -23,7 +22,7 @@ fakturanummeret.
 ## Overgang og startnummer
 
 1. Avklar siste brukte numre i tidligere system og eksisterende installasjon.
-2. Åpne **Oppsettsveiviser → steg 7 → Velg nummerserier**.
+2. Åpne **Oppstartsoversikten → Nummerserier**.
 3. Velg startnummer for hver serie, og ønskede prefikser. Kunde-/leverandørprefiks kan stå tomt.
 4. Velg **Forhåndsvis nummerering**. Neste forventede nummer vises før lagring.
 5. Gjennomgå overgangen og bekreft **Aktiver nummereringen**.
@@ -105,7 +104,7 @@ se [Skatteetatens uttalelse om nummerering](https://www.skatteetaten.no/rettskil
 
 ## Valgfrie partsprefikser fra 0.52.0
 
-Åpne samme nummerserieoppsett i steg 7. Kundenummer og leverandørnummer har
+Åpne samme nummerserieoppsett fra oppstartsoversikten. Kundenummer og leverandørnummer har
 nå hvert sitt valgfrie prefiksfelt. Eksempel: `K` gir `K00001`, `L` gir
 `L00001`; tomt felt gir `00001`. Velg **Forhåndsvis nummerering** og bekreft
 før endringen lagres. Prefiksene velges ikke automatisk ved oppdatering.

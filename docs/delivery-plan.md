@@ -1,213 +1,110 @@
-# Arbeidsplan for norsk lokalisering
+# Samlet leveranseplan for norsk lokalisering
 
-Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.75.0. Oppryddingen er gjennomført;
-videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
-beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
+Oppdatert 2026-10-17. Gjeldende modulversjon: **0.76.0**. Planen følger
+[gjennomgangen av 0.75.0](review-0.75.0.md), med funn R01–R17. Dette er én
+samlet mangelliste og prioritering. [Leveransehistorikken](delivery-history.md)
+beskriver fortiden; den utvider ikke bestillingen.
 
-## Styrende beslutning
+## Mål og avgrensning
 
-Dolibarrs eksisterende funksjoner skal brukes. Modulen skal dekke konkrete
-norske mangler og uttrykkelig bestilte behov med minst mulig tilleggskode.
-Et dokumentasjons- eller sporbarhetskrav betyr ikke automatisk at det trengs
-en ny kontrollside, tabell, historikkmodell eller bekreftelsesrunde.
+En sammenhengende modul for ett norsk foretak med NOK, varer og tjenester,
+norsk/engelsk tilbud og faktura, norske regnskaps-/avgiftsopplysninger og
+kvalifisert rapportering. Kjernens dokumenter, kjøpsjournal, bank, reskontro,
+hovedbok og perioder skal brukes. Foretaksform og faktisk bruksområde avgjør
+hvilke norske regler som gjelder; støtte loves først for kvalifisert omfang.
+Valgfrie prefikser/startnummer og sperring av sjekker beholdes som bestilt.
+Papirløs bilagsflyt tas sist. Eventuell ekstern lisensadapter er valgfri og
+skal ikke være en avhengighet fra regnskapskjernen.
 
-Egne kontroll- og historikkfunksjoner er fjernet fra vanlig arbeidsflyt.
-Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
+Få kodelinjer er ikke en forenkling hvis brukeren får flere manuelle steg.
+Før ny eller vesentlig endret regnskapsflyt implementeres, sammenlignes relevant
+leverandørdokumentasjon fra etablerte norske programmer. Deretter prøves
+kjernen/eksisterende tillegg. Brukerflyt er inspirasjon; norske krav avgjøres
+med primære regelkilder. Ingen leverandørs interne kontonumre eller kodemodell
+kopieres ukritisk. Referanser finnes i [dekningsanalysen](coverage-analysis.md#referanser-for-normal-arbeidsflyt).
 
-## Normal arbeidsflyt er ferdigkriteriet
+## Hva som er levert nå
 
-Presisert 2026-10-17 etter brukerens tilbakemelding: En teknisk prøvd manuell
-reservevei er ikke ferdig støtte for vanlig bruk. Enkel implementasjon må også
-gi enkel bruk. Løsninger som krever gjentatt ompostering, separat kodevalg og
-manuell oppfølging av kreditnota, skal ikke bli normalflyten av hensyn til
-minst mulig tilleggskode.
+- Native dokument- og bokføringsgrunnlag, kontoliste, norske kodevalg,
+  foretaksopplysninger, nummerering, språk/NOK og delvis MVA-uttrekk finnes.
+- 0.76.0 erstatter elleve veivisersteg med [én oppstartsoversikt](setup-wizard.md):
+  oppgave, aktuell status, nødvendig forklaring og lenke. Den skriver ikke
+  regnskapsdata og lagrer ingen fullførings-/godkjenningsstatus.
+- R01 rettes med eksplisitt fjerning av utgåtte eide PHP-filer og kontroll av
+  uventet kjørbar kode ved oppdatering. Historikk, andre moduler og data beholdes.
+  Oppgraderingstesten prøver filrestene og bevaring. Dette løser ikke alle
+  øvrige drifts- eller regnskapsfunn.
+- 0.66.0/0.75.0 sine separate fradragsrettinger og 0.74.0 sin manuelle 87-flyt
+  er reserveveier. De lukker ikke gapet for normal kjøps-/fradragsflyt.
 
-Før videre implementasjon skal den aktuelle arbeidsflyten sammenlignes med
-leverandørenes dokumentasjon for etablerte norske regnskapsprogrammer.
-[Referansene i dekningsanalysen](coverage-analysis.md#referanser-for-normal-arbeidsflyt)
-er inspirasjon til brukerflyt, ikke regelkilder eller et vedtak om å bygge
-samme modell. Deretter prøves kjernen og aktuelle eksisterende tillegg.
-Norske regnskapskrav avgjøres med primære regelkilder.
+Hele modulen har **ikke** samlet regnskapsfaglig produksjonsaksept. Status i
+veilederen, README og denne planen skal vise de samme kjente begrensningene.
 
-Neste konkrete oppgave er å gjennomgå de manuelle fradragsrutinene fra
-0.66.0/0.75.0 og kode 87-flyten fra 0.74.0 mot dette kriteriet, før flere
-importtilfeller legges til. Normalmålet er avgiftsbehandling/fradragsandel
-ved registrering, riktig kostnad og MVA ved bokføring, og tilsvarende håndtering
-av kreditnota og rapportering. Det skal avklares hva kjernen/tillegg faktisk
-kan gjenbruke før en nødvendig tilpasning velges. Ingen ny bokføringsmotor,
-kontrollside eller fradragsmodell er bestilt ved denne presiseringen.
+## Fast rekkefølge og ferdigkriterier
 
-De eksisterende manuelle rutinene beholdes som dokumenterte reserveveier.
-Allerede bokførte beløp, metadata og rapportlesing skal bevares ved forenkling.
-Planpunkt 2 er fortsatt åpent for en sammenhengende normalflyt uten/delvis
-fradrag. Grønne tekniske tester alene lukker ikke dette gapet.
-
-## Gjenstående leveranser
-
-| Rekkefølge | Oppgave | Ferdig når |
+| Etappe | Arbeid og funn | Ferdig når |
 | --- | --- | --- |
-| 1 | Avklare kjernedekning og gjenbruk | Første kildegjennomgang er dokumentert i [dekningsanalysen](coverage-analysis.md). Aktuelle tillegg er kandidater, ikke installert eller godkjent støtte. Kompatibilitet og faktisk norsk dekning prøves før valg. |
-| 2 | Norsk MVA-behandling og dokumenter | Ordinært salg/kjøp, kreditnota, fritak/unntak, registreringsovergang, fradrag og relevante utenlandstransaksjoner er prøvd mot kjernen. Bare påviste mangler får nødvendig tilpasning. Varer og tjenester inngår. |
-| 3 | MVA-grunnlag og melding | Grunnlag og avgift kan avstemmes mot bokføringen per periode og norsk avgiftsbehandling, inkludert manuelle bilag og retting. Direkte innsending er et eget bestilt behov med autorisasjon, status og kvittering; rapportgrunnlag må være riktig først. |
-| 4 | EHF faktura og kreditnota | Eksisterende tillegg og tilgangspunkt er kvalifisert med norske identifikatorer, mottakerreferanser, validering, sending og status. Undersøkelse starter parallelt med punkt 2. Ingen avtale eller kjøp er gjort. |
-| 5 | SAF-T Financial | Norsk eksport med kontoklassifisering, avgiftskoder, motparter, saldoer og bilag er validert mot aktuelt skjema og avstemt mot komplett regnskap. Eksisterende eksportutvidelser undersøkes før egen kode. |
-| 6 | Avstemming og årsavslutning | Kjernens reskontro, bank, saldoovergang, periodisering, låsing og retting er prøvd for støttet omfang. Rutiner og rapporter er dokumentert; egne kontrollflater er ikke standardløsningen. |
-| 7 | Næringsspesifikasjon og skattemelding | Regnskapskontoer og saldoer er koblet til relevante opplysninger for riktig inntektsår og foretaksform. Skattemessige forskjeller, avskrivninger og tilleggsopplysninger håndteres. Grunnlaget avstemmes mot årsavslutningen, og en konkret leveringsvei er kvalifisert: egnet årsoppgjørssystem, overføring/eksport eller integrasjon. SAF-T alene dekker ikke leveransen. |
-| 8 | Samlet produksjonsaksept og drift | Hele kjeden dokument–bokføring–betaling/kreditnota–avstemming–rapport/eksport er prøvd. Tilgang, retting, bevaring og gjenoppretting inngår. Støttet bruk og gjenværende avvik beskrives eksplisitt. |
-| 9 | Papirløs bilagsflyt og matching | Eksisterende mottak og vedlegg er brukt først; nødvendig forenkling av registrering og matching er prøvd. Tas til slutt som avtalt. |
+| 1. Ryddig grunnlag | R01, R11, R12, R17: filutrulling, riktig testgrunnlag, enkel veileder og konsistent dokumentasjon/versjon. | Gammel installasjon oppgraderes uten gamle skriveflater eller datatap. Aktuelle brukerlenker virker. Mangler vises presist; det er ingen ekstra godkjenningsflyt. 0.76.0 dekker filutrulling og veileder; bred dokumentasjonsopprydding gjenstår. |
+| 2. Norsk grunnoppsett | R02, R07–R10: kontotyper, kontokoblinger, journaler, bank og uavhengige nummerserier. | Et nytt og et allerede brukt regnskap kan settes opp med forståelige native verktøy. Balanse-/resultatgrupper virker i kjernen. Egne kontonavn og flere bankkonti håndteres. Utstedte numre og gamle posteringer bevares. |
+| 3. Vanlig dokument-/kjøpsflyt | R03, R04, R06: dokumentinnhold, innenlands/utland, ingen/delvis/full fradragsrett, kreditnota og betalingsoppfølging. | Behandling velges ved vanlig registrering, og riktig kostnad/MVA/gjeld bokføres. Kjøp, fritekst der relevant, kreditnota og betaling henger sammen. Et separat rettingsbilag er ikke hovedvei for hvert kjøp. Norske/engelske PDF-er er prøvd for støttet omfang. |
+| 4. Bank, perioder og MVA | R05 og rester i etappe 2–3: avstemming, perioder, registreringsovergang, nødvendige særposteringer og MVA-melding. | Saldoer, dokumenter, betalinger og avgiftsgrunnlag kan avstemmes. Historiske perioder tåler legitimt endret oppsett. Fullt grunnlag og retting er prøvd; innsending har autorisasjon, resultat og kvittering. Uttrekk alene er ikke ferdig innsending. |
+| 5. EHF og SAF-T | Eksisterende EHF-/Peppol-tillegg kvalifiseres; norsk SAF-T leveres med riktig mapping. EHF-undersøkelse kan gå parallelt fra etappe 2. | EHF-faktura/kreditnota er validert og sendt med mottakerreferanser og sporbar status gjennom valgt løsning. SAF-T er skjemavalid og avstemt mot komplett regnskap, med kontoer, avgifter, motparter og bilag. 1.40 er målformat for 2027. Ingen avtale, kjøp eller mottakerregistrering gjøres uten uttrykkelig bestilling. |
+| 6. Årsavslutning og skatt | Kjernens avslutning, kontogrupper og resultatdisponering; næringsspesifikasjon og skattemelding som egen leveranse. | Inngående saldoer og årsresultat avstemmes. Foretaksform/inntektsår, skattemessige forskjeller, avskrivninger og tilleggsopplysninger er håndtert. En konkret leveringsvei er kvalifisert. SAF-T erstatter ikke skattemeldingen. |
+| 7. Samlet aksept og drift | R13–R16 og rester: vedlikeholdsvindu, moduloverganger, skjermbredde, valgfrie hjelpemidler, tilgang og bevaring. | Hele akseptmatrisen under består i fersk og oppgradert installasjon. Feil, låsing, retting, bevaring og gjenoppretting er prøvd. Støttet bruk og alle eksterne avhengigheter er dokumentert. |
+| 8. Papirløs bilagsflyt | Kjernens eksisterende mottak/vedlegg og aktuelle tillegg brukes først. | Registrering og matching er prøvd uten en parallell bokføringsmotor. Tas sist som avtalt. |
 
-## Neste konkrete arbeid
+## Felles akseptmatrise — hele arbeidsflyter
 
-Første MVA-prøve er gjennomført i `tests/core-vat-report.php` og dokumentert
-i [dekningsanalysen](coverage-analysis.md). Fakturabaserte varer/tjenester,
-kreditnotaer, lokale kodegrupper og betalinger er prøvd. Manuelle MVA-bilag
-og separate omposteringer påvirker hovedboken uten å inngå i fakturauttrekket.
-Dette er et konkret rapporteringsgap, ikke en begrunnelse for nye kontrollflater.
+En etappe avsluttes med samlet bevis for relevant rad, ikke bare test av siste
+kodeendring. Bruk én liten syntetisk regnskapsperiode med uavhengig forventet
+fasit og native dokument-/betalingsflyt.
 
-Blandede 25/15/12-satser, kreditnotaer og separate bilag for 50/0-prosent
-fradrag er nå prøvd gjennom kjernen i 0.66.0. Norsk/engelsk NPR-tekst er
-presisert fordi valget er en fransk særordning som påvirker prisberegningen.
-En konkret manuell fradragsflyt står i oppsettsveiledningen. Ingen egen
-kjøpsmotor eller fradragshistorikk skal gjeninnføres for dette behovet.
+| Arbeidsflyt | Må vises før den regnes som ferdig |
+| --- | --- |
+| Oppstart og systembytte | Foretak/MVA, kontoplan og kontotyper, kontoer, journaler, bank, nummerstart, inngående saldoer og åpne poster. Historikk bevares. |
+| Innenlandsk salg/kjøp | Varer/tjenester, relevante satser, riktig dokument, kontering, full/ingen/delvis fradragsrett der aktuelt, kreditnota og betaling/refusjon. |
+| Utenlandske transaksjoner | Relevante land/leveranser, dokumentert behandling, salg og kjøp, bokført beregnet avgift og faktisk fradrag. Bevar opprinnelig kjøpsdokument og nødvendig omregningsgrunnlag selv om salget er i NOK. |
+| Perioder og MVA | Grensedatoer, registreringsovergang, manuelle bilag, retting, oppgjør, avstemming og historisk lesing etter endring av oppsett. Innsendingsfeil og korrigert melding inngår når innsending leveres. |
+| EHF og SAF-T | Faktura og kreditnota, validering, transportstatus/kvittering for EHF; fullstendighet og avstemming av norsk SAF-T. |
+| Årsskifte og skatt | Resultat/balanse, periodisering og saldoovergang uten dobbeltføring, foretaksform/årsversjon, skattemessige forskjeller og faktisk leveringsvei. |
+| Drift og rettigheter | Fersk installasjon og oppgradering fra faktisk gammel fil-/datamodell, feil under oppdatering, ikke-admin/ekstern bruker, slettede skriveflater, backup og isolert gjenoppretting. |
+| Brukerflyt | Oppgavene finnes der de hører hjemme, uten dobbeltregistrering eller overflødige bekreftelser. Norsk/engelsk og relevante PC-/mobilbredder prøves. |
 
-0.67.0 gjenbruker kjernens satsregister og fakturalinjefelt til ordinære norske
-koder: salg 3/31/33 og kjøp 1/11/13. MVA-kontohjelpen og de prøvde native
-standardvalgene støtter skillet. Det er ingen ny kodemodell eller meny.
-Eksisterende regnskap og produkter konverteres ikke automatisk.
+Samme datagrunnlag skal avstemme dokument → bokføring → kreditnota/betaling →
+reskontro/bank → MVA/eksport → årsavslutning der relevant. Tester som forventer
+bare at to summer er like, er ikke tilstrekkelig bevis for riktig behandling.
 
-0.68.0 legger [avgiftskode og grunnlag på manuelle MVA-linjer](manual-vat.md)
-ved kjernens vanlige bilagskort. Ordinære koder og kontoer kommer fra satsregisteret;
-regnskapsbeløp og fakturaer endres ikke. Skjema 2 er en additiv metadatautvidelse,
-med migrerings- og gjenopprettingsprøve. Låste/eksporterte bilag kan bare leses,
-og endret kilde blir ikke stille godtatt som gjeldende avgiftsgrunnlag.
+## Behandling av hvert funn
 
-0.69.0 gir et [lesende MVA-uttrekk for ordinære koder](vat-report.md) under
-Regnskap → Regnskap → Rapporter. Native fakturaer/kreditnotaer, manuelle
-MVA-linjer og separate fradragsrettinger kan summeres mot faktisk bokføring.
-Manglende kode, kilde-/beløpsavvik, ulik dato og manglende overføring vises
-ved kilden. Delsummer har ingen netto/CSV før avvik er avklart. Dette er én
-rapport ved den vanlige rapportoppgaven; ingen nye kontrollkopier eller databasetabeller.
+R01–R17 beholdes som stabile referanser. Nye funn føyes til med konkret bevis;
+vi oppretter ikke stadig nye parallelle planer. Et funn er lukket når:
 
-0.70.0 gjenbruker satsregister/fakturalinjer for innenlandske 5/6/7, med
-append-only oppretting av manglende kodevalg ved aktivering/oppdatering.
-Native fakturaer/kreditnotaer, rene og blandede nullsatslinjer og varer/tjenester
-er prøvd. 5/6 vises som meldingsgrunnlag, 7 separat uten slikt grunnlag i CSV.
-En ukodet nullsats blir ikke gjettet til en behandling. Ingen ny meny, database-
-modell eller begrunnelsesside innføres. Faglig vilkårsvurdering er fortsatt
-brukerens oppgave i den vanlige dokumentflyten.
+1. Det konkrete gapet og nødvendig brukerresultat er beskrevet.
+2. Kjerne/tillegg og relevant normalflyt er undersøkt før eventuell ny kode.
+3. Endringen og bevaring av eksisterende data er prøvd i riktig arbeidsflyt.
+4. Dokumentasjon, veilederstatus og testbevis stemmer med faktisk støtte.
 
-0.71.0 bruker kjernens kjøpsjournal og linjekode NO0 for innenlandske kjøp
-uten MVA-behandling. Det lokale navnet unngår kjernens tap av bokstavelig
-kode 0 i velger/lagring. Uttrekket viser norsk kode 0 med separat beløp uten
-fradrag/meldingsgrunnlag. Native rene/blandede fakturaer og kreditnotaer,
-varer/tjenester og bevaring gjennom oppdatering/gjenoppretting er prøvd.
-Ingen nye tabeller, menyer eller lagringsinngrep innføres.
+Dette er utviklingskriterier, ikke nye bekreftelsesoppgaver for brukeren.
+En reservevei kan dokumenteres, men regnes ikke som ferdig normalflyt.
+Et lukket område åpnes igjen ved en konkret feil eller endret krav, ikke bare
+fordi en ny produktidé dukker opp. Kjente uløste funn flyttes ikke bort ved
+å øke versjonsnummeret.
 
-0.72.0 gjenbruker satsregister, kundefakturalinjer og salgsjournal for
-uttrykkelig valgt eksportkode 52. NOK-salg/kreditnotaer til utenlandske
-kunder, varer/tjenester og nullavgift er prøvd med SE/US. Uttrekket tar med
-eksportgrunnlaget uten avgift; innenlandske kodevalg blir ikke brukt som
-utenlandsregel. Dokumentasjon beholdes i den vanlige dokumentflyten.
-Ingen nye menyer, tabeller, kontrollsider eller bokføringsmotor innføres.
+## Leveranser og avhengigheter
 
-0.73.0 bruker kjernens omvendte avgiftsplikt på NOK-tjenestekjøp med 25 %
-og full fradragsrett. Eksplisitt kode 86, katalogtjeneste, native avgiftsvalg,
-kjøpsjournal, kreditnotaer og kontoene 2704/2714/2400 er prøvd med SE/US.
-Uttrekket avstemmer faktisk avgift i begge retninger og viser inngående
-fradrag uten nytt grunnlag. Ingen egen kjøpsmotor, tabell eller kontrollside.
-Kjernens konto-/driftsinnstillinger må settes opp; de overskrives ikke.
+- Utvikling skjer på staging; main krever PR og beståtte påkrevde tester på
+  aktuell revisjon. Bare main og staging beholdes, uten force-push.
+- En teknisk delversjon kan leveres med tydelig avgrensning. Hele modulen
+  erklæres ikke ferdig før samlet aksept for avtalt omfang er dokumentert.
+- Eksisterende regnskapsdata, dokumenter, numre, volumer, passord og instansnøkkel
+  bevares. Skjemaendringer krever versjonert migrering, backup og restore-prøve.
+- Det innføres ikke nye kontrollsider, generelle historikkmodeller eller en
+  særskilt kjøpsmotor for å lukke listen. Nødvendige kontroller hører til ved
+  oppgaven i kjernen; oppsett hører til innstillingene.
+- Kjøp/avtale med EHF-leverandør, myndighetsautorisasjon og virksomhetens
+  faglige valg kan kreve avklaring når en konkret løsning foreligger. Dette
+  hindrer ikke kildearbeid, kompatibilitetsprøver og øvrige uavhengige oppgaver.
 
-0.74.0 støtter kode 87 på hele, manuelt bokførte NOK-tjenestekjøp uten
-fradragsrett ved 25 %. Kjernens bilag, eksisterende MVA-felt og konto 2704
-gjenbrukes. Kostnaden inkluderer avgiften; uttrekket viser bare utgående
-MVA og grunnlag. Ingen ny satsrad, side, tabell eller betalingsflyt innføres.
-Denne flyten oppretter ikke leverandørfakturaer eller betalingsoppfølging.
-
-0.75.0 støtter delvis fradrag på den prøvde native 86-fakturaflyten ved et
-separat rettingsbilag med kode 86 på 2714. Kjernens bilag og eksisterende
-MVA-felt gjenbrukes. Full beregnet avgift/grunnlag beholdes; faktisk inngående
-fradrag summeres uten nytt grunnlag. Kjøp/kreditnota og begge fortegn er
-prøvd med 50 % fradrag. Prosent og kobling til faktura automatiseres ikke.
-Ingen nye tabeller, menyer eller kontrollsider.
-
-Før videre utvidelse prioriteres gjennomgangen av normalflyt beskrevet ovenfor.
-Deretter følger aktuelle importtilfeller,
-registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
-rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
-Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og
-samlet faglig produksjonsaksept gjenstår. Kjernens journaler brukes fortsatt.
-
-EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
-avtale eller installasjon. Norsk dokumentvalidering og faktisk transport
-prøves hver for seg. Ingen mottakerregistrering eller kontakt med leverandører
-gjøres uten uttrykkelig bestilling.
-
-## Utført forenkling i 0.65.0
-
-| Beholdt | Fjernet | Overgang |
-| --- | --- | --- |
-| Norsk kontoplan, standardkontoer, MVA-kontoer, foretaksopplysninger, nummermodeller, NOK og språk, valgfri EUR-visning og sperring av sjekker | Egne faktura-, bilags-, periode- og fordelingskontroller, begrunnelsesregistrering, nye kontrollkopier og særskilt kjøpsbokføring | Regnskap og dokumenter beholdes. Gammel tilleggshistorikk kan leses og lastes ned uendret. Tidligere særposterte kjøp sperres mot dobbeltføring; separat rettingsbilag i kjernen er mulig. |
-
-Oppsettsveilederen gir forklaringer og lenker uten egen godkjenningsstatus.
-Daglig arbeid bruker kjernens dokumenter, journaler, hovedbok, perioder,
-bank og produktkontoer. Norsk regnskapsoppsett har én menyinngang under
-Regnskap → Innstillinger. De tidligere løsningene var tillegg, ikke
-lovpålagte brukeroppgaver. Det gamle lagringsskjemaet beholdes for lesing
-og vern av allerede særposterte kjøp; nye historikkposter opprettes ikke.
-
-Oppryddingen er prøvd med ordinær salgs- og kjøpsbokføring, gammel historikk,
-oppgradering, backup og gjenoppretting. Dette dokumenterer teknisk overgang,
-ikke full norsk regnskapsmessig etterlevelse.
-
-Neste arbeid er å avklare faktisk dekning i kjernen og eksisterende tillegg
-for MVA-rapportering, SAF-T og EHF. Ingen ny rapportmotor eller kontrollflate
-skal bygges før det konkrete norske gapet er dokumentert. Papirløs flyt tas sist.
-
-## Videre omfang
-
-De avtalte områdene beholdes, men er ikke forhåndsbeslutninger om egen kode:
-
-- A1/A2: norsk avgiftsoppsett, faktura, kreditnota og nødvendige kontokoblinger.
-- B1/B2: norsk MVA-grunnlag og rapportering, med direkte innsending som bestilt funksjon.
-- C/C2: reskontro, bank, avstemming og årsavslutning på kjernens grunnlag.
-- D: relevante utenlandsscenarioer for varer og tjenester.
-- E: EHF/Peppol for offentlige kunder; eksisterende løsninger undersøkes tidlig.
-- F: SAF-T Financial.
-- F2: næringsspesifikasjon og skattemelding som egen leveranse etter årsavslutning.
-- G: nødvendig retting, tilgang, oppbevaring og drift.
-- A3/C1: papirløs bilagsflyt og enkel matching tas fortsatt til slutt.
-
-Kravgrunnlaget ligger i [kravregisteret](norwegian-requirements.md) og
-[kilderegisteret](sources.md). Lovkrav, uttrykkelige brukerønsker og intern
-teknisk diagnostikk skal skilles. Tekniske tester bekrefter ikke at et tillegg
-er nødvendig eller at norsk regnskapsmessig etterlevelse er oppnådd.
-
-## Kontroller som del av arbeidsflyten
-
-Nødvendige kontroller brukes ved den ordinære oppgaven. Gjenbruk kjernens
-kontroller først. Oppsett hører til i relevante innstillinger eller
-oppsettsveilederen; daglige oppgaver hører til ved dokument, bank eller regnskap.
-Vanlig bokføring skal ikke få ekstra manuelle kontrollrunder uten et konkret
-behov. Interne diagnoser skal ikke presenteres som lovpålagte brukeroppgaver.
-
-## Arbeidsregler og ferdigkriterium
-
-Ett foretak, NOK som dokumentvaluta, norsk/engelsk på tilbud og faktura og
-valgfri veiledende EUR-prisvisning videreføres. Modulen skal være generell
-for varer og tjenester. Bare main og staging brukes, og kjernen endres ikke.
-
-Før ny tilleggskode skal den korte begrunnelsen vise:
-
-1. Kravet eller det uttrykkelig bestilte behovet.
-2. Hva kjernen eller et eksisterende tillegg faktisk dekker i prøvd versjon.
-3. Det konkrete gapet og den minste endringen som løser det.
-4. Referanse for vanlig brukerflyt og hvilke ekstra steg løsningen krever,
-   også ved kreditnota. En reservevei skal merkes og gapet for normalflyt
-   holdes åpent. Dette dokumenteres i utviklingsgrunnlaget, ikke som en ny
-   bekreftelsesrunde for brukeren.
-
-Relevant test og dokumentasjon følger endringen. Main krever fortsatt PR,
-bestått CI på aktuell revisjon og tydelig akseptert omfang. Eksisterende
-regnskap, dokumenter, passord, volumer og instansnøkkel bevares. Endring av
-skjema eller historikk krever versjonert overgang og prøvd gjenoppretting.
+Kravgrunnlaget er [kravregisteret](norwegian-requirements.md) og
+[kilderegisteret](sources.md). Ulike bransjer, ansatte, kontantsalg og
+forbrukersalg gir betingede krav; de skal ikke automatisk bli nye produktspor.

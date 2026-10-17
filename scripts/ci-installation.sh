@@ -74,7 +74,9 @@ export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" cp tests/legacy-evidence.json web:/tmp/norway-legacy-evidence.json
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.75.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.76.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+# Seed each removed executable into the reused module volume before replacement.
+"${compose[@]}" exec -T web sh -c 'while IFS= read -r retired; do mkdir -p "/var/www/html/custom/norway/$(dirname "$retired")"; echo "<?php exit; // SYNTHETIC RETIRED CODE" > "/var/www/html/custom/norway/$retired"; done < /opt/norway-module/data/retired-files.txt'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
 "${compose[@]}" exec -T web php <<'PHPTEST'
 <?php
@@ -98,6 +100,14 @@ git add .
 git commit --quiet -m 'Synthetic installation snapshot'
 bash scripts/update-installation.sh
 python3 scripts/migrate-storage.py
+"${compose[@]}" exec -T web sh -c 'while IFS= read -r retired; do test ! -e "/var/www/html/custom/norway/$retired" || exit 1; done < /opt/norway-module/data/retired-files.txt'
+# Verification must reject an extra executable, not merely match shipped hashes.
+"${compose[@]}" exec -T web sh -c 'echo "<?php exit; // SYNTHETIC EXTRA CODE" > /var/www/html/custom/norway/unexpected-runtime.php'
+if "${compose[@]}" exec -T web php < scripts/verify-installation.php > "$install_root/unexpected-code.log" 2>&1; then
+    echo 'Unexpected executable passed installation verification.' >&2; exit 1
+fi
+grep -q 'FAIL norway_module_payload' "$install_root/unexpected-code.log"
+"${compose[@]}" exec -T web rm /var/www/html/custom/norway/unexpected-runtime.php
 "${compose[@]}" exec -T web sh -c 'cmp -s /opt/norway-module/core/modules/modNorway.class.php /var/www/html/custom/norway/core/modules/modNorway.class.php; test "$(cat /var/www/html/custom/synthetic-other-module/retained)" = SYNTHETIC'
 "${compose[@]}" cp tests/legacy-evidence.json web:/tmp/norway-legacy-evidence.json
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 web php < tests/storage-sentinel.php
