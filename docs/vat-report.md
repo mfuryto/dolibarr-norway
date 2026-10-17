@@ -47,7 +47,7 @@ må stemme med bokført reskontrobeløp. Kildenes avgift per konto må stemme me
 når flere koder deler konto. Avrunding summeres over åtte lagrede desimaler
 med heltall før omregning til øre. Ubalanse i et bilag innenfor perioden,
 manglende kode, ukjent kilde, feil dato, NPR/lokalavgifter og behandling
-utenfor de ordinære kodene vises ved kilden. Delsummer kan leses, men netto
+utenfor de støttede kodene vises ved kilden. Delsummer kan leses, men netto
 og CSV er utilgjengelig så lenge slike poster finnes. CSV-kallet håndhever
 samme regel og beregner rapporten på nytt ved nedlasting.
 
@@ -60,7 +60,8 @@ er kvalifisert. Egendefinerte MVA-kontoer må være registrert i oppsettet.
 
 **Dette er ikke en fullstendig norsk MVA-melding eller innsending.**
 Førsteversjonen dekket ikke nullsats/fritak/unntak; 0.70.0-utvidelsen
-nedenfor dekker eksplisitte innenlandske 5/6/7. Utenlandshandel, registreringsovergang,
+nedenfor dekker eksplisitte innenlandske 5/6/7, 0.71.0 kjøpskode 0 og 0.72.0
+eksportkode 52. Utenlandskjøp, omvendt avgiftsplikt, registreringsovergang,
 avgiftsoppgjør/åpningsposter og andre særtilfeller er ikke kvalifisert.
 Øvrige manuelle hovedbokslinjer uten MVA-klassifisering telles separat;
 manuell omsetning uten MVA blir ikke automatisk med. En avstemt ordinær
@@ -123,9 +124,9 @@ med i kodegrunnlaget. Filen er fremdeles et avstemmingsuttrekk, ikke en fil
 for innsendings-API-et.
 
 Manglende, deaktiverte, feilrettede eller tvetydige kodeoppsett gir uavklart
-uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske motparter og
-51/52 er fortsatt utenfor prøvd omfang. Det samme gjelder manuelt nullgrunnlag,
-registreringsovergang og MVA-oppgjør/åpningsposter.
+uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske kjøpsmotparter og kode
+51 er fortsatt utenfor prøvd omfang, sammen med manuelle nullgrunnlag,
+registreringsovergang og MVA-oppgjør/åpningsposter. Eksportkode 52 er beskrevet nedenfor.
 
 Kildene er [Skatteetatens forklaring av fritak/unntak](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/slik-fungerer-mva/forskjellen-pa-fritak-og-unntak-fra-merverdiavgift/),
 [offisielle SAF-T-koder](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv)
@@ -154,3 +155,31 @@ forklarer valget. Ingen eksisterende bilag omklassifiseres. Manglende kode,
 deaktivert/feilrettet sats, ikke-null avgift og kildedrift gir uavklart uttrekk.
 Prøvene omfatter native journaler, varer/tjenester, rene/blandede fakturaer,
 kreditnotaer, CSV, lesing uten dataskriving og backup/gjenoppretting.
+
+## Eksportkode 52 i 0.72.0
+
+Uttrekket støtter nå eksplisitte 52-linjer på NOK-kundefakturaer og
+kreditnotaer til utenlandske kunder. Varer og tjenester bruker samme kode,
+som [Skatteetatens standardliste](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv)
+angir for utførsel av varer og tjenester. Samme avstemming mot kilde,
+reskontro, periode og salgsjournal brukes. Avgift må være eksakt null;
+ingen kunstig MVA-konto eller postering kreves.
+
+Kode 52 har `vat_return=included`, sats 0 og netto eksportbeløp i
+`output_base_nok`. Kreditnota reduserer grunnlaget. `vat_nok` er 0.00 og
+`excluded_base_nok` er tomt. Netto MVA påvirkes ikke. Kolonnene er uendret.
+Det [eksisterende kodebiblioteket for MVA-meldingen](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
+har kode 52. Kildene er kontrollert 2026-10-17.
+
+Kundens land setter ikke avgiftskoden. Utenlandske kjøp eller innenlandske
+kodevalg på utenlandske salg gir fortsatt uavklart uttrekk. Kode 52 med norsk
+mottaker er også utenfor dette avgrensede omfanget, selv om særskilte faktiske
+eksporttilfeller kan finnes. Tomt land, feil/deaktivert kode, avgiftsbeløp,
+kilde- og bokføringsavvik gir uavklart rapport og ingen netto/CSV.
+
+Prøven omfatter syntetiske kunder i Sverige og USA, native varer/tjenester,
+fakturaer og kreditnotaer gjennom den faktiske salgsjournalen. Kode 52-grunnlaget
+avstemmes uten avgift og uten at lesing endrer dokumenter/bokføring.
+[Brukerveiledningen](vat-rates.md#eksportkode-52-i-0720) beskriver vilkår,
+vanlige vedlegg og begrensninger. Dette kvalifiserer den tekniske flyten,
+ikke brukerens fritaksvurdering eller full norsk regnskapsmessig etterlevelse.

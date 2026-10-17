@@ -876,7 +876,7 @@ NorwayWizardExtraTaxAccounts=Guide: Tax accounts
 NorwayWizardExtraTaxAccountsHelp=Explains when the list can remain unchanged, the distinction from VAT accounts and tax accounts for sole proprietorships. Changes no settings.
 
 NorwayVatRatesTitle=Norwegian VAT rates and codes
-NorwayVatRatesScope=Ordinary Norwegian codes, domestic sales codes 5/6/7 and purchase choice NO0 (Norwegian code 0) in the core rate register. A zero rate alone does not select a treatment. Code 0 does not replace purchases carrying non-deductible VAT.
+NorwayVatRatesScope=Ordinary Norwegian codes, domestic sales codes 5/6/7, export code 52 and purchase choice NO0 (Norwegian code 0) in the core rate register. A zero rate alone does not select a treatment. Code 0 does not replace purchases carrying non-deductible VAT.
 NorwayVatRatesLimits=Only missing codes in an unused setup are created. Existing documents, products, codes, defaults and accounts are not reclassified. Existing installations use the native rate register. Foreign trade and registration transition remain outstanding.
 NorwayVatRatesConfirm=I confirm that this is an unused accounting setup without documents or ledger history and that the displayed changes are correct. No invoice lines or VAT registration status change.
 NorwayVatRatesCreate=Create coded rate row
@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Enter the correct output VAT base with at most two decimals.
 NorwayManualVatDatabase=VAT information could not be read or saved. Ensure that the module update has completed.
 
 NorwayVatReportTitle=VAT extract (supported codes)
-NorwayVatReportScope=Read-only extract for ordinary Norwegian codes 3/31/33 and 1/11/13, domestic sales 5/6/7 and purchases without VAT using NO0 (code 0). Bookkeeping date determines the period. Codes 0/7 are shown separately outside the VAT return. Complete returns, submission, foreign trade, registration transition and special treatments remain outstanding.
+NorwayVatReportScope=Read-only extract for ordinary Norwegian codes 3/31/33 and 1/11/13, domestic sales 5/6/7, purchases without VAT using NO0 (code 0), and exports to foreign customers explicitly coded 52. Bookkeeping date determines the period. Codes 0/7 are outside the VAT return. Complete returns, submission, foreign purchases, registration transition and special treatments remain outstanding.
 NorwayVatReportDatabase=The extract could not be read consistently from the database.
 NorwayVatReportAmount=The extract contains an amount outside the supported arithmetic precision.
 NorwayVatReportPeriod=Select valid start and end dates within the same calendar year.
@@ -1235,3 +1235,4 @@ NorwayVatCode6=Turnover outside the VAT Act
 NorwayVatCode7=Income that is not VAT turnover
 NorwayVatCode0=Purchases without VAT treatment
 NorwayVatCodeNO0=Purchases without VAT treatment (NO0 → 0)
+NorwayVatCode52=Export of goods and services

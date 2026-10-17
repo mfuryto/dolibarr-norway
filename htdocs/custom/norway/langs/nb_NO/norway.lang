@@ -876,7 +876,7 @@ NorwayWizardExtraTaxAccounts=Veiledning: Skattekontoer
 NorwayWizardExtraTaxAccountsHelp=Forklarer når listen kan stå urørt, forskjellen fra MVA-kontoer og bruk av skattekontoer for ENK. Ingen innstillinger endres.
 
 NorwayVatRatesTitle=Norske MVA-satser og koder
-NorwayVatRatesScope=Ordinære norske koder, innenlandske salgskoder 5/6/7 og kjøpsvalget NO0 (norsk kode 0) i kjernens satsregister. Nullsats alene velger ikke behandling. Kode 0 brukes ikke som erstatning for kjøp med MVA uten fradragsrett.
+NorwayVatRatesScope=Ordinære norske koder, innenlandske salgskoder 5/6/7, eksportkode 52 og kjøpsvalget NO0 (norsk kode 0) i kjernens satsregister. Nullsats alene velger ikke behandling. Kode 0 brukes ikke som erstatning for kjøp med MVA uten fradragsrett.
 NorwayVatRatesLimits=Hjelpen oppretter bare manglende koder i ubrukt oppsett. Eksisterende dokumenter, produkter, koder, standardvalg og kontoer omklassifiseres ikke. Ved eksisterende drift brukes det vanlige satsregisteret. Utenlandshandel og registreringsovergang gjenstår.
 NorwayVatRatesConfirm=Jeg bekrefter at dette er et nytt bokføringsoppsett uten dokumenter eller bokføringshistorikk, og at de viste endringene er riktige. Ingen fakturalinjer eller MVA-status endres.
 NorwayVatRatesCreate=Opprett kodet satsrad
@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Oppgi riktig grunnlag med maksimalt to desimaler for utgåen
 NorwayManualVatDatabase=MVA-opplysningene kunne ikke leses eller lagres. Kontroller at moduloppdateringen er fullført.
 
 NorwayVatReportTitle=MVA-uttrekk (støttede koder)
-NorwayVatReportScope=Lesende uttrekk for ordinære norske koder 3/31/33 og 1/11/13, innenlands salg 5/6/7 og kjøp uten MVA med NO0 (kode 0). Bokføringsdato bestemmer perioden. Kode 0/7 vises separat utenfor MVA-meldingen. Fullstendig melding, innsending, utenlandshandel, registreringsovergang og særtilfeller gjenstår.
+NorwayVatReportScope=Lesende uttrekk for ordinære norske koder 3/31/33 og 1/11/13, innenlands salg 5/6/7, kjøp uten MVA med NO0 (kode 0) og eksport til utenlandske kunder med eksplisitt kode 52. Bokføringsdato bestemmer perioden. Kode 0/7 vises utenfor MVA-meldingen. Full melding, innsending, utenlandskjøp, registreringsovergang og særtilfeller gjenstår.
 NorwayVatReportDatabase=Uttrekket kunne ikke leses samlet fra databasen.
 NorwayVatReportAmount=Uttrekket inneholder et beløp som ikke kan summeres innenfor støttet nøyaktighet.
 NorwayVatReportPeriod=Velg gyldige fra- og til-datoer i samme kalenderår.
@@ -1235,3 +1235,4 @@ NorwayVatCode6=Omsetning utenfor MVA-loven
 NorwayVatCode7=Inntekt som ikke er MVA-omsetning
 NorwayVatCode0=Kjøp uten MVA-behandling
 NorwayVatCodeNO0=Kjøp uten MVA-behandling (NO0 → 0)
+NorwayVatCode52=Utførsel av varer og tjenester

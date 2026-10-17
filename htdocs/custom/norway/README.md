@@ -1,6 +1,6 @@
-# Norway 0.71.0
+# Norway 0.72.0
 
-**Versjon 0.71.0 · Under utvikling**
+**Versjon 0.72.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -62,3 +62,10 @@ kode 0 fordi kjernen mister den bokstavelige verdien «0». Uttrekket viser
 kode 0 separat, uten fradrag eller meldingsgrunnlag. Vanlig kjøpsjournal,
 kreditnotaer og varer/tjenester gjenbrukes. Kjøp med MVA uten fradragsrett
 krever fortsatt den ordinære fradragsrettingen; NO0 erstatter ikke dette.
+
+0.72.0 gjør eksportkode 52 tilgjengelig i satsregisteret og det samme
+MVA-uttrekket. Eksplisitt kodede NOK-fakturaer/kreditnotaer til utenlandske
+kunder bruker kjernens salgsjournal, for både varer og tjenester.
+Eksportgrunnlaget vises med null norsk avgift; landet setter ikke koden
+automatisk. Se kodeveiledningen i prosjektets dokumentasjon for eksportflyten.
+Utenlandskjøp, omvendt avgiftsplikt og full MVA-melding gjenstår.

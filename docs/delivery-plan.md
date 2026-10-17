@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.71.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.72.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -76,7 +76,14 @@ fradrag/meldingsgrunnlag. Native rene/blandede fakturaer og kreditnotaer,
 varer/tjenester og bevaring gjennom oppdatering/gjenoppretting er prøvd.
 Ingen nye tabeller, menyer eller lagringsinngrep innføres.
 
-Neste arbeid er aktuelle utenlandstilfeller, deretter
+0.72.0 gjenbruker satsregister, kundefakturalinjer og salgsjournal for
+uttrykkelig valgt eksportkode 52. NOK-salg/kreditnotaer til utenlandske
+kunder, varer/tjenester og nullavgift er prøvd med SE/US. Uttrekket tar med
+eksportgrunnlaget uten avgift; innenlandske kodevalg blir ikke brukt som
+utenlandsregel. Dokumentasjon beholdes i den vanlige dokumentflyten.
+Ingen nye menyer, tabeller, kontrollsider eller bokføringsmotor innføres.
+
+Neste arbeid er utenlandskjøp og omvendt avgiftsplikt, deretter
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og
