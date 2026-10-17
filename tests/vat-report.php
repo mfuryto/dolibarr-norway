@@ -115,7 +115,16 @@ try {
  $outputPiece=(new BookKeeping($db))->getNextNumMvt();foreach(array('2701'=>-15,'3000'=>-100,'1920'=>115) as $account=>$amount){$o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=dol_mktime(12,0,0,2,1,2038);$o->doc_type='';$o->doc_ref='SYNTHETIC MANUAL OUTPUT '.$run;$o->fk_doc=0;$o->fk_docdet=0;$o->numero_compte=$account;$o->label_compte='Synthetic';$o->label_operation='Synthetic';$o->debit=max($amount,0);$o->credit=max(-$amount,0);$o->montant=abs($amount);$o->sens=$amount>0?'D':'C';$o->code_journal='SYNVR';$o->journal_label='Synthetic';$o->piece_num=$outputPiece;nrAssert($o->createStd($user)>0,'Manual output create');$manualIds[]=(int)$o->id;}
  $outputLine=NorwayManualVat::lines($db,$entity,$outputPiece,$user)[0];NorwayManualVat::save($db,$entity,$outputPiece,(int)$outputLine->rowid,'31','100',NorwayManualVat::editToken($outputLine),$user);
  $r=nrReport();nrAssert(!$r['issues'] && $r['net']===2750 && $r['groups']['31']['base']===26000 && $r['groups']['31']['tax']===3900,'Manual output base or VAT lost');
- $csv=NorwayVatReport::csv($r);nrAssert(substr_count($csv,"\n")===67 && strpos($csv,'ledger;'.(int)$line->rowid.';'.$piece.';1;input;;;-12.50')!==false,'CSV detail/sign/input fields');
+ // Whole manual purchases without deduction: cost includes VAT, no supplier-invoice object is posted twice.
+ $manual87=array();foreach($foreignParties as $supplier){foreach(array(1,-1) as $sign){$base=$sign===1?100:-20;$tax=$base*0.25;$manualPiece=(new BookKeeping($db))->getNextNumMvt();
+  foreach(array('6790'=>$base+$tax,'2400'=>-$base,'2704'=>-$tax) as $account=>$amount){$o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=dol_mktime(12,0,0,2,10,2038);$o->doc_type='manual';$o->doc_ref='SYNTHETIC FOREIGN PURCHASE '.$run.' '.$supplier.' '.$sign;$o->fk_doc=0;$o->fk_docdet=0;$o->numero_compte=$account;$o->label_compte='Synthetic purchase';$o->label_operation='Synthetic foreign service, no deduction';$o->debit=max($amount,0);$o->credit=max(-$amount,0);$o->montant=abs($amount);$o->sens=$amount>0?'D':'C';$o->piece_num=$manualPiece;$o->code_journal='SYNVR';$o->journal_label='Synthetic manual purchases';nrAssert($o->createStd($user)>0,'Manual purchase create');$manualIds[]=(int)$o->id;if((string)$account==='2704'){$manual87[]=(int)$o->id;}}
+  $r=nrReport();nrAssert(nrReason($r,'MissingCode') && $r['net']===null,'Unclassified manual reverse charge hidden');
+  foreach(NorwayManualVat::lines($db,$entity,$manualPiece,$user) as $row){if($row->numero_compte==='2704'){NorwayManualVat::save($db,$entity,$manualPiece,(int)$row->rowid,'87',(string)$base,NorwayManualVat::editToken($row),$user);}}
+ }}
+ $r=nrReport();nrAssert(!$r['issues'] && $r['groups']['87']['base']===16000 && $r['groups']['87']['tax']===4000 && $r['groups']['87']['type']===1 && $r['net']===6750,'Manual code 87 base, liability, credit or no deduction lost');
+ $choices87=NorwayManualVat::choices($db,$entity);nrAssert(isset($choices87['87']) && $choices87['87']['account']==='2704','Manual 87 choice missing');
+ echo "PASS native complete manual service purchases/credits without deduction, 6790/2400/2704, code 87 base/liability and unchanged original invoices\n";
+ $csv=NorwayVatReport::csv($r);nrAssert(substr_count($csv,"\n")===71 && strpos($csv,'ledger;'.(int)$line->rowid.';'.$piece.';1;input;;;-12.50')!==false,'CSV detail/sign/input fields');
  $csvRows=array_map(fn($s)=>str_getcsv($s,';','"',''),explode("\n",trim($csv)));$outside=array_filter(array_slice($csvRows,1),fn($row)=>$row[5]==='7');nrAssert(count($outside)===6,'Code 7 CSV lost');
  foreach($outside as $row){nrAssert($row[7]==='' && $row[8]==='' && $row[9]==='0.00' && $row[10]==='excluded' && $row[11]!=='','Code 7 became VAT return basis');}
  $purchaseZero=array_filter(array_slice($csvRows,1),fn($row)=>$row[5]==='0');nrAssert(count($purchaseZero)===6,'Purchase zero CSV lost');$zeroBase=0;
@@ -125,6 +134,8 @@ try {
  foreach($exportRows as $row){nrAssert($row[6]==='output' && $row[7]==='0' && $row[8]!=='' && $row[9]==='0.00' && $row[10]==='included' && $row[11]==='','Export became excluded/non-zero VAT');}
  $reverseRows=array_filter(array_slice($csvRows,1),fn($row)=>$row[5]==='86');nrAssert(count($reverseRows)===8,'Reverse-charge CSV rows');
  foreach($reverseRows as $row){nrAssert($row[10]==='included' && $row[11]==='' && ($row[6]==='output'?($row[7]==='25' && $row[8]!==''):($row[7]==='' && $row[8]==='')),'Reverse-charge CSV direction/base');}
+ $manualRows87=array_filter(array_slice($csvRows,1),fn($row)=>$row[5]==='87');nrAssert(count($manualRows87)===4,'Manual 87 CSV rows');
+ foreach($manualRows87 as $row){nrAssert($row[2]==='ledger' && $row[6]==='output' && $row[7]==='25' && $row[8]!=='' && $row[10]==='included' && $row[11]==='','Code 87 became an input deduction');}
  echo "PASS native reverse-charge service invoices/credits, SE/US, 2704/2714/6790/2400, per-line rounding, code 86 output plus deduction and unchanged net VAT\n";
  echo "PASS explicit export 52, SE/US goods/services invoices and credits, native journal accounts, included CSV base and unchanged net VAT\n";
  echo "PASS purchase code 0, native pure/mixed goods/services invoices and credits, zero VAT, excluded CSV base and no deduction\n";
@@ -152,6 +163,9 @@ try {
  );
  foreach($variants as $reason=>$sql){$db->begin();try{nrSql($sql);$bad=nrReport();nrAssert(nrReason($bad,$reason) && $bad['net']===null,'Unresolved variant accepted: '.$reason);nrBlocked(fn()=>NorwayVatReport::csv($bad),'Unresolved CSV accepted: '.$reason);}finally{$db->rollback();}}
  foreach(array(
+  array('Unsupported',"UPDATE ".$p."facture_fourn_det SET vat_src_code='87' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
+  array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC CHANGED' WHERE rowid=".$manual87[0]),
+  array('MissingCode',"UPDATE ".$p."accounting_account SET active=0 WHERE entity=".$entity." AND rowid=".$accountIds['2704']),
   array('Unsupported',"UPDATE ".$p."facture_fourn SET vat_reverse_charge=0 WHERE rowid=".(int)$reverseInvoices[0]->id),
   array('Unsupported',"UPDATE ".$p."facture_fourn_det SET product_type=0 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Unsupported',"UPDATE ".$p."facture_fourn_det SET fk_product=NULL WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
@@ -181,7 +195,7 @@ try {
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql('UPDATE '.$p.'facture SET total_ht=total_ht+100,total_ttc=total_ttc+100 WHERE rowid='.$id);nrSql('UPDATE '.$p.'facturedet SET total_ht=total_ht+100 WHERE fk_facture='.$id.' ORDER BY rowid LIMIT 1');nrAssert(nrReason(nrReport(),'Mismatch'),'Source base drift accepted');}finally{$db->rollback();}
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql("UPDATE ".$p."facturedet SET total_ht=total_ht+CASE WHEN vat_src_code='3' THEN 10 WHEN vat_src_code='31' THEN -10 ELSE 0 END WHERE fk_facture=".$id);nrAssert(nrReason(nrReport(),'Mismatch'),'Redistributed base with unchanged tax/header accepted');}finally{$db->rollback();}
  // Multiple rate codes can legitimately share a VAT account without multiplying their amounts.
- $db->begin();try{nrSql("UPDATE ".$p."c_tva SET accountancy_code_sell='2700' WHERE entity=".$entity." AND code IN ('3','31','33')");$docids=implode(',',array_map(fn($o)=>(int)$o->id,$invoices['customer_invoice']));nrSql("UPDATE ".$p."accounting_bookkeeping SET numero_compte='2700' WHERE doc_type='customer_invoice' AND fk_doc IN (".$docids.") AND numero_compte IN ('2701','2703')");$shared=nrReport();nrAssert(!$shared['issues'] && $shared['net']===2750 && $shared['groups']['3']['tax']===4000,'Shared VAT account duplicated/lost codes');}finally{$db->rollback();}
+ $db->begin();try{nrSql("UPDATE ".$p."c_tva SET accountancy_code_sell='2700' WHERE entity=".$entity." AND code IN ('3','31','33')");$docids=implode(',',array_map(fn($o)=>(int)$o->id,$invoices['customer_invoice']));nrSql("UPDATE ".$p."accounting_bookkeeping SET numero_compte='2700' WHERE doc_type='customer_invoice' AND fk_doc IN (".$docids.") AND numero_compte IN ('2701','2703')");$shared=nrReport();nrAssert(!$shared['issues'] && $shared['net']===6750 && $shared['groups']['3']['tax']===4000,'Shared VAT account duplicated/lost codes');}finally{$db->rollback();}
  $db->begin();try{nrSql('UPDATE '.$p.'societe SET entity=2 WHERE rowid='.$partnerId);nrAssert(nrReason(nrReport(),'Unsupported'),'Other-entity source party accepted');$r2=NorwayVatReport::build($db,$entity,'2038-03-01','2038-03-31',$user);nrAssert(!$r2['entries'],'Period leaked entries');}finally{$db->rollback();}
  nrBlocked(fn()=>NorwayVatReport::build($db,$entity+1,$start,$end,$user),'Entity leaked');
  nrBlocked(fn()=>NorwayVatReport::build($db,$entity,'2038-02-30',$end,$user),'Invalid date accepted');
@@ -189,6 +203,7 @@ try {
  nrAssert(nrSnapshot()===$snapshot,'Report/variants changed original financial data or metadata');
  $path='/custom/norway/vat.php?date_start='.$start.'&date_end='.$end;
  foreach(array('nb_NO'=>'MVA-uttrekk (støttede koder)','en_US'=>'VAT extract (supported codes)') as $lang=>$title){$body=nrHttp($path.'&lang='.$lang);nrAssert(strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)!==false && strpos($body,'format=csv')!==false,'Report HTTP/translation missing');}
+ foreach($manual87 as $id){$row=$db->fetch_object(nrSql('SELECT piece_num FROM '.$p.'accounting_bookkeeping WHERE rowid='.$id));$body=nrHttp('/accountancy/bookkeeping/card.php?piece_num='.(int)$row->piece_num.'&lang=nb_NO');nrAssert(strpos($body,'value="87" selected')!==false && strpos($body,'value="87" selected>87')!==false,'Native manual 87 choice/base missing');}
  $download=nrHttp($path.'&format=csv');nrAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && $download===$csv,'HTTP CSV differs');
  nrAssert(nrSnapshot()===$snapshot,'HTTP report/export changed financial data');
  nrSql("UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC EDITED' WHERE rowid=".(int)$line->rowid);

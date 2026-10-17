@@ -1185,7 +1185,7 @@ NorwayNativeVatCode=Norwegian VAT code
 NorwayNativeVatBoth=Sales and purchases
 
 NorwayManualVatTitle=VAT on manual voucher
-NorwayManualVatHelp=Select a code on the VAT line. Enter a base only for output VAT; use the opposite sign for reversals. Input VAT uses the posted amount; leave the base empty. Only ordinary Norwegian rates are supported here. This form creates no accounting entries.
+NorwayManualVatHelp=Select a code on the VAT line. Enter a base only for output VAT; reverse its sign for reversals. Input VAT uses the posted amount; leave the base empty. Code 87 covers manually posted service purchases without deduction, 25%, on 2704. This form creates no accounting entries.
 NorwayManualVatCodeLabel=VAT code
 NorwayManualVatBaseLabel=Base (output VAT, NOK)
 NorwayManualVatOutput=Output
@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Enter the correct output VAT base with at most two decimals.
 NorwayManualVatDatabase=VAT information could not be read or saved. Ensure that the module update has completed.
 
 NorwayVatReportTitle=VAT extract (supported codes)
-NorwayVatReportScope=Read-only extract for ordinary Norwegian codes 3/31/33 and 1/11/13, domestic 5/6/7 and NO0 (code 0), exports 52, and reverse-charge service purchases at 25% with full deduction (86). Bookkeeping date determines the period. Codes 0/7 are outside the VAT return. Complete returns, submission, other imports, registration transition and special treatments remain outstanding.
+NorwayVatReportScope=Read-only extract for supported Norwegian codes, including exports 52, service purchases with full deduction 86, and manually posted service purchases without deduction 87 (25%). Bookkeeping date determines the period. Codes 0/7 are outside the VAT return. Complete returns, submission, automated supplier-invoice flow for 87, partial deduction and other special cases remain outstanding.
 NorwayVatReportDatabase=The extract could not be read consistently from the database.
 NorwayVatReportAmount=The extract contains an amount outside the supported arithmetic precision.
 NorwayVatReportPeriod=Select valid start and end dates within the same calendar year.
@@ -1237,3 +1237,4 @@ NorwayVatCode0=Purchases without VAT treatment
 NorwayVatCodeNO0=Purchases without VAT treatment (NO0 → 0)
 NorwayVatCode52=Export of goods and services
 NorwayVatCode86=Foreign service purchases, 25% with full deduction
+NorwayVatCode87=Foreign service purchases without deduction

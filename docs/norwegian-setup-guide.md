@@ -171,8 +171,10 @@ varen/tjenesten og vurder fritaksvilkårene før kodevalget. Se [eksportflyten](
 og [uttrekkets avgrensning](vat-report.md#eksportkode-52-i-0720).
 Fra 0.73.0 er NOK-kjøp av fjernleverbare tjenester med 25 % og full fradragsrett
 prøvd med kjernens omvendte avgiftsplikt og kode 86. Se [engangsoppsett og bruk](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730)
-før du aktiverer dette. Kode 87, ingen/delvis fradragsrett, andre satser og
-vareimport er fortsatt ikke kvalifisert.
+før du aktiverer dette. Fra 0.74.0 er [hele, manuelt bokførte kjøp uten fradragsrett med kode 87](manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740)
+støttet i uttrekket. Denne flyten oppretter ikke leverandørfakturaer eller
+betalingsoppfølging. Automatisk kode 87 i leverandørfakturaflyten, delvis
+fradrag, andre satser og vareimport er fortsatt ikke kvalifisert.
 
 ## 9. Inngående saldoer, perioder og løpende rutiner
 

@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.73.0 · Under utvikling**
+**Versjon 0.74.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -174,3 +174,11 @@ Uttrekket avstemmer og viser begge retninger under 86. Kjernens funksjon
 må settes opp før bruk; eksisterende kontovalg og fakturaer endres ikke.
 Se [oppsett og avgrensning](docs/vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730).
 Ingen/delvis fradragsrett, andre satser og vareimport gjenstår.
+
+0.74.0 støtter kode 87 på manuelt bokførte NOK-tjenestekjøp uten fradragsrett,
+med 25 % beregnet MVA på 2704 og grunnlag på det vanlige bilagskortet.
+Uttrekket viser bare utgående avgift for 87. Denne avgrensede flyten oppretter
+ikke leverandørfaktura eller betalingsoppfølging i fakturamodulen; den må
+ikke brukes i tillegg til en allerede bokført faktura for samme kjøp.
+Se [manuell kode 87 og avgrensning](docs/manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740).
+Automatisk leverandørfakturaflyt for 87 og delvis fradragsrett gjenstår.
