@@ -70,3 +70,13 @@
   .norway-setup-overview tr { border-bottom: 1px solid #aaa; padding: .6rem 0; }
   .norway-setup-overview th, .norway-setup-overview td { padding: .3rem .6rem; height: auto !important; }
 }
+
+/* The native invoice creation form needs stacked fields on small screens. */
+@media (max-width: 700px) {
+  #id-right .norway-invoice-create, #id-right .norway-invoice-create tbody, #id-right .norway-invoice-create tr,
+  #id-right .norway-invoice-create td { display: block; width: auto !important; min-width: 0 !important; max-width: 100%; box-sizing: border-box; height: auto !important; }
+  #id-right .norway-invoice-create tr[hidden] { display: none !important; }
+  #id-right .norway-invoice-create .nowraponall { white-space: normal; }
+  #id-right .norway-invoice-create .select2-container { width: 100% !important; min-width: 0 !important; max-width: 100%; }
+  #id-right .norway-invoice-create input, #id-right .norway-invoice-create select { min-width: 0 !important; max-width: 100%; box-sizing: border-box; }
+}

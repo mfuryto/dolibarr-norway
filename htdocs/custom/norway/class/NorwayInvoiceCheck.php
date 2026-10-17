@@ -1,6 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayReadiness.php';
+require_once __DIR__.'/NorwayCreditReference.php';
 /** Presence checks on current invoice data; no edits or compliance certification. */
 class NorwayInvoiceCheck
 {
@@ -20,7 +21,7 @@ class NorwayInvoiceCheck
             $descriptions = $descriptions && (self::text($line->desc ?? '') || self::text($line->label ?? '') || self::text($line->product_label ?? ''));
         }
         $credit = (int) $invoice->type === 2;
-        $sourceValid = !$credit || ($source && (int) $source->id === (int) $invoice->fk_facture_source
+        $sourceValid = !$credit || NorwayCreditReference::external($invoice) || ($source && (int) $source->id === (int) $invoice->fk_facture_source
             && (int) $source->entity === (int) $invoice->entity
             && (int) $source->socid === (int) $invoice->socid
             && (int) $source->statut > 0 && (int) $source->type !== 2);

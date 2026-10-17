@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.77.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.78.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -358,3 +358,32 @@ eksisterende profiler/koder og dokumentnumre bevares.
 Dette dekker grunnoppsett. Full dokument-/fradragsflyt, rapportering, faktisk
 årsoppgjør og skatt er fortsatt åpne leveranser. Grønn teknisk prøve er ingen
 samlet regnskapsfaglig produksjonsaksept.
+
+## Oppfølging i 0.78.0 — dokumentdelen av etappe 3
+
+R06 er kvalifisert for det avgrensede ENK/AS/ASA-omfanget i
+[salgsdokumentasjonen](sales-documents.md#dokumentflyt-fra-0780). Det er prøvd
+18 faktiske PDF-er: tilbud, faktura og kreditnota på norsk/engelsk for tre
+foretaksformer. Native leveringsperioder, offentlig leveringssted, kundereferanse,
+identitet, foretaksform, valuta og beløp inngår. Foretaksregisteret legges til
+for norsk AS/ASA. Systembytte bruker native standalone-kreditnota og `ref_ext`;
+retting i kladd, skrivevern etter utstedelse, salgsjournal, negative MVA-beløp
+og refusjonsallokering er prøvd. Ingen skjemaendring eller ny bokføringsmotor.
+
+R03/R04 er fortsatt åpne. Kjerne 24.0.1 mangler linjevis fradragsandel i
+kjøpsjournalen. NPR påvirker fransk støtte-/avgiftsføring og er ikke norsk
+fradragsandel. Den globale innstillingen for å føre all kjøps-MVA som kostnad
+er heller ikke et valg per anskaffelse. Ingen av disse skal presenteres som
+normal løsning på delvis fradrag.
+
+Undersøkt eksisterende tillegg:
+[Non-deductible VAT](https://www.dolistore.com/product.php?id=2790&l=en&title=non-deductible-vat)
+fra utgiver Weer Wolf. Utgiver beskriver prosent på produkt/leverandørlinje,
+lagrede brutto/fradragsbeløp og overføring av ikke-fradragsført MVA til `total_ht`.
+Nedlasting ga `paiedProduct`; pakken er ikke tilgjengelig for denne prøven og
+er ikke installert eller kvalifisert. Det er ikke gjort kjøp eller registrering.
+Norsk kode-/rapportsamsvar, kildebeløp, fritekst, kreditnota og omvendt avgiftsplikt
+må prøves med faktisk kode før eventuell bruk. En utgiverbeskrivelse er ikke
+kompatibilitetsaksept. Videre arbeid skal fortsatt velge behandling ved vanlig
+registrering og bevare dokument-/betalingsflyten, fremfor etterfølgende manuelle
+rettingsbilag som hovedvei.

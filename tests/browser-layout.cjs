@@ -10,13 +10,25 @@ const {chromium}=require('playwright');
   const page=await browser.newPage();await page.goto(base+'/index.php');
   await page.locator('input[name=username]').fill('testadmin');await page.locator('input[name=password]').fill(process.env.TEST_ADMIN_PASSWORD);
   await page.locator('input[type=submit]').first().click();await page.waitForLoadState('networkidle');
-  const paths=['/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
+  await page.goto(base+'/societe/list.php');
+  const partyLink=await page.locator('a[href*="/societe/card.php?socid="]').first().getAttribute('href');
+  const partyId=partyLink&&partyLink.match(/[?&]socid=([0-9]+)/);if(!partyId)throw Error('Synthetic customer missing');
+  const paths=['/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
   for(const width of [1440,1024,768,390])for(const lang of ['nb_NO','en_US']){
    await page.setViewportSize({width,height:900});
    for(const path of paths){
     const response=await page.goto(base+path+(path.includes('?')?'&':'?')+'lang='+lang);
     if(response.status()!==200||await page.locator('input[name=username]').count())throw Error('Page unavailable: '+path);
     if(!await page.locator('link[href*="layout-0.5.0.css"]').count())throw Error('Module style missing');
+    if(path.includes('type=2')){
+     const row=page.locator('#norway-original-reference');
+     if(!await row.isVisible())throw Error('External original reference hidden');
+     if(width<=700){const overlap=await page.locator('.norway-invoice-create > tbody > tr').evaluateAll(rows=>rows.some(row=>{const box=row.getBoundingClientRect();return box.height>0&&[...row.querySelectorAll('td,input,textarea,.select2-container')].some(child=>child.getBoundingClientRect().height>0&&child.getBoundingClientRect().bottom>box.bottom+2);}));if(overlap)throw Error('Invoice creation fields overlap');}
+
+     const source=page.locator('select[name=fac_avoir]');
+     const options=await source.locator('option').evaluateAll(nodes=>nodes.map(n=>n.value).filter(v=>parseInt(v,10)>0));
+     if(options.length){await source.selectOption(options[0]);if(await row.isVisible())throw Error('External reference shown for an internal original');await source.selectOption('-1');if(!await row.isVisible())throw Error('External reference not restored');}
+    }
     if(path.includes('/wizard.php')){
      const overview=page.locator('.norway-setup-overview');
      if(await overview.locator('tr[data-setup-task]').count()!==18||await page.locator('.norway-wizard form').count())throw Error('Overview tasks/forms');

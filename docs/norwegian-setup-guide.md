@@ -167,6 +167,11 @@ Velg nummerserier i veilederens steg 7 og dokumentmodeller i kjernens faktura- o
 
 **Delvis levert:** fakturatrigger og PDF-tilpasninger dekker deler av dette. De garanterer ikke alle opplysninger på alle dokumentmodeller. Prøvde modeller er azur for tilbud og sponge for faktura. Fritekst oversettes ikke automatisk. Rett utstedte feil gjennom dokumentert kreditnota-/rettingsflyt, ikke sletting av historikk.
 
+Fra 0.78.0 får norsk AS/ASA registerteksten på standarddokumentene. Ved
+systembytte kan kreditnota vise til originalfakturanummer fra tidligere system,
+registrert på det vanlige fakturakortet. Bruk intern originalkobling når
+fakturaen allerede finnes her. Se [dokumentflyten](sales-documents.md#dokumentflyt-fra-0780).
+
 ## 8. Offentlige kunder og utenlandshandel
 
 **E-faktura til næringslivet:** Roadmapen omfatter også de nye kravene til

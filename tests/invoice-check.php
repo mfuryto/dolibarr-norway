@@ -48,3 +48,11 @@ $invoice->type = 2; $invoice->total_tva = -25;
 check(NorwayInvoiceValidation::missing($invoice,$seller,$customer,$source) === array(), 'Historical linked VAT credit blocked after deregistration');
 check(in_array('CreditSource', NorwayInvoiceValidation::missing($invoice,$seller,$customer), true), 'Credit without source accepted');
 print "PASS minimum invoice validation, unregistered VAT guard and historical linked credit exception\n";
+
+$invoice->fk_facture_source=0;$invoice->ref_ext='OLD-2025-0042';
+check(NorwayInvoiceCheck::evaluate($invoice,$seller,$customer)['CreditSource']==='Present','External original reference rejected');
+$invoice->fk_facture_source=31;
+check(NorwayInvoiceCheck::evaluate($invoice,$seller,$customer,$source)['CreditSource']==='Missing','External reference bypassed invalid internal source');
+$invoice->fk_facture_source=0;
+foreach(array('',"OLD\n42",'<b>OLD42</b>',str_repeat('x',256)) as $bad){$invoice->ref_ext=$bad;check(NorwayInvoiceCheck::evaluate($invoice,$seller,$customer)['CreditSource']==='Missing','Invalid external reference accepted');}
+print "PASS external original reference, internal source priority, invalid characters and bounded length\n";

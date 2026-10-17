@@ -19,6 +19,11 @@ $before = serialize($source);
 expectIdentity($hook->pdf_build_address($params, $object, $action, null) === 0, 'Core address replaced');
 expectIdentity($hook->resprints === 'Org.nr.: 123 456 785 MVA', 'Registered identity missing');
 expectIdentity(serialize($source) === $before, 'Company fields changed during rendering');
+foreach (array(173002,173003) as $form) {
+    $source->forme_juridique_code=$form;$hook->pdf_build_address($params,$object,$action,null);
+    expectIdentity($hook->resprints==="Org.nr.: 123 456 785 MVA\nForetaksregisteret",'AS/ASA register statement missing');
+}
+$source->forme_juridique_code=173001;
 $source->tva_assuj = 0;
 $hook->pdf_build_address($params, $object, $action, null);
 expectIdentity($hook->resprints === 'Org.nr.: 123 456 785', 'MVA shown when configured unregistered');

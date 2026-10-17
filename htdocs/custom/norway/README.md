@@ -1,6 +1,6 @@
-# Norway 0.77.0
+# Norway 0.78.0
 
-**Versjon 0.77.0 · Under utvikling**
+**Versjon 0.78.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -110,3 +110,10 @@ Kontoplanens manglende native balanse-/resultatgrupper fylles uten å endre egne
 valg eller posteringer; resultat og teknisk saldoovergang er prøvd. Hver
 nummerserie låses uavhengig etter bruk. Se [leveranseplanen](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/delivery-plan.md)
 for gjenstående dokument-/fradragsflyt, rapportering og årsavslutning/skatt.
+
+Fra **0.78.0** støtter dokumentflyten kreditnota for originalfaktura fra tidligere
+system med kjernens referansefelt. Norsk AS/ASA får «Foretaksregisteret» på
+faktura/tilbud. Norske/engelske standard-PDF-er, native leveringsopplysninger,
+bokføring, MVA-fortegn og refusjonsregistrering er prøvd. Kjøpsflyten med
+ingen/delvis fradrag er fortsatt under arbeid; etappe 3 er ikke ferdigstilt.
+Se [salgsdokumenter](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/sales-documents.md).
