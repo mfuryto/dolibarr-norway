@@ -33,6 +33,12 @@ class NorwayEhfTransport
         $base=$root.'/.norway-ehf-test';$path=$base.'/'.(int)$invoice->id;
         if (is_link($root) || is_link($base) || is_link($path) || dol_mkdir($path)<0 || !is_dir($path)
             || realpath(dirname($base))!==realpath($root) || realpath(dirname($path))!==realpath($base)) { throw new RuntimeException('NorwayEhfStorage'); }
+        foreach (array($path,$base,$root) as $folder) {
+            $handle=fopen($folder,'r');
+            if (!$handle) { throw new RuntimeException('NorwayEhfStorage'); }
+            try { if (!fsync($handle)) { throw new RuntimeException('NorwayEhfStorage'); } }
+            finally { fclose($handle); }
+        }
         return $path;
     }
 
@@ -121,7 +127,7 @@ class NorwayEhfTransport
                 $body=array('sender'=>$endpoint('AccountingSupplierParty'),'recipient'=>$endpoint('AccountingCustomerParty'),
                     'processType'=>'cenbii-procid-ubl::'.NorwayEhfXml::PROFILE,
                     'documentType'=>'busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:'.$type.'-2::'.$type.'##'.NorwayEhfXml::CUSTOMIZATION.'::2.1',
-                    'fileContent'=>base64_encode($xml));
+                    'fileName'=>$type==='CreditNote'?'creditnote.xml':'invoice.xml','fileContent'=>base64_encode($xml));
                 $attempt=bin2hex(random_bytes(12));$state=array('status'=>'pending','environment'=>'test','attempt'=>$attempt,'sha256'=>hash('sha256',$xml),'started'=>gmdate('c'),'sender'=>$body['sender'],'recipient'=>$body['recipient']);
                 $this->write($directory.'/norway-ehf-test-'.$attempt.'.xml',$xml);
                 // Persist before the HTTP call. A crash at any point from here must block automatic resending.

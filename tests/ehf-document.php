@@ -48,16 +48,17 @@ try{
    if((int)$invoice->type===2){eqAssert($xpath->evaluate('string(/*/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID)')===$result['expected_original_reference'],'Original invoice');}
    eqAssert($xpath->evaluate('string(/*/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name)')===$mysoc->name,'Escaped identity');
    file_put_contents($out.'/'.$scenario.'.xml',$xml);$result['generated']=true;
-   if($scenario==='ordinary'){
+   if(in_array($scenario,array('ordinary','credit'),true)){
     putenv('NORWAY_EHF_MODE=test');putenv('NORWAY_EHF_TEST_API_KEY=synthetic-not-a-real-key');
     $id='12345678-1234-1234-1234-123456789abc';$attemptDir=$conf->facture->dir_output.'/.norway-ehf-test/'.$invoice->id;
     foreach(array('accepted','unknown','rejected','malformed') as $outcome){
      if(is_dir($attemptDir)){dol_delete_dir_recursive($attemptDir);}$requests=0;
-     $fake=function($method,$path,$body) use(&$requests,$outcome,$id){
+     $fake=function($method,$path,$body) use(&$requests,$outcome,$id,$invoice){
       $requests++;
       if($method==='POST'){
        eqAssert($path==='/message' && $body['sender']==='0192:123456785' && $body['recipient']==='0192:123456785','Wire endpoints');
-       eqAssert(str_contains(base64_decode($body['fileContent']),'<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>'),'Exact wire document');
+       eqAssert(str_contains(base64_decode($body['fileContent']),(int)$invoice->type===2?'<cbc:CreditNoteTypeCode>381</cbc:CreditNoteTypeCode>':'<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>'),'Exact wire document');
+       eqAssert($body['fileName']===((int)$invoice->type===2?'creditnote.xml':'invoice.xml'),'Official client filename');
        return match($outcome){'accepted'=>array('http'=>200,'data'=>array('id'=>$id)),'rejected'=>array('http'=>422,'data'=>'Rejected'), 'malformed'=>array('http'=>200,'data'=>array('id'=>'bad')),default=>array('http'=>0,'data'=>null)};
       }
       return array('http'=>200,'data'=>array('id'=>$id,'sender'=>'0192:123456785','recipient'=>'0192:123456785','direction'=>'OUT','folder'=>'Sent','confirmed'=>false));

@@ -79,7 +79,9 @@ kontrolleres ved avtaleinngåelse; ingen modulavgift er ikke et løfte om gratis
 aksesspunktbruk for ethvert volum. Prosjektet er ikke avhengig av et betalt tillegg.
 
 [Testkonto](https://customer.test.peppyrus.be),
-[test-API-kontrakt](https://api.test.peppyrus.be/v1/openapi.json).
+[test-API-kontrakt](https://api.test.peppyrus.be/v1/openapi.json) og
+[leverandørens PHP-eksempel](https://github.com/tigron/peppyrus-api-php/blob/main/examples/message_post.php).
+Forespørselen inkluderer også `fileName` fra leverandørens klienteksempel.
 Testmiljø og produksjon har separate nøkler. Testkoden bruker bare den faste
 HTTPS-verten `api.test.peppyrus.be`, uten omdirigering eller produksjonsnøkkel.
 
@@ -107,7 +109,7 @@ Dokument og sendestatus lagres i den eksisterende dokumentlagringen under
 ikke nullstiller duplikatvernet. Dokumentlagringen inngår i ordinær backup.
 Ingen databasetabell eller skjemamigrering innføres.
 
-Forsøk lagres før HTTP-kallet og låses mot samtidige klikk. 401/422 behandles
+Forsøk lagres atomisk og synkroniseres til disk før HTTP-kallet og låses mot samtidige klikk. 401/422 behandles
 som avvist forespørsel. Tidsavbrudd, uleselig svar, 5xx eller svar uten meldings-ID
 blir ukjent resultat; omstart eller nytt klikk sender ikke på nytt. Avklar slike
 forsøk med aksesspunktet. Et HTTP-svar med meldings-ID betyr mottatt hos
