@@ -71,3 +71,31 @@ Dette er nødvendige kildeopplysninger for norsk rapportering, ikke en ferdig
 MVA-melding. Manuelle bilag har fortsatt ikke egne norske avgiftsfelt i kjernen.
 Rapporteringen må bruke faktisk bokført fradrag og kunne behandle disse bilagene
 før fullstendighet eller innsending kan godkjennes.
+
+## Innenlands salg uten beregnet MVA fra 0.70.0
+
+Aktivering og oppdatering gjør manglende **5/6/7** tilgjengelige som separate
+salgsrader med teknisk sats 0 i kjernens register. Dette er en append-only
+endring: eksisterende rader, deaktiveringer, kontovalg, standardvalg og
+historiske dokumenter beholdes. En eksisterende konflikt overskrives ikke.
+Gjenta aktivering oppretter ikke flere rader. Ingen kode velges automatisk
+på en faktura eller et produkt, og ingen MVA-konto fylles på nullradene.
+
+| Valg på fakturalinjen | Betydning | I det støttede uttrekket |
+| --- | --- | --- |
+| `0 (5)` | Innenlands fritak med nullsats | Grunnlag for kode 5, ingen avgift |
+| `0 (6)` | Omsetning utenfor MVA-loven | Grunnlag for kode 6, ingen avgift; ikke kalt nullsats |
+| `0 (7)` | Inntekt som ikke er MVA-omsetning | Vises separat; ikke meldingsgrunnlag |
+
+Velg riktig behandling i den vanlige MVA-listen på fakturalinjen. En
+ukodet `0` blir ikke tolket som 5, 6 eller 7. Behold riktig inntektskonto
+på varen/tjenesten eller i det native konto-oppsettet; MVA-koden er ikke
+en inntektskonto. Beskriv behandlingen i vanlig linjetekst/merknad og
+oppbevar relevant dokumentasjon ved dokumentet. Ingen ny begrunnelsesside
+eller bekreftelsesrunde innføres.
+
+Dette gjelder innenlandske fakturaer/kreditnotaer i NOK i det prøvde,
+MVA-registrerte oppsettet. Vilkårene for fritak/unntak og fradragsrett avgjøres
+ikke av kodevalget. Rene unntatte foretak, registreringsovergang, manuelle
+nullsatsbilag, kjøp uten MVA og utenlandskjøp/-salg er fortsatt ikke kvalifisert.
+Import/eksport skal ikke presses inn under de innenlandske kodene.

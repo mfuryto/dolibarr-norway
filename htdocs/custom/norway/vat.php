@@ -11,7 +11,7 @@ try{$report=NorwayVatReport::build($db,(int)$conf->entity,$start,$end,$user);}
 catch(Throwable $e){$error=strpos($e->getMessage(),'NorwayVatReport')===0?$e->getMessage():'NorwayVatReportDatabase';}
 if(GETPOST('format','aZ09')==='csv'){
     if(!$report || $report['issues']){http_response_code(409);$error=$error?:'NorwayVatReportIncomplete';}
-    else {header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="ordinary-vat-'.$start.'-'.$end.'.csv"');header('Cache-Control: no-store');print NorwayVatReport::csv($report);$db->close();exit;}
+    else {header('Content-Type: text/csv; charset=UTF-8');header('Content-Disposition: attachment; filename="norway-vat-'.$start.'-'.$end.'.csv"');header('Cache-Control: no-store');print NorwayVatReport::csv($report);$db->close();exit;}
 }
 $e=static fn($s)=>dol_escape_htmltag((string)$s);
 $money=static fn($n)=>$e(NorwayVatReport::money($n));
@@ -39,9 +39,9 @@ if($report){
         print '</ul>';
     } else {print '<p>'.$e($langs->trans('NorwayVatReportReconciled')).'</p>';}
     print '<div class="div-table-responsive"><table class="noborder centpercent"><tr class="liste_titre">';
-    foreach(array('NorwayManualVatCodeLabel','NorwayVatReportDirection','NorwayVatReportRate','NorwayManualVatBaseLabel','NorwayVatReportTax') as $key){print '<th>'.$e($langs->trans($key)).'</th>';}
+    foreach(array('NorwayManualVatCodeLabel','NorwayVatReportDirection','NorwayVatReportRate','NorwayVatReportBase','NorwayVatReportTax','NorwayVatReportUsage') as $key){print '<th>'.$e($langs->trans($key)).'</th>';}
     print '</tr>';
-    foreach($report['groups'] as $code=>$group){print '<tr class="oddeven"><td>'.$e($code).'</td><td>'.$e($langs->trans($group['type']===1?'NorwayManualVatOutput':'NorwayManualVatInput')).'</td><td>'.($group['type']===1?$e($group['rate']).'%':'').'</td><td>'.($group['base']===null?'':$money($group['base'])).'</td><td>'.$money($group['tax']).'</td></tr>';}
+    foreach($report['groups'] as $code=>$group){print '<tr class="oddeven"><td>'.$e($code).(in_array((string)$code,array('5','6','7'),true)?' · '.$e($langs->trans('NorwayVatCode'.$code)):'').'</td><td>'.$e($langs->trans($group['type']===1?'NorwayManualVatOutput':'NorwayManualVatInput')).'</td><td>'.($group['type']===1 && !in_array((string)$code,array('6','7'),true)?$e($group['rate']).'%':'').'</td><td>'.($group['base']===null?'':$money($group['base'])).'</td><td>'.$money($group['tax']).'</td><td>'.$e($langs->trans($group['reported']?'NorwayVatReportIncluded':'NorwayVatReportExcluded')).'</td></tr>';}
     print '</table></div>';
     if($report['net']!==null){
         print '<p><strong>'.$e($langs->trans('NorwayVatReportNet')).': '.$money($report['net']).' NOK</strong></p>';
@@ -50,8 +50,8 @@ if($report){
     print '<p>'.$e($langs->trans('NorwayVatReportOther',$report['other_lines'])).'</p>';
     if($report['entries']){
         print '<details><summary>'.$e($langs->trans('NorwayVatReportSources')).'</summary><div class="div-table-responsive"><table class="noborder centpercent"><tr class="liste_titre">';
-        foreach(array('NorwayVatReportSources','NorwayManualVatCodeLabel','NorwayManualVatBaseLabel','NorwayVatReportTax') as $key){print '<th>'.$e($langs->trans($key)).'</th>';}
-        print '</tr>';foreach($report['entries'] as $entry){print '<tr class="oddeven"><td>'.$e($langs->trans('NorwayVatReportSource'.($entry['source']==='ledger'?'Manual':($entry['source']==='customer_invoice'?'Sale':'Purchase')))).' '.$link($entry['source'],$entry['id'],$entry['piece']).'</td><td>'.$e($entry['code']).'</td><td>'.($entry['base']===null?'':$money($entry['base'])).'</td><td>'.$money($entry['tax']).'</td></tr>';}
+        foreach(array('NorwayVatReportSources','NorwayManualVatCodeLabel','NorwayVatReportBase','NorwayVatReportTax') as $key){print '<th>'.$e($langs->trans($key)).'</th>';}
+        print '</tr>';foreach($report['entries'] as $entry){print '<tr class="oddeven"><td>'.$e($langs->trans('NorwayVatReportSource'.($entry['source']==='ledger'?'Manual':($entry['source']==='customer_invoice'?'Sale':'Purchase')))).' '.$link($entry['source'],$entry['id'],$entry['piece']).'</td><td>'.$e($entry['code']).(!$entry['reported']?' · '.$e($langs->trans('NorwayVatReportExcluded')):'').'</td><td>'.($entry['base']===null?'':$money($entry['base'])).'</td><td>'.$money($entry['tax']).'</td></tr>';}
         print '</table></div></details>';
     }
 }

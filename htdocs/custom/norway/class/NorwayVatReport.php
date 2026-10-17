@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayManualVat.php';
-/** Read-only ordinary-code extract, reconciled to native vouchers, never a complete VAT return. */
+/** Read-only supported domestic-code extract, reconciled to native vouchers, never a complete VAT return. */
 class NorwayVatReport
 {
     public static function allowed($user)
@@ -46,7 +46,7 @@ class NorwayVatReport
     private static function entry(&$report,$source,$id,$piece,$code,$base,$tax,$spec)
     {
         $report['entries'][]=array('source'=>$source,'id'=>(int)$id,'piece'=>(int)$piece,'code'=>(string)$code,
-            'type'=>$spec['type'],'rate'=>$spec['rate'],'base'=>$spec['type']===1?self::cents($base):null,'tax'=>self::cents($tax));
+            'type'=>$spec['type'],'rate'=>$spec['rate'],'base'=>$spec['type']===1?self::cents($base):null,'tax'=>self::cents($tax),'reported'=>$spec['reported']??true);
     }
     public static function build($db,$entity,$start,$end,$user)
     {
@@ -67,8 +67,8 @@ class NorwayVatReport
         global $conf,$mysoc;
         $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null);
         if($conf->currency!=='NOK' || ($mysoc->country_code??'')!=='NO'){self::issue($report,'Setup','',0);}
-        $choices=NorwayManualVat::choices($db,$entity);$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
-        $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity) as $row){
+        $choices=NorwayManualVat::choices($db,$entity)+NorwayVatRates::zeroChoices($db,$entity);$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
+        $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux<>0') as $row){
             foreach(array($row->accountancy_code_sell,$row->accountancy_code_buy) as $account){if(trim((string)$account)!==''){$watch[$account]=true;}}
         }
         foreach(array('ACCOUNTING_VAT_SOLD_ACCOUNT','ACCOUNTING_VAT_BUY_ACCOUNT') as $name){$account=getDolGlobalString($name);if($account!==''){$watch[$account]=true;}}
@@ -115,10 +115,10 @@ class NorwayVatReport
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}
                     $base=self::amount($line->total_ht);$tax=self::amount($sale?$line->total_tva:$line->tva);
-                    if(abs(round(self::cents($base)*$spec['rate']/100)-self::cents($tax))>1 || ($tax!==0 && ($base===0 || (($base<0)!==($tax<0))))){self::issue($report,'Mismatch',$type,$id,$piece);}
+                    if((!empty($spec['zero']) && $tax!==0) || abs(round(self::cents($base)*$spec['rate']/100)-self::cents($tax))>1 || ($tax!==0 && ($base===0 || (($base<0)!==($tax<0))))){self::issue($report,'Mismatch',$type,$id,$piece);}
                     $sumBase=self::add($sumBase,$base);$sumTax=self::add($sumTax,$tax);
                     $groups[$code]['base']=self::add($groups[$code]['base']??0,$base);$groups[$code]['tax']=self::add($groups[$code]['tax']??0,$tax);
-                    $expected[$spec['account']]=self::add($expected[$spec['account']]??0,$tax);
+                    if(empty($spec['zero'])){$expected[$spec['account']]=self::add($expected[$spec['account']]??0,$tax);}
                 }
                 if(!$groups || self::cents($sumBase)!==self::cents(self::amount($h->total_ht)) || self::cents($sumTax)!==self::cents(self::amount($h->total_tva))){self::issue($report,'Mismatch',$type,$id,$piece);}
                 $counterpart=$sale?$h->accountancy_code_customer_general:$h->accountancy_code_supplier_general;
@@ -137,26 +137,26 @@ class NorwayVatReport
                     if(self::cents($expected[$account]??0)!==self::cents($actual[$account]??0)){self::issue($report,'Mismatch',$type,$id,$piece);}
                 }
                 // Rounding across codes sharing an account must still equal the actual booked amount.
-                $allocated=array();foreach($groups as $code=>$g){$account=$choices[$code]['account'];$allocated[$account]=self::add($allocated[$account]??0,self::cents($g['tax']));}
+                $allocated=array();foreach($groups as $code=>$g){if(!empty($choices[$code]['zero'])){continue;}$account=$choices[$code]['account'];$allocated[$account]=self::add($allocated[$account]??0,self::cents($g['tax']));}
                 foreach($allocated as $account=>$amount){if($amount!==self::cents($actual[$account]??0)){self::issue($report,'Mismatch',$type,$id,$piece);}}
                 if(count($report['issues'])!==$before){continue;}
                 foreach($groups as $code=>$g){self::entry($report,$type,$id,$piece,$code,$g['base'],$g['tax'],$choices[$code]);}
             }
         }
-        foreach($report['entries'] as $entry){$code=$entry['code'];if(!isset($report['groups'][$code])){$report['groups'][$code]=array('type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0);}
+        foreach($report['entries'] as $entry){$code=$entry['code'];if(!isset($report['groups'][$code])){$report['groups'][$code]=array('type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0,'reported'=>$entry['reported']);}
             $report['groups'][$code]['tax']=self::add($report['groups'][$code]['tax'],$entry['tax']);
             if($entry['base']!==null){$report['groups'][$code]['base']=self::add($report['groups'][$code]['base'],$entry['base']);}
         }
         ksort($report['groups'],SORT_NUMERIC);
-        if(!$report['issues']){$report['net']=0;foreach($report['groups'] as $group){$report['net']=self::add($report['net'],$group['type']===1?$group['tax']:-$group['tax']);}}
+        if(!$report['issues']){$report['net']=0;foreach($report['groups'] as $group){if(!$group['reported']){continue;}$report['net']=self::add($report['net'],$group['type']===1?$group['tax']:-$group['tax']);}}
         return $report;
     }
     public static function csv($report)
     {
         if($report['issues']){throw new RuntimeException('NorwayVatReportIncomplete');}
         $out=fopen('php://temp','w+');
-        fputcsv($out,array('period_start','period_end','source_type','source_id','piece_num','vat_code','direction','rate','output_base_nok','vat_nok'),';','"','');
-        foreach($report['entries'] as $e){fputcsv($out,array($report['start'],$report['end'],$e['source'],$e['id'],$e['piece'],$e['code'],$e['type']===1?'output':'input',$e['type']===1?$e['rate']:'',$e['base']===null?'':self::money($e['base']),self::money($e['tax'])),';','"','');}
+        fputcsv($out,array('period_start','period_end','source_type','source_id','piece_num','vat_code','direction','rate','output_base_nok','vat_nok','vat_return','excluded_base_nok'),';','"','');
+        foreach($report['entries'] as $e){fputcsv($out,array($report['start'],$report['end'],$e['source'],$e['id'],$e['piece'],$e['code'],$e['type']===1?'output':'input',$e['type']===1 && !in_array($e['code'],array('6','7'),true)?$e['rate']:'',$e['base']===null || !$e['reported']?'':self::money($e['base']),self::money($e['tax']),$e['reported']?'included':'excluded',$e['reported'] || $e['base']===null?'':self::money($e['base'])),';','"','');}
         rewind($out);$data=stream_get_contents($out);fclose($out);return $data;
     }
 }

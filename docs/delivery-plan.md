@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.69.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.70.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -61,10 +61,19 @@ Manglende kode, kilde-/beløpsavvik, ulik dato og manglende overføring vises
 ved kilden. Delsummer har ingen netto/CSV før avvik er avklart. Dette er én
 rapport ved den vanlige rapportoppgaven; ingen nye kontrollkopier eller databasetabeller.
 
-Neste arbeid er fritak/unntak og aktuelle nullsats-/utlandstilfeller, samt
-registreringsovergang og særposteringer som MVA-oppgjør. De ordinære kodene
-utgjør ikke alene en fullstendig norsk melding. Innsending og samlet faglig
-produksjonsaksept gjenstår. Kjernens journaler skal fortsatt brukes.
+0.70.0 gjenbruker satsregister/fakturalinjer for innenlandske 5/6/7, med
+append-only oppretting av manglende kodevalg ved aktivering/oppdatering.
+Native fakturaer/kreditnotaer, rene og blandede nullsatslinjer og varer/tjenester
+er prøvd. 5/6 vises som meldingsgrunnlag, 7 separat uten slikt grunnlag i CSV.
+En ukodet nullsats blir ikke gjettet til en behandling. Ingen ny meny, database-
+modell eller begrunnelsesside innføres. Faglig vilkårsvurdering er fortsatt
+brukerens oppgave i den vanlige dokumentflyten.
+
+Neste arbeid er aktuelle utenlandstilfeller og kjøp uten MVA, deretter
+registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
+rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
+Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og
+samlet faglig produksjonsaksept gjenstår. Kjernens journaler brukes fortsatt.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
 avtale eller installasjon. Norsk dokumentvalidering og faktisk transport

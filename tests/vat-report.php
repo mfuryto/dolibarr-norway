@@ -13,7 +13,7 @@ nrAssert($user->fetch('','testadmin')>0,'Admin missing');$mod=new modNorway($db)
 $p=$db->prefix();$entity=(int)$conf->entity;$run=bin2hex(random_bytes(4));$start='2038-02-01';$end='2038-02-28';
 $oldGlobals=clone $conf->global;$oldCompany=clone $mysoc;$oldRates=array();$oldSettings=array();$invoices=array('customer_invoice'=>array(),'supplier_invoice'=>array());$manualIds=array();$accountIds=array();$newAccounts=array();$journalIds=array();$partnerId=0;
 $settings=array('ACCOUNTANCY_FISCAL_PERIOD_MODE'=>'blockedonclosed','ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400','ACCOUNTING_PRODUCT_SOLD_ACCOUNT'=>'3000','ACCOUNTING_SERVICE_SOLD_ACCOUNT'=>'3000','ACCOUNTING_PRODUCT_BUY_ACCOUNT'=>'4000','ACCOUNTING_SERVICE_BUY_ACCOUNT'=>'4000','ACCOUNTING_VAT_SOLD_ACCOUNT'=>'2700','ACCOUNTING_VAT_BUY_ACCOUNT'=>'2710');
-$codes="'1','11','13','3','31','33'";$r=nrSql('SELECT * FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');while($row=$db->fetch_object($r)){$oldRates[]=(array)$row;}
+$codes="'1','11','13','3','31','33','5','6','7'";$r=nrSql('SELECT * FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');while($row=$db->fetch_object($r)){$oldRates[]=(array)$row;}
 foreach($settings as $name=>$v){$r=nrSql('SELECT * FROM '.$p."const WHERE entity=".$entity." AND name='".$name."'");while($row=$db->fetch_object($r)){$oldSettings[]=(array)$row;}}
 $cookie=tempnam(sys_get_temp_dir(),'norway-vat-report-');$curl=curl_init();curl_setopt_array($curl,array(CURLOPT_RETURNTRANSFER=>true,CURLOPT_COOKIEFILE=>$cookie,CURLOPT_COOKIEJAR=>$cookie,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_TIMEOUT=>30));
 function nrHttp($path,$post=null){global $curl;curl_setopt($curl,CURLOPT_URL,'http://localhost'.$path);curl_setopt($curl,CURLOPT_POST,$post!==null);if($post!==null){curl_setopt($curl,CURLOPT_POSTFIELDS,http_build_query($post));}$b=curl_exec($curl);nrAssert($b!==false,'HTTP failed');return $b;}
@@ -29,6 +29,7 @@ try {
  }
  nrSql('DELETE FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');
  foreach(NorwayVatRates::codes() as $s){$account=($s['type']===1?'270':'271').array(25=>'0',15=>'1',12=>'3')[$s['rate']];nrSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,localtax1,localtax2,active,accountancy_code_sell,accountancy_code_buy) VALUES (".$entity.",173,'".$s['code']."',".$s['type'].",".$s['rate'].",0,0,0,1,'".($s['type']===1?$account:'')."','".($s['type']===2?$account:'')."')");}
+ foreach(NorwayVatRates::zeroCodes() as $s){nrSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,localtax1,localtax2,active) VALUES (".$entity.",173,'".$s['code']."',1,0,0,0,0,1)");}
  foreach(array(2,3) as $nature){nrSql("INSERT INTO ".$p."accounting_journal (entity,code,label,nature,active) VALUES (".$entity.",'SYNVR".$nature.'-'.$run."','Synthetic report',".$nature.",1)");$journalIds[$nature]=(int)$db->last_insert_id($p.'accounting_journal');}
  $party=new Societe($db);$party->name='SYNTHETIC VAT REPORT ONLY '.$run;$party->client=1;$party->fournisseur=1;$party->code_client='SYNVRC-'.$run;$party->code_fournisseur='SYNVRL-'.$run;$party->code_compta='SYNVRC';$party->code_compta_fournisseur='SYNVRL';$party->country_id=173;$party->tva_assuj=1;$party->idprof1='123456785';nrAssert($party->create($user)>0,'Party create');$partnerId=(int)$party->id;
  foreach(array('customer_invoice','supplier_invoice') as $source){$sale=$source==='customer_invoice';foreach(array(0,1) as $productType){foreach(array(0,2) as $type){
@@ -40,13 +41,21 @@ try {
    $result=$sale?$o->addline('Synthetic goods/services',$net,1,$rate.' ('.$code.')',0,0,0,0,'','',$accountIds['3000'],0,0,'HT',0,$productType):$o->addline('Synthetic goods/services',$net,$rate.' ('.$code.')',0,0,1,0,0,0,0,$accountIds['4000'],0,'HT',$productType);
    nrAssert($result>0,'Line create: '.$o->error);
   }
+  if($sale){foreach(array('5','6','7') as $code){nrAssert($o->addline('Synthetic domestic treatment '.$code,$type===2?20.10:100.10,1,'0 ('.$code.')',0,0,0,0,'','',$accountIds['3000'],0,0,'HT',0,$productType)>0,'Native zero line');}}
   nrAssert($o->validate($user,$sale?'':'SYNVR-'.$run.'-'.$productType.'-'.$type)>0,'Validate: '.$o->error);nrAssert($o->fetch($o->id)>0,'Reload');
  }}}
+ // Pure zero-tax invoices have no VAT ledger line: all three classifications must still reconcile.
+ foreach(array(0,2) as $type){$o=new Facture($db);$o->socid=$partnerId;$o->date=dol_mktime(12,0,0,2,10,2038);$o->type=$type;$o->multicurrency_code='NOK';$o->multicurrency_tx=1;if($type===2){$o->fk_facture_source=end($invoices['customer_invoice'])->id;}
+  nrAssert($o->create($user)>0,'Pure zero invoice');$invoices['customer_invoice'][]=$o;
+  foreach(array('5','6','7') as $code){nrAssert($o->addline('Synthetic zero '.$code,$type===2?20:100,1,'0 ('.$code.')',0,0,0,0,'','',$accountIds['3000'])>0,'Pure zero line');}
+  nrAssert($o->validate($user)>0,'Pure zero validation: '.$o->error);nrAssert($o->fetch($o->id)>0,'Pure zero fetch');
+ }
  $private=nrHttp('/custom/norway/vat.php?date_start='.$start.'&date_end='.$end.'&format=csv');nrAssert(strpos($private,'name="username"')!==false && strpos($private,'period_start;')===false,'Anonymous CSV exposed');
  $body=nrHttp('/index.php');nrHttp('/index.php',array('token'=>nrToken($body),'actionlogin'=>'login','loginfunction'=>'loginfunction','username'=>'testadmin','password'=>getenv('DOLI_ADMIN_PASSWORD')));
  foreach(array(2=>'sellsjournal',3=>'purchasesjournal') as $nature=>$journal){$params=array('id_journal'=>$journalIds[$nature],'date_startday'=>1,'date_startmonth'=>2,'date_startyear'=>2038,'date_endday'=>28,'date_endmonth'=>2,'date_endyear'=>2038,'in_bookkeeping'=>'notyet');$path='/accountancy/journal/'.$journal.'.php?'.http_build_query($params);$body=nrHttp($path);nrHttp($path,$params+array('token'=>nrToken($body),'action'=>'writebookkeeping'));}
- $r=nrReport();nrAssert(!$r['issues'],'Native coded journal report unresolved: '.json_encode($r['issues']));nrAssert(count($r['entries'])===24 && count($r['groups'])===6,'Lost/duplicated grouped invoice codes');
+ $r=nrReport();nrAssert(!$r['issues'],'Native coded journal report unresolved: '.json_encode($r['issues']));nrAssert(count($r['entries'])===42 && count($r['groups'])===9,'Lost/duplicated grouped invoice codes');
  foreach(array('3'=>4000,'31'=>2400,'33'=>1920,'1'=>4000,'11'=>2400,'13'=>1920) as $code=>$tax){nrAssert($r['groups'][$code]['tax']===$tax,'Mixed/credit VAT amount');if(in_array((string)$code,array('3','31','33'),true)){nrAssert($r['groups'][$code]['base']===16000,'Output base amount');}else{nrAssert($r['groups'][$code]['base']===null,'Input base invented');}}
+ foreach(array('5','6','7') as $code){nrAssert($r['groups'][$code]['base']===24000 && $r['groups'][$code]['tax']===0 && $r['groups'][$code]['reported']===($code!=='7'),'Zero classification lost');}
  nrAssert($r['net']===0,'Balanced sale/purchase net');
  // Native separate manual correction reduces the real deductible VAT without rewriting its invoice.
  $piece=(new BookKeeping($db))->getNextNumMvt();foreach(array('2710'=>-12.5,'4000'=>12.5) as $account=>$amount){$o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=dol_mktime(12,0,0,2,28,2038);$o->doc_type='manual';$o->doc_ref='SYNTHETIC VAT CORRECTION '.$run;$o->fk_doc=0;$o->fk_docdet=0;$o->numero_compte=$account;$o->label_compte='Synthetic';$o->label_operation='Synthetic';$o->debit=max($amount,0);$o->credit=max(-$amount,0);$o->montant=abs($amount);$o->sens=$amount>0?'D':'C';$o->code_journal='SYNVR';$o->journal_label='Synthetic';$o->piece_num=$piece;nrAssert($o->createStd($user)>0,'Correction create');$manualIds[]=(int)$o->id;}
@@ -57,7 +66,10 @@ try {
  $outputPiece=(new BookKeeping($db))->getNextNumMvt();foreach(array('2701'=>-15,'3000'=>-100,'1920'=>115) as $account=>$amount){$o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=dol_mktime(12,0,0,2,1,2038);$o->doc_type='';$o->doc_ref='SYNTHETIC MANUAL OUTPUT '.$run;$o->fk_doc=0;$o->fk_docdet=0;$o->numero_compte=$account;$o->label_compte='Synthetic';$o->label_operation='Synthetic';$o->debit=max($amount,0);$o->credit=max(-$amount,0);$o->montant=abs($amount);$o->sens=$amount>0?'D':'C';$o->code_journal='SYNVR';$o->journal_label='Synthetic';$o->piece_num=$outputPiece;nrAssert($o->createStd($user)>0,'Manual output create');$manualIds[]=(int)$o->id;}
  $outputLine=NorwayManualVat::lines($db,$entity,$outputPiece,$user)[0];NorwayManualVat::save($db,$entity,$outputPiece,(int)$outputLine->rowid,'31','100',NorwayManualVat::editToken($outputLine),$user);
  $r=nrReport();nrAssert(!$r['issues'] && $r['net']===2750 && $r['groups']['31']['base']===26000 && $r['groups']['31']['tax']===3900,'Manual output base or VAT lost');
- $csv=NorwayVatReport::csv($r);nrAssert(substr_count($csv,"\n")===27 && strpos($csv,'ledger;'.(int)$line->rowid.';'.$piece.';1;input;;;-12.50')!==false,'CSV detail/sign/input fields');
+ $csv=NorwayVatReport::csv($r);nrAssert(substr_count($csv,"\n")===45 && strpos($csv,'ledger;'.(int)$line->rowid.';'.$piece.';1;input;;;-12.50')!==false,'CSV detail/sign/input fields');
+ $csvRows=array_map(fn($s)=>str_getcsv($s,';','"',''),explode("\n",trim($csv)));$outside=array_filter(array_slice($csvRows,1),fn($row)=>$row[5]==='7');nrAssert(count($outside)===6,'Code 7 CSV lost');
+ foreach($outside as $row){nrAssert($row[7]==='' && $row[8]==='' && $row[9]==='0.00' && $row[10]==='excluded' && $row[11]!=='','Code 7 became VAT return basis');}
+ echo "PASS domestic native zero codes 5/6/7, pure/mixed invoices and credits, no VAT ledger line required, code 7 separated in CSV\n";
  echo "PASS real native goods/services sales, purchases, mixed 25/15/12, credits, grouped ledger agreement and separate manual deduction correction\n";
  // No persistent snapshots: variants are transactional and report must neither write nor adopt stale source metadata.
  function nrSnapshot(){
@@ -80,6 +92,13 @@ try {
   'Unsupported'=>"UPDATE ".$p."societe SET fk_pays=1 WHERE rowid=".$partnerId,
  );
  foreach($variants as $reason=>$sql){$db->begin();try{nrSql($sql);$bad=nrReport();nrAssert(nrReason($bad,$reason) && $bad['net']===null,'Unresolved variant accepted: '.$reason);nrBlocked(fn()=>NorwayVatReport::csv($bad),'Unresolved CSV accepted: '.$reason);}finally{$db->rollback();}}
+ foreach(array(
+  array('Code',"UPDATE ".$p."c_tva SET type_vat=2 WHERE entity=".$entity." AND code='5'"),
+  array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='6'"),
+  array('Code',"INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,active) VALUES (".$entity.",173,'7',1,25,1)"),
+  array('Mismatch',"UPDATE ".$p."facturedet SET total_tva=0.00001 WHERE vat_src_code='5' AND fk_facture=".(int)$invoices['customer_invoice'][0]->id),
+  array('Code',"UPDATE ".$p."facturedet SET tva_tx=25 WHERE vat_src_code='6' AND fk_facture=".(int)$invoices['customer_invoice'][0]->id),
+ ) as $case){$db->begin();try{nrSql($case[1]);$bad=nrReport();nrAssert(nrReason($bad,$case[0]) && $bad['net']===null,'Invalid zero treatment accepted');nrBlocked(fn()=>NorwayVatReport::csv($bad),'Invalid zero CSV accepted');}finally{$db->rollback();}}
  // Altered source net/gross cannot pass merely by preserving its old tax amount.
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql('UPDATE '.$p.'facture SET total_ht=total_ht+100,total_ttc=total_ttc+100 WHERE rowid='.$id);nrSql('UPDATE '.$p.'facturedet SET total_ht=total_ht+100 WHERE fk_facture='.$id.' ORDER BY rowid LIMIT 1');nrAssert(nrReason(nrReport(),'Mismatch'),'Source base drift accepted');}finally{$db->rollback();}
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql("UPDATE ".$p."facturedet SET total_ht=total_ht+CASE WHEN vat_src_code='3' THEN 10 WHEN vat_src_code='31' THEN -10 ELSE 0 END WHERE fk_facture=".$id);nrAssert(nrReason(nrReport(),'Mismatch'),'Redistributed base with unchanged tax/header accepted');}finally{$db->rollback();}
@@ -91,7 +110,7 @@ try {
  $reader=new class{public $id=987654;public $socid=0;public function hasRight(...$a){return $a[1]==='mouvements';}};nrBlocked(fn()=>NorwayVatReport::build($db,$entity,$start,$end,$reader),'Report permission not required');
  nrAssert(nrSnapshot()===$snapshot,'Report/variants changed original financial data or metadata');
  $path='/custom/norway/vat.php?date_start='.$start.'&date_end='.$end;
- foreach(array('nb_NO'=>'MVA-uttrekk (ordinære koder)','en_US'=>'VAT extract (ordinary codes)') as $lang=>$title){$body=nrHttp($path.'&lang='.$lang);nrAssert(strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)!==false && strpos($body,'format=csv')!==false,'Report HTTP/translation missing');}
+ foreach(array('nb_NO'=>'MVA-uttrekk (støttede koder)','en_US'=>'VAT extract (supported codes)') as $lang=>$title){$body=nrHttp($path.'&lang='.$lang);nrAssert(strpos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),$title)!==false && strpos($body,'format=csv')!==false,'Report HTTP/translation missing');}
  $download=nrHttp($path.'&format=csv');nrAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===200 && $download===$csv,'HTTP CSV differs');
  nrAssert(nrSnapshot()===$snapshot,'HTTP report/export changed financial data');
  nrSql("UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC EDITED' WHERE rowid=".(int)$line->rowid);

@@ -78,6 +78,13 @@ if(getenv('NORWAY_CREATE_SENTINEL')==='1') {
 $r=$db->query('SELECT * FROM '.$db->prefix().'norway_manual_vat WHERE entity='.(int)$conf->entity.' AND fk_bookkeeping=2147483000');$marker=$r?$db->fetch_object($r):null;
 if(!$marker || $marker->tax_code!=='1' || $marker->tax_base!=='0.00000000' || $marker->source_hash!==$manualHash || $marker->updated_at!=='2026-01-01 00:00:00' || (int)$marker->fk_user!==1){throw new RuntimeException('Manual VAT fields lost through update/restore');}
 print "PASS manual VAT storage preserved through update/restore\n";
+$zeroRows=array();$r=$db->query('SELECT * FROM '.$db->prefix()."c_tva WHERE entity=".(int)$conf->entity." AND fk_pays=173 AND code IN ('5','6','7') ORDER BY code");
+while($r && $row=$db->fetch_object($r)){$zeroRows[]=(array)$row;}
+if(count($zeroRows)!==3){throw new RuntimeException('Missing synthetic zero choices');}
+$zeroMarker='/var/www/documents/norway-zero-code-marker.json';$zeroJson=json_encode($zeroRows,JSON_THROW_ON_ERROR);
+if(getenv('NORWAY_CREATE_SENTINEL')==='1'){if(file_put_contents($zeroMarker,$zeroJson)===false){throw new RuntimeException('Zero marker write');}}
+elseif(file_get_contents($zeroMarker)!==$zeroJson){throw new RuntimeException('Native zero choices changed through update/restore');}
+print "PASS native zero-code rows/IDs preserved through update/restore\n";
 $result = $db->query("SELECT label,active FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='SYN-BACKUP' AND account_number='8891'");
 $account = $result ? $db->fetch_object($result) : false;
 if (!$account || $account->label !== 'Synthetic imported backup account' || (int) $account->active !== 1) {
