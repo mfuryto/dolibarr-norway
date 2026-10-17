@@ -64,4 +64,8 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/manual-vat.php
 "${compose[@]}" exec -T web php /opt/norway-tests/vat-report.php
 "${compose[@]}" exec -T web php /opt/norway-tests/purchase-deduction.php
+# Earlier CLI fixtures create native document folders as root. Restore the image
+# ownership contract, then run the full period with the actual application user.
+"${compose[@]}" exec -T web chown -R www-data:www-data /var/www/documents
+"${compose[@]}" exec -T --user www-data web php /opt/norway-tests/period-cycle.php
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-cleanup.php

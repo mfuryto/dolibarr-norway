@@ -168,44 +168,43 @@ try {
  nrAssert(NorwayVatReport::cents(NorwayVatReport::amount('0.00499999'))===0 && NorwayVatReport::cents(NorwayVatReport::amount('0.005'))===1 && NorwayVatReport::cents(NorwayVatReport::amount('-0.005'))===-1,'Exact half-ore arithmetic');
  nrBlocked(fn()=>NorwayVatReport::amount('99999999999'),'Amount overflow accepted');
  $variants=array(
-  'Changed'=>"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC EDITED' WHERE rowid=".(int)$line->rowid,
-  'Code'=>"UPDATE ".$p."facturedet SET vat_src_code='' WHERE fk_facture=".(int)$invoices['customer_invoice'][0]->id,
-  'Mismatch'=>"UPDATE ".$p."accounting_bookkeeping SET credit=credit+1 WHERE doc_type='customer_invoice' AND fk_doc=".(int)$invoices['customer_invoice'][0]->id." AND numero_compte='2700'",
-  'Date'=>"UPDATE ".$p."accounting_bookkeeping SET doc_date='2038-03-01' WHERE doc_type='supplier_invoice' AND fk_doc=".(int)$invoices['supplier_invoice'][0]->id." AND numero_compte='2710'",
-  'NotPosted'=>'DELETE FROM '.$p."accounting_bookkeeping WHERE doc_type='customer_invoice' AND fk_doc=".(int)$invoices['customer_invoice'][0]->id,
-  'Unsupported'=>"UPDATE ".$p."societe SET fk_pays=1 WHERE rowid=".$partnerId,
+  array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC EDITED' WHERE rowid=".(int)$line->rowid),
+  array('Mismatch',"UPDATE ".$p."facturedet SET vat_src_code='' WHERE fk_facture=".(int)$invoices['customer_invoice'][0]->id),
+  array('Mismatch',"UPDATE ".$p."accounting_bookkeeping SET credit=credit+1 WHERE doc_type='customer_invoice' AND fk_doc=".(int)$invoices['customer_invoice'][0]->id." AND numero_compte='2700'"),
+  array('Date',"UPDATE ".$p."accounting_bookkeeping SET doc_date='2038-03-01' WHERE doc_type='supplier_invoice' AND fk_doc=".(int)$invoices['supplier_invoice'][0]->id." AND numero_compte='2710'"),
+  array('NotPosted','DELETE FROM '.$p."accounting_bookkeeping WHERE doc_type='customer_invoice' AND fk_doc=".(int)$invoices['customer_invoice'][0]->id),
  );
- foreach($variants as $reason=>$sql){$db->begin();try{nrSql($sql);$bad=nrReport();nrAssert(nrReason($bad,$reason) && $bad['net']===null,'Unresolved variant accepted: '.$reason);nrBlocked(fn()=>NorwayVatReport::csv($bad),'Unresolved CSV accepted: '.$reason);}finally{$db->rollback();}}
+ foreach($variants as [$reason,$sql]){$db->begin();try{nrSql($sql);$bad=nrReport();nrAssert(nrReason($bad,$reason) && $bad['net']===null,'Unresolved variant accepted: '.$reason);nrBlocked(fn()=>NorwayVatReport::csv($bad),'Unresolved CSV accepted: '.$reason);}finally{$db->rollback();}}
  foreach(array(
   array('Mismatch',"UPDATE ".$p."facture_fourn_det SET vat_src_code='87' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC CHANGED' WHERE rowid=".$manual87[0]),
   array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC CHANGED' WHERE rowid=".$manual86[0]),
-  array('MissingCode',"UPDATE ".$p."accounting_account SET active=0 WHERE entity=".$entity." AND rowid=".$accountIds['2714']),
-  array('MissingCode',"UPDATE ".$p."accounting_account SET active=0 WHERE entity=".$entity." AND rowid=".$accountIds['2704']),
-  array('Unsupported',"UPDATE ".$p."facture_fourn SET vat_reverse_charge=0 WHERE rowid=".(int)$reverseInvoices[0]->id),
-  array('Unsupported',"UPDATE ".$p."facture_fourn_det SET product_type=0 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
-  array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='86'"),
-  array('Code',"UPDATE ".$p."facture_fourn_det SET vat_src_code='' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facture_fourn SET vat_reverse_charge=0 WHERE rowid=".(int)$reverseInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facture_fourn_det SET product_type=0 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facture_fourn_det SET vat_src_code='' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Mismatch',"UPDATE ".$p."facture_fourn_det SET tva=0.00001 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Mismatch',"UPDATE ".$p."accounting_bookkeeping SET debit=debit-1 WHERE entity=".$entity." AND doc_type='supplier_invoice' AND fk_doc=".(int)$reverseInvoices[0]->id." AND numero_compte='2714'"),
-  array('Unsupported',"UPDATE ".$p."societe SET fk_pays=173 WHERE rowid=".$foreignParties[0]),
   array('Unsupported',"UPDATE ".$p."societe SET fk_pays=NULL WHERE rowid=".$foreignParties[0]),
-  array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='52'"),
-  array('Code',"UPDATE ".$p."c_tva SET type_vat=2 WHERE entity=".$entity." AND code='52'"),
   array('Mismatch',"UPDATE ".$p."facturedet SET total_tva=0.00001 WHERE vat_src_code='52' AND fk_facture=".(int)$exportInvoices[0]->id),
-  array('Code',"UPDATE ".$p."facturedet SET vat_src_code='' WHERE fk_facture=".(int)$exportInvoices[0]->id),
-  array('Unsupported',"UPDATE ".$p."facturedet SET vat_src_code='5' WHERE fk_facture=".(int)$exportInvoices[0]->id),
-  array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='NO0'"),
-  array('Code',"UPDATE ".$p."c_tva SET type_vat=1 WHERE entity=".$entity." AND code='NO0'"),
-  array('Code',"UPDATE ".$p."facture_fourn_det SET vat_src_code='' WHERE vat_src_code='NO0' AND fk_facture_fourn=".(int)$invoices['supplier_invoice'][0]->id),
+  array('Mismatch',"UPDATE ".$p."facturedet SET vat_src_code='' WHERE fk_facture=".(int)$exportInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facturedet SET vat_src_code='5' WHERE fk_facture=".(int)$exportInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facture_fourn_det SET vat_src_code='' WHERE vat_src_code='NO0' AND fk_facture_fourn=".(int)$invoices['supplier_invoice'][0]->id),
   array('Mismatch',"UPDATE ".$p."facture_fourn_det SET tva=0.00001 WHERE vat_src_code='NO0' AND fk_facture_fourn=".(int)$invoices['supplier_invoice'][0]->id),
-  array('Code',"UPDATE ".$p."c_tva SET type_vat=2 WHERE entity=".$entity." AND code='5'"),
-  array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='6'"),
-  array('Code',"INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,active) VALUES (".$entity.",173,'7',1,25,1)"),
   array('Mismatch',"UPDATE ".$p."facturedet SET total_tva=0.00001 WHERE vat_src_code='5' AND fk_facture=".(int)$invoices['customer_invoice'][0]->id),
-  array('Code',"UPDATE ".$p."facturedet SET tva_tx=25 WHERE vat_src_code='6' AND fk_facture=".(int)$invoices['customer_invoice'][0]->id),
- ) as $case){$db->begin();try{nrSql($case[1]);$bad=nrReport();nrAssert(nrReason($bad,$case[0]) && $bad['net']===null,'Invalid zero treatment accepted');nrBlocked(fn()=>NorwayVatReport::csv($bad),'Invalid zero CSV accepted');}finally{$db->rollback();}}
- $registered=$mysoc->tva_assuj;try{$mysoc->tva_assuj=0;$bad=nrReport();nrAssert(nrReason($bad,'Unsupported') && $bad['net']===null,'Unregistered company accepted ordinary reverse-charge return');}finally{$mysoc->tva_assuj=$registered;}
+  array('Mismatch',"UPDATE ".$p."facturedet SET tva_tx=25 WHERE vat_src_code='6' AND fk_facture=".(int)$invoices['customer_invoice'][0]->id),
+ ) as $case){$db->begin();try{nrSql($case[1]);$bad=nrReport();nrAssert(nrReason($bad,$case[0]) && $bad['net']===null,'Invalid zero treatment accepted: '.json_encode($case).': '.json_encode($bad['issues']));nrBlocked(fn()=>NorwayVatReport::csv($bad),'Invalid zero CSV accepted');}finally{$db->rollback();}}
+ $registered=$mysoc->tva_assuj;try{$mysoc->tva_assuj=0;$past=nrReport();nrAssert(!$past['issues'] && $past['net']===9750,'Current registration changed historical VAT');}finally{$mysoc->tva_assuj=$registered;}
+ // Legitimate setup changes cannot reinterpret already posted codes, accounts or counterpart roles.
+ $historical=nrReport();
+ foreach(array(
+  "UPDATE ".$p."c_tva SET active=0,accountancy_code_sell='9991',accountancy_code_buy='9992',taux=taux+0.01 WHERE entity=".$entity,
+  'DELETE FROM '.$p.'c_tva WHERE entity='.$entity,
+  'UPDATE '.$p.'accounting_account SET active=0 WHERE entity='.$entity,
+  "UPDATE ".$p."societe SET fk_pays=1,accountancy_code_customer_general='9993',accountancy_code_supplier_general='9994' WHERE entity=".$entity,
+ ) as $change){$db->begin();try{nrSql($change);$past=nrReport();nrAssert($past===$historical,'Setup change altered historical extract: '.$change);}finally{$db->rollback();}}
+ echo "PASS historical VAT independent of active/deleted/changed rates, account mappings, chart activity, party country and current registration; posted tax and counterpart roles retained\n";
+ // Old native postings remain readable without new roles; never fill them from today's dictionary.
+ $db->begin();try{nrSql("UPDATE ".$p."accounting_bookkeeping SET extraparams=NULL WHERE entity=$entity AND doc_date>='$start' AND doc_date<='$end 23:59:59'");nrSql('DELETE FROM '.$p.'c_tva WHERE entity='.$entity);$legacy=nrReport();nrAssert(!$legacy['issues'] && $legacy['groups']===$historical['groups'] && $legacy['net']===$historical['net'],'Legacy native labels/accounts depended on current dictionary');}finally{$db->rollback();}
  // Altered source net/gross cannot pass merely by preserving its old tax amount.
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql('UPDATE '.$p.'facture SET total_ht=total_ht+100,total_ttc=total_ttc+100 WHERE rowid='.$id);nrSql('UPDATE '.$p.'facturedet SET total_ht=total_ht+100 WHERE fk_facture='.$id.' ORDER BY rowid LIMIT 1');nrAssert(nrReason(nrReport(),'Mismatch'),'Source base drift accepted');}finally{$db->rollback();}
  $db->begin();try{$id=(int)$invoices['customer_invoice'][0]->id;nrSql("UPDATE ".$p."facturedet SET total_ht=total_ht+CASE WHEN vat_src_code='3' THEN 10 WHEN vat_src_code='31' THEN -10 ELSE 0 END WHERE fk_facture=".$id);nrAssert(nrReason(nrReport(),'Mismatch'),'Redistributed base with unchanged tax/header accepted');}finally{$db->rollback();}

@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayManualVat.php';
 require_once __DIR__.'/NorwayPurchaseVat.php';
-/** Read-only supported-code extract, reconciled to native vouchers, never a complete VAT return. */
+require_once __DIR__.'/NorwayVatLedger.php';
+require_once __DIR__.'/NorwayVatPeriod.php';
+/** Read-only supported-code basis for portal filing, reconciled to native vouchers. */
 class NorwayVatReport
 {
     public static function allowed($user)
@@ -70,33 +72,39 @@ class NorwayVatReport
     private static function read($db,$entity,$start,$end)
     {
         global $conf,$mysoc;
-        $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null);
+        $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null,'tax_accounts'=>array(),'settled'=>0);
         if($conf->currency!=='NOK' || ($mysoc->country_code??'')!=='NO'){self::issue($report,'Setup','',0);}
-        $manualChoices=NorwayManualVat::choices($db,$entity);
-        $choices=$manualChoices;unset($choices['86'],$choices['87']); // Manual deduction metadata must never substitute an inactive invoice rate.
-        $choices=NorwayVatRates::zeroChoices($db,$entity)+$choices;$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
-        foreach($manualChoices as $code=>$spec){if(!empty($spec['manual_only'])){$specs[$code]=$spec;}}
-        $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux<>0') as $row){
-            foreach(array($row->accountancy_code_sell,$row->accountancy_code_buy) as $account){if(trim((string)$account)!==''){$watch[$account]=true;}}
-        }
-        foreach(array('ACCOUNTING_VAT_SOLD_ACCOUNT','ACCOUNTING_VAT_BUY_ACCOUNT') as $name){$account=getDolGlobalString($name);if($account!==''){$watch[$account]=true;}}
+        $specs=NorwayVatLedger::specs();$choices=$specs;
+        $manualSpecs=$specs;
+        $manualSpecs['86']=array('code'=>'86','rate'=>25,'type'=>2,'manual_only'=>true);
+        $manualSpecs['87']=array('code'=>'87','rate'=>25,'type'=>1,'manual_only'=>true);
+        $watch=array();foreach(self::rows($db,'SELECT DISTINCT b.numero_compte FROM '.$p.'norway_manual_vat v JOIN '.$p.'accounting_bookkeeping b ON b.entity=v.entity AND b.rowid=v.fk_bookkeeping WHERE v.entity='.$entity) as $row){$watch[$row->numero_compte]=true;}
         $ledger=self::rows($db,'SELECT b.*,v.tax_code,v.tax_base,v.source_hash FROM '.$p.'accounting_bookkeeping b LEFT JOIN '.$p.'norway_manual_vat v ON v.entity=b.entity AND v.fk_bookkeeping=b.rowid WHERE b.entity='.$entity." AND b.doc_date>='".$start." 00:00:00' AND b.doc_date<='".$end." 23:59:59' ORDER BY b.rowid");
-        $documents=array();$balances=array();
+        $documents=array();$balances=array();$settlements=array();
+        foreach($ledger as $b){$role=NorwayVatLedger::role($b);if(($role['kind']??'')==='tax'){$watch[$b->numero_compte]=true;}}
+        foreach($ledger as $b){if($b->doc_type==='vat_settlement'){$settlements[(int)$b->piece_num][]=$b;}}
+        foreach($settlements as $piece=>$lines){if(count(self::rows($db,'SELECT rowid FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity.' AND piece_num='.(int)$piece))!==count($lines) || !NorwayVatPeriod::settlement($lines,$watch)){self::issue($report,'Mismatch','ledger',0,$piece);}}
         foreach($ledger as $line){
             $debit=self::amount($line->debit);$credit=self::amount($line->credit);
             $piece=(int)$line->piece_num;$balances[$piece]=self::add($balances[$piece]??0,$debit-$credit);
+            if($line->doc_type==='vat_settlement'){
+                if($line->numero_compte==='2740'){$report['settled']=self::add($report['settled'],$debit-$credit);}
+                elseif($line->numero_compte!=='7740'){$report['tax_accounts'][$line->numero_compte]=self::add($report['tax_accounts'][$line->numero_compte]??0,$debit-$credit);}
+                continue;
+            }
             $taxAccount=isset($watch[$line->numero_compte]) || preg_match('/^27[01][0-9]$/D',$line->numero_compte)===1;
             if(in_array($line->doc_type,array('customer_invoice','supplier_invoice'),true) && (int)$line->fk_doc>0){
                 $documents[$line->doc_type][(int)$line->fk_doc][]=$line;continue;
             }
             if(!$taxAccount && empty($line->tax_code)){$report['other_lines']++;continue;}
-            $spec=$specs[$line->tax_code??'']??null;
+            $spec=$manualSpecs[$line->tax_code??'']??null;
             if(!in_array((string)$line->doc_type,array('','manual'),true) || (int)$line->fk_doc!==0 || (int)$line->fk_docdet!==0){self::issue($report,'Unsupported','ledger',(int)$line->rowid,$piece);continue;}
-            if(!$spec || (!empty($spec['manual_only']) && $line->numero_compte!==$spec['account'])){self::issue($report,'MissingCode','ledger',(int)$line->rowid,$piece);continue;}
+            if(!$spec){self::issue($report,'MissingCode','ledger',(int)$line->rowid,$piece);continue;}
             if(!NorwayManualVat::current($line)){self::issue($report,'Changed','ledger',(int)$line->rowid,$piece);continue;}
             if(($debit!==0 && $credit!==0) || ($debit===0 && $credit===0)){self::issue($report,'Mismatch','ledger',(int)$line->rowid,$piece);continue;}
             $tax=$spec['type']===1?$credit-$debit:$debit-$credit;$base=self::amount($line->tax_base);
             if(($spec['type']===2 && $base!==0) || ($spec['type']===1 && ($base*$tax<=0 || abs(round(self::cents($base)*$spec['rate']/100)-self::cents($tax))>1))){self::issue($report,'Mismatch','ledger',(int)$line->rowid,$piece);continue;}
+            $report['tax_accounts'][$line->numero_compte]=self::add($report['tax_accounts'][$line->numero_compte]??0,$debit-$credit);
             self::entry($report,'ledger',(int)$line->rowid,$piece,$line->tax_code,$base,$tax,$spec);
         }
         foreach($balances as $piece=>$balance){if(self::cents($balance)!==0){self::issue($report,'Balance','ledger',0,$piece);}}
@@ -109,9 +117,11 @@ class NorwayVatReport
             }
             foreach($docs as $id=>$posted){
                 $piece=(int)$posted[0]->piece_num;$before=count($report['issues']);
+                try{$binding=NorwayVatLedger::bindings($posted,$specs,$db,$entity);}catch(Throwable $error){self::issue($report,'Mismatch',$type,$id,$piece);continue;}
+                $choices=$specs;foreach($choices as $code=>&$s){if(!empty($s['reverse_rate'])){$s['reverse_credit']=$binding['accounts'][$code.'/1']??null;$s['reverse_debit']=$binding['accounts'][$code.'/2']??null;}elseif(empty($s['zero'])){$s['account']=$binding['accounts'][$code.'/'.$s['type']]??null;}}unset($s);
                 $headers=self::rows($db,'SELECT f.*,s.accountancy_code_customer_general,s.accountancy_code_supplier_general,c.code AS country_code FROM '.$p.$header.' f LEFT JOIN '.$p.'societe s ON s.rowid=f.fk_soc AND s.entity='.$entity.' LEFT JOIN '.$p.'c_country c ON c.rowid=s.fk_pays WHERE f.entity='.$entity.' AND f.rowid='.$id);
                 $h=$headers[0]??null;
-                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || !preg_match('/^[A-Z]{2}$/D',(string)$h->country_code) || (!$sale && $h->country_code!=='NO' && (int)($h->vat_reverse_charge??0)!==1)
+                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || !$h->country_code
                     || !in_array((string)$h->multicurrency_code,array('','NOK'),true)) {self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                 $all=self::rows($db,'SELECT * FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity." AND doc_type='".$type."' AND fk_doc=".$id);
                 if(count($all)!==count($posted)){self::issue($report,'Date',$type,$id,$piece);}
@@ -120,8 +130,9 @@ class NorwayVatReport
                 $lineSql=$sale?'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid':'SELECT d.*,e.norway_vat_deduction FROM '.$p.$lines.' d LEFT JOIN '.$p.'facture_fourn_det_extrafields e ON e.fk_object=d.rowid WHERE d.'.$fk.'='.$id.' ORDER BY d.rowid';
                 foreach(self::rows($db,$lineSql) as $line){
                     $code=(string)$line->vat_src_code;$spec=$choices[$code]??null;
-                    if($spec && (!empty($spec['manual_only']) || ((!empty($spec['export']) || !empty($spec['reverse_rate']))!==($h->country_code!=='NO')
-                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1))))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
+                    if($spec && !empty($spec['reverse_rate']) && ($sale || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1)){
+                        self::issue($report,'Unsupported',$type,$id,$piece);continue;
+                    }
                     if(!$spec || $spec['type']!==($sale?1:2) || (float)$line->tva_tx!==(float)$spec['rate'] || (int)$line->info_bits!==0
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}
@@ -134,25 +145,27 @@ class NorwayVatReport
                         catch(Throwable $error){self::issue($report,'Code',$type,$id,$piece);continue;}
                         if(empty($spec['zero']) && $percent!==10000){$deducted=NorwayPurchaseVat::deductionAmount($tax,$percent);}
                         if(empty($spec['zero']) && $percent===0){$code='NO0';$spec=$choices['NO0']??null;if(!$spec){self::issue($report,'Code',$type,$id,$piece);continue;}}
-                        if(!empty($spec['reverse_rate']) && $percent===0){$code='87';$spec=$choices['87']??null;if(!$spec){self::issue($report,'Code',$type,$id,$piece);continue;}}
+                        if(!empty($spec['reverse_rate']) && $percent===0){$code='87';$spec=array_replace($spec,array('code'=>'87','no_deduction'=>true));if(!$spec){self::issue($report,'Code',$type,$id,$piece);continue;}}
                     }
                     $groups[$code]['base']=self::add($groups[$code]['base']??0,(!$sale && $sourceCode!==$code && $code==='NO0')?self::add($base,$tax):$base);$groups[$code]['tax']=self::add($groups[$code]['tax']??0,$sale?$tax:$deducted);
                     if(!empty($spec['reverse_rate'])){
+                        if(!$spec['reverse_credit'] || (!$spec['reverse_debit'] && $percent>0)){self::issue($report,'Mismatch',$type,$id,$piece);continue;}
                         $reverse=self::reverseTax($base);$groups[$code]['reverse_tax']=self::add($groups[$code]['reverse_tax']??0,$reverse);
                         $expected[$spec['reverse_credit']]=self::add($expected[$spec['reverse_credit']]??0,-$reverse);
                         $recoverable=NorwayPurchaseVat::deductionAmount($reverse,$percent);
                         $groups[$code]['reverse_deduction']=self::add($groups[$code]['reverse_deduction']??0,$recoverable);
+                        if(!$spec['reverse_debit']){$spec['reverse_debit']='2714';}
                         $expected[$spec['reverse_debit']]=self::add($expected[$spec['reverse_debit']]??0,$recoverable);
                     }
+                    if(empty($spec['zero']) && !$spec['account']){self::issue($report,'Mismatch',$type,$id,$piece);continue;}
                     if(empty($spec['zero'])){$expected[$spec['account']]=self::add($expected[$spec['account']]??0,$sale?$tax:$deducted);}
                 }
                 if(!$groups || self::cents($sumBase)!==self::cents(self::amount($h->total_ht)) || self::cents($sumTax)!==self::cents(self::amount($h->total_tva))){self::issue($report,'Mismatch',$type,$id,$piece);}
-                $counterpart=$sale?$h->accountancy_code_customer_general:$h->accountancy_code_supplier_general;
-                if(!$counterpart || $counterpart==='-1'){$counterpart=getDolGlobalString($sale?'ACCOUNTING_ACCOUNT_CUSTOMER':'ACCOUNTING_ACCOUNT_SUPPLIER');}
+                $counterpart=$binding['counterpart'];
                 $gross=0;
                 $actual=array();foreach($posted as $b){
                     if($b->numero_compte===$counterpart){$gross=self::add($gross,$sale?self::amount($b->debit)-self::amount($b->credit):self::amount($b->credit)-self::amount($b->debit));}
-                    if(isset($expected[$b->numero_compte]) || isset($watch[$b->numero_compte]) || preg_match('/^27[01][0-9]$/D',$b->numero_compte)){
+                    if(isset($expected[$b->numero_compte]) || (NorwayVatLedger::role($b)['kind']??'')==='tax' || preg_match('/^27[01][0-9]$/D',$b->numero_compte)){
                         $amount=self::amount($b->credit)-self::amount($b->debit);if(!$sale){$amount=-$amount;}
                         $actual[$b->numero_compte]=self::add($actual[$b->numero_compte]??0,$amount);
                     }
@@ -166,6 +179,7 @@ class NorwayVatReport
                 $allocated=array();foreach($groups as $code=>$g){if(!empty($choices[$code]['zero'])){continue;}$account=$choices[$code]['account'];$allocated[$account]=self::add($allocated[$account]??0,self::cents($g['tax']));}
                 foreach($allocated as $account=>$amount){if($amount!==self::cents($actual[$account]??0)){self::issue($report,'Mismatch',$type,$id,$piece);}}
                 if(count($report['issues'])!==$before){continue;}
+                foreach($actual as $account=>$amount){$signed=$sale?-$amount:$amount;$report['tax_accounts'][$account]=self::add($report['tax_accounts'][$account]??0,$signed);}
                 foreach($groups as $code=>$g){$spec=$choices[$code];
                     if(!empty($spec['reverse_rate'])){
                         self::entry($report,$type,$id,$piece,$code,$g['base'],$g['reverse_tax'],array_replace($spec,array('type'=>1,'rate'=>$spec['reverse_rate'])));

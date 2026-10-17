@@ -29,3 +29,7 @@ fradragsandel er kvalifisert i 0.79.0 for [støttet omfang](purchase-vat.md).
 Full årsavslutning og flere rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
 skriver regnskapsdata. Den er en veiledning til oppgavene; løpende arbeid skjer
 fortsatt i kjernens vanlige menyer.
+
+Fra 0.80.0 er ordinær bank-/MVA-periode prøvd gjennom kjernen, med
+portalinnlevering som valgt leveringsvei. Se [bank, MVA og periodeavslutning](vat-period-close.md)
+for betaling, kvittering, oppgjør, retting og avgrensning.

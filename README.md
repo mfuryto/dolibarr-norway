@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.79.0 · Under utvikling**
+**Versjon 0.80.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -132,7 +132,11 @@ bruker kjernens referansefelt. Se [salgsdokumenter](docs/sales-documents.md).
 
 Ordinære MVA-koder, nullsats 5/6/7, lokal NO0 (norsk kode 0), eksport 52 og
 tjenestekjøp 86/87 inngår i det [avstembare MVA-uttrekket](docs/vat-report.md).
-Uttrekket bruker faktisk fradrag og bevarer lesing av tidligere manuelle
-bilag. Det er fortsatt et avgrenset uttrekk; full melding og innsending,
-historisk oppsettsendring, vareimport, EHF, SAF-T og årsoppgjør/skatt gjenstår.
+Fra **0.80.0** velges en ordinær tomånedlig termin med grunnlag for
+manuell levering i Skatteetatens portal. Historiske beløp tåler endret
+satsregister, kontokobling og registreringsstatus. Rapporten viser et forslag
+til oppgjørsbilag; bilag, MVA-betaling, kvitteringsvedlegg, bankavstemming og
+periodelåsing bruker kjernen. Se [MVA og periodeavslutning](docs/vat-period-close.md).
+Portalinnlogging og levering gjøres av brukeren; ingen innsending skjer fra modulen.
+Vareimport, særordninger, EHF, SAF-T og årsoppgjør/skatt gjenstår.
 Se [samlet leveranseplan](docs/delivery-plan.md) for støttet omfang og neste etappe.

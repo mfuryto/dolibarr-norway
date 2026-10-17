@@ -223,3 +223,7 @@ Registrer for hvert punkt: valg/ikke relevant/må avklares, begrunnelse, ansvarl
 Før et konkret scenario tas i bruk må hele kjeden prøves med syntetiske data utenfor drift: dokument → bokføring → betaling/kreditnota → avstemming → relevant rapport/eksport. Uavklarte MVA-, EHF-, SAF-T- og historikkbehov er reelle leveransegap, ikke valg som brukeren kan løse ved å krysse av «ferdig».
 
 Videre utvikling av veiviseren skal følge denne rekkefølgen, vise gjeldende verdier, forklare forslag, lenke til relevante innstillinger og bevare eksisterende valg. Den må vise manglende funksjoner og støtte «ikke relevant» med begrunnelse. Automatiske endringer krever forhåndsvisning og bekreftelse; ingen automatisk grønn produksjonsstatus innføres. Videre utvikling følger [leveranseplanen](delivery-plan.md).
+
+Fra 0.80.0 er ordinær bank-/MVA-periode prøvd gjennom kjernen, med
+portalinnlevering som valgt leveringsvei. Se [bank, MVA og periodeavslutning](vat-period-close.md)
+for betaling, kvittering, oppgjør, retting og avgrensning.
