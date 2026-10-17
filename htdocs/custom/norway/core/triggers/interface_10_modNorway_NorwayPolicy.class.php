@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.77.0';
+        $this->version = '0.78.0';
         $this->picto = 'accountancy';
     }
 
@@ -21,6 +21,17 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
             try { NorwayLegacyArchive::guardPosting($this->db,(int)$conf->entity,$object); }
             catch (Throwable $error) { $langs->load('norway@norway');$this->error=$langs->trans('NorwayArchiveProtected');$object->error=$this->error;return -1; }
             return 0;
+        }
+        if ($action==='BILL_CREATE' && (int)$object->type===2 && (int)$object->fk_facture_source<=0
+            && ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/compta/facture/card.php'
+            && ($_SERVER['REQUEST_METHOD']??'')==='POST' && GETPOSTISSET('norway_original_invoice_ref')) {
+            require_once __DIR__.'/../../class/NorwayCreditReference.php';
+            $reference=GETPOST('norway_original_invoice_ref','none');
+            if (trim((string)$reference)!=='') {
+                if (!NorwayCreditReference::valid($reference) || $object->setValueFrom('ref_ext',trim($reference),'',null,'','',$user)<=0) {
+                    $langs->load('norway@norway');$this->error=$langs->trans('NorwayCreditReferenceBlocked');$object->error=$this->error;return -1;
+                }
+            }
         }
         $reason = '';
         if (in_array($action, array('BILL_CREATE', 'BILL_MODIFY', 'BILL_VALIDATE', 'PROPAL_CREATE', 'PROPAL_MODIFY', 'PROPAL_VALIDATE'), true)) {

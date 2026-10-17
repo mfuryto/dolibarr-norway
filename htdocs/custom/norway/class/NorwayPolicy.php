@@ -32,6 +32,10 @@ class NorwayPolicy
             }
             $conf->global->$name = '1';
         }
+        if (getDolGlobalString('INVOICE_CREDIT_NOTE_STANDALONE')==='') {
+            if (dolibarr_set_const($db,'INVOICE_CREDIT_NOTE_STANDALONE','1','chaine',0,'Core credit notes for system migration',$conf->entity)<=0) { throw new RuntimeException('Could not enable core standalone credit notes'); }
+            $conf->global->INVOICE_CREDIT_NOTE_STANDALONE='1';
+        }
         if (!$db->query("UPDATE ".MAIN_DB_PREFIX."c_paiement SET active=0 WHERE code='CHQ' AND entity=".(int) $conf->entity)) {
             throw new RuntimeException('Could not disable cheque payment selection');
         }

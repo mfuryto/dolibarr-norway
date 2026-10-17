@@ -1300,3 +1300,8 @@ NorwaySetupLinkBookkeeping=Ledger
 NorwaySetupLinkPurchases=Supplier invoices
 NorwaySetupLinkYearEnd=Year-end settings
 NorwaySetupScopeHelp=This overview covers one entity using NOK. Employees, cash sales, consumers and special industries may need further assessment. Resolve missing support before using the affected scenario.
+
+NorwayCreditReferenceLabel=Original invoice number from previous system
+NorwayCreditReferenceHelp=Complete only for a credit note against an invoice from a previous system. Select the original invoice in core when it exists here. Retain the original document and verify amounts and VAT.
+NorwayCreditReferencePdf=Credits original invoice from previous system
+NorwayCreditReferenceBlocked=Reference could not be saved. Use a draft credit note without an internal original link, and an invoice number without HTML or line breaks.

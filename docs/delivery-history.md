@@ -514,3 +514,13 @@ visninger på norsk/engelsk ved fire skjermbredder.
 
 Dette er grunnoppsett, ikke ferdig norsk årsoppgjør eller samlet produksjonsaksept.
 Gjenstående arbeid følger den samlede leveranseplanen.
+
+## 0.78.0 — dokumentdel og kreditnota ved systembytte
+
+Tilbud/faktura/kreditnota er prøvd som 18 faktiske standard-PDF-er på norsk og
+engelsk for ENK/AS/ASA. AS/ASA får registerteksten ved organisasjonsnummeret.
+Leveringsperiode, leveringssted og kundereferanse bruker eksisterende felt.
+Systembytte bruker native standalone-kreditnota og `ref_ext`, med registrering
+på fakturakortet, retting i kladd og skrivevern etter utstedelse. Native hovedbok,
+MVA-fortegn og refusjonsregistrering inngår i prøven. Ingen skjemaendring.
+Dokumentert omfang er teknisk kvalifisert; R03/R04 og resten av etappe 3 er åpne.

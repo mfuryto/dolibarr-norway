@@ -1300,3 +1300,8 @@ NorwaySetupLinkBookkeeping=Hovedbok
 NorwaySetupLinkPurchases=Leverandørfakturaer
 NorwaySetupLinkYearEnd=Avslutningsoppsett
 NorwaySetupScopeHelp=Oversikten gjelder ett foretak med NOK. Ansatte, kontantsalg, privatkunder og særbransjer kan kreve flere avklaringer. Manglende støtte i tabellen må løses før det aktuelle bruksområdet tas i bruk.
+
+NorwayCreditReferenceLabel=Opprinnelig fakturanummer fra tidligere system
+NorwayCreditReferenceHelp=Fyll bare ved kreditnota for en faktura fra et tidligere system. For fakturaer i denne installasjonen velger du originalfakturaen i kjernen. Bevar originaldokumentet og kontroller beløp og MVA.
+NorwayCreditReferencePdf=Krediterer opprinnelig faktura fra tidligere system
+NorwayCreditReferenceBlocked=Referansen kunne ikke lagres. Bruk en kreditnota i kladd uten intern originalkobling, og et fakturanummer uten HTML eller linjeskift.

@@ -69,6 +69,38 @@ class ActionsNorway
         $this->resprints=$html;return 1;
     }
 
+    private function invoicePage()
+    {
+        return ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/compta/facture/card.php';
+    }
+
+    public function formObjectOptions($parameters,&$object,&$action,$hookmanager)
+    {
+        global $user,$langs;
+        $this->resprints='';
+        if(!$this->invoicePage() || !empty($user->socid) || !$user->hasRight('facture','creer') || $action!=='create'){return 0;}
+        require_once __DIR__.'/NorwayCreditReference.php';
+        $this->resprints='<tr id="norway-original-reference"><td colspan="4">'.NorwayCreditReference::field(GETPOST('norway_original_invoice_ref','alphanohtml'),$langs).'</td></tr>'
+            .'<script>jQuery(function(){document.getElementById("norway-original-reference").closest("table").classList.add("norway-invoice-create");function originalReference(){var t=document.querySelector("input[name=type]:checked"),o=document.querySelector("select[name=fac_avoir]");document.getElementById("norway-original-reference").hidden=!(t&&t.value==="2"&&(!o||parseInt(o.value,10)<=0));}jQuery("input[name=type],select[name=fac_avoir]").on("change",originalReference);originalReference();});</script>';
+        return 0;
+    }
+
+    public function printUnderHeaderPDFline($parameters,&$model,&$action,$hookmanager)
+    {
+        global $conf;
+        $this->results=array();$this->resprints='';$invoice=$parameters['object']??null;
+        require_once __DIR__.'/NorwayCreditReference.php';
+        if(!is_object($invoice) || (int)($invoice->entity??0)!==(int)$conf->entity || !NorwayCreditReference::external($invoice)){return 0;}
+        if(!isset($model->tab_top,$model->page_largeur,$model->marge_gauche,$model->marge_droite)){return 0;}
+        $pdf=$parameters['pdf'];$lang=$parameters['outputlangs'];$lang->load('norway@norway');
+        $top=$model->tab_top;
+        $pdf->SetXY($model->marge_gauche,$top);
+        $pdf->MultiCell($model->page_largeur-$model->marge_gauche-$model->marge_droite,4,
+            $lang->convToOutputCharset($lang->transnoentities('NorwayCreditReferencePdf').': '.$invoice->ref_ext),0,'L');
+        $this->results['extra_under_address_shift']=max(8,$pdf->GetY()-$top+3);
+        return 0;
+    }
+
     private function companyPage()
     {
         global $user;
@@ -85,6 +117,17 @@ class ActionsNorway
     {
         global $db,$conf,$user,$langs;
         $this->resprints='';
+        $invoice=$GLOBALS['object']??null;
+        if($this->invoicePage() && is_object($invoice) && !empty($invoice->id) && (int)($invoice->entity??0)===(int)$conf->entity
+            && (int)($invoice->type??0)===2 && (int)($invoice->fk_facture_source??0)<=0 && empty($user->socid) && $user->hasRight('facture','creer')){
+            require_once __DIR__.'/NorwayCreditReference.php';$langs->load('norway@norway');
+            if((int)$invoice->statut===0){
+                $this->resprints='<div class="fichecenter"><form method="post" action="'.DOL_URL_ROOT.'/compta/facture/card.php?facid='.(int)$invoice->id.'">'
+                    .'<input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="norway_credit_reference">'
+                    .NorwayCreditReference::field($invoice->ref_ext??'',$langs).'<button class="button" type="submit">'.$langs->trans('Save').'</button></form></div>';
+            }elseif(NorwayCreditReference::external($invoice)){$this->resprints='<p>'.dol_escape_htmltag($langs->trans('NorwayCreditReferencePdf').': '.$invoice->ref_ext).'</p>';}
+            return 0;
+        }
         if(!$this->bookkeepingPage() || !GETPOSTINT('piece_num')){return 0;}
         require_once __DIR__.'/NorwayManualVat.php';
         if(!NorwayManualVat::allowed($user)){return 0;}
@@ -96,6 +139,15 @@ class ActionsNorway
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        if($this->invoicePage() && $action==='norway_credit_reference'){
+            require_once __DIR__.'/NorwayCreditReference.php';$langs->load('norway@norway');
+            try{
+                if(($_SERVER['REQUEST_METHOD']??'')!=='POST' || empty($_SESSION['token']) || !hash_equals($_SESSION['token'],GETPOST('token','alphanohtml'))){throw new RuntimeException('NorwayCreditReferenceBlocked');}
+                NorwayCreditReference::save($db,(int)$conf->entity,(int)$object->id,GETPOST('norway_original_invoice_ref','none'),$user);
+                setEventMessages($langs->trans('RecordSaved'),null,'mesgs');$object->fetch($object->id);
+            }catch(Throwable $error){setEventMessages($langs->trans('NorwayCreditReferenceBlocked'),null,'errors');}
+            $action='';return 1;
+        }
         if($this->bookkeepingPage() && $action==='norway_save_manual_vat'){
             require_once __DIR__.'/NorwayManualVat.php';$langs->load('norway@norway');
             try {
@@ -157,7 +209,8 @@ class ActionsNorway
         $outputlangs = $parameters['outputlangs'];
         $outputlangs->load('norway@norway');
         $this->resprints = $outputlangs->convToOutputCharset($outputlangs->transnoentities('NorwayOrganisationLabel').': '.$number
-            .((int) ($source->tva_assuj ?? 0) === 1 ? ' MVA' : ''));
+            .((int) ($source->tva_assuj ?? 0) === 1 ? ' MVA' : '')
+            .(in_array((int)($source->forme_juridique_code??0),array(173002,173003),true)?"\nForetaksregisteret":''));
         // Append to the standard address through the core hook; no party fields change.
         return 0;
     }
