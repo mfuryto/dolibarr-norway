@@ -52,3 +52,6 @@
 .norway-page .norway-sales-basis-form label { display: block; }
 .norway-sales-basis-form textarea { width: 100%; max-width: 100%; box-sizing: border-box; }
 .norway-sales-basis-line { overflow-wrap: anywhere; }
+/* The VAT report scrolls within its column instead of splitting short accounting labels. */
+#norway-vat-report .div-table-responsive { display: block; width: 100%; overflow-x: auto; }
+#norway-vat-report .div-table-responsive > table { min-width: 32rem; overflow-wrap: normal; }

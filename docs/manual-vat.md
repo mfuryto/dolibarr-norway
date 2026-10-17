@@ -27,8 +27,9 @@ ved henholdsvis 25/15/12 prosent. Salg og kjøp av både varer og tjenester
 omfattes. Satser, kontoer og retning gjenbrukes fra kjernens satsregister;
 modulen gjetter ikke avgiftsbehandling fra kontonummeret alene.
 
-Dette er opplysninger for rapportgrunnlaget. **Et samlet norsk MVA-uttrekk
-og innsending er ikke levert ennå.** Fritak, unntak, import/eksport og andre
+Dette er opplysninger for rapportgrunnlaget. **Et fullstendig norsk MVA-uttrekk
+og innsending er ikke levert ennå.** Fra 0.69.0 inngår de ordinære kodene i
+[et avstembart uttrekk](vat-report.md). Fritak, unntak, import/eksport og andre
 særtilfeller skal ikke registreres med en ordinær kode for å få dem med.
 Kjernens eksisterende fakturabaserte MVA-rapport inkluderer fortsatt ikke
 disse manuelle bilagene.

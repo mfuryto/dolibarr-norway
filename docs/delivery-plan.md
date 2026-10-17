@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.68.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.69.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -54,10 +54,17 @@ regnskapsbeløp og fakturaer endres ikke. Skjema 2 er en additiv metadatautvidel
 med migrerings- og gjenopprettingsprøve. Låste/eksporterte bilag kan bare leses,
 og endret kilde blir ikke stille godtatt som gjeldende avgiftsgrunnlag.
 
-Neste arbeid er et avstembart norsk MVA-uttrekk som bruker bokførte beløp og
-disse opplysningene, også ved separate fradragsrettinger. Fritak/unntak,
-registreringsovergang og relevante nullsats-/utlandstilfeller må inngå før
-full norsk melding godkjennes. Ingen av de nå leverte delene er innsending.
+0.69.0 gir et [lesende MVA-uttrekk for ordinære koder](vat-report.md) under
+Regnskap → Regnskap → Rapporter. Native fakturaer/kreditnotaer, manuelle
+MVA-linjer og separate fradragsrettinger kan summeres mot faktisk bokføring.
+Manglende kode, kilde-/beløpsavvik, ulik dato og manglende overføring vises
+ved kilden. Delsummer har ingen netto/CSV før avvik er avklart. Dette er én
+rapport ved den vanlige rapportoppgaven; ingen nye kontrollkopier eller databasetabeller.
+
+Neste arbeid er fritak/unntak og aktuelle nullsats-/utlandstilfeller, samt
+registreringsovergang og særposteringer som MVA-oppgjør. De ordinære kodene
+utgjør ikke alene en fullstendig norsk melding. Innsending og samlet faglig
+produksjonsaksept gjenstår. Kjernens journaler skal fortsatt brukes.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før
 avtale eller installasjon. Norsk dokumentvalidering og faktisk transport
