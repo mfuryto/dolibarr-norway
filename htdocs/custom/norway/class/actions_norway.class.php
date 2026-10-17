@@ -10,7 +10,7 @@ class ActionsNorway
 
     private $renderingVat = false;
 
-    /** Core default detection ignores sale/purchase type; keep its widget and fix only an unselected domestic default. */
+    /** Reuse the native widget for directional domestic defaults and Norwegian reverse-charge choices. */
     public function load_tva($parameters, &$object, &$action, $hookmanager)
     {
         global $db,$conf;
@@ -18,6 +18,25 @@ class ActionsNorway
         $selected=(string)($parameters['selectedrate'] ?? '');$type=(int)($parameters['type_vat'] ?? 0);
         $seller=$parameters['seller'] ?? null;$buyer=$parameters['buyer'] ?? null;
         $script=str_replace('\\','/',$_SERVER['SCRIPT_FILENAME'] ?? '');
+        // Core searches the foreign seller's rates; the purchaser's reverse-charge code is Norwegian.
+        $invoice=$GLOBALS['object']??null;
+        if(!$this->renderingVat && isModEnabled('norway') && $type===2 && (int)($invoice->vat_reverse_charge??0)===1
+            && ($invoice->element??'')==='invoice_supplier' && (int)($invoice->entity??0)===(int)$conf->entity
+            && $script===DOL_DOCUMENT_ROOT.'/fourn/facture/card.php' && is_object($seller) && is_object($buyer)
+            && ($buyer->country_code??'')==='NO' && preg_match('/^[A-Z]{2}$/D',(string)($seller->country_code??'')) && $seller->country_code!=='NO'
+            && empty($parameters['is_npr']) && (int)($parameters['mode']??0)>0){
+            $norwegianSeller=clone $seller;$norwegianSeller->country_code='NO';$norwegianSeller->country_id=$buyer->country_id;
+            $this->renderingVat=true;
+            try{$form=new Form($db);$this->resprints=$form->load_tva($parameters['htmlname'],in_array($selected,array('','-1'),true)?'0':$selected,
+                $norwegianSeller,$buyer,(int)($parameters['idprod']??0),0,$parameters['type']??'',$parameters['options_only']??false,(int)$parameters['mode'],2);}
+            finally{$this->renderingVat=false;}
+            // If all ordinary zero choices were removed, the browser must not default to code 86.
+            if(in_array($selected,array('','-1'),true) && preg_match('/<option\b[^>]*value="0(?:\.0+)? \(86\)"[^>]*\sselected(?=[\s>])[^>]*>/',$this->resprints,$match)){
+                $this->resprints=str_replace($match[0],preg_replace('/\sselected(?=[\s>])/','',$match[0]),$this->resprints);
+                $plain='<option value="0" selected>0%</option>';
+                $this->resprints=!empty($parameters['options_only'])?$plain.$this->resprints:preg_replace('/(<select\b[^>]*>)/','$1'.$plain,$this->resprints,1);
+            }return 1;
+        }
         $productForm=$type===0 && in_array($script,array(DOL_DOCUMENT_ROOT.'/product/card.php',DOL_DOCUMENT_ROOT.'/product/price.php'),true)
             && preg_match('/^tva_tx(?:\[|$)/D',$parameters['htmlname'] ?? '')===1;
         $productDefault=$productForm && $script===DOL_DOCUMENT_ROOT.'/product/card.php'

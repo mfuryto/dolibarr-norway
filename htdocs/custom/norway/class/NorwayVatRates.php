@@ -24,7 +24,8 @@ class NorwayVatRates
         return array(array('rate'=>0,'type'=>1,'code'=>'5','reported'=>true),
             array('rate'=>0,'type'=>1,'code'=>'6','reported'=>true),array('rate'=>0,'type'=>1,'code'=>'7','reported'=>false),
             array('rate'=>0,'type'=>2,'code'=>'NO0','reported'=>false,'report_code'=>'0'),
-            array('rate'=>0,'type'=>1,'code'=>'52','reported'=>true,'export'=>true));
+            array('rate'=>0,'type'=>1,'code'=>'52','reported'=>true,'export'=>true),
+            array('rate'=>0,'type'=>2,'code'=>'86','reported'=>true,'reverse_rate'=>25,'reverse_credit'=>'2704','reverse_debit'=>'2714'));
     }
     public static function zeroChoices($db,$entity)
     {

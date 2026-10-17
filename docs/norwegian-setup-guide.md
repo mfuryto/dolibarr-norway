@@ -169,7 +169,10 @@ kreditnotaer til utenlandske kunder, for varer og tjenester. Bruk kjernens
 vanlige fakturalinjer, offentlig merknad og vedlegg. Velg eksportkonto etter
 varen/tjenesten og vurder fritaksvilkårene før kodevalget. Se [eksportflyten](vat-rates.md#eksportkode-52-i-0720)
 og [uttrekkets avgrensning](vat-report.md#eksportkode-52-i-0720).
-Utenlandskjøp og omvendt avgiftsplikt er fortsatt ikke kvalifisert.
+Fra 0.73.0 er NOK-kjøp av fjernleverbare tjenester med 25 % og full fradragsrett
+prøvd med kjernens omvendte avgiftsplikt og kode 86. Se [engangsoppsett og bruk](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730)
+før du aktiverer dette. Kode 87, ingen/delvis fradragsrett, andre satser og
+vareimport er fortsatt ikke kvalifisert.
 
 ## 9. Inngående saldoer, perioder og løpende rutiner
 

@@ -1,6 +1,6 @@
-# Norway 0.72.0
+# Norway 0.73.0
 
-**Versjon 0.72.0 · Under utvikling**
+**Versjon 0.73.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -68,4 +68,12 @@ MVA-uttrekket. Eksplisitt kodede NOK-fakturaer/kreditnotaer til utenlandske
 kunder bruker kjernens salgsjournal, for både varer og tjenester.
 Eksportgrunnlaget vises med null norsk avgift; landet setter ikke koden
 automatisk. Se kodeveiledningen i prosjektets dokumentasjon for eksportflyten.
-Utenlandskjøp, omvendt avgiftsplikt og full MVA-melding gjenstår.
+Full MVA-melding og innsending gjenstår. Tjenestekjøp med kode 86 er beskrevet nedenfor.
+
+0.73.0 gjenbruker kjernens omvendte avgiftsplikt for NOK-kjøp av tjenester
+med 25 % og full fradragsrett (kode 86). Leverandørgjelden har ingen norsk
+MVA; kjøpsjournalen fører beregnet MVA på 2704 og fradraget på 2714.
+Uttrekket avstemmer og viser begge retninger under 86. Kjernens funksjon
+må settes opp før bruk; eksisterende kontovalg og fakturaer endres ikke.
+Se kodeveiledningen i prosjektets dokumentasjon før bruk.
+Ingen/delvis fradragsrett, andre satser og vareimport gjenstår.

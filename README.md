@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.72.0 · Under utvikling**
+**Versjon 0.73.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -165,4 +165,12 @@ MVA-uttrekket. Eksplisitt kodede NOK-fakturaer/kreditnotaer til utenlandske
 kunder bruker kjernens salgsjournal, for både varer og tjenester.
 Eksportgrunnlaget vises med null norsk avgift; landet setter ikke koden
 automatisk. Se [eksportflyt og avgrensning](docs/vat-rates.md#eksportkode-52-i-0720).
-Utenlandskjøp, omvendt avgiftsplikt og full MVA-melding gjenstår.
+Full MVA-melding og innsending gjenstår. Tjenestekjøp med kode 86 er beskrevet nedenfor.
+
+0.73.0 gjenbruker kjernens omvendte avgiftsplikt for NOK-kjøp av tjenester
+med 25 % og full fradragsrett (kode 86). Leverandørgjelden har ingen norsk
+MVA; kjøpsjournalen fører beregnet MVA på 2704 og fradraget på 2714.
+Uttrekket avstemmer og viser begge retninger under 86. Kjernens funksjon
+må settes opp før bruk; eksisterende kontovalg og fakturaer endres ikke.
+Se [oppsett og avgrensning](docs/vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730).
+Ingen/delvis fradragsrett, andre satser og vareimport gjenstår.

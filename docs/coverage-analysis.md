@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.72.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.73.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -257,3 +257,22 @@ utenlandske salg til eksplisitt 52. Native NOK-fakturaer/kreditnotaer med
 varer/tjenester, SE/US, reskontro, kontoer og CSV er prøvd. Kundeland er ingen
 automatisk fritaksvurdering. Utenlandskjøp/omvendt avgiftsplikt må fortsatt
 prøves separat; gjeldende grunnlag og avgift kan ikke utledes av nullsats alene.
+
+## Kode 86: native omvendt avgiftsplikt og konkret rapportgap
+
+Kjøpsjournalen har allerede en reverse-charge-gren. Den styres av fakturaens
+`vat_reverse_charge`, `ACCOUNTING_FORCE_ENABLE_VAT_REVERSE_CHARGE` og for
+leverandører utenfor EU `ACCOUNTING_REVERSE_CHARGE_ALSO_NON_EEC`. Beregningen
+bruker katalogproduktets `tva_tx`, ikke leverandørens nullsats. Kredit/debet
+hentes fra de native globale kontoene. SQL-skjemaet for `c_tva` har ingen egne
+reverse-charge-kontofelt i støttet versjon, selv om journalen har reservekode
+for slike verdier. Det innføres derfor ingen ekstra native kolonner.
+
+0.73.0 prøver og bruker denne flyten med 25 %, full fradragsrett og 2704/2714.
+Satsvelgeren søker ellers bare i den utenlandske selgerens land. Den eksisterende
+hooken gjenbruker den norske kjøperens native liste ved en utenlandsk
+leverandørfaktura med omvendt avgiftsplikt, uten å endre motpart eller velge kode
+86 automatisk. Det eksisterende uttrekket avstemmer faktisk beregnet og
+fradragsført MVA i begge retninger under 86. Ingen ny bokføringsmotor,
+lagringsmodell eller kontrollside. Kode 87 og delvis fradrag er neste gap,
+ikke noe som utledes fra en nullsats eller fremmed leverandør alene.
