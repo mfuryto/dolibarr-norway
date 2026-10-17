@@ -22,15 +22,15 @@ try {
  $retained=$db->fetch_object(vrSql('SELECT accountancy_code_sell,use_default,active FROM '.$p.'c_tva WHERE entity='.$entity.' AND fk_pays=173 AND taux=25'));vrAssert($retained->accountancy_code_sell==='CUSTOM'&&(int)$retained->use_default===1&&(int)$retained->active===1,'Blocked preview changed choices');
  // Clear only this synthetic choice explicitly; production requires native manual review.
  vrSql("UPDATE ".$p."c_tva SET accountancy_code_sell='',use_default=0 WHERE entity=".$entity." AND fk_pays=173 AND taux=25");
- $preview=NorwayVatRates::preview($db,$entity);vrAssert(!$preview['blocked'] && count($preview['changes'])===12,'Initial code scope failed');
+ $preview=NorwayVatRates::preview($db,$entity);vrAssert(!$preview['blocked'] && count($preview['changes'])===13,'Initial code scope failed');
  $reader=clone $user;$reader->admin=0;
  try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$reader);throw new LogicException('Nonadmin accepted');}catch(InvalidArgumentException $expected){}
  $failing=new class($db){private $db;private $writes=0;public function __construct($db){$this->db=$db;}public function __call($name,$args){return $this->db->$name(...$args);}public function query($sql,...$args){if((strpos($sql,'INSERT INTO '.$this->db->prefix().'c_tva ')===0 || strpos($sql,'UPDATE '.$this->db->prefix().'c_tva SET ')===0) && ++$this->writes===3){return false;}return $this->db->query($sql,...$args);}};
  try{NorwayVatRates::apply($failing,$entity,NorwayDefaultAccounts::fingerprint($preview),$user);throw new LogicException('Partial write accepted');}catch(RuntimeException $expected){}
  vrAssert(NorwayVatRates::preview($db,$entity)===$preview,'Atomic rollback failed');
  $db->begin();try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user);throw new LogicException('Nested transaction accepted');}catch(RuntimeException $expected){}finally{$db->rollback();}
- vrAssert(NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user)===12,'Expected nine coded rows and three retained/deactivated rows');
- $after=NorwayVatRates::preview($db,$entity);vrAssert(!$after['blocked'] && count($after['rates'])===13,'Rows deleted or duplicated');
+ vrAssert(NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user)===13,'Expected ten coded rows and three retained/deactivated rows');
+ $after=NorwayVatRates::preview($db,$entity);vrAssert(!$after['blocked'] && count($after['rates'])===14,'Rows deleted or duplicated');
  foreach($after['rates'] as $r){$expectedActive=$r['code']!=='' || (float)$r['taux']===0.0;vrAssert((int)$r['active']===(int)$expectedActive,'Incorrect active coded/legacy row');}
  $accountPreview=NorwayVatAccounts::preview($db,$entity);vrAssert(NorwayVatAccounts::apply($db,$entity,NorwayDefaultAccounts::fingerprint($accountPreview),$user)===6,'Six directional VAT accounts not filled');
  foreach(NorwayVatRates::codes() as $spec){$row=$db->fetch_object(vrSql("SELECT * FROM ".$p."c_tva WHERE entity=".$entity." AND code='".$spec['code']."'"));$map=array(25=>array('2700','2710'),15=>array('2701','2711'),12=>array('2703','2713'));
@@ -59,6 +59,7 @@ try {
   $dom=new DOMDocument();@$dom->loadHTML($html);$nodes=(new DOMXPath($dom))->query('//select[@name="synthetic_vat"]/option[@selected]');
   vrAssert($nodes->length===1 && preg_match('/^25(?:\.0+)? \('.$expected.'\)$/D',$nodes->item(0)->getAttribute('value'))===1,'Core widget chose wrong directional default');
   if($direction===1){foreach(array('5','6','7') as $zeroCode){$zeroHtml=$form->load_tva('zero_vat','0 ('.$zeroCode.')',$seller,$buyer,0,0,'',false,1,1);$zdom=new DOMDocument();@$zdom->loadHTML($zeroHtml);$z=(new DOMXPath($zdom))->query('//select[@name="zero_vat"]/option[@selected]');vrAssert($z->length===1 && preg_match('/^0(?:\.0+)? \('.$zeroCode.'\)$/D',$z->item(0)->getAttribute('value'))===1,'Explicit native zero selection lost');}}
+  if($direction===2){foreach(array(false,true) as $optionsOnly){$html=$form->load_tva('zero_purchase','0 (NO0)',$seller,$buyer,0,0,'',$optionsOnly,1,2);$dom=new DOMDocument();@$dom->loadHTML($optionsOnly?'<select>'.$html.'</select>':$html);$xp=new DOMXPath($dom);$sel=$xp->query('//option[@selected]');vrAssert($sel->length===1 && preg_match('/^0(?:\.0+)? \(NO0\)$/D',$sel->item(0)->getAttribute('value'))===1,'Explicit NO0 native selection lost');}}
   $explicit=$form->load_tva('explicit_vat','0',$seller,$buyer,0,0,'',false,1,$direction);$dom=new DOMDocument();@$dom->loadHTML($explicit);$nodes=(new DOMXPath($dom))->query('//select[@name="explicit_vat"]/option[@selected]');vrAssert($nodes->length===1&&(float)$nodes->item(0)->getAttribute('value')===0.0,'Explicit zero rate changed');
  }
  // New product cards use the same core widget without a direction argument.
@@ -75,24 +76,27 @@ try {
  // Exercise native document APIs, not direct synthetic line inserts.
  foreach(array(1,2) as $direction){$invoice=$direction===1?new Facture($db):new FactureFournisseur($db);$invoice->socid=$party;$invoice->date=dol_mktime(12,0,0,1,10,2026);$invoice->multicurrency_code='NOK';$invoice->multicurrency_tx=1;$invoice->ref_supplier='SYN-CODE-ONLY';
   vrAssert($invoice->create($user)>0,'Native coded document create: '.$invoice->error);
-  foreach(array_merge(NorwayVatRates::codes(),$direction===1?NorwayVatRates::zeroCodes():array()) as $spec){if($spec['type']!==$direction){continue;}$vat=$spec['rate'].' ('.$spec['code'].')';
+  foreach(array_merge(NorwayVatRates::codes(),NorwayVatRates::zeroCodes()) as $spec){if($spec['type']!==$direction){continue;}$vat=$spec['rate'].' ('.$spec['code'].')';
    $line=$direction===1?$invoice->addline('Synthetic coded sale',100,1,$vat):$invoice->addline('Synthetic coded purchase',100,$vat,0,0,1);
    vrAssert($line>0,'Native coded line: '.$invoice->error);
   }
-  vrAssert($invoice->fetch($invoice->id)>0,'Native coded document fetch');$expected=$direction===1?array('3','31','33','5','6','7'):array('1','11','13');
+  vrAssert($invoice->fetch($invoice->id)>0,'Native coded document fetch');$expected=$direction===1?array('3','31','33','5','6','7'):array('1','11','13','NO0');
   vrAssert(array_map(static fn($line)=>(string)$line->vat_src_code,$invoice->lines)===$expected,'Native document did not preserve directional tax codes');
+  if($direction===2){$last=end($invoice->lines);vrAssert($invoice->updateline($last->id,'Synthetic purchase edit',125,'0 (NO0)')>0,'Native purchase edit failed');vrAssert($invoice->fetch($invoice->id)>0 && end($invoice->lines)->vat_src_code==='NO0','Native purchase edit lost classification');}
+
  }
  // Append-only upgrade is safe even with documents: existing choices and their references stay unchanged.
- $zeroBefore=NorwayVatRates::zeroChoices($db,$entity);vrAssert(count($zeroBefore)===3,'Zero classifications missing');
+ vrSql("UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='NO0'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['NO0']),'Inactive purchase zero reactivated');vrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND code='NO0'");
+ $zeroBefore=NorwayVatRates::zeroChoices($db,$entity);vrAssert(count($zeroBefore)===4,'Zero classifications missing');
  vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0,'Repeat zero seed duplicated rows');
  vrSql("UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='7'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['7']),'Inactive zero code reactivated');vrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND code='7'");
  vrSql("UPDATE ".$p."c_tva SET type_vat=2 WHERE entity=".$entity." AND code='6'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['6']),'Conflicting zero direction overwritten');vrSql("UPDATE ".$p."c_tva SET type_vat=1 WHERE entity=".$entity." AND code='6'");
  vrSql("UPDATE ".$p."c_tva SET code='6 ' WHERE entity=".$entity." AND code='6'");vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===0 && !isset(NorwayVatRates::zeroChoices($db,$entity)['6']),'Ambiguous stored code silently replaced');vrSql("UPDATE ".$p."c_tva SET code='6' WHERE entity=".$entity." AND code='6 '");
- vrSql("DELETE FROM ".$p."c_tva WHERE entity=".$entity." AND code IN ('5','6','7')");
+ vrSql("DELETE FROM ".$p."c_tva WHERE entity=".$entity." AND code IN ('NO0','5','6','7')");
  $failingZero=new class($db){private $db;private $writes=0;public function __construct($db){$this->db=$db;}public function __call($name,$args){return $this->db->$name(...$args);}public function query($sql,...$args){if(strpos($sql,'INSERT INTO '.$this->db->prefix().'c_tva ')===0 && ++$this->writes===2){return false;}return $this->db->query($sql,...$args);}};
  try{NorwayVatRates::ensureZeroCodes($failingZero,$entity);throw new LogicException('Partial zero seed accepted');}catch(RuntimeException $expected){}
  vrAssert(count(NorwayVatRates::zeroChoices($db,$entity))===0,'Partial zero seed not rolled back');
- vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===3 && NorwayVatRates::ensureZeroCodes($db,$entity)===0,'Missing zero rows not provisioned with existing documents');
+ vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===4 && NorwayVatRates::ensureZeroCodes($db,$entity)===0,'Missing zero rows not provisioned with existing documents');
  vrAssert(NorwayVatRates::zeroChoices($db,$entity)===$zeroBefore,'Zero choice semantics changed');
 
  $blocked=NorwayVatRates::preview($db,$entity);vrAssert($blocked['blocked'],'Draft document use ignored');

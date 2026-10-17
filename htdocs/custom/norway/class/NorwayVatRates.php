@@ -18,23 +18,29 @@ class NorwayVatRates
             array('rate'=>12,'type'=>1,'code'=>'33'),array('rate'=>12,'type'=>2,'code'=>'13'),
         );
     }
-    /** Explicit domestic sales classifications; 7 is outside the VAT return. Never infer from a zero amount. */
+    /** Explicit domestic classifications; 0/7 are outside the VAT return. Never infer from a zero amount. */
     public static function zeroCodes()
     {
         return array(array('rate'=>0,'type'=>1,'code'=>'5','reported'=>true),
-            array('rate'=>0,'type'=>1,'code'=>'6','reported'=>true),array('rate'=>0,'type'=>1,'code'=>'7','reported'=>false));
+            array('rate'=>0,'type'=>1,'code'=>'6','reported'=>true),array('rate'=>0,'type'=>1,'code'=>'7','reported'=>false),
+            array('rate'=>0,'type'=>2,'code'=>'NO0','reported'=>false,'report_code'=>'0'));
     }
     public static function zeroChoices($db,$entity)
     {
         if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
         $choices=array();
         foreach(self::zeroCodes() as $spec){
-            $rows=self::rows($db,"SELECT t.* FROM ".$db->prefix()."c_tva t JOIN ".$db->prefix()."c_country c ON c.rowid=t.fk_pays WHERE t.entity=".(int)$entity." AND c.code='NO' AND c.active=1 AND t.code='".$spec['code']."'");
-            if(count($rows)===1 && (string)$rows[0]['code']===$spec['code'] && (int)$rows[0]['active']===1 && (int)$rows[0]['type_vat']===1
-                && (float)$rows[0]['taux']===0.0 && self::plain($rows[0])){$choices[$spec['code']]=$spec+array('zero'=>true);}
+            if(self::zeroRow($db,$entity,$spec)!==null){$choices[$spec['code']]=$spec+array('zero'=>true);}
         }return $choices;
     }
-    /** Add missing explicit zero-sales choices on activation; never repair, default or reclassify existing rows. */
+    private static function zeroRow($db,$entity,$spec)
+    {
+        if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
+        $rows=self::rows($db,"SELECT t.* FROM ".$db->prefix()."c_tva t JOIN ".$db->prefix()."c_country c ON c.rowid=t.fk_pays WHERE t.entity=".(int)$entity." AND c.code='NO' AND c.active=1 AND t.code='".$spec['code']."'");
+        return count($rows)===1 && (string)$rows[0]['code']===$spec['code'] && (int)$rows[0]['active']===1 && (int)$rows[0]['type_vat']===$spec['type']
+            && (float)$rows[0]['taux']===0.0 && self::plain($rows[0])?$rows[0]:null;
+    }
+    /** Add missing explicit zero choices on activation; never repair, default or reclassify existing rows. */
     public static function ensureZeroCodes($db,$entity)
     {
         if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
@@ -48,7 +54,7 @@ class NorwayVatRates
             foreach(self::zeroCodes() as $spec){
                 if(in_array($spec['code'],$codes,true)){continue;}
                 if(!$db->query('INSERT INTO '.$p.'c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES ('
-                    .(int)$entity.','.$country.",0,1,'".$spec['code']."',0,1,0,'Norwegian VAT code ".$spec['code']."')")){throw new RuntimeException('Norwegian zero code');}$created++;
+                    .(int)$entity.','.$country.",0,".$spec['type'].",'".$spec['code']."',0,1,0,'Norwegian VAT code ".$spec['code']."')")){throw new RuntimeException('Norwegian zero code');}$created++;
             }
             if($db->commit()<=0){throw new RuntimeException('Commit');}return $created;
         }catch(Throwable $error){$db->rollback();throw $error;}

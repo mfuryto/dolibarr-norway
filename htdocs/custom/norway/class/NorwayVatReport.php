@@ -45,8 +45,8 @@ class NorwayVatReport
     }
     private static function entry(&$report,$source,$id,$piece,$code,$base,$tax,$spec)
     {
-        $report['entries'][]=array('source'=>$source,'id'=>(int)$id,'piece'=>(int)$piece,'code'=>(string)$code,
-            'type'=>$spec['type'],'rate'=>$spec['rate'],'base'=>$spec['type']===1?self::cents($base):null,'tax'=>self::cents($tax),'reported'=>$spec['reported']??true);
+        $report['entries'][]=array('source'=>$source,'id'=>(int)$id,'piece'=>(int)$piece,'code'=>(string)($spec['report_code']??$code),
+            'type'=>$spec['type'],'rate'=>$spec['rate'],'base'=>($spec['type']===1 || ($spec['reported']??true)===false)?self::cents($base):null,'tax'=>self::cents($tax),'reported'=>$spec['reported']??true);
     }
     public static function build($db,$entity,$start,$end,$user)
     {
