@@ -70,6 +70,14 @@ foreach ($legacy['rows'] as $row) {
     $r=$db->query("SELECT payload,payload_sha256 FROM ".$db->prefix()."norway_tax_evidence WHERE entity=".(int)$conf->entity." AND document_type='".$db->escape($row['document_type'])."' AND fk_document=".(int)$row['fk_document'].' AND revision='.(int)$row['revision']);$actual=$r ? $db->fetch_object($r) : null;
     if(!$actual || $actual->payload!==$row['payload'] || $actual->payload_sha256!==$row['payload_sha256'] || !hash_equals($actual->payload_sha256,hash('sha256',$actual->payload))) { throw new RuntimeException('Legacy record changed through update/restore'); }
 }
+// Synthetic storage marker only; deliberately has no accounting source and is never read as a voucher.
+$manualHash=hash('sha256','SYNTHETIC MANUAL VAT STORAGE ONLY');
+if(getenv('NORWAY_CREATE_SENTINEL')==='1') {
+    if(!$db->query("INSERT INTO ".$db->prefix()."norway_manual_vat (entity,fk_bookkeeping,tax_code,tax_base,source_hash,fk_user,updated_at) VALUES (".(int)$conf->entity.",2147483000,'1',0,'".$manualHash."',1,'2026-01-01 00:00:00')")){throw new RuntimeException('Manual VAT storage marker');}
+}
+$r=$db->query('SELECT * FROM '.$db->prefix().'norway_manual_vat WHERE entity='.(int)$conf->entity.' AND fk_bookkeeping=2147483000');$marker=$r?$db->fetch_object($r):null;
+if(!$marker || $marker->tax_code!=='1' || $marker->tax_base!=='0.00000000' || $marker->source_hash!==$manualHash || $marker->updated_at!=='2026-01-01 00:00:00' || (int)$marker->fk_user!==1){throw new RuntimeException('Manual VAT fields lost through update/restore');}
+print "PASS manual VAT storage preserved through update/restore\n";
 $result = $db->query("SELECT label,active FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='SYN-BACKUP' AND account_number='8891'");
 $account = $result ? $db->fetch_object($result) : false;
 if (!$account || $account->label !== 'Synthetic imported backup account' || (int) $account->active !== 1) {

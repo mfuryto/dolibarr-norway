@@ -56,9 +56,41 @@ class ActionsNorway
         return !empty($user->admin) && substr(str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? ''), -18) === '/admin/company.php';
     }
 
+    private function bookkeepingPage()
+    {
+        return ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/bookkeeping/card.php'
+            && GETPOST('mode','aZ09')==='';
+    }
+
+    public function printCommonFooter($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db,$conf,$user,$langs;
+        $this->resprints='';
+        if(!$this->bookkeepingPage() || !GETPOSTINT('piece_num')){return 0;}
+        require_once __DIR__.'/NorwayManualVat.php';
+        if(!NorwayManualVat::allowed($user)){return 0;}
+        try{$this->resprints=NorwayManualVat::render($db,(int)$conf->entity,GETPOSTINT('piece_num'),$user,$langs);}
+        catch(Throwable $error){$langs->load('norway@norway');$this->resprints='<div class="error">'.dol_escape_htmltag($langs->trans('NorwayManualVatDatabase')).'</div>';}
+        return 0;
+    }
+
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
-        global $db, $langs;
+        global $db, $langs, $conf, $user;
+        if($this->bookkeepingPage() && $action==='norway_save_manual_vat'){
+            require_once __DIR__.'/NorwayManualVat.php';$langs->load('norway@norway');
+            try {
+                // Also enforce the native session token if the global CSRF option was disabled.
+                if(($_SERVER['REQUEST_METHOD']??'')!=='POST' || empty($_SESSION['token']) || !hash_equals($_SESSION['token'],GETPOST('token','alphanohtml'))){throw new RuntimeException('NorwayManualVatAccess');}
+                NorwayManualVat::save($db,(int)$conf->entity,GETPOSTINT('piece_num'),GETPOSTINT('norway_vat_line'),
+                    GETPOST('norway_vat_code','alphanohtml'),GETPOST('norway_vat_base','alphanohtml'),GETPOST('norway_vat_token','alphanohtml'),$user);
+                setEventMessages($langs->trans('RecordSaved'),null,'mesgs');
+            } catch(Throwable $error){
+                $key=strpos($error->getMessage(),'NorwayManualVat')===0?$error->getMessage():'NorwayManualVatDatabase';
+                setEventMessages($langs->trans($key),null,'errors');
+            }
+            $action='';return 1;
+        }
         if (!$this->companyPage() || ($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
             || !in_array($action, array('update', 'updateedit'), true) || GETPOST('cancel', 'alpha')
             || GETPOST('optiontva', 'aZ09') !== '1' || trim(GETPOST('tva', 'alphanohtml')) !== '') { return 0; }

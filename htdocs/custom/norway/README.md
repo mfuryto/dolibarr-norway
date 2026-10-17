@@ -1,6 +1,6 @@
-# Norway 0.67.0
+# Norway 0.68.0
 
-**Versjon 0.67.0 · Under utvikling**
+**Versjon 0.68.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -34,7 +34,7 @@ Fradragsandel avgjøres faglig og bokføres manuelt i kjernen; NPR er en fransk
 særordning og endrer prisberegningen. Ingen egen kjøpsflyt eller fradragshistorikk
 innføres. Fakturauttrekket er fortsatt ikke en komplett norsk MVA-melding.
 
-## Norske MVA-koder i 0.67.0
+## Norske MVA-koder i 0.68.0
 
 Det eksisterende MVA-oppsettet kan opprette separate ordinære salgskoder
 3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister for nye, ubrukte oppsett.
@@ -45,3 +45,7 @@ kontrollside, kodemodell eller lagringstabell innføres.
 
 MVA-meldingen er fortsatt uferdig. Manuelle bilags norske avgiftsopplysninger,
 nullsats-/utlandstilfeller og komplett avstemming/innsending gjenstår.
+
+I 0.68.0 kan ordinære MVA-koder og utgående grunnlag registreres ved
+manuelle bilag i kjernens bilagskort. Bokførte beløp endres ikke.
+Samlet norsk MVA-uttrekk og innsending gjenstår.
