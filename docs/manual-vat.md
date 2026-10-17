@@ -138,3 +138,61 @@ manuelle MVA-bilag. Kildene er [Skatteetatens tjenestekjøpsveiledning](https://
 og [meldingskodebiblioteket](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml),
 lest 2026-10-17. Kodebiblioteket angir bare utgående MVA for 87. Dette er
 teknisk støtte for det beskrevne manuelle omfanget, ikke full MVA-melding.
+
+## Delvis fradrag på tjenestekjøp: kode 86 i 0.75.0
+
+Kjernens automatiske kjøpsjournal fører fullt fradrag. Fra 0.75.0 kan et
+separat, vanlig rettingsbilag redusere dette fradraget med kode **86** på
+**2714**. Leverandørfakturaen, beregnet MVA og betalingsoppfølgingen beholdes.
+Ingen ny bokføringsmotor, side, tabell eller prosentberegner innføres.
+
+Dette gjelder den [prøvde fakturaflyten med kode 86](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730):
+MVA-registrert norsk virksomhet, NOK, avgiftspliktige fjernleverbare tjenester
+fra utlandet og 25 %. Det er ikke automatisk delvis fradrag på fakturaen.
+Faglig vurdering og beregning av fradragsandelen gjøres før bokføring.
+
+1. Registrer og bokfør leverandørfakturaen med kode 86 og omvendt avgiftsplikt
+   som beskrevet i fakturaflyten. Kontroller at kjernen har ført hele beregnet
+   avgift kredit 2704 og fullt fradrag debet 2714. Ikke bokfør kjøpet på nytt.
+2. Før den delen som **ikke** kan fradragsføres fra 2714 til riktig kostnads-/
+   eiendelskonto i et separat bilag. Ved nettokjøp **1 000 NOK**, beregnet MVA
+   **250 NOK** og **50 % fradragsrett** er rettingen:
+
+   | Konto | Debet | Kredit |
+   | --- | ---: | ---: |
+   | Riktig kostnads-/eiendelskonto | 125 | |
+   | 2714, reduksjon av inngående MVA | | 125 |
+
+   Ikke før noe på 2704 eller leverandørgjelden i dette rettingsbilaget.
+   Oppgi faktura-/bilagsreferanse og forklar fradragsfordelingen i de vanlige
+   bilagsfeltene. Bevar beregningen sammen med regnskapsdokumentasjonen.
+3. På rettingsbilagets 2714-linje velger du **86** under **MVA på manuelt bilag**.
+   La grunnlaget stå **tomt**. Lagre. Kontoen må være entydig og aktiv i valgt,
+   aktiv kontoplan; foretaket må være norsk, bruke NOK og ha «MVA brukes» valgt.
+4. Før rettingen i riktig MVA-periode sammen med kjøpet. Uttrekket skal vise
+   fullt utgående grunnlag **1 000**, beregnet avgift **250**, inngående fradrag
+   **125** og dermed **125 NOK** netto MVA for eksempelet. Kjøpet viser fullt
+   fradrag inntil rettingsbilaget er bokført og klassifisert.
+5. En kreditnota krever også motsatt retting av den opprinnelige fradrags-
+   reduksjonen. Ved tilbakeføring av **200 NOK** med samme 50 % fradragsandel
+   fører kjernen avgift **−50** i begge retninger. Rett deretter debet 2714
+   **25** og kredit kostnad **25**, med kode 86 og tomt grunnlag på 2714.
+
+Uttrekket summerer fakturaens inngående avgift og rettingsbilagets faktiske
+beløp; det velger eller kontrollerer ikke fradragsprosenten. Det oppretter
+heller ingen kobling som automatisk retter ved senere kreditnota. Referanser,
+periode og avstemming må derfor ivaretas i vanlig bokføring. Endret kilde,
+manglende kode og inaktiv konto gir uavklart uttrekk uten netto/CSV.
+
+Manuell kode 86 her gjelder bare inngående fradragsretting på 2714. Hele
+manuelle kjøp med 86, andre satser, varer og valutafakturaer er ikke kvalifisert.
+Kjøp helt uten fradragsrett følger fortsatt den beskrevne kode 87-flyten.
+
+[Merverdiavgiftshåndboken § 8-2](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-8/M-8-2/)
+beskriver fradrag for anskaffelser delvis til bruk i registrert virksomhet.
+[Skatteetatens kodebibliotek](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
+angir både inngående og utgående MVA for kode 86. Sammen med
+[informasjonsmodellen](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/)
+er dette grunnlaget for å rapportere faktisk inngående fradrag uten å gjenta
+utgående grunnlag. Lest 2026-10-17. Føringsmåten over er prosjektets avgrensede
+anvendelse av kjernens rettingsbilag, ikke en særskilt prosedyre pålagt av kildene.

@@ -1185,7 +1185,7 @@ NorwayNativeVatCode=Norwegian VAT code
 NorwayNativeVatBoth=Sales and purchases
 
 NorwayManualVatTitle=VAT on manual voucher
-NorwayManualVatHelp=Select a code on the VAT line. Enter a base only for output VAT; reverse its sign for reversals. Input VAT uses the posted amount; leave the base empty. Code 87 covers manually posted service purchases without deduction, 25%, on 2704. This form creates no accounting entries.
+NorwayManualVatHelp=Select a code on the VAT line. Enter a base only for output VAT; reverse its sign for reversals. Input VAT uses the posted amount; leave the base empty. Code 87 covers manually posted service purchases without deduction, 25%, on 2704. Code 86 on 2714 covers a separate deduction correction after a posted reverse-charge invoice. This form creates no accounting entries.
 NorwayManualVatCodeLabel=VAT code
 NorwayManualVatBaseLabel=Base (output VAT, NOK)
 NorwayManualVatOutput=Output
@@ -1236,5 +1236,5 @@ NorwayVatCode7=Income that is not VAT turnover
 NorwayVatCode0=Purchases without VAT treatment
 NorwayVatCodeNO0=Purchases without VAT treatment (NO0 → 0)
 NorwayVatCode52=Export of goods and services
-NorwayVatCode86=Foreign service purchases, 25% with full deduction
+NorwayVatCode86=Foreign service purchases, 25% with deduction
 NorwayVatCode87=Foreign service purchases without deduction
