@@ -44,6 +44,7 @@ try {
   mvBlocked(fn()=>mvSave($piece,$id,'81',$base),'Unsupported import code accepted');
   mvBlocked(fn()=>mvSave($piece,$id,$spec['type']===1?'1':'3',$base),'Wrong direction/account accepted');
   mvBlocked(fn()=>mvSave($piece,$id,(string)$code,'999'),'Wrong base accepted');
+  if($spec['type']===1){mvBlocked(fn()=>mvSave($piece,$id,(string)$code,'0'),'Zero output base accepted');mvBlocked(fn()=>mvSave($piece,$id,(string)$code,(string)(-100*$sign)),'Opposite base sign accepted');}
   $outsider=new class {public $id=987654;public $socid=1;public function hasRight(...$args){return true;}};
   mvBlocked(fn()=>mvSave($piece,$id,(string)$code,$base,null,$outsider),'External user accepted');
   $reader=new class {public $id=987654;public $socid=0;public function hasRight(...$args){return end($args)==='lire';}};

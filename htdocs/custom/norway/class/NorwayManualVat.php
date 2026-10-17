@@ -87,7 +87,7 @@ class NorwayManualVat
                 else {
                     if(!preg_match('/^-?(?:0|[1-9][0-9]{0,12})(?:\.[0-9]{1,2})?$/D',$base)) {throw new RuntimeException('NorwayManualVatBase');}
                     $tax=(float)$line->credit-(float)$line->debit;
-                    if(abs(round((float)$base*$spec['rate']/100,2)-$tax)>0.010001){throw new RuntimeException('NorwayManualVatBase');}
+                    if((float)$base*$tax<=0 || abs(round((float)$base*$spec['rate']/100,2)-$tax)>0.010001){throw new RuntimeException('NorwayManualVatBase');}
                 }
                 $hash=self::sourceHash($line);
                 self::query($db,'INSERT INTO '.$db->prefix().'norway_manual_vat (entity,fk_bookkeeping,tax_code,tax_base,source_hash,fk_user,updated_at) VALUES ('
