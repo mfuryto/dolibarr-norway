@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-16. Modul 0.67.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.69.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -151,6 +151,23 @@ uten kopier av hele dokumenter eller en ny bokføringsflyt. Det er ikke laget
 en delvis rapport som fremstilles som komplett MVA-melding. Generelle API-kall
 til standardoppslaget går ikke gjennom widget-hooken; integrasjoner skal angi
 riktig kode uttrykkelig.
+
+## Manuelle felt og ordinært uttrekk i 0.68.0–0.69.0
+
+Det manuelle feltgapet ovenfor er løst med én liten oppføring per manuell
+MVA-linje, ved det native bilaget. Ingen dokumentkopier eller revisjonsarkiv
+opprettes. [Manuelle felt](manual-vat.md) beskriver tilgang og overgang.
+
+[Det ordinære uttrekket](vat-report.md) gjenbruker dagens fakturakoder,
+linjebeløp og hovedbok, samt de manuelle feltene. Native journalprøver av
+varer/tjenester, tre satser, kreditnotaer og separate fradragsrettinger er
+avstemt. Betaling påvirker ikke dette bokføringsbaserte periodevalget.
+Ufullstendige kilder eller beløpsavvik gir ingen netto/CSV. Ingen kilde skrives
+om. Rapporten har én inngang under de native regnskapsrapportene.
+
+Dette dekker det påviste gapet for ordinære koder, ikke full norsk melding.
+Nullsats/utland, registreringsovergang og blant annet oppgjør/åpningsposter
+må kvalifiseres før et fullstendig uttrekk eller innsending kan godkjennes.
 
 ## SAF-T: kjerneeksport og kandidater
 

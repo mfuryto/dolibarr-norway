@@ -473,3 +473,13 @@ låsing, eksport og samtidige endringer er prøvd, sammen med begge fortegn,
 separate fradragsrettinger, norsk/engelsk HTTP og backup/gjenoppretting.
 [Omfang og kilde](manual-vat.md). Neste leveranse er det avstembare uttrekket;
 nullsats/utland og samlet MVA-melding er fortsatt ikke godkjent.
+
+## Ordinært MVA-uttrekk i 0.69.0
+
+Den native rapportgruppen har ett lesende uttrekk for ordinære norske koder.
+Fakturaer/kreditnotaer og manuelle MVA-linjer avstemmes mot faktisk bokføring,
+inkludert separate fradragsrettinger. Uavklarte poster viser kildelenker og
+sperrer netto/CSV. Ingen ny lagringsmodell, kontrollkopi eller oppstartsoppgave.
+Native journalprøver, øreavrunding, kildebevaring, rettigheter/foretak og
+HTTP-eksport inngår. [Omfang](vat-report.md). Neste arbeid gjelder nullsats,
+utland, registreringsovergang og særposteringer; full melding/innsending gjenstår.
