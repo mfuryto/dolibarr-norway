@@ -41,11 +41,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-currency.php
 "${compose[@]}" exec -T web php /opt/norway-tests/integration.php
 "${compose[@]}" exec -T web php /opt/norway-tests/schema-migration.php
-"${compose[@]}" exec -T web php /opt/norway-tests/bank-setup.php
-"${compose[@]}" exec -T web php /opt/norway-tests/bank-defaults.php
-"${compose[@]}" exec -T web php /opt/norway-tests/journal-setup.php
 "${compose[@]}" exec -T web php /opt/norway-tests/company-setup.php
-"${compose[@]}" exec -T web php /opt/norway-tests/vat-accounts.php
 "${compose[@]}" exec -T web php /opt/norway-tests/vat-rates.php
 "${compose[@]}" exec -T web php /opt/norway-tests/registry.php
 "${compose[@]}" exec -T web php /opt/norway-tests/eur-pricing.php
@@ -56,7 +52,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-preview.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-import.php
 "${compose[@]}" exec -T web php /opt/norway-tests/chart-profile.php
-"${compose[@]}" exec -T web php /opt/norway-tests/standard-accounts.php
+"${compose[@]}" exec -T web php /opt/norway-tests/chart-groups.php
 "${compose[@]}" exec -T web php /opt/norway-tests/http-smoke.php
 "${compose[@]}" exec -T web php /opt/norway-tests/company-vat-http.php
 

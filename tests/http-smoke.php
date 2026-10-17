@@ -44,7 +44,7 @@ try{
   foreach($stored as $row){$values=array_map(fn($value)=>$value===null?'NULL':"'".$db->escape((string)$value)."'",array_values($row));httpAssert((bool)$db->query('INSERT INTO '.$db->prefix().'const ('.implode(',',array_keys($row)).') VALUES ('.implode(',',$values).')'),'Default restore row');}
   $conf->setValues($db);
  }
- foreach(array('audit','periods','invoice','invoiceperiod','salestaxbasis','purchasededuction','productaccounts','documents','registration','taxmappings','vat','chart') as $retired){request('/custom/norway/admin/'.$retired.'.php');httpAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===404,'Retired endpoint still callable');}
+ foreach(array('defaults','standardaccounts','journals','vataccounts','bankdefaults','audit','periods','invoice','invoiceperiod','salestaxbasis','purchasededuction','productaccounts','documents','registration','taxmappings','vat','chart') as $retired){request('/custom/norway/admin/'.$retired.'.php');httpAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===404,'Retired endpoint still callable');}
  $body=request('/index.php?lang=nb_NO');httpAssert(strpos($body,'bg-infobox-bank_account')!==false,'Bank dashboard missing');httpAssert(stripos(html_entity_decode($body,ENT_QUOTES,'UTF-8'),'sjekkinnskudd')===false&&strpos($body,'/compta/paiement/cheque/')===false,'Cheque dashboard remains');
  request('/compta/paiement/cheque/list.php');httpAssert(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Cheque endpoint accessible');
  httpAssert(overviewSnapshot()===$snapshot,'Setup overview or linked GET changed financial data');

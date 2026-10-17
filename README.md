@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.76.0 · Under utvikling**
+**Versjon 0.77.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -132,8 +132,9 @@ separate fradragsomposteringer.
 ## Norske MVA-koder
 
 Det eksisterende MVA-oppsettet kan opprette separate ordinære salgskoder
-3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister for nye, ubrukte oppsett.
-MVA-kontohjelpen støtter disse radene. Native fakturalinjer bevarer kodevalget.
+3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister. Fra 0.77.0 kan manglende kodevalg også legges til i
+brukte oppsett, med bevaring av eksisterende satser.
+Kontokodene velges direkte på satsradene i kjernens MVA-register. Native fakturalinjer bevarer kodevalget.
 Standardvalget i de prøvde skjermbildene er avgrenset til riktig salgs-/kjøpsretning.
 Eksisterende regnskap og produkter legges ikke om automatisk. Ingen ny meny,
 kontrollside, kodemodell eller lagringstabell innføres.
@@ -199,3 +200,10 @@ lagrede fullføringsmerker eller ekstra godkjenninger.
 Full [gjennomgang av tidligere tilpasninger](docs/review-0.75.0.md)
 og [samlet leveranseplan med ferdigkriterier](docs/delivery-plan.md)
 er grunnlaget for videre arbeid. Hele modulen er fortsatt under utvikling.
+
+Fra **0.77.0** er norsk grunnoppsett forenklet til kjernens standardkontoer,
+journaler, MVA-register og bankkort. Separate utfyllingssider er fjernet.
+Kontoplanens manglende native balanse-/resultatgrupper fylles uten å endre egne
+valg eller posteringer; resultat og teknisk saldoovergang er prøvd. Hver
+nummerserie låses uavhengig etter bruk. Se [leveranseplanen](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/delivery-plan.md)
+for gjenstående dokument-/fradragsflyt, rapportering og årsavslutning/skatt.

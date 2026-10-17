@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
-require_once __DIR__.'/NorwayDefaultAccounts.php';
-/** Confirmed initial setup only: never rewrite rates or historical source data. */
+require_once __DIR__.'/NorwayChartProfile.php';
+/** Native Norwegian VAT choices; preserve used settings and historical source data. */
 class NorwayVatRates
 {
     private static function rows($db,$sql)
@@ -82,7 +82,11 @@ class NorwayVatRates
     }
     public static function preview($db,$entity)
     {
-        $base=NorwayDefaultAccounts::preview($db,$entity,array('ACCOUNTING_VAT_SOLD_ACCOUNT'=>'2700','ACCOUNTING_VAT_BUY_ACCOUNT'=>'2710'));
+        if ((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity) { throw new InvalidArgumentException('Entity'); }
+        $selected=self::rows($db,"SELECT value FROM ".$db->prefix()."const WHERE entity=".(int)$entity." AND name='CHARTOFACCOUNTS'");
+        $chartId=count($selected)===1 ? (int)$selected[0]['value'] : 0;
+        $charts=self::rows($db,"SELECT s.rowid,s.pcg_version,s.active,c.code AS country FROM ".$db->prefix()."accounting_system s JOIN ".$db->prefix()."c_country c ON c.rowid=s.fk_country WHERE s.rowid=".$chartId);
+        $base=array('chart'=>count($charts)===1?$charts[0]:null,'runtime_chart'=>getDolGlobalInt('CHARTOFACCOUNTS'));
         $entity=(int)$entity;$p=$db->prefix();
         $country=self::rows($db,"SELECT rowid,active FROM ".$p."c_country WHERE code='NO'");
         if (count($country)!==1) { throw new RuntimeException('Country'); }
@@ -95,10 +99,10 @@ class NorwayVatRates
         // All document states count, including drafts and quotes. Do not silently change their setup.
         foreach (array('facture','facture_fourn','propal','commande','commande_fournisseur','accounting_bookkeeping') as $table) {
             $usage[$table]=self::rows($db,'SELECT rowid FROM '.$p.$table.' WHERE entity='.$entity.' ORDER BY rowid'.$db->plimit(1));
-            $blocked=$blocked || (bool)$usage[$table];
+
         }
         $usage['products']=self::rows($db,'SELECT rowid FROM '.$p.'product WHERE entity='.$entity.' ORDER BY rowid'.$db->plimit(1));
-        $blocked=$blocked || (bool)$usage['products'];
+        $hasUsage=(bool)array_filter($usage);
         $changes=array();
         foreach (array_merge(self::codes(),self::zeroCodes()) as $spec) {
             $matches=array_values(array_filter($rates,static fn($r)=>trim((string)$r['code'])===$spec['code']));
@@ -113,12 +117,13 @@ class NorwayVatRates
             // Preserve other coded treatments; never infer their purpose from the rate.
             if(trim((string)$r['code'])!=='' && in_array((float)$r['taux'],array(25.0,15.0,12.0),true)){continue;}
             $plain=self::ordinary($r) && trim((string)$r['accountancy_code_sell'])==='' && trim((string)$r['accountancy_code_buy'])==='';
-            $action=$plain && (int)$r['use_default']===0 ? 'Deactivate' : 'Review';
+            $action=$hasUsage ? 'Keep' : ($plain && (int)$r['use_default']===0 ? 'Deactivate' : 'Review');
             $blocked=$blocked || $action==='Review';
             $changes[]=array('id'=>(int)$r['rowid'],'rate'=>(int)$r['taux'],'type'=>(int)$r['type_vat'],'code'=>(string)$r['code'],'action'=>$action);
         }
         return array('entity'=>$entity,'base'=>$base,'country'=>$country,'usage'=>$usage,'rates'=>$rates,'changes'=>$changes,'blocked'=>$blocked);
     }
+    public static function fingerprint($preview) { return hash('sha256',json_encode($preview,JSON_THROW_ON_ERROR)); }
     public static function apply($db,$entity,$fingerprint,$user)
     {
         if (empty($user->admin) || (int)$user->id<=0 || !$user->hasRight('accounting','chartofaccount')) { throw new InvalidArgumentException('Permission'); }
@@ -133,7 +138,7 @@ class NorwayVatRates
             self::rows($db,'SELECT rowid FROM '.$p.'accounting_system FOR UPDATE');
             self::rows($db,"SELECT rowid FROM ".$p."c_country WHERE code='NO' FOR UPDATE");
             $preview=self::preview($db,$entity);
-            if (!hash_equals(NorwayDefaultAccounts::fingerprint($preview),(string)$fingerprint) || $preview['blocked']) { throw new InvalidArgumentException('Changed or blocked'); }
+            if (!hash_equals(self::fingerprint($preview),(string)$fingerprint) || $preview['blocked']) { throw new InvalidArgumentException('Changed or blocked'); }
             $saved=0;$country=(int)$preview['country'][0]['rowid'];
             foreach ($preview['changes'] as $change) {
                 if ($change['action']==='Create') {

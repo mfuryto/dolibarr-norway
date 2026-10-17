@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.76.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.77.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -344,3 +344,17 @@ veilederen er nå én lesende statustabell med lenker til kjernens verktøy og
 tydelig uferdig støtte. Ingen ny godkjenningsmodell eller kontrollhistorikk.
 Filutrullingen fjerner eksplisitt utgåtte eide PHP-filer; installasjonskontrollen
 avviser ekstra kjørbar kode. Øvrige funn lukkes først med bevis i relevant flyt.
+
+## Oppfølging i 0.77.0 — norsk grunnoppsett
+
+R02 og oppsettsoverlappene R07–R10 er rettet for etappe 2. [Kontoplandokumentasjonen](norwegian-chart.md)
+angir native grupper og uavhengig fasit for resultat/saldoovergang. Native
+HTTP-skjemaer dekker standardkontoer, journaler, omdøpt konto og flere bankkonti,
+også etter historikk. Overlappende skriveflater og deres hjelpeklasser er fjernet.
+MVA-kodevalg kan suppleres uten endring av historiske rader. Nummerserieprøvene
+viser at faktura ikke låser kreditnota/tilbud og kunde ikke låser leverandør;
+eksisterende profiler/koder og dokumentnumre bevares.
+
+Dette dekker grunnoppsett. Full dokument-/fradragsflyt, rapportering, faktisk
+årsoppgjør og skatt er fortsatt åpne leveranser. Grønn teknisk prøve er ingen
+samlet regnskapsfaglig produksjonsaksept.

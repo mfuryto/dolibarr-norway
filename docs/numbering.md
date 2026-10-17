@@ -40,9 +40,12 @@ numeriske numre med annet antall sifre i den samme serien sperrer dette enkle
 oppsettet og krever særskilt gjennomgang. Systemet kan ikke kontrollere numre
 som bare finnes i et tidligere system; administrator må avklare overgangen.
 
-F/K/T-oppsettet låses når nye dokumenter er utstedt etter konfigureringen, eller
-når den registrerte utstedte referansehistorikken er endret. Kunde-/leverandør-
-startnumre låses separat når partsposter er lagt til/fjernet eller kodene endret.
+Fra 0.77.0 låses hver serie uavhengig: Faktura låser ikke kreditnota eller
+tilbud, og kunde låser ikke leverandør. Start/prefiks for en dokumentserie låses
+når dens utstedte referanser endres etter konfigurering. Startnummer for hver
+partstype låses når kodene for akkurat den rollen endres. En ny part uten kode
+for rollen låser ikke denne serien. Eldre oppsett leses videre; ved neste
+lagring oppgraderes profilen uten å endre eksisterende numre.
 Kunde-/leverandørprefiks kan fortsatt endres etter bruk, for nye koder.
 Tellingen fortsetter på tvers av tidligere valgte prefikser, uten omnummerering.
 Navne-/adresseendringer endrer ikke nummereringen. Betaling av en faktura endrer

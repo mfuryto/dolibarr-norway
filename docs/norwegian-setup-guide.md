@@ -51,7 +51,7 @@ Velg behandling for hver aktuell type salg og kjøp: norsk avgiftspliktig omsetn
 **Delvis levert:** modulen kontrollerer satsdekning og hindrer enkelte feil ved fakturavalidering. Velg bare satsene som gjelder dine varer og tjenester. Kjernens gamle norske satser må ikke brukes ukritisk.
 
 MVA-kontoer velges under Regnskap → Innstillinger. Modulen har oppsetthjelp
-for norske satsrader i nye regnskap. Det er ingen egen registreringshistorikk
+for manglende norske satsrader. Det er ingen egen registreringshistorikk
 eller avgiftskodekobling å vedlikeholde i modulen. Bevar vedtak og annet
 registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
@@ -59,9 +59,8 @@ registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
 
 Fra 0.67.0 kan [MVA-oppsettet](vat-rates.md) legge ordinære norske salgskoder
-3/31/33 og kjøpskoder 1/11/13 på kjernens satsrader i et ubrukt oppsett.
-Kjernen bevarer kodevalget på fakturalinjen. Eksisterende regnskap og produkter
-krever manuell gjennomgang i kjernens register. Nullsats og utenlandshandel
+3/31/33 og kjøpskoder 1/11/13 på kjernens satsrader.
+Kjernen bevarer kodevalget på fakturalinjen. Fra 0.77.0 kan også brukte oppsett suppleres uten å endre eksisterende rader. Nullsats og utenlandshandel
 får ingen automatisk klassifisering. Dette er grunnlag for videre rapportering,
 ikke en ferdig MVA-melding.
 
@@ -107,8 +106,8 @@ norsk MVA-melding. Se [prøver og begrensninger](coverage-analysis.md).
 ## 4. Kontoplan, standardkontoer og journaler
 
 I nytt regnskap følger du kontoplanvalg med [ordinært MVA-satsoppsett](vat-rates.md)
-og deretter [satskontoene](vat-accounts.md). Dokumenter og historikk sperrer
-den automatiske oppsetthjelperen; etablerte regnskap gjennomgås manuelt.
+og deretter [satskontoene](vat-accounts.md). Brukte oppsett kan suppleres med
+manglende kodevalg; eksisterende satser og kontokoblinger bevares.
 
 «Skattekontoer» er en egen liste for skatt-/avgiftsmodulen. Den kan stå urørt
 når funksjonen ikke brukes, og er ikke en forutsetning for vanlig fakturering
@@ -127,15 +126,24 @@ i ENK uten ansatte. Se [veiledning for skattekontoer](tax-accounts.md).
 | Bank | 1920 Bankinnskudd | Velges på faktisk bankkonto; flere bankkonti kan kreve andre kontoer |
 | Kjøp, feilkonto og overføring | Ingen automatisk anbefaling | Avhenger av kostnad og transaksjon |
 
-Fra 0.14.0 kan [manglende journaltyper opprettes etter bekreftelse](journal-setup.md), med bevaring av eksisterende journaler og bilag. Kontroller aktive journaler med kode og riktig type: salg (2), kjøp (3), bank/kasse (4), diverse (1). Kodene kan beholdes hvis oppsettet er egnet; de er ikke myndighetenes avgiftskoder. Kontoens eksistens bekrefter ikke riktig klassifisering. Kontokategorier og SAF-T-/næringsmapping settes ikke av kontoplanimporten.
+Bruk kjernens [journalregister](journal-setup.md): salg (2), kjøp (3),
+bank/kasse (4) og diverse (1). Velg egne koder og navn; de er ikke myndighetskoder.
+Kjernen lagrer både standardkontoer og journaler i nytt og brukt regnskap.
+Separate utfyllingssider er fjernet i 0.77.0.
 
-**Levert:** kontroll og kontoforslag, samt separat [bekreftet utfylling](default-accounts.md) av tom kunde-/leverandørstandard i et nytt bokføringsoppsett. Eksisterende valg og historikk bevares. **Gjenstår:** lagring av øvrige grunnkoblinger og komplett rapporteringsmapping. Oppdatering fyller ingen kontoforslag automatisk. Se [detaljert kontooppsett](accounting-setup.md).
+Den medfølgende planen får kontoklasse 1–2 for balanse og 3–8 for resultat.
+Manglende grupper fylles ved oppdatering; egne valg og historikk bevares.
+Kjernens avslutningsoppsett har tilsvarende grupper når feltene var tomme.
+Velg passende avslutningsjournal og resultatkonto der før årsavslutning.
+Dette gir ikke automatisk resultatdisponering, SAF-T eller skattelevering.
+Se [detaljert kontooppsett](accounting-setup.md).
 
 ## 5. Bank og betaling
 
 **Manuelt:** Åpne bank-/kasselisten, opprett eller rediger faktisk bankkonto, fyll inn betalingsopplysningene og velg NOK, bokføringskonto og aktiv bankjournal. Kontroller opplysningene på en forhåndsvisning av fakturaen. KID og bankintegrasjon må vurderes og konfigureres særskilt; de følger ikke automatisk med kontoplanen.
 
-Fra 0.17.0 finnes [bekreftet utfylling av manglende bankkoblinger](bank-defaults.md) for én ny ordinær NOK-bankkonto uten historikk. Eksisterende koblinger beholdes; øvrige oppsett gjennomgås manuelt.
+Fra 0.77.0 bruker alle [bankkontoens vanlige oppsett](bank-defaults.md).
+Flere bankkonti og egne kontonavn er tillatt; det er ingen separat bekreftelsesrunde.
 
 Bruk kjernens bankkontooppsett og hovedbok for konto-/journal-/valutakoblinger og avstemming.
 

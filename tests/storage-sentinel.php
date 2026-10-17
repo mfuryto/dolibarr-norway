@@ -85,6 +85,17 @@ $zeroMarker='/var/www/documents/norway-zero-code-marker.json';$zeroJson=json_enc
 if(getenv('NORWAY_CREATE_SENTINEL')==='1'){if(file_put_contents($zeroMarker,$zeroJson)===false){throw new RuntimeException('Zero marker write');}}
 elseif(file_get_contents($zeroMarker)!==$zeroJson){throw new RuntimeException('Native zero choices changed through update/restore');}
 print "PASS native zero-code rows/IDs preserved through update/restore\n";
+// Version 0.77 repairs missing native classes while preserving explicit local grouping.
+if(getenv('NORWAY_CREATE_SENTINEL')==='1'){
+    if(!$db->query("UPDATE ".$db->prefix()."accounting_account SET pcg_type='RESK' WHERE entity=".(int)$conf->entity." AND fk_pcg_version='NORWAY-NO-1' AND account_number='1500'")
+        || !$db->query("UPDATE ".$db->prefix()."accounting_account SET pcg_type='XXXXXX' WHERE entity=".(int)$conf->entity." AND fk_pcg_version='NORWAY-NO-1' AND account_number='1920'")){throw new RuntimeException('Legacy group fixture');}
+    if(dolibarr_set_const($db,'ACCOUNTING_CLOSURE_ACCOUNTING_GROUPS_USED_FOR_BALANCE_SHEET_ACCOUNT','1,2,RESK','chaine',0,'',$conf->entity)<=0){throw new RuntimeException('Custom closing fixture');}
+}
+$r=$db->query("SELECT account_number,pcg_type FROM ".$db->prefix()."accounting_account WHERE entity=".(int)$conf->entity." AND fk_pcg_version='NORWAY-NO-1'");$classes=array();while($r&&$row=$db->fetch_object($r)){$classes[$row->account_number]=$row->pcg_type;}
+if(count($classes)!==745){throw new RuntimeException('Chart classes lost');}
+foreach($classes as $number=>$class){$expected=(string)$number==='1500'?'RESK':((string)$number==='1920'&&getenv('NORWAY_CREATE_SENTINEL')==='1'?'XXXXXX':substr((string)$number,0,1));if($class!==$expected){throw new RuntimeException('Class repair/preservation failed');}}
+if(getDolGlobalString('ACCOUNTING_CLOSURE_ACCOUNTING_GROUPS_USED_FOR_BALANCE_SHEET_ACCOUNT')!=='1,2,RESK'){throw new RuntimeException('Custom closing group lost');}
+print "PASS 0.77 native class repair and custom groups through upgrade/restore\n";
 $result = $db->query("SELECT label,active FROM ".$db->prefix()."accounting_account WHERE entity=".(int) $conf->entity." AND fk_pcg_version='SYN-BACKUP' AND account_number='8891'");
 $account = $result ? $db->fetch_object($result) : false;
 if (!$account || $account->label !== 'Synthetic imported backup account' || (int) $account->active !== 1) {

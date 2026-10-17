@@ -494,3 +494,23 @@ Kode 7 vises utenfor meldingsgrunnlaget, også i CSV. Konflikter og feilaktige
 nullbeløp sperrer uttrekket. Oppdatering, bevaring og gjenoppretting er prøvd.
 Faglige vilkår, utenlandstilfeller og øvrige begrensninger står i
 [kodeveiledningen](vat-rates.md); ingen ny kontrollflyt eller meny er opprettet.
+
+## 0.77.0 — ferdigstilt norsk grunnoppsett
+
+Native kontoklasser og tomme avslutningsgrupper fylles for den medfølgende planen,
+med gjentakbar dataretting for eldre installasjoner. Egne navn/grupper, kontoers
+aktivstatus og posteringer beholdes. Fem parallelle skriveflater og seks
+hjelpeklasser fjernes; oppsettet bruker kjernens standardkontoer, MVA-register,
+journaler og bankkort. Hver nummerserie låses separat etter bruk; eldre profiler
+leses videre. Norske kodevalg kan suppleres i et brukt regnskap uten å deaktivere
+gamle satser.
+
+Aksept av etappe 2: 23 kildetester, PHP-syntaks, modulpakke, komplett fersk
+integrasjonsprøve og faktisk native HTTP-oppsett med omdøpt konto/to banker.
+Resultat/saldoovergang gir overskudd 300 og underskudd 200 med balansert åpning
+og bevarte gamle poster. Oppgradering og isolert backup/gjenoppretting prøver
+manglende klasser, egne grupper og utgått kode. Nettleserprøven dekker 80
+visninger på norsk/engelsk ved fire skjermbredder.
+
+Dette er grunnoppsett, ikke ferdig norsk årsoppgjør eller samlet produksjonsaksept.
+Gjenstående arbeid følger den samlede leveranseplanen.

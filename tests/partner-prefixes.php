@@ -18,7 +18,7 @@ try{
  $changed=ppPartner(1,0);ppAssert($changed->code_client==='C00003','New prefix not used');$both->name='SYNTHETIC PREFIX PARTNER RENAMED';ppAssert($both->update($both->id,$user)>0,'Old codes rejected on unrelated edit');ppAssert($both->fetch($both->id)>0&&$both->code_client==='K00001'&&$both->code_fournisseur==='L00001','Existing code rewritten');
  $input['customer_prefix']='';$input['supplier_prefix']='';ppSave($input);$plain=ppPartner(1,1);ppAssert($plain->code_client==='00004'&&$plain->code_fournisseur==='00002','Returning to no prefix reset counters');
  $input['customer_prefix']='K';$input['supplier_prefix']='L';ppSave($input);$back=ppPartner(1,1);ppAssert($back->code_client==='K00005'&&$back->code_fournisseur==='L00003','Returning to old prefix reused numbers');
- $record=NorwayNumbering::record($db,$entity,'customer');ppAssert($record['version']===2&&$record['partner_prefixes']['customer']===array('','K','C'),'Prefix history missing');
+ $record=NorwayNumbering::record($db,$entity,'customer');ppAssert($record['version']===3&&$record['partner_prefixes']['customer']===array('','K','C'),'Prefix history missing');
  $before=$input;$before['customer_start']=2;try{NorwayNumbering::preview($db,$entity,$before,$user);throw new LogicException('Used starting number reset');}catch(RuntimeException $expected){}
  foreach(array('k','K-',' K','ABCDE') as $prefix){try{NorwayNumbering::input('F',1,'K',1,'T',1,1,1,$prefix,'L');throw new LogicException('Invalid prefix accepted');}catch(InvalidArgumentException $expected){}}
  // Legacy v1 records read with empty prefixes; saving upgrades only configuration.

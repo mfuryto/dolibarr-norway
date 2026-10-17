@@ -14,7 +14,7 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.76.0';
+        $this->version = '0.77.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
@@ -61,7 +61,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.76.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.77.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';
@@ -73,6 +73,9 @@ class modNorway extends DolibarrModules
         require_once __DIR__.'/../../class/NorwayVatRates.php';
         try { NorwayVatRates::ensureZeroCodes($this->db,(int)$GLOBALS['conf']->entity); }
         catch (Throwable $error) { $this->error='Could not add missing Norwegian VAT choices'; return -1; }
+        require_once __DIR__.'/../../class/NorwayChartGroups.php';
+        try { NorwayChartGroups::complete($this->db,(int)$GLOBALS['conf']->entity); }
+        catch (Throwable $error) { $this->error='Could not complete Norwegian account groups'; return -1; }
         // Core _init inserts module parts but does not update existing hook records.
         // Refresh our own registration explicitly when upgrading an enabled module.
         if (dolibarr_set_const($this->db, 'MAIN_MODULE_NORWAY_HOOKS', json_encode($this->module_parts['hooks']),

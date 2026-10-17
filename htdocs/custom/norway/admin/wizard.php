@@ -4,6 +4,7 @@ require '../../../main.inc.php';
 if (!$user->admin || !empty($user->socid) || !isModEnabled('norway')) { accessforbidden(); }
 require_once __DIR__.'/../class/NorwayReadiness.php';
 require_once __DIR__.'/../class/NorwayVatRates.php';
+require_once __DIR__.'/../class/NorwayChartGroups.php';
 $langs->load('norway@norway');
 header('Cache-Control: no-store');
 $guide='https://github.com/mfuryto/dolibarr-norway/blob/main/docs/norwegian-setup-guide.md';
@@ -16,8 +17,8 @@ try {
     $r=$db->query('SELECT s.rowid FROM '.$db->prefix().'accounting_system s JOIN '.$db->prefix().'c_country c ON c.rowid=s.fk_country'
         .' WHERE s.rowid='.(int)getDolGlobalInt('CHARTOFACCOUNTS')." AND s.active=1 AND c.code='NO'");
     if(!$r){throw new RuntimeException('Setup read failed');}
-    // Selecting a chart is not proof that its accounts, groups or year-end setup are complete.
-    if($db->num_rows($r)>0){$chartStatus='Partial';}
+    // This status concerns account groups, not statutory reporting or tax support.
+    if($db->num_rows($r)>0){$chartStatus=NorwayChartGroups::ready($db,(int)$conf->entity)?'Set':'Partial';}
     $ratesStatus='Set';
     foreach(NorwayVatRates::codes() as $spec){if(NorwayVatRates::defaultCode($db,(int)$conf->entity,$spec['rate'],$spec['type'])===null){$ratesStatus='Missing';break;}}
 } catch(Throwable $error){$chartStatus='Unknown';$ratesStatus='Unknown';}
@@ -25,7 +26,7 @@ $rows=array(
     'Company'=>array($company?'Set':'Missing',array('/admin/company.php'=>'NorwayCompanySettings','/user/list.php'=>'NorwaySetupLinkUsers')),
     'Currency'=>array($conf->currency==='NOK' && getDolGlobalInt('MAIN_MULTILANGS')===1?'Set':'Missing',array('/admin/company.php'=>'NorwayCompanySettings','/admin/ihm.php'=>'NorwaySetupLinkLanguage')),
     'Registration'=>array('Review',array('/admin/company.php'=>'NorwayCompanySettings')),
-    'Chart'=>array($chartStatus,array('/custom/norway/admin/profile.php'=>'NorwaySetupLinkInstallChart','/accountancy/admin/account.php'=>'NorwaySetupLinkChart')),
+    'Chart'=>array($chartStatus,array('/custom/norway/admin/profile.php'=>'NorwaySetupLinkInstallChart','/accountancy/admin/account.php'=>'NorwaySetupLinkChart','/accountancy/admin/closure.php'=>'NorwaySetupLinkYearEnd')),
     'Accounts'=>array(getDolGlobalString('ACCOUNTING_ACCOUNT_CUSTOMER')!=='' && getDolGlobalString('ACCOUNTING_ACCOUNT_SUPPLIER')!=='' && getDolGlobalString('ACCOUNTING_ACCOUNT_CUSTOMER')!=='-1' && getDolGlobalString('ACCOUNTING_ACCOUNT_SUPPLIER')!=='-1'?'Set':'Missing',array('/accountancy/admin/defaultaccounts.php'=>'NorwaySetupLinkAccounts','/accountancy/admin/journals_list.php'=>'NorwayJournals')),
     'Rates'=>array($ratesStatus,array('/custom/norway/admin/vatrates.php'=>'NorwaySetupLinkNorwegianRates','/admin/dict.php?id=10'=>'NorwaySetupLinkVatAccounts')),
     'Bank'=>array('Review',array('/compta/bank/list.php'=>'NorwayWizardTaskBank')),

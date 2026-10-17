@@ -1,6 +1,6 @@
 # Installerbar norsk kontoplan
 
-Norway 0.9.0 leverer de 745 kontoene fra Odoos offisielle norske regnskapsmodul `l10n_no`, i stedet for et egenlaget lite kontoutvalg. Dette er en etablert norsk programvarekontoplan, ikke en påstand om sertifisering fra Standard Norge eller at hele regnskapsløsningen er godkjent.
+Modulen leverer de 745 kontoene fra Odoos offisielle norske regnskapsmodul `l10n_no`, i stedet for et egenlaget lite kontoutvalg. Dette er en etablert norsk programvarekontoplan, ikke en påstand om sertifisering fra Standard Norge eller at hele regnskapsløsningen er godkjent.
 
 ## Kilde og gjenbruk
 
@@ -22,15 +22,15 @@ Installeringsskriptet er en eksplisitt handling og kjøres ikke ved modulaktiver
 
 For et tomt bokføringsoppsett opprettes planen `NORWAY-NO-1`, knyttes til Norge, får alle 745 kontoene og velges for aktivt foretak. Ny installering av samme plan oppretter bare manglende kontoer og bevarer øvrige opplysninger. Hvis kontoene allerede samsvarer, opprettes null kontoer.
 
-Dolibarr velger en standardplan ved aktivering, selv uten installerte kontoer. Et slikt tomt valg kan erstattes ved eksplisitt installering dersom foretaket verken har kontoer eller hovedbokhistorikk. Hvis en annen plan har kontoer, eller foretaket har hovedbokhistorikk, stoppes installeringen. Inaktive/endrede kontoer, historiske kontonumre uten konto i planen, ugyldig profilmetadata eller endret forhåndsvisning blokkerer også installering. Slike situasjoner krever avklart migrering, ikke automatisk bytte.
+Dolibarr velger en standardplan ved aktivering, selv uten installerte kontoer. Et slikt tomt valg kan erstattes ved eksplisitt installering dersom foretaket verken har kontoer eller hovedbokhistorikk. Hvis en annen plan har kontoer, eller foretaket har hovedbokhistorikk, stoppes installeringen. Duplikater, historiske kontonumre uten konto i planen, ugyldig profilmetadata eller endret forhåndsvisning blokkerer også installering. Egne kontonavn og inaktive kontoer i samme plan bevares og sperrer ikke komplettering. Slike situasjoner krever avklart migrering, ikke automatisk bytte.
 
 Oppretting av plan, valg av plan og import skjer i én transaksjon. Bruker/foretak avgrenses og relevant oppsett låses før ny kontroll. Feil før commit rulles tilbake. Ved forbindelsesbrudd under commit kontrolleres resultatet med en ny forhåndsvisning før nytt forsøk. Kjør ikke parallelle kontoplanendringer eller bokføring under installering; låsing kan kortvarig forsinke andre operasjoner.
 
 ## Hva kontoplaninstalleringen ikke gjør
 
-Den velger ikke standardkontoer for salg/kjøp, endrer ikke journaler eller bankkontoer og setter ikke MVA-satser eller avgiftskoder. Eksisterende dokumenter og bokførte poster endres ikke. Kontoens navn er ingen avgiftsregel. Odoos kontotyper, avstemmingsflagg og tags beholdes i originalkilden for sporbarhet, men gjettes ikke om til Dolibarrs rapporteringskategorier.
+Den velger ikke standardkontoer for salg/kjøp, endrer ikke journaler eller bankkontoer og setter ikke MVA-satser eller avgiftskoder. Eksisterende dokumenter og bokførte poster endres ikke. Kontoens navn er ingen avgiftsregel. Fra 0.77.0 settes kjernens `pcg_type` til kontoklassen (første siffer): 1–2 for balanse, 3–8 for resultat. Klassifiseringen samsvarer for alle 745 kontoer med balansetypene/resultattypene i den låste originalkilden. Avstemmingsflagg, tags og valgfrie egendefinerte rapportkategorier oversettes ikke automatisk.
 
-Norsk MVA-behandling, registreringsperioder og SAF-T-/næringsmapping er videre arbeid. Kontoplanen inneholder kontoer for flere virksomhetstyper; at en konto finnes, betyr ikke at et ENK skal bruke den. Bruk bokføringskontrollen etter installering og gjennomgå relevant kontobruk før bokføring.
+Norsk MVA-behandling, registreringsperioder og SAF-T-/næringsmapping er videre arbeid. Kontoplanen inneholder kontoer for flere virksomhetstyper; at en konto finnes, betyr ikke at et ENK skal bruke den. Gjennomgå relevant kontobruk i kjernens kontoplan og standardkontooppsett før bokføring.
 
 ## Aksept
 
@@ -54,6 +54,51 @@ SAF-T-klassifisering, avgiftsmapping, eksport og avstemming må fortsatt
 implementeres og testes separat. Eksisterende kontoer eller bokførte poster
 endres ikke som følge av denne beslutningen.
 
-### Teknisk verifikasjon
+## Kontogrupper og overgang fra eldre modul
 
-Kildetesten kontrollerer fast revisjon, lisensangivelse, filhasher og tapsfri konvertering av alle 745 kontoer. Syntetiske tester kontrollerer oppretting og valg, gjentakelse uten duplikater, utløpt/endret bekreftelse, navnekonflikter og vern mot annen plan eller eksisterende kontoer. Tidligere kontoimporttester dekker feil under andre kontooppretting og atomisk tilbakeføring. Installasjonstesten prøver CLI-installering to ganger og kontrollerer at alle 745 aktive kontoer og planvalget overlever oppdatering og backup/gjenoppretting. Nettlesertesten består for 17 sider ved fire skjermbredder (68 visninger). Ingen produksjonsdata brukes.
+Kontoklassene følger vanlig norsk inndeling: klasse 1 eiendeler, klasse 2
+egenkapital/gjeld og klasse 3–8 resultat. Se
+[Tripletex om kontoklasser](https://www.tripletex.no/ordbok/kontoklasser/).
+Dette er klassifisering i Dolibarrs native felt, ikke en kopi av NS 4102.
+Kjernens [resultatberegning og saldoovergang](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/class/bookkeeping.class.php#L2955)
+leser nettopp `pcg_type` og valgte avslutningsgrupper.
+
+Datarettingen i **0.77.0** kjøres ved moduloppdatering for aktivt foretak når
+akkurat `NORWAY-NO-1` er valgt. Den fyller bare tom/`XXXXXX` gruppe på kontoer
+som finnes i kildefilen. Navn, aktivstatus, andre kontoplaner, lokalt tilføyde
+konti, eksplisitte grupper og posteringer beholdes. Dette er en versjonert,
+gjentakbar dataretting i eksisterende felt; databaseskjemaet er fortsatt versjon 2.
+Oppdateringsskriptet tar backup først. Feil under retting tilbakefører hele
+rettingen. En isolert gjenopprettingsprøve dekker overgangen.
+
+Tomme avslutningsgrupper fylles med balanse `1,2` og resultat `3,4,5,6,7,8`.
+Egne eller arvede valg overskrives ikke. Rediger disse i kjernens
+**Avslutningsoppsett**, og grupper på kontoens native kort. Nyopprettede egne
+konti må få egnet gruppe der. Oppstartsoversikten viser delvis oppsett hvis
+kontoer mangler egnet gruppe eller balanse/resultat overlapper.
+
+Velg avslutningsjournal (type 9) og resultatkonto etter foretaket før bruk.
+Oppdateringen velger ikke disse og avslutter ingen periode. Ingen norsk
+resultatdisponering, skattemessig behandling eller myndighetsrapport oppstår
+automatisk. Kjernens valgfrie rapportkategorier er et annet felt enn
+kontoklassene; det leveres ingen ny egendefinert rapportmodell.
+
+### Teknisk verifikasjon i 0.77.0
+
+- Kildetest: fast revisjon, lisens, filhasher, 745 uendrede numre/navn og samsvar
+  mellom alle kontoklasser og originalkildens balanse-/resultattyper.
+- Nytt/brukt oppsett: komplettering, egne navn/grupper, inaktiv konto,
+  fremmed foretak, gjentakelse, gammel forhåndsvisning og feil med tilbakeføring.
+- Native hovedbok: inngående bank/egenkapital 1000, salg 500, kostnad 200,
+  fordring/gjeld 125. Kjernen gir resultat **300** og neste periodes saldoer
+  1500 debet 125, 1920 debet 1300, 2050 kredit 1000, 2099 kredit 300,
+  2400 kredit 125. Ingen resultatkonto følger med som inngående saldo;
+  summen balanserer og gamle poster er identiske før/etter. En separat periode
+  med underskudd 200 gir tilsvarende balansert åpning med debet 200 på resultatkontoen.
+- Installasjonsprøve: oppgradering av manglende grupper med egne valg samt
+  backup/gjenoppretting. Native HTTP-skjemaer prøves for standardkontoer,
+  journaler, omdøpt bokføringskonto og to faktiske bankkonti.
+
+2099 er valgt i den syntetiske prøven for å holde teknisk resultatføring adskilt
+fra faktisk resultatdisponering; det er ingen automatisk anbefaling til et foretak.
+Full årsavslutning, skatt og samlet produksjonsaksept følger leveranseplanen.

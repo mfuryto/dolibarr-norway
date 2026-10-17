@@ -94,63 +94,8 @@ try {
     verify(strpos($profile, 'NORWAY-NO-1') !== false && strpos($profile, 'value="installprofile"') !== false,
         'Norwegian chart preview or confirmation missing');
     if (getenv('NORWAY_TEST_DEFAULTS') === '1') {
-        verify(getenv('DOLI_COMPANY_NAME') === 'SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY') === '1', 'Synthetic defaults guard missing');
-        $defaults = page('/custom/norway/admin/defaults.php');
-        verify(preg_match('/name="token"[^>]*value="([^"]+)"/', $defaults, $defaultsToken) === 1
-            && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/', $defaults, $defaultsNonce) === 1, 'Defaults confirmation missing');
-        forwardProxyCookies();
-        page('/custom/norway/admin/defaults.php', array('action'=>'savedefaults', 'token'=>html_entity_decode($defaultsToken[1]), 'preview_nonce'=>$defaultsNonce[1]));
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302, 'Defaults save did not redirect');
-        forwardProxyCookies();
-        $defaults = page('/custom/norway/admin/defaults.php');
-        verify(strpos($defaults,'value="savedefaults"')===false
-            && (strpos($defaults,'Lagret 2 standardkontovalg')!==false || strpos($defaults,'Saved 2 account defaults')!==false), 'Confirmed defaults save failed');
-        forwardProxyCookies();
-        page('/custom/norway/admin/defaults.php', array('action'=>'savedefaults','token'=>html_entity_decode($defaultsToken[1]), 'preview_nonce'=>$defaultsNonce[1]));
-        forwardProxyCookies();
-        $defaults = page('/custom/norway/admin/defaults.php');
-        verify(strpos($defaults,'Lagringen kunne ikke bekreftes')!==false || strpos($defaults,'Saving could not be confirmed')!==false, 'Defaults confirmation replay accepted');
-    }
-
-if (getenv('NORWAY_TEST_JOURNALS') === '1') {
-        $journals=page('/custom/norway/admin/journals.php');
-        verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$journals,$journalToken)===1
-            && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$journals,$journalNonce)===1,'Journal confirmation missing');
-        forwardProxyCookies();
-        page('/custom/norway/admin/journals.php',array('action'=>'createjournals','token'=>html_entity_decode($journalToken[1]),'preview_nonce'=>$journalNonce[1]));
-        verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Journal save did not redirect');
-        forwardProxyCookies();
-        $journals=page('/custom/norway/admin/journals.php');
-        verify(strpos($journals,'value="createjournals"')===false
-            && (strpos($journals,'Opprettet 4 journaler')!==false || strpos($journals,'Created 4 journals')!==false),'Confirmed journal creation failed');
-        forwardProxyCookies();
-        page('/custom/norway/admin/journals.php',array('action'=>'createjournals','token'=>html_entity_decode($journalToken[1]),'preview_nonce'=>$journalNonce[1]));
-        forwardProxyCookies();
-        $journals=page('/custom/norway/admin/journals.php');
-        verify(strpos($journals,'Opprettingen kunne ikke bekreftes')!==false || strpos($journals,'Creation could not be confirmed')!==false,'Journal confirmation replay accepted');
-    }
-    if (getenv('NORWAY_TEST_BANK_DEFAULTS') === '1') {
-        verify(getenv('DOLI_COMPANY_NAME')==='SYNTHETIC INSTALLATION ONLY' && getenv('NORWAY_EXPECT_EMPTY')==='1','Synthetic bank defaults guard missing');
-        $r=$db->query('SELECT COUNT(*) AS n FROM '.$db->prefix().'bank_account');
-        verify($r && (int)$db->fetch_object($r)->n===0,'Bank fixture requires no bank accounts');
-        verify((bool)$db->query("INSERT INTO ".$db->prefix()."bank_account (ref,label,entity,clos,courant,fk_pays,currency_code) VALUES ('SYN-BANK','Synthetic bank setup',".(int)$conf->entity.",0,1,173,'NOK')"),'Bank fixture creation failed');
-        $fixture=(int)$db->last_insert_id($db->prefix().'bank_account');
-        try {
-            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
-            verify(preg_match('/name="token"[^>]*value="([^"]+)"/',$bank,$bankToken)===1 && preg_match('/name="preview_nonce"[^>]*value="([^"]+)"/',$bank,$bankNonce)===1,'Bank mapping confirmation missing');
-            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>html_entity_decode($bankToken[1]),'preview_nonce'=>$bankNonce[1]));
-            verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===302,'Bank mapping save did not redirect');
-            $r=$db->query('SELECT account_number,fk_accountancy_journal FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture);
-            $row=$r ? $db->fetch_object($r) : null;
-            verify($row && $row->account_number==='1920' && (int)$row->fk_accountancy_journal>0,'Confirmed bank mapping not stored');
-            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
-            verify(strpos($bank,'value="savebankdefaults"')===false,'Completed bank mapping offers repeated write');
-            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>html_entity_decode($bankToken[1]),'preview_nonce'=>$bankNonce[1]));
-            forwardProxyCookies(); $bank=page('/custom/norway/admin/bankdefaults.php');
-            verify(strpos($bank,'Lagringen kunne ikke bekreftes')!==false || strpos($bank,'Saving could not be confirmed')!==false,'Bank mapping replay accepted');
-            forwardProxyCookies(); page('/custom/norway/admin/bankdefaults.php',array('action'=>'savebankdefaults','token'=>'invalid','preview_nonce'=>$bankNonce[1]));
-            verify(curl_getinfo($curl,CURLINFO_HTTP_CODE)===403,'Bank mapping CSRF guard missing');
-        } finally { verify((bool)$db->query('DELETE FROM '.$db->prefix().'bank_account WHERE rowid='.$fixture),'Bank fixture cleanup failed'); }
+        require '/tmp/norway-native-setup.php';
+        nativeSetup(static function($path,$post=null){forwardProxyCookies();return page($path,$post);});
     }
 
     print "PASS installed module, NOK, nb_NO, instance key, locked installer and HTTPS-aware login\n";

@@ -1,7 +1,8 @@
 # MVA-kontoer for salg og innkjøp
 
-Fra 0.40.0 finnes «Fyll MVA-kontoer for salg og innkjøp» i norsk regnskapsoppsett,
-fra standardkontosiden og fra kontrollen av MVA-kontokoblinger.
+Bruk kjernens **MVA-kontoer** under Regnskap (avgiftssatsordboken).
+Fra 0.77.0 er modulens separate utfyllingsside fjernet. Lagrede koblinger
+beholdes; egne kontonavn og eksisterende regnskap sperrer ikke kjernens oppsett.
 
 Dolibarr lagrer to separate innstillinger:
 
@@ -11,7 +12,7 @@ Dolibarr lagrer to separate innstillinger:
 
 Å fylle standardkontoene fyller ikke satsradens egne felt. En generell
 reservekonto for høy sats erstatter heller ikke særskilte kontoer for lavere
-satser. Den nye siden viser forslag før lagring:
+satser. For den medfølgende planen brukes disse kontoene for ordinære avgiftspliktige innenlandske transaksjoner:
 
 | Ordinær innenlandsk sats | Salg: utgående MVA | Innkjøp: inngående MVA |
 | --- | --- | --- |
@@ -27,38 +28,13 @@ Kilder kontrollert 2026-10-13.
 
 ## Bruk
 
-1. Kontroller de aktive norske avgiftssatsene. Fra 0.41.0 finnes et separat
-   [bekreftet satsoppsett for nye regnskap](vat-rates.md). Eksisterende
-   regnskap og særvalg må fortsatt gjennomgås manuelt.
-2. Åpne utfyllingssiden og gjennomgå hver rad. Bare tomme felt på ordinære,
-   aktive norske satser uten særinnstillinger foreslås fylt. Fra 0.67.0
-   gjenkjennes også kodene 3/31/33 for salg og 1/11/13 for kjøp, når sats
-   og bruk samsvarer. Andre kodede behandlinger bevares for manuell vurdering.
-3. Bekreft at radene gjelder ordinære innenlandske avgiftspliktige salg/kjøp,
-   og at de viste kontoene er riktige. Lagre med bekreftelsesknappen.
-4. Åpne «MVA-kontoer» under Regnskap og kontroller salg- og kjøpskolonnene.
+1. Opprett manglende [norske kodevalg](vat-rates.md) ved behov.
+2. Åpne den aktuelle satsraden i kjernens MVA-register.
+3. Velg riktig salg-/kjøpskonto og lagre i det vanlige skjemaet.
 
-Eksisterende kontokoder bevares, også ukjente eller ugyldige koder som må
-rettes manuelt. Satsens bruk (salg, kjøp eller begge) respekteres.
-Forhåndsvisning og lagring er bundet til administrator, foretak og gjeldende
-innstillinger; samtidige endringer krever ny forhåndsvisning. Delvise feil
-rulles tilbake i én transaksjon.
-
-## Avgrensning
-
-Hjelperen krever den medfølgende aktive norske kontoplanen og et nytt
-bokføringsoppsett uten validerte kunde-/leverandørfakturaer eller hovedbok.
-Eksisterende regnskap må gjennomgå kontokoblingene manuelt i Dolibarr.
-Manglende, inaktive eller endrede målkontoer sperrer utfyllingen.
-
-Ingen satsrader opprettes, aktiveres eller endres. 0 %, historiske satser
-som 8 og 14 %, kodede rader, lokale avgifter, avdelingsregler og andre
-særinnstillinger fylles ikke. Import og omvendt avgiftsplikt trenger egne
-vurderinger og koblinger. Nullsats avgjør ikke om omsetningen er fritatt,
-unntatt eller eksport.
-
-Kontokoder avgjør ikke MVA-registrering, satsvalg på fakturalinjer,
-fradragsrett eller MVA-rapportering. Innkjøpskontoene gjelder inngående MVA
-med relevant fradragsrett; ingen automatisk vurdering av fradrag gjøres.
-Denne leveransen er teknisk kontooppsett, ikke norsk regnskapsmessig
-produksjonsaksept.
+Kodene 3/31/33 gjelder salg og 1/11/13 kjøp, i henholdsvis høy, middels og lav
+sats. Kontofeltene skal samsvare med radens retning og behandling. Nullkoder og
+omvendt avgiftsplikt har egne regler; ikke kopier de ordinære kontoene ukritisk.
+Eksisterende kontokoder overskrives ikke av moduloppdatering. Endring av et
+kontooppsett flytter ikke gamle hovedboksposter, men kan påvirke dokumenter som
+ennå ikke er overført. Se [samlet veiledning](norwegian-setup-guide.md).

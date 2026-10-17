@@ -28,7 +28,7 @@ class NorwayNumbering
     {
         if (!is_string($raw) || strlen($raw)>4000) { throw new RuntimeException('Numbering record'); }
         $record=json_decode($raw,true,512,JSON_THROW_ON_ERROR);
-        if (!is_array($record) || !in_array($record['version'] ?? null,array(1,2),true) || ($record['entity'] ?? null)!==$entity
+        if (!is_array($record) || !in_array($record['version'] ?? null,array(1,2,3),true) || ($record['entity'] ?? null)!==$entity
             || !is_int($record['user'] ?? null) || $record['user']<=0 || !is_string($record['at'] ?? null)
             || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+00:00$/D',$record['at'])
             || !is_string($record['baseline'] ?? null) || !preg_match('/^[a-f0-9]{64}$/D',$record['baseline'])
@@ -49,6 +49,10 @@ class NorwayNumbering
                     || !in_array('',$prefixes,true) || !in_array($input[$kind.'_prefix'],$prefixes,true)) { throw new RuntimeException('Partner prefix history'); }
                 foreach ($prefixes as $prefix) { if (!is_string($prefix) || !preg_match('/^[A-Z]{0,4}$/D',$prefix)) { throw new RuntimeException('Partner prefix history'); } }
             }
+        }
+        if ($record['version']===3) {
+            if (!is_array($record['series_baselines'] ?? null) || array_keys($record['series_baselines'])!==self::KINDS) { throw new RuntimeException('Numbering series'); }
+            foreach ($record['series_baselines'] as $hash) { if (!is_string($hash) || !preg_match('/^[a-f0-9]{64}$/D',$hash)) { throw new RuntimeException('Numbering series hash'); } }
         }
         return $record;
     }
@@ -138,6 +142,8 @@ class NorwayNumbering
         if (($record && $proposalModule!==self::PROPOSAL_MODULE) || (!$record && !in_array($proposalModule,array('mod_propale_marbre','mod_propale_saphir'),true))) { throw new RuntimeException('Proposal numbering module conflict'); }
         $partnerModule=$effective['SOCIETE_CODECLIENT_ADDON'] ?? 'mod_codeclient_leopard';
         if (($record && $partnerModule!==self::PARTNER_MODULE) || (!$record && !in_array($partnerModule,array('mod_codeclient_leopard','mod_codeclient_monkey','mod_codeclient_elephant'),true))) { throw new RuntimeException('Partner numbering module conflict'); }
+        $series=array();$seriesUsed=array_fill_keys(self::KINDS,false);
+        foreach (self::KINDS as $kind) { $series[$kind]=hash_init('sha256'); }
         $all=hash_init('sha256'); $issued=hash_init('sha256'); $count=0; $issuedCount=0;
         foreach (array('facture','propal') as $table) {
         $r=$db->query('SELECT rowid,ref,'.($table==='facture' ? 'type' : '0 AS type').',fk_statut FROM '.$db->prefix().$table.' WHERE entity='.$entity.' ORDER BY rowid LIMIT '.(self::SCAN_LIMIT+1));
@@ -145,7 +151,14 @@ class NorwayNumbering
         while ($row=$db->fetch_object($r)) {
             if (++$count>self::SCAN_LIMIT) { throw new RuntimeException('Numbering history capacity'); }
             hash_update($all,$table.json_encode((array)$row,JSON_THROW_ON_ERROR)."\n");
-            if ((int)$row->fk_statut!==0) { $issuedCount++; hash_update($issued,$table.json_encode(array($row->rowid,$row->ref,$row->type),JSON_THROW_ON_ERROR)."\n"); }
+            if ((int)$row->fk_statut!==0) {
+                $kind=$table==='propal' ? 'proposal' : ((int)$row->type===2 ? 'credit' : 'invoice');
+                // Other invoice types retain their original core model and do not use F/K.
+                if ($table==='propal' || in_array((int)$row->type,array(0,2),true)) {
+                    hash_update($series[$kind],json_encode(array($row->rowid,$row->ref,$row->type),JSON_THROW_ON_ERROR)."\n");
+                }
+                if ($record && ($table==='propal' || in_array((int)$row->type,array(0,2),true)) && preg_match('/^'.preg_quote($record['input'][$kind.'_prefix'],'/').'[0-9]{6}$/D',$row->ref)) { $seriesUsed[$kind]=true; }
+                $issuedCount++; hash_update($issued,$table.json_encode(array($row->rowid,$row->ref,$row->type),JSON_THROW_ON_ERROR)."\n"); }
             foreach ($table==='facture' ? array('invoice','credit') : array('proposal') as $kind) {
                 if (preg_match('/^'.preg_quote($input[$kind.'_prefix'],'/').'([0-9]+)$/D',$row->ref,$matches) && strlen($matches[1])!==6) { throw new RuntimeException('Numbering digit width conflict'); }
             }
@@ -157,18 +170,31 @@ class NorwayNumbering
         while ($row=$db->fetch_object($r)) {
             if (++$count>self::SCAN_LIMIT) { throw new RuntimeException('Numbering history capacity'); }
             hash_update($partners,json_encode((array)$row,JSON_THROW_ON_ERROR)."\n");
+            foreach (array('customer'=>'code_client','supplier'=>'code_fournisseur') as $kind=>$field) {
+                if ($row->$field===null || $row->$field==='') { continue; }
+                hash_update($series[$kind],json_encode(array($row->rowid,$row->$field),JSON_THROW_ON_ERROR)."\n");
+                foreach ($record['partner_prefixes'][$kind] ?? array() as $oldPrefix) {
+                    if (preg_match('/^'.preg_quote($oldPrefix,'/').'[0-9]{5}$/D',$row->$field)) { $seriesUsed[$kind]=true; }
+                }
+            }
         }
         $partnerBaseline=hash_final($partners);
         $partnersLocked=$record && $record['partner_baseline']!==$partnerBaseline;
         $baseline=hash_final($issued); $locked=$record && $record['baseline']!==$baseline;
+        $seriesBaselines=array();$seriesLocked=array();
         foreach (self::KINDS as $kind) {
-            $freeze=in_array($kind,array('customer','supplier'),true) ? $partnersLocked : $locked;
+            $seriesBaselines[$kind]=hash_final($series[$kind]);
+            $combinedLocked=in_array($kind,array('customer','supplier'),true) ? $partnersLocked : $locked;
+            $seriesLocked[$kind]=$record && ($record['version']===3
+                ? $record['series_baselines'][$kind]!==$seriesBaselines[$kind]
+                : ($combinedLocked && $seriesUsed[$kind]));
+            $freeze=$seriesLocked[$kind];
             foreach (in_array($kind,array('customer','supplier'),true) ? array('start') : array('start','prefix') as $field) {
                 if ($freeze && $record['input'][$kind.'_'.$field]!==$input[$kind.'_'.$field]) { throw new RuntimeException('Numbering locked after use'); }
             }
         }
         $next=array(); foreach (self::KINDS as $kind) { $next[$kind]=self::next($db,$entity,$input,$kind); }
-        $state=array('entity'=>$entity,'input'=>$input,'settings'=>$settings,'record'=>$record,'baseline'=>$baseline,'history'=>hash_final($all),'count'=>$count,'issued_count'=>$issuedCount,'locked'=>(bool)$locked,'partner_baseline'=>$partnerBaseline,'partners_locked'=>(bool)$partnersLocked,'next'=>$next);
+        $state=array('entity'=>$entity,'input'=>$input,'settings'=>$settings,'record'=>$record,'baseline'=>$baseline,'history'=>hash_final($all),'count'=>$count,'issued_count'=>$issuedCount,'locked'=>(bool)$locked,'partner_baseline'=>$partnerBaseline,'partners_locked'=>(bool)$partnersLocked,'next'=>$next,'series_baselines'=>$seriesBaselines,'series_locked'=>$seriesLocked);
         return $state+array('fingerprint'=>hash('sha256',json_encode($state,JSON_THROW_ON_ERROR)));
     }
 
@@ -185,9 +211,12 @@ class NorwayNumbering
             $preview=self::preview($db,$entity,$input,$user);
             if (!is_string($fingerprint) || !hash_equals($preview['fingerprint'],$fingerprint)) { throw new RuntimeException('Numbering changed'); }
             $record=$preview['record'];
-            if (!$record || $record['version']!==2 || $record['input']!==$input) {
+            if (!$record || $record['version']!==3 || $record['input']!==$input) {
                 $prefixes=array();foreach (array('customer','supplier') as $kind) { $prefixes[$kind]=array_values(array_unique(array_merge(array(''),$record['partner_prefixes'][$kind] ?? array(),array($input[$kind.'_prefix']))));if (count($prefixes[$kind])>100) { throw new RuntimeException('Partner prefix history capacity'); } }
-                $record=array('version'=>2,'entity'=>$entity,'input'=>$input,'partner_prefixes'=>$prefixes,'fallback'=>$record ? $record['fallback'] : ($preview['settings']['effective']['FACTURE_ADDON'] ?? 'mod_facture_mars'),
+                $baselines=array();
+                foreach (self::KINDS as $kind) { $baselines[$kind]=$preview['series_locked'][$kind]
+                    ? ($record['series_baselines'][$kind] ?? hash('sha256','legacy-used:'.$kind)) : $preview['series_baselines'][$kind]; }
+                $record=array('version'=>3,'series_baselines'=>$baselines,'entity'=>$entity,'input'=>$input,'partner_prefixes'=>$prefixes,'fallback'=>$record ? $record['fallback'] : ($preview['settings']['effective']['FACTURE_ADDON'] ?? 'mod_facture_mars'),
                     'proposal_fallback'=>$record ? $record['proposal_fallback'] : ($preview['settings']['effective']['PROPALE_ADDON'] ?? 'mod_propale_marbre'),
                     'partner_fallback'=>$record ? $record['partner_fallback'] : ($preview['settings']['effective']['SOCIETE_CODECLIENT_ADDON'] ?? 'mod_codeclient_leopard'),
                     'partner_baseline'=>$preview['partners_locked'] ? $record['partner_baseline'] : $preview['partner_baseline'],

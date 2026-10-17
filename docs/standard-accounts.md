@@ -1,20 +1,14 @@
 # Norske standardkontoer og lukkingskontoer
 
-Norsk regnskapsoppsett åpner en samlet oversikt over 46 kontofelt fra Dolibarr
-24.0.1: standardkontoene under Regnskap og de to resultatkontoene under
-årsavslutning. Dette er kontoforslag knyttet til funksjon, ikke en automatisk
-kontering av alle transaksjoner eller dokumentasjon på NS 4102-samsvar.
+Bruk **Regnskap → Innstillinger → Standardkontoer**, og kjernens
+**Avslutningsoppsett** for resultatkontoer. Fra 0.77.0 er modulens overlappende
+46-felts utfyllingsside fjernet; lagrede kontovalg beholdes.
 
-## Bruk
-
-Installer og velg først den medfølgende norske kontoplanen. Velg deretter bare
-kontoer som passer virksomhetens faktiske bruk. Ingenting er forhåndsvalgt.
-Forhåndsvisningen viser hvilke tomme felt som kan fylles. Bekreft valgene før
-lagring. Eksisterende lokale, arvede og effektive valg beholdes. Kontoene må
-være aktive og ha uendret nummer og navn fra profilen. Lagrede fakturaer som
-ikke er utkast, eller hovedboksposteringer, sperrer nye standardvalg gjennom
-hjelperen. I et eksisterende regnskap må endringer vurderes særskilt i kjernens
-oppsett; hjelperen flytter ingen tidligere posteringer.
+Installer og velg først passende norsk kontoplan. Velg bare standardkontoer
+som passer faktisk bruk. Kontonavn kan endres uten å sperre oppsettet. Samme
+native skjema brukes for nye og brukte regnskap. En endret reservekobling
+flytter ikke bokførte poster, men kan påvirke allerede registrerte dokumenter
+som ennå ikke er overført. Vurder derfor dokumentkøen ved senere endringer.
 
 Vare-, tjeneste-, kunde-/leverandør- og MVA-satskoblinger kan overstyre disse
 reservekontoene. Å velge en MVA-konto registrerer ikke foretaket i
@@ -39,9 +33,8 @@ resultatet føres som egenkapital i inngående balanse. Feltene foreslår derfor
 **Valg av lukkingskontoer er ikke et ferdig årsoppgjør.** Kjernens
 [årsavslutningsoppsett](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/admin/closure.php)
 krever også journal og riktige kontogrupper for balanse og resultat.
-Kontoplanimporten kvalifiserer ikke disse gruppene. Automatisk norsk
-årsavslutning er ikke akseptert produksjonsomfang. Ingen årsavslutning eller
-postering utføres av standardkontohjelperen.
+Fra 0.77.0 får den medfølgende planen kontoklasse 1–2 for balanse og 3–8 for resultat, med prøvd teknisk saldoovergang. Automatisk norsk
+årsavslutning er ikke akseptert produksjonsomfang. Moduloppdatering utfører ingen årsavslutning eller postering.
 
 ## Andre kilder og avgrensninger
 
@@ -56,33 +49,17 @@ alle koblingene. Feltlisten kontrolleres mot
 - [Tripletex om programvareanskaffelse](https://www.tripletex.no/kontohjelp/konto/6552-programvare-anskaffelse/) og [Fiken om programvare](https://kontohjelp.fiken.no/as/medMva/6553) gir eksempler på avgrensede kostnadstyper. Ingen enkelt tjenestekonto passer alle kjøp, og aktivering må vurderes separat.
 - [Fiken om 6795](https://kontohjelp.fiken.no/6795) forklarer avgrensningen mot opplysningspliktige tjenester. Forslaget må velges etter leveransens art og opplysningsplikt.
 
-Kildene ble kontrollert 2026-10-12. UI-tekstene forklarer formål og forbehold
-for hvert felt. Felt uten kvalifisert standardforslag vises som «må vurderes
-separat». Dette gjelder blant annet omvendt avgiftsplikt,
+Kildene ble kontrollert 2026-10-12. Kjernens felter må velges etter faktisk bruk. Dette gjelder blant annet omvendt avgiftsplikt,
 lokale skatter, rabatter, gaver, medlemskap og mellomregning. Ingen norsk
 MVA-konto settes automatisk i kjernens EU- eller lokale skattefelt. Utenlandsk
 leveranse må vurderes etter leveransetype og mottakerforhold.
-
-## Faktura og hovedbok
-
-Fakturakontrollen kan sammenligne brutto fakturabeløp med sum debet og kredit
-for de kildekoblede posteringene i ett bilag. Sammenligningen støtter validerte
-ordinære NOK-fakturaer og kreditnotaer. Beløp beregnes med åtte desimaler uten
-flyttall; debet og kredit må balansere eksakt, mens sammenligning med
-fakturabeløpet har toleranse på ett øre. Manglende/avvikende kildekobling,
-flere bilagsnøkler eller feil dato gir behov for gjennomgang. Avkortede
-resultater godtas ikke. Tom hovedbok gir ingen godkjent sammenligning.
-
-Dette kontrollerer bruttosummer, ikke korrekt konto-/MVA-fordeling,
-betalinger, gebyrer, tilbakeføringer eller fullstendighet. Faktura og hovedbok
-leses separat; oppdater visningen etter endringer. Kontrollen skriver ingen data.
 
 ## Regnskapskoder for varer og tjenester
 
 Standardvalgene omfatter både salg og kjøp av varer og tjenester. Kodene er
 kontonumre, ikke en separat norsk kodeordning. Egne koder kan angis i
 «Regnskapskoder» ved redigering av vare-/tjenestekortet. Disse individuelle
-kodene endres ikke av standardkontohjelperen. Tomme koder bruker kjernens
+kodene endres ikke av moduloppdateringen. Tomme koder bruker kjernens
 reservekoblinger; øvrige kunde- og avgiftskoblinger kan også påvirke konteringen.
 
 Innenlandsk høy sats har forslag 3000 for varesalg og 3020 for tjenestesalg.
@@ -95,35 +72,7 @@ Felt og prioritering kontrolleres mot kjernens
 [vare-/tjenestekort](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/product/card.php)
 og [kobling av fakturalinjer](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/customer/index.php).
 
-## Gjennomgang av kodene på kortene
+## Oppfølging av produktkoder
 
-Fra 0.38.0 åpner det tidligere oppsettets produktoppgave en lesende oversikt over kontokandidater
-for varer og tjenester. Oversikten finnes også fra standardkontosiden.
-Den viser kortets egen kode, aktuell standardkonto og om kontokandidaten
-finnes entydig og er aktiv i valgt kontoplan. Vare-/tjenestereferansen åpner
-kortet for vanlig redigering. Ingenting lagres av denne oversikten.
-
-Innenlandsk, eksport og EU-felter kan gjennomgås separat. Valget inspiserer
-lagrede felt; det avgjør ikke hvilken handelstype en faktisk leveranse har.
-EU-feltene er ikke en generell kode for handel mellom Norge og EU. Produkter
-av type vare/tjeneste som er markert for salg eller kjøp i aktivt foretak tas
-med, med bare de relevante retningene. Første 200 kort vises i fast rekkefølge;
-avkorting varsles og betyr at gjennomgangen ikke er fullstendig.
-
-Dette er ikke en simulering av fakturakontering. Vist MVA-sats er dagens
-kortstandard. Fakturalinjer, tredjepartskontoer, forskudd, hooks og andre
-moduler kan gi andre resultater. Tilgjengelig konto bekrefter ikke korrekt
-kostnadstype eller avgiftsbehandling. Egne ugyldige/inaktive koder skjules
-ikke ved å bytte dem ut med en standardkonto i visningen.
-
-Den tekniske prioriteringen følger produkt- og standardfeltene i
-[Dolibarrs getAccountingCodeToBind](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/class/accountingaccount.class.php#L744),
-kontrollert mot den låste kjernen. Ingen nye norske avgiftsregler er innført.
-
-Fra 0.39.0 finnes [generelle kontoforslag for handel](trade-account-suggestions.md)
-med egne import-/eksportvalg og flere kostnadstyper. Forslagene følger
-medfølgende kontoplan og krever eksplisitt valg etter formål og avgiftsbehandling.
-
-Fra 0.40.0 kan tomme salg- og kjøpskontoer på ordinære norske MVA-satser
-fylles separat med forhåndsvisning og bekreftelse. Standardkontoene fyller
-ikke satsradens egne felt. Se [MVA-kontoer](vat-accounts.md) for bruk og omfang.
+Bruk kjernens produktkort og produktkontooppsett. Modulen har ingen separat
+kontrollside eller bekreftelseshistorikk for disse koblingene.

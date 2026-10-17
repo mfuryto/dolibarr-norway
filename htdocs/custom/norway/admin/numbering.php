@@ -48,7 +48,7 @@ try {
     { // Partner prefixes remain configurable after first use; starts stay locked.
         print '<h2>'.$langs->trans('NorwayNumberingConfigure').'</h2><form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="previewnumbering">';
         foreach (NorwayNumbering::KINDS as $kind) {
-            $partner=in_array($kind,array('customer','supplier'),true); $readonly=($partner ? $preview['partners_locked'] : $preview['locked']) ? ' readonly' : '';
+            $partner=in_array($kind,array('customer','supplier'),true); $readonly=$preview['series_locked'][$kind] ? ' readonly' : '';
             print '<fieldset><legend>'.$langs->trans('NorwayNumbering'.ucfirst($kind)).'</legend>';
             $prefixReadonly=$partner ? '' : $readonly;
             print '<p><label>'.$langs->trans($partner ? 'NorwayNumberingPartnerPrefix' : 'NorwayNumberingPrefix').' <input type="text" maxlength="4" pattern="[A-Z]{'.($partner ? '0' : '1').',4}" name="'.$kind.'_prefix"'.($partner ? '' : ' required').$prefixReadonly.' value="'.dol_escape_htmltag($input[$kind.'_prefix']).'"></label></p>';
