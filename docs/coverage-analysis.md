@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.71.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.72.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -245,3 +245,15 @@ bevares av kjernen; 0.71.0 bruker dette som fast lokalt navn for norsk kode 0
 og oversetter ved lesing i det eksisterende uttrekket. Ingen kjerneendring,
 trigger som skriver om bilag, ny koblingstabell eller egen velger trengs.
 Ukodede nullkjøp og utenlandsbehandling blir ikke automatisk klassifisert.
+
+## Eksportkode 52: gjenbruk og rapportgap
+
+Den fastlåste kjernen viser en eksplisitt norsk salgskode 52 også med
+utenlandsk kjøper, bevarer koden i kundefakturalinjer og overfører nullavgift
+via vanlig salgsjournal. Ingen eksportmotor eller egen satsvelger trengs.
+Før 0.72.0 manglet valget i modulens kodeoppsett, og uttrekket avviste alle
+utenlandske kunder. Utvidelsen legger til kodevalget og avgrenser rapportens
+utenlandske salg til eksplisitt 52. Native NOK-fakturaer/kreditnotaer med
+varer/tjenester, SE/US, reskontro, kontoer og CSV er prøvd. Kundeland er ingen
+automatisk fritaksvurdering. Utenlandskjøp/omvendt avgiftsplikt må fortsatt
+prøves separat; gjeldende grunnlag og avgift kan ikke utledes av nullsats alene.

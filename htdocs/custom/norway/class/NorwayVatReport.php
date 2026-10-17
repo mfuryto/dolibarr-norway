@@ -1,7 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayManualVat.php';
-/** Read-only supported domestic-code extract, reconciled to native vouchers, never a complete VAT return. */
+/** Read-only supported-code extract, reconciled to native vouchers, never a complete VAT return. */
 class NorwayVatReport
 {
     public static function allowed($user)
@@ -103,7 +103,7 @@ class NorwayVatReport
                 $piece=(int)$posted[0]->piece_num;$before=count($report['issues']);
                 $headers=self::rows($db,'SELECT f.*,s.accountancy_code_customer_general,s.accountancy_code_supplier_general,c.code AS country_code FROM '.$p.$header.' f LEFT JOIN '.$p.'societe s ON s.rowid=f.fk_soc AND s.entity='.$entity.' LEFT JOIN '.$p.'c_country c ON c.rowid=s.fk_pays WHERE f.entity='.$entity.' AND f.rowid='.$id);
                 $h=$headers[0]??null;
-                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || $h->country_code!=='NO'
+                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || !preg_match('/^[A-Z]{2}$/D',(string)$h->country_code) || (!$sale && $h->country_code!=='NO')
                     || !in_array((string)$h->multicurrency_code,array('','NOK'),true)) {self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                 $all=self::rows($db,'SELECT * FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity." AND doc_type='".$type."' AND fk_doc=".$id);
                 if(count($all)!==count($posted)){self::issue($report,'Date',$type,$id,$piece);}
@@ -111,6 +111,7 @@ class NorwayVatReport
                 $groups=array();$expected=array();$sumBase=0;$sumTax=0;
                 foreach(self::rows($db,'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid') as $line){
                     $code=(string)$line->vat_src_code;$spec=$choices[$code]??null;
+                    if($spec && !empty($spec['export'])!==($h->country_code!=='NO')){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                     if(!$spec || $spec['type']!==($sale?1:2) || (float)$line->tva_tx!==(float)$spec['rate'] || (int)$line->info_bits!==0
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}

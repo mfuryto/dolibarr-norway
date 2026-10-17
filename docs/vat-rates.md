@@ -97,7 +97,8 @@ eller bekreftelsesrunde innføres.
 Dette gjelder innenlandske fakturaer/kreditnotaer i NOK i det prøvde,
 MVA-registrerte oppsettet. Vilkårene for fritak/unntak og fradragsrett avgjøres
 ikke av kodevalget. Rene unntatte foretak, registreringsovergang, manuelle
-nullsatsbilag og utenlandskjøp/-salg er fortsatt ikke kvalifisert.
+nullsatsbilag og utenlandskjøp er fortsatt ikke kvalifisert. Eksport med kode 52 er
+beskrevet nedenfor.
 Import/eksport skal ikke presses inn under de innenlandske kodene.
 
 ## Kjøp uten MVA-behandling i 0.71.0
@@ -121,3 +122,44 @@ Bruk ikke NO0 til utenlandskjøp, import, omvendt avgiftsplikt eller som en
 snarvei for kjøp med MVA der fradragsretten er begrenset/mangler. For sistnevnte
 brukes [den prøvde fradragsrettingen](norwegian-setup-guide.md). Ingen nullklassifisering
 velges automatisk. Manuelt førte nullbilag er fortsatt utenfor uttrekkets omfang.
+
+## Eksportkode 52 i 0.72.0
+
+Aktivering/oppdatering legger til en manglende norsk salgsrad for **`0 (52)`**,
+uten MVA-konto eller standardvalg. Eksisterende rader, deaktiveringer,
+kontovalg og fakturaer beholdes. Ingen omklassifisering skjer ved oppdatering.
+
+Bruk kjernens vanlige kundefaktura eller kreditnota i NOK. Registrer riktig
+mottaker og utenlandsk adresse, velg varen/tjenesten og dens inntektskonto,
+og velg `0 (52)` på de linjene som oppfyller vilkårene for eksportfritak.
+For handelsvarer peker den medfølgende kontoplanens eksportforslag på 3105,
+og for tjenester på 3125; andre varer/behandlinger kan kreve andre kontoer.
+Koden setter ikke inntektskontoen. Bruk vanlig linjetekst/offentlig merknad
+for relevant fritaksgrunnlag, og oppbevar dokumentasjonen som vanlige vedlegg.
+Dokumentene kan fortsatt lages på norsk eller engelsk. Det innføres ingen
+egen begrunnelsesside eller godkjenningsrunde.
+
+**Varer:** § 6-21 gjelder omsetning ut av merverdiavgiftsområdet.
+Skatteetaten beskriver krav til salgsdokument, deklarasjon og attest for
+utførsel, med egne regler for varer unntatt fra deklareringsplikt. En
+utenlandsk fakturaadresse alene dokumenterer ikke at varen er utført.
+
+**Tjenester:** For fjernleverbare tjenester etter § 6-22 annet ledd må
+mottakeren være hjemmehørende utenfor merverdiavgiftsområdet. Tjenestens
+art og faktisk mottaker må vurderes. Dette er ikke et generelt fritak for
+alle tjenester til en utenlandsk kunde. Beskriv behandlingen konkret,
+for eksempel henvisning til § 6-22 annet ledd når denne gjelder.
+
+Det støttede uttrekket omfatter eksplisitt kode 52 på fakturaer/kreditnotaer
+til utenlandske kunder, både varer og tjenester. SE og US er syntetisk prøvd.
+Beløpet avstemmes mot bokføring/reskontro og inngår som kode 52-grunnlag
+med null avgift. Ukodet nullsats blir ikke eksport. Det samme gjelder 5/6/7.
+Norske mottakere med særskilte eksportforhold, blanding av 52 og andre
+avgiftsbehandlinger på en utenlandsfaktura, utenlandsk MVA, omvendt avgiftsplikt,
+utenlandskjøp og manuelle eksportbilag er fortsatt utenfor prøvd omfang.
+Koden bekrefter ikke at fritaksvilkår eller dokumentasjonskrav er oppfylt.
+
+Kilder, lest 2026-10-17:
+- [Skatteetatens SAF-T-koder, kode 52](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv).
+- [Utførsel av varer og dokumentasjon](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-21/M-6-21.2/).
+- [Fjernleverbare tjenester, § 6-22 annet ledd](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-22/M-6-22.4/).

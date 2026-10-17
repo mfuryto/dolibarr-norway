@@ -18,12 +18,13 @@ class NorwayVatRates
             array('rate'=>12,'type'=>1,'code'=>'33'),array('rate'=>12,'type'=>2,'code'=>'13'),
         );
     }
-    /** Explicit domestic classifications; 0/7 are outside the VAT return. Never infer from a zero amount. */
+    /** Explicit zero-VAT classifications; 0/7 are outside the VAT return. Never infer treatment from a zero amount. */
     public static function zeroCodes()
     {
         return array(array('rate'=>0,'type'=>1,'code'=>'5','reported'=>true),
             array('rate'=>0,'type'=>1,'code'=>'6','reported'=>true),array('rate'=>0,'type'=>1,'code'=>'7','reported'=>false),
-            array('rate'=>0,'type'=>2,'code'=>'NO0','reported'=>false,'report_code'=>'0'));
+            array('rate'=>0,'type'=>2,'code'=>'NO0','reported'=>false,'report_code'=>'0'),
+            array('rate'=>0,'type'=>1,'code'=>'52','reported'=>true,'export'=>true));
     }
     public static function zeroChoices($db,$entity)
     {

@@ -49,7 +49,7 @@ for norske satsrader i nye regnskap. Det er ingen egen registreringshistorikk
 eller avgiftskodekobling å vedlikeholde i modulen. Bevar vedtak og annet
 registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
-**Gjenstår:** komplett norsk MVA-rapportering, eksport og faglig kvalifisering
+**Gjenstår:** komplett norsk MVA-rapportering, SAF-T-eksport og faglig kvalifisering
 av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
 
 Fra 0.67.0 kan [MVA-oppsettet](vat-rates.md) legge ordinære norske salgskoder
@@ -163,6 +163,13 @@ kunder. Se KR16 og fristene i [norsk kravregister](norwegian-requirements.md).
 **Offentlige kunder:** Avklar EHF-mottaker, bestiller-/ordrereferanse, kontraktskrav, vedlegg og tilgangspunkt før sending. PDF på e-post er ikke EHF. Kvalifisert norsk EHF/Peppol-integrasjon er ikke levert; ekstern løsning må vurderes med sporbarhet til fakturaen. Se [DFØs EHF-veiledning](https://www.anskaffelser.no/verktoy/veiledere/ehf-fakturering).
 
 **Utland:** Avklar leveringsmodell, mottakerland, kundetype og dokumentasjon for både salg og kjøp før avgiftsregel velges. Programvare er ikke én universell avgiftskategori. Ikke bruk norsk innenlandsk standardkonto eller 0 prosent som eneste beslutningsregel. Utenlandske avgiftsplikter, kjøp med omvendt avgiftsplikt, utenlandsk valuta og dokumenterte bankoppgjør krever særskilt kvalifisering. Støttede NOK-salgsdokumenter utvider ikke automatisk modulens avgiftsstøtte.
+
+Fra 0.72.0 støttes eksplisitt eksportkode `0 (52)` på NOK-kundefakturaer og
+kreditnotaer til utenlandske kunder, for varer og tjenester. Bruk kjernens
+vanlige fakturalinjer, offentlig merknad og vedlegg. Velg eksportkonto etter
+varen/tjenesten og vurder fritaksvilkårene før kodevalget. Se [eksportflyten](vat-rates.md#eksportkode-52-i-0720)
+og [uttrekkets avgrensning](vat-report.md#eksportkode-52-i-0720).
+Utenlandskjøp og omvendt avgiftsplikt er fortsatt ikke kvalifisert.
 
 ## 9. Inngående saldoer, perioder og løpende rutiner
 
