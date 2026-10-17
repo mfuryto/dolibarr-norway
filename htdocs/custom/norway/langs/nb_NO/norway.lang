@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Oppgi riktig grunnlag med maksimalt to desimaler for utgåen
 NorwayManualVatDatabase=MVA-opplysningene kunne ikke leses eller lagres. Kontroller at moduloppdateringen er fullført.
 
 NorwayVatReportTitle=MVA-uttrekk (støttede koder)
-NorwayVatReportScope=Lesende uttrekk for støttede norske koder, inkludert eksport 52, tjenestekjøp med fullt fradrag 86 og manuelt bokførte tjenestekjøp uten fradrag 87 (25 %). Bokføringsdato bestemmer perioden. Kode 0/7 er utenfor MVA-meldingen. Full melding, innsending, automatisk leverandørfakturaflyt for 87, delvis fradrag og øvrige særtilfeller gjenstår.
+NorwayVatReportScope=Lesende uttrekk for støttede norske koder, eksport 52 og tjenestekjøp 86/87 med faktisk fradrag. Bokføringsdato bestemmer perioden. Kode 0/7 er utenfor MVA-meldingen. Full melding, innsending, historisk oppsettsendring og øvrige importtilfeller gjenstår.
 NorwayVatReportDatabase=Uttrekket kunne ikke leses samlet fra databasen.
 NorwayVatReportAmount=Uttrekket inneholder et beløp som ikke kan summeres innenfor støttet nøyaktighet.
 NorwayVatReportPeriod=Velg gyldige fra- og til-datoer i samme kalenderår.
@@ -1276,7 +1276,7 @@ NorwaySetupHelpDocuments=Velg dokumentmodell og betalingsvilkår. Se gjennom nor
 NorwaySetupTaskPeriods=Regnskapsår og inngående saldoer
 NorwaySetupHelpPeriods=Opprett riktige regnskapsperioder og rutine for låsing og retting. Ved systembytte må bank, åpne poster og øvrige inngående saldoer avstemmes; kontoplanimport flytter ikke saldoer.
 NorwaySetupTaskForeign=Utland og fradragsrett
-NorwaySetupHelpForeign=Avklar behandling ut fra leveranse og motpart. NOK-eksport og enkelte tjenestekjøp støttes. Ingen/delvis fradragsrett krever foreløpig manuelle reserveveier; normalflyten er uferdig.
+NorwaySetupHelpForeign=Velg behandling ut fra leveranse og motpart. NOK-eksport og fjernleverbare tjenestekjøp med 25 % beregnet MVA støttes. MVA-fradrag velges på vanlig kjøpslinje; kreditnota og betaling bruker kjernen. Vareimport og andre særtilfeller gjenstår.
 NorwaySetupTaskVatReport=MVA-grunnlag og melding
 NorwaySetupHelpVatReport=Uttrekket dekker støttede koder og må avstemmes mot bokføringen. Fullstendig norsk MVA-melding, registreringsovergang og innsending er ikke ferdigstilt.
 NorwaySetupTaskEhf=EHF-faktura og kreditnota
@@ -1305,3 +1305,7 @@ NorwayCreditReferenceLabel=Opprinnelig fakturanummer fra tidligere system
 NorwayCreditReferenceHelp=Fyll bare ved kreditnota for en faktura fra et tidligere system. For fakturaer i denne installasjonen velger du originalfakturaen i kjernen. Bevar originaldokumentet og kontroller beløp og MVA.
 NorwayCreditReferencePdf=Krediterer opprinnelig faktura fra tidligere system
 NorwayCreditReferenceBlocked=Referansen kunne ikke lagres. Bruk en kreditnota i kladd uten intern originalkobling, og et fakturanummer uten HTML eller linjeskift.
+
+NorwayVatDeduction=MVA-fradrag (%)
+NorwayVatDeductionHelp=Tomt felt gir fullt fradrag (kode 87: ingen). Bruk 0 for ingen fradragsrett, eller f.eks. 60 for 60 prosent. Leverandørens beløp og MVA beholdes; resten av avgiften føres som kostnad i kjøpsjournalen. Velg kode 86/87 og tjenestelinje for fjernleverbare tjenester fra utlandet.
+NorwayPurchaseVatInvalid=Kontroller MVA-kode, fradrag (0–100 %), registreringsstatus, tjenestetype og omvendt avgiftsplikt. Fradragsvalget gjelder norske kjøp eller fjernleverbare tjenester fra utlandet i NOK. Global bruttoføring kan ikke brukes. Endre kun utkast.

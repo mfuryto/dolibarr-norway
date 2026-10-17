@@ -159,7 +159,19 @@ Kilder, lest 2026-10-17:
 - [Utførsel av varer og dokumentasjon](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-21/M-6-21.2/).
 - [Fjernleverbare tjenester, § 6-22 annet ledd](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-22/M-6-22.4/).
 
+## Gjeldende kjøpsflyt fra 0.79.0
+
+Se [kjøp og MVA-fradrag](purchase-vat.md). Andelen velges ved vanlig
+registrering, også for friteksttjenester fra utlandet. Uttrekket viser faktisk
+fradrag, fulle beregnede utgående beløp under 86, og bare utgående beløp under
+87 når det ikke er fradrag. Innenlandske kjøp uten fradrag vises som kode 0
+utenfor meldingen. Gamle manuelle bilag beholdes. Full melding og innsending,
+R05 om legitimt endret historisk oppsett og øvrige importtilfeller gjenstår.
+
 ## Tjenestekjøp med omvendt avgiftsplikt i 0.73.0
+
+> Historisk flyt i 0.73–0.78. Nye kjøp følger [0.79-flyten](purchase-vat.md).
+> Krav om katalogprodukt og skjulte engangsinnstillinger videreføres ikke.
 
 Denne flyten gjelder MVA-registrert virksomhet, NOK-faktura fra utenlandsk
 leverandør uten norsk/utenlandsk MVA, fjernleverbar tjeneste med norsk sats

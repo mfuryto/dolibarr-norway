@@ -188,17 +188,15 @@ kreditnotaer til utenlandske kunder, for varer og tjenester. Bruk kjernens
 vanlige fakturalinjer, offentlig merknad og vedlegg. Velg eksportkonto etter
 varen/tjenesten og vurder fritaksvilkårene før kodevalget. Se [eksportflyten](vat-rates.md#eksportkode-52-i-0720)
 og [uttrekkets avgrensning](vat-report.md#eksportkode-52-i-0720).
-Fra 0.73.0 er NOK-kjøp av fjernleverbare tjenester med 25 % og full fradragsrett
-prøvd med kjernens omvendte avgiftsplikt og kode 86. Se [engangsoppsett og bruk](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730)
-før du aktiverer dette. Fra 0.74.0 er [hele, manuelt bokførte kjøp uten fradragsrett med kode 87](manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740)
-støttet i uttrekket. Denne flyten oppretter ikke leverandørfakturaer eller
-betalingsoppfølging. Fra 0.75.0 kan delvis fradrag på den native 86-flyten
-håndteres med [separat rettingsbilag på 2714](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
-Fradragsandelen må beregnes og dokumenteres; kreditnota krever motsatt retting.
-Disse manuelle 86-/87-rutinene er reserveveier. Normalflyt for ingen/delvis
-fradrag er fortsatt uferdig og prioriteres før flere importtilfeller.
-Automatisk kode 87 i leverandørfakturaflyten, andre satser og vareimport
-er fortsatt ikke kvalifisert.
+Fra 0.79.0 velges fullt, delvis eller ingen MVA-fradrag på den vanlige
+leverandørfakturalinjen. Det gjelder innenlandske varer/tjenester med 25/15/12
+prosent og fjernleverbare utenlandstjenester med 25 prosent beregnet avgift.
+Bruk tjenestelinje, omvendt avgiftsplikt og kode 86/87 for sistnevnte.
+Fritekst fungerer; produktkortets senere sats brukes ikke. Kreditnota kopierer
+valget, og betalingsoppfølgingen beholdes. Se [vanlig kjøpsflyt med eksempler](purchase-vat.md).
+Tidligere manuelle 86-/87-rutiner beholdes for gamle bilag. Nye kjøp i dette
+omfanget skal ikke kreve et separat fradragsrettingsbilag. Vareimport,
+andre beregnede satser og uregistrerte foretaks utenlandskjøp gjenstår.
 
 ## 9. Inngående saldoer, perioder og løpende rutiner
 

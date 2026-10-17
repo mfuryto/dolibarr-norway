@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.78.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.79.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -387,3 +387,14 @@ må prøves med faktisk kode før eventuell bruk. En utgiverbeskrivelse er ikke
 kompatibilitetsaksept. Videre arbeid skal fortsatt velge behandling ved vanlig
 registrering og bevare dokument-/betalingsflyten, fremfor etterfølgende manuelle
 rettingsbilag som hovedvei.
+
+## Oppfølging i 0.79.0 — normal kjøpsflyt (R03/R04)
+
+Fradragsandel lagres på native kjøpslinje og følger vanlig registrering,
+redigering, kreditnota og kjøpsjournal. Originale fakturabeløp beholdes.
+En begrenset journalprojeksjon erstatter avhengigheten av dagens produktkort
+for kode 86/87. Ingen nye kontrollsider, bekreftelser eller hovedboksskriver.
+Se [konkret gap, vurdert kjerne/tillegg, kilder og akseptprøver](purchase-vat.md).
+R03/R04 er lukket for innenlandske 25/15/12-kjøp og NOK-fjernleverbare tjenester
+med 25 prosent beregnet avgift i registrert foretak. R05, øvrig import,
+full melding/innsending og samlet produksjonsaksept er fortsatt åpne.

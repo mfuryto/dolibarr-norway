@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Enter the correct output VAT base with at most two decimals.
 NorwayManualVatDatabase=VAT information could not be read or saved. Ensure that the module update has completed.
 
 NorwayVatReportTitle=VAT extract (supported codes)
-NorwayVatReportScope=Read-only extract for supported Norwegian codes, including exports 52, service purchases with full deduction 86, and manually posted service purchases without deduction 87 (25%). Bookkeeping date determines the period. Codes 0/7 are outside the VAT return. Complete returns, submission, automated supplier-invoice flow for 87, partial deduction and other special cases remain outstanding.
+NorwayVatReportScope=Read-only extract for supported Norwegian codes, exports 52 and services 86/87 with actual deduction. Posting date determines the period. Codes 0/7 are outside the VAT return. Full return, submission, historical configuration changes and other imports remain.
 NorwayVatReportDatabase=The extract could not be read consistently from the database.
 NorwayVatReportAmount=The extract contains an amount outside the supported arithmetic precision.
 NorwayVatReportPeriod=Select valid start and end dates within the same calendar year.
@@ -1276,7 +1276,7 @@ NorwaySetupHelpDocuments=Choose document models and payment terms in the standar
 NorwaySetupTaskPeriods=Financial periods and opening balances
 NorwaySetupHelpPeriods=Create the correct financial periods and establish locking and correction routines. On migration, reconcile bank, open items and other opening balances; chart import does not transfer balances.
 NorwaySetupTaskForeign=Foreign trade and deduction
-NorwaySetupHelpForeign=Determine treatment from the supply and counterparty. NOK exports and some foreign service purchases are supported. No/partial deduction currently requires manual fallbacks; the normal workflow is unfinished.
+NorwaySetupHelpForeign=Choose treatment based on supply and counterparty. NOK exports and remotely deliverable services with 25% reverse VAT are supported. Select VAT deduction on the ordinary purchase line; credits and payments use core. Goods imports and other special cases remain.
 NorwaySetupTaskVatReport=VAT basis and return
 NorwaySetupHelpVatReport=The extract covers supported codes and must reconcile to bookkeeping. A complete Norwegian VAT return, registration transition and submission are unfinished.
 NorwaySetupTaskEhf=EHF invoices and credit notes
@@ -1305,3 +1305,7 @@ NorwayCreditReferenceLabel=Original invoice number from previous system
 NorwayCreditReferenceHelp=Complete only for a credit note against an invoice from a previous system. Select the original invoice in core when it exists here. Retain the original document and verify amounts and VAT.
 NorwayCreditReferencePdf=Credits original invoice from previous system
 NorwayCreditReferenceBlocked=Reference could not be saved. Use a draft credit note without an internal original link, and an invoice number without HTML or line breaks.
+
+NorwayVatDeduction=VAT deduction (%)
+NorwayVatDeductionHelp=Leave blank for full deduction (code 87: none). Use 0 for no deduction or, for example, 60 for 60 percent. Original supplier amounts and VAT are preserved; non-recoverable VAT is posted as expense in the purchase journal. Use code 86/87 and a service line for remotely deliverable services purchased abroad.
+NorwayPurchaseVatInvalid=Review the VAT code, deduction (0–100%), registration status, service type and reverse charge. Deduction applies to Norwegian purchases or remotely deliverable foreign services in NOK. Global gross posting is incompatible. Edit drafts only.

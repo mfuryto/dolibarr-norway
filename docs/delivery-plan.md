@@ -1,6 +1,6 @@
 # Samlet leveranseplan for norsk lokalisering
 
-Oppdatert 2026-10-17. Gjeldende modulversjon: **0.78.0**. Planen følger
+Oppdatert 2026-10-17. Gjeldende modulversjon: **0.79.0**. Planen følger
 [gjennomgangen av 0.75.0](review-0.75.0.md), med funn R01–R17. Dette er én
 samlet mangelliste og prioritering. [Leveransehistorikken](delivery-history.md)
 beskriver fortiden; den utvider ikke bestillingen.
@@ -43,9 +43,13 @@ kopieres ukritisk. Referanser finnes i [dekningsanalysen](coverage-analysis.md#r
   «Foretaksregisteret» for AS/ASA og kreditnota for original i tidligere system
   via kjernens referansefelt og standalone-funksjon. Leveringsperiode/-sted og
   kundereferanse bruker eksisterende felt. Native bokføring, MVA-fortegn og
-  refusjonsregistrering er prøvd. R03/R04 er fortsatt åpne; etappe 3 er ikke ferdig.
+  refusjonsregistrering er prøvd.
 - 0.66.0/0.75.0 sine separate fradragsrettinger og 0.74.0 sin manuelle 87-flyt
-  er reserveveier. De lukker ikke gapet for normal kjøps-/fradragsflyt.
+  er historiske reserveveier. Ny normalflyt erstatter dem fra 0.79.0; gamle poster bevares.
+- 0.79.0 lukker R03/R04 i etappe 3 for innenlandske 25/15/12-kjøp og NOK-
+  tjenestekjøp fra utlandet med 25 prosent beregnet avgift: fradrag på vanlig
+  linje, fritekst, ett native bilag, kreditnota, betaling/refusjon og avstemt
+  faktisk fradrag. Se [omfang, eksempler og prøvebevis](purchase-vat.md).
 
 Hele modulen har **ikke** samlet regnskapsfaglig produksjonsaksept. Status i
 veilederen, README og denne planen skal vise de samme kjente begrensningene.
@@ -56,7 +60,7 @@ veilederen, README og denne planen skal vise de samme kjente begrensningene.
 | --- | --- | --- |
 | 1. Ryddig grunnlag | R01, R11, R12, R17: filutrulling, riktig testgrunnlag, enkel veileder og konsistent dokumentasjon/versjon. | Gammel installasjon oppgraderes uten gamle skriveflater eller datatap. Aktuelle brukerlenker virker. Mangler vises presist; det er ingen ekstra godkjenningsflyt. 0.76.0 dekker filutrulling og veileder; bred dokumentasjonsopprydding gjenstår. |
 | 2. Norsk grunnoppsett | **Levert i 0.77.0 for grunnoppsettet.** R02, R07–R10: native kontoklasser, kontokoblinger, journaler, bank og uavhengige nummerserier. | Et nytt og et allerede brukt regnskap kan settes opp med forståelige native verktøy. Balanse-/resultatgrupper virker i kjernen. Egne kontonavn og flere bankkonti håndteres. Utstedte numre og gamle posteringer bevares. |
-| 3. Vanlig dokument-/kjøpsflyt | **Pågår. Dokumentdel levert i 0.78.0 for dokumentert omfang; R03/R04 gjenstår.** R03, R04, R06: dokumentinnhold, innenlands/utland, ingen/delvis/full fradragsrett, kreditnota og betalingsoppfølging. | Behandling velges ved vanlig registrering, og riktig kostnad/MVA/gjeld bokføres. Kjøp, fritekst der relevant, kreditnota og betaling henger sammen. Et separat rettingsbilag er ikke hovedvei for hvert kjøp. Norske/engelske PDF-er er prøvd for støttet omfang. |
+| 3. Vanlig dokument-/kjøpsflyt | **Levert i 0.78.0/0.79.0 for dokumentert omfang.** R03, R04, R06: dokumentinnhold, innenlands/utland, ingen/delvis/full fradragsrett, kreditnota og betalingsoppfølging. | Behandling velges ved vanlig registrering, og riktig kostnad/MVA/gjeld bokføres. Kjøp, fritekst der relevant, kreditnota og betaling henger sammen. Et separat rettingsbilag er ikke hovedvei for hvert kjøp. Norske/engelske PDF-er er prøvd for støttet omfang. |
 | 4. Bank, perioder og MVA | R05 og rester i etappe 2–3: avstemming, perioder, registreringsovergang, nødvendige særposteringer og MVA-melding. | Saldoer, dokumenter, betalinger og avgiftsgrunnlag kan avstemmes. Historiske perioder tåler legitimt endret oppsett. Fullt grunnlag og retting er prøvd; innsending har autorisasjon, resultat og kvittering. Uttrekk alene er ikke ferdig innsending. |
 | 5. EHF og SAF-T | Eksisterende EHF-/Peppol-tillegg kvalifiseres; norsk SAF-T leveres med riktig mapping. EHF-undersøkelse kan gå parallelt fra etappe 2. | EHF-faktura/kreditnota er validert og sendt med mottakerreferanser og sporbar status gjennom valgt løsning. SAF-T er skjemavalid og avstemt mot komplett regnskap, med kontoer, avgifter, motparter og bilag. 1.40 er målformat for 2027. Ingen avtale, kjøp eller mottakerregistrering gjøres uten uttrykkelig bestilling. |
 | 6. Årsavslutning og skatt | Kjernens avslutning, kontogrupper og resultatdisponering; næringsspesifikasjon og skattemelding som egen leveranse. | Inngående saldoer og årsresultat avstemmes. Foretaksform/inntektsår, skattemessige forskjeller, avskrivninger og tilleggsopplysninger er håndtert. En konkret leveringsvei er kvalifisert. SAF-T erstatter ikke skattemeldingen. |

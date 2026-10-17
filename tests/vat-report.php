@@ -13,7 +13,7 @@ nrAssert($user->fetch('','testadmin')>0,'Admin missing');$mod=new modNorway($db)
 $p=$db->prefix();$entity=(int)$conf->entity;$run=bin2hex(random_bytes(4));$start='2038-02-01';$end='2038-02-28';
 $oldGlobals=clone $conf->global;$oldCompany=clone $mysoc;$oldRates=array();$oldSettings=array();$invoices=array('customer_invoice'=>array(),'supplier_invoice'=>array());$manualIds=array();$accountIds=array();$newAccounts=array();$journalIds=array();$partnerId=0;$foreignParties=array();$exportInvoices=array();$pdfDirectories=array();$reverseInvoices=array();$reverseProduct=0;
 $settings=array('ACCOUNTING_VAT_BUY_REVERSE_CHARGES_CREDIT'=>'2704','ACCOUNTING_VAT_BUY_REVERSE_CHARGES_DEBIT'=>'2714','ACCOUNTING_FORCE_ENABLE_VAT_REVERSE_CHARGE'=>'1','ACCOUNTING_REVERSE_CHARGE_ALSO_NON_EEC'=>'1','ACCOUNTANCY_FISCAL_PERIOD_MODE'=>'blockedonclosed','ACCOUNTING_ACCOUNT_CUSTOMER'=>'1500','ACCOUNTING_ACCOUNT_SUPPLIER'=>'2400','ACCOUNTING_PRODUCT_SOLD_ACCOUNT'=>'3000','ACCOUNTING_SERVICE_SOLD_ACCOUNT'=>'3000','ACCOUNTING_PRODUCT_BUY_ACCOUNT'=>'4000','ACCOUNTING_SERVICE_BUY_ACCOUNT'=>'4000','ACCOUNTING_VAT_SOLD_ACCOUNT'=>'2700','ACCOUNTING_VAT_BUY_ACCOUNT'=>'2710');
-$codes="'86','52','NO0','1','11','13','3','31','33','5','6','7'";$r=nrSql('SELECT * FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');while($row=$db->fetch_object($r)){$oldRates[]=(array)$row;}
+$codes="'87','86','52','NO0','1','11','13','3','31','33','5','6','7'";$r=nrSql('SELECT * FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');while($row=$db->fetch_object($r)){$oldRates[]=(array)$row;}
 foreach($settings as $name=>$v){$r=nrSql('SELECT * FROM '.$p."const WHERE entity=".$entity." AND name='".$name."'");while($row=$db->fetch_object($r)){$oldSettings[]=(array)$row;}}
 $cookie=tempnam(sys_get_temp_dir(),'norway-vat-report-');$curl=curl_init();curl_setopt_array($curl,array(CURLOPT_RETURNTRANSFER=>true,CURLOPT_COOKIEFILE=>$cookie,CURLOPT_COOKIEJAR=>$cookie,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_TIMEOUT=>30));
 function nrHttp($path,$post=null){global $curl;curl_setopt($curl,CURLOPT_URL,'http://localhost'.$path);curl_setopt($curl,CURLOPT_POST,$post!==null);if($post!==null){curl_setopt($curl,CURLOPT_POSTFIELDS,http_build_query($post));}$b=curl_exec($curl);nrAssert($b!==false,'HTTP failed');return $b;}
@@ -39,6 +39,7 @@ try {
  nrSql('DELETE FROM '.$p.'c_tva WHERE entity='.$entity.' AND code IN ('.$codes.')');
  foreach(NorwayVatRates::codes() as $s){$account=($s['type']===1?'270':'271').array(25=>'0',15=>'1',12=>'3')[$s['rate']];nrSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,localtax1,localtax2,active,accountancy_code_sell,accountancy_code_buy) VALUES (".$entity.",173,'".$s['code']."',".$s['type'].",".$s['rate'].",0,0,0,1,'".($s['type']===1?$account:'')."','".($s['type']===2?$account:'')."')");}
  foreach(NorwayVatRates::zeroCodes() as $s){nrSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,localtax1,localtax2,active) VALUES (".$entity.",173,'".$s['code']."',".$s['type'].",0,0,0,0,1)");}
+ NorwayPurchaseVat::completeAccounts($db,$entity);
  foreach(array(2,3) as $nature){nrSql("INSERT INTO ".$p."accounting_journal (entity,code,label,nature,active) VALUES (".$entity.",'SYNVR".$nature.'-'.$run."','Synthetic report',".$nature.",1)");$journalIds[$nature]=(int)$db->last_insert_id($p.'accounting_journal');}
  $party=new Societe($db);$party->name='SYNTHETIC VAT REPORT ONLY '.$run;$party->client=1;$party->fournisseur=1;$party->code_client='SYNVRC-'.$run;$party->code_fournisseur='SYNVRL-'.$run;$party->code_compta='SYNVRC';$party->code_compta_fournisseur='SYNVRL';$party->country_id=173;$party->tva_assuj=1;$party->idprof1='123456785';nrAssert($party->create($user)>0,'Party create');$partnerId=(int)$party->id;
  foreach(array('customer_invoice','supplier_invoice') as $source){$sale=$source==='customer_invoice';foreach(array(0,1) as $productType){foreach(array(0,2) as $type){
@@ -80,8 +81,8 @@ try {
  foreach($foreignParties as $supplier){$original=0;foreach(array(0,2) as $type){$o=new FactureFournisseur($db);$o->socid=$supplier;$o->ref_supplier='SYNRC-'.$run.'-'.$supplier.'-'.$type;$o->date=dol_mktime(12,0,0,2,10,2038);$o->type=$type;$o->multicurrency_code='NOK';$o->multicurrency_tx=1;$o->vat_reverse_charge=1;if($type===2){$o->fk_facture_source=$original;}
   nrAssert($o->create($user)>0,'Foreign purchase create');$invoices['supplier_invoice'][]=$o;$reverseInvoices[]=$o;if(!$original){$original=(int)$o->id;}
   foreach($type===2?array(-20.10,-10.02):array(100.10,50.02) as $net){nrAssert($o->addline('Synthetic reverse-charge service',$net,'0 (86)',0,0,1,$reverseProduct,0,0,0,$accountIds['6790'],0,'HT',1)>0,'Reverse-charge line');}
-  if(count($reverseInvoices)===1){$states=array();$q=nrSql("SELECT rowid,active FROM ".$p."c_tva WHERE entity=".$entity." AND fk_pays=173 AND taux=0 AND code<>'86'");while($state=$db->fetch_object($q)){$states[(int)$state->rowid]=(int)$state->active;}
-   try{foreach($states as $id=>$active){nrSql('UPDATE '.$p.'c_tva SET active=0 WHERE rowid='.$id);}$only=nrHttp('/fourn/facture/card.php?facid='.(int)$o->id);nrAssert(preg_match('/<option[^>]*value="0(?:\.0+)? \(86\)"[^>]*selected/',$only)!==1 && preg_match('/<option value="0" selected>0%<\/option>/',$only)===1,'Code 86 became an implicit browser default');}
+  if(count($reverseInvoices)===1){$states=array();$q=nrSql("SELECT rowid,active FROM ".$p."c_tva WHERE entity=".$entity." AND fk_pays=173 AND taux=0");while($state=$db->fetch_object($q)){$states[(int)$state->rowid]=(int)$state->active;}
+   try{foreach(array('86','87') as $sole){foreach($states as $id=>$active){nrSql('UPDATE '.$p.'c_tva SET active=0 WHERE rowid='.$id);}nrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND fk_pays=173 AND code='".$sole."'");$only=nrHttp('/fourn/facture/card.php?facid='.(int)$o->id);nrAssert(preg_match('/<option[^>]*value="0(?:\.0+)? \((?:86|87)\)"[^>]*selected/',$only)!==1 && preg_match('/<option value="0" selected>0%<\/option>/',$only)===1,'Reverse-charge code became an implicit browser default');}}
    finally{foreach($states as $id=>$active){nrSql('UPDATE '.$p.'c_tva SET active='.$active.' WHERE rowid='.$id);}}
   }
   nrAssert($o->fetch($o->id)>0,'Reverse-charge draft fetch');$card=nrHttp('/fourn/facture/card.php?facid='.(int)$o->id);nrAssert(strpos($card,'(86)')!==false && preg_match('/<option[^>]*value="0(?:\.0+)? \(86\)"[^>]*selected/',$card)!==1,'Reverse charge silently preselected');$body=nrHttp('/fourn/facture/card.php?facid='.(int)$o->id.'&action=editline&lineid='.(int)$o->lines[0]->id.'&token='.urlencode(nrToken($card)));nrAssert(preg_match('/<option[^>]*value="0(?:\.0+)? \(86\)"[^>]*selected/',$body)===1,'Native foreign purchase edit lost code 86');
@@ -176,14 +177,13 @@ try {
  );
  foreach($variants as $reason=>$sql){$db->begin();try{nrSql($sql);$bad=nrReport();nrAssert(nrReason($bad,$reason) && $bad['net']===null,'Unresolved variant accepted: '.$reason);nrBlocked(fn()=>NorwayVatReport::csv($bad),'Unresolved CSV accepted: '.$reason);}finally{$db->rollback();}}
  foreach(array(
-  array('Unsupported',"UPDATE ".$p."facture_fourn_det SET vat_src_code='87' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
+  array('Mismatch',"UPDATE ".$p."facture_fourn_det SET vat_src_code='87' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC CHANGED' WHERE rowid=".$manual87[0]),
   array('Changed',"UPDATE ".$p."accounting_bookkeeping SET doc_ref='SYNTHETIC CHANGED' WHERE rowid=".$manual86[0]),
   array('MissingCode',"UPDATE ".$p."accounting_account SET active=0 WHERE entity=".$entity." AND rowid=".$accountIds['2714']),
   array('MissingCode',"UPDATE ".$p."accounting_account SET active=0 WHERE entity=".$entity." AND rowid=".$accountIds['2704']),
   array('Unsupported',"UPDATE ".$p."facture_fourn SET vat_reverse_charge=0 WHERE rowid=".(int)$reverseInvoices[0]->id),
   array('Unsupported',"UPDATE ".$p."facture_fourn_det SET product_type=0 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
-  array('Unsupported',"UPDATE ".$p."facture_fourn_det SET fk_product=NULL WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Code',"UPDATE ".$p."c_tva SET active=0 WHERE entity=".$entity." AND code='86'"),
   array('Code',"UPDATE ".$p."facture_fourn_det SET vat_src_code='' WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),
   array('Mismatch',"UPDATE ".$p."facture_fourn_det SET tva=0.00001 WHERE fk_facture_fourn=".(int)$reverseInvoices[0]->id),

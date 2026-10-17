@@ -6,6 +6,10 @@ med / til- og med-dato i samme kalenderår. Standardvalget er inneværende
 måned. Uttrekket leser bokføring og eksisterende kilder uten å endre dem.
 Det oppretter ingen kontrollkopier, historikk eller bekreftelsesoppgaver.
 
+Fra 0.79.0 brukes [vanlig kjøpsflyt med fradragsandel](purchase-vat.md),
+inkludert friteksttjenester og kode 86/87. Historiske beskrivelser av separate
+rettingsbilag nedenfor gjelder eldre registreringer.
+
 ## Hva som vises
 
 Ordinære norske koder 3/31/33 og 1/11/13 dekker henholdsvis utgående og
@@ -61,7 +65,7 @@ er kvalifisert. Egendefinerte MVA-kontoer må være registrert i oppsettet.
 **Dette er ikke en fullstendig norsk MVA-melding eller innsending.**
 Førsteversjonen dekket ikke nullsats/fritak/unntak; 0.70.0-utvidelsen
 nedenfor dekker eksplisitte innenlandske 5/6/7, 0.71.0 kjøpskode 0 og 0.72.0
-eksportkode 52. Utenlandskjøp utover kode 86-flyten nedenfor, registreringsovergang,
+eksportkode 52. Utenlandskjøp utover den dokumenterte 86/87-flyten, registreringsovergang,
 avgiftsoppgjør/åpningsposter og andre særtilfeller er ikke kvalifisert.
 Øvrige manuelle hovedbokslinjer uten MVA-klassifisering telles separat;
 manuell omsetning uten MVA blir ikke automatisk med. En avstemt ordinær
@@ -124,7 +128,7 @@ med i kodegrunnlaget. Filen er fremdeles et avstemmingsuttrekk, ikke en fil
 for innsendings-API-et.
 
 Manglende, deaktiverte, feilrettede eller tvetydige kodeoppsett gir uavklart
-uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske kjøpsmotparter utenfor 86-flyten og kode
+uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske kjøpsmotparter utenfor 86/87-flyten og kode
 51 er fortsatt utenfor prøvd omfang, sammen med manuelle nullgrunnlag,
 registreringsovergang og MVA-oppgjør/åpningsposter. Eksportkode 52 er beskrevet nedenfor.
 
@@ -171,7 +175,7 @@ Kode 52 har `vat_return=included`, sats 0 og netto eksportbeløp i
 Det [eksisterende kodebiblioteket for MVA-meldingen](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
 har kode 52. Kildene er kontrollert 2026-10-17.
 
-Kundens land setter ikke avgiftskoden. Utenlandske kjøp utenfor 86-flyten eller innenlandske
+Kundens land setter ikke avgiftskoden. Utenlandske kjøp utenfor 86/87-flyten eller innenlandske
 kodevalg på utenlandske salg gir fortsatt uavklart uttrekk. Kode 52 med norsk
 mottaker er også utenfor dette avgrensede omfanget, selv om særskilte faktiske
 eksporttilfeller kan finnes. Tomt land, feil/deaktivert kode, avgiftsbeløp,
@@ -184,7 +188,19 @@ avstemmes uten avgift og uten at lesing endrer dokumenter/bokføring.
 vanlige vedlegg og begrensninger. Dette kvalifiserer den tekniske flyten,
 ikke brukerens fritaksvurdering eller full norsk regnskapsmessig etterlevelse.
 
+## Gjeldende kjøpsflyt fra 0.79.0
+
+Se [kjøp og MVA-fradrag](purchase-vat.md). Andelen velges ved vanlig
+registrering, også for friteksttjenester fra utlandet. Uttrekket viser faktisk
+fradrag, fulle beregnede utgående beløp under 86, og bare utgående beløp under
+87 når det ikke er fradrag. Innenlandske kjøp uten fradrag vises som kode 0
+utenfor meldingen. Gamle manuelle bilag beholdes. Full melding og innsending,
+R05 om legitimt endret historisk oppsett og øvrige importtilfeller gjenstår.
+
 ## Tjenestekjøp med kode 86 i 0.73.0
+
+> Historisk flyt i 0.73–0.78. Nye kjøp følger [0.79-flyten](purchase-vat.md).
+> Krav om katalogprodukt og skjulte engangsinnstillinger videreføres ikke.
 
 Det eksisterende uttrekket støtter nå den avgrensede native flyten for
 utenlandske tjenestekjøp i NOK med 25 % og full fradragsrett. Fakturaen må ha

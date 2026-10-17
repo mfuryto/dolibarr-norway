@@ -14,12 +14,12 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.78.0';
+        $this->version = '0.79.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
         $this->picto = 'accountancy';
-        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('invoicecard', 'bookkeepingcard', 'commonobject', 'main', 'index', 'pdfgeneration', 'admincompany'));
+        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('invoicecard', 'bookkeepingcard', 'commonobject', 'main', 'index', 'pdfgeneration', 'admincompany', 'purchasesjournal'));
         $this->config_page_url = array('setup.php@norway');
         $this->langfiles = array('norway@norway');
         $this->phpmin = array(8, 2);
@@ -61,7 +61,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.78.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.79.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';
@@ -73,6 +73,9 @@ class modNorway extends DolibarrModules
         require_once __DIR__.'/../../class/NorwayVatRates.php';
         try { NorwayVatRates::ensureZeroCodes($this->db,(int)$GLOBALS['conf']->entity); }
         catch (Throwable $error) { $this->error='Could not add missing Norwegian VAT choices'; return -1; }
+        require_once __DIR__.'/../../class/NorwayPurchaseVat.php';
+        try { NorwayPurchaseVat::completeAccounts($this->db,(int)$GLOBALS['conf']->entity); }
+        catch (Throwable $error) { $this->error='Could not complete native purchase VAT accounts'; return -1; }
         require_once __DIR__.'/../../class/NorwayChartGroups.php';
         try { NorwayChartGroups::complete($this->db,(int)$GLOBALS['conf']->entity); }
         catch (Throwable $error) { $this->error='Could not complete Norwegian account groups'; return -1; }
