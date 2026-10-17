@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
-Oppdatert 2026-10-16 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.67.0. Oppryddingen er gjennomført;
+Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
+Gjeldende programversjon er 0.68.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -48,11 +48,15 @@ koder: salg 3/31/33 og kjøp 1/11/13. MVA-kontohjelpen og de prøvde native
 standardvalgene støtter skillet. Det er ingen ny kodemodell eller meny.
 Eksisterende regnskap og produkter konverteres ikke automatisk.
 
-Neste arbeid er avgiftskode og grunnlag på manuelle hovedbokslinjer, etterfulgt
-av et avstembart norsk MVA-uttrekk. Kjernen mangler disse manuelle feltene.
-En eventuell minste metadatautvidelse må løse akkurat dette gapet og ha
-versjonert overgang og gjenopprettingsprøve. Ikke kopier fakturaer eller
-bygg egen kjøpsbokføring. Relevante nullsats-/utlandstilfeller må inngå før
+0.68.0 legger [avgiftskode og grunnlag på manuelle MVA-linjer](manual-vat.md)
+ved kjernens vanlige bilagskort. Ordinære koder og kontoer kommer fra satsregisteret;
+regnskapsbeløp og fakturaer endres ikke. Skjema 2 er en additiv metadatautvidelse,
+med migrerings- og gjenopprettingsprøve. Låste/eksporterte bilag kan bare leses,
+og endret kilde blir ikke stille godtatt som gjeldende avgiftsgrunnlag.
+
+Neste arbeid er et avstembart norsk MVA-uttrekk som bruker bokførte beløp og
+disse opplysningene, også ved separate fradragsrettinger. Fritak/unntak,
+registreringsovergang og relevante nullsats-/utlandstilfeller må inngå før
 full norsk melding godkjennes. Ingen av de nå leverte delene er innsending.
 
 EHF-kandidater vurderes videre på dokumentasjon og tilgjengelig kilde før

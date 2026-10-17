@@ -1183,3 +1183,16 @@ NorwaySimpleLimits=Norwegian VAT reporting, SAF-T and EHF/Peppol are unfinished.
 NorwayNativeVatCode=Norwegian VAT code
 
 NorwayNativeVatBoth=Sales and purchases
+
+NorwayManualVatTitle=VAT on manual voucher
+NorwayManualVatHelp=Select a code on the VAT line. Enter a base only for output VAT; use the opposite sign for reversals. Input VAT uses the posted amount; leave the base empty. Only ordinary Norwegian rates are supported here. This form creates no accounting entries.
+NorwayManualVatCodeLabel=VAT code
+NorwayManualVatBaseLabel=Base (output VAT, NOK)
+NorwayManualVatOutput=Output
+NorwayManualVatInput=Input
+NorwayManualVatAccess=You cannot edit VAT information for this line.
+NorwayManualVatLocked=VAT information cannot be changed on locked or exported entries, or outside an open fiscal period.
+NorwayManualVatChanged=The entry or its VAT information has changed. Reopen the voucher and enter the correct information.
+NorwayManualVatCode=Select an active ordinary Norwegian code linked to this VAT account in the rate register.
+NorwayManualVatBase=Enter the correct output VAT base with at most two decimals. Amount and sign must match the VAT line. Leave this field empty for input VAT.
+NorwayManualVatDatabase=VAT information could not be read or saved. Ensure that the module update has completed.

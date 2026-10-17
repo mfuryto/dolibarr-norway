@@ -462,3 +462,14 @@ den opprinnelige koblingen. Ingen ny meny eller oppstartsoppgave.
 Neste A2-del avklarer dokumentert myndighetsgodkjenning og etterfakturering;
 deretter manuelle bilag og videre rettingsscenarioer. Full faglig avgifts-
 og rapporteringsaksept gjenstår. Papirløs bilagsflyt er fortsatt sist.
+
+## MVA på manuelle bilag i 0.68.0
+
+Det native bilagskortet har ordinære norske MVA-koder fra satsregisteret og
+utgående grunnlag på manuelle MVA-linjer. Ingen ny meny eller kontrollside;
+regnskapsbeløp og fakturalinjer endres ikke. Skjema 2 lagrer bare de manglende
+manuelle feltene med kildefingeravtrykk. Brukerrettigheter, regnskapsperiode,
+låsing, eksport og samtidige endringer er prøvd, sammen med begge fortegn,
+separate fradragsrettinger, norsk/engelsk HTTP og backup/gjenoppretting.
+[Omfang og kilde](manual-vat.md). Neste leveranse er det avstembare uttrekket;
+nullsats/utland og samlet MVA-melding er fortsatt ikke godkjent.

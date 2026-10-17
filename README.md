@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.67.0 · Under utvikling**
+**Versjon 0.68.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -129,7 +129,7 @@ Se [oppsettsveiledningen](docs/norwegian-setup-guide.md) for et regneeksempel.
 Norsk MVA-melding gjenstår; kjernens fakturauttrekk tar ikke automatisk med
 separate fradragsomposteringer.
 
-## Norske MVA-koder i 0.67.0
+## Norske MVA-koder i 0.68.0
 
 Det eksisterende MVA-oppsettet kan opprette separate ordinære salgskoder
 3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister for nye, ubrukte oppsett.
@@ -140,3 +140,8 @@ kontrollside, kodemodell eller lagringstabell innføres.
 
 MVA-meldingen er fortsatt uferdig. Manuelle bilags norske avgiftsopplysninger,
 nullsats-/utlandstilfeller og komplett avstemming/innsending gjenstår.
+
+I 0.68.0 kan ordinære MVA-koder og utgående grunnlag registreres ved
+manuelle bilag i kjernens bilagskort. Bokførte beløp endres ikke.
+Samlet norsk MVA-uttrekk og innsending gjenstår.
+Se [bruk, omfang og skjemaovergang](docs/manual-vat.md).

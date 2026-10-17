@@ -1183,3 +1183,16 @@ NorwaySimpleLimits=Norsk MVA-rapportering, SAF-T og EHF/Peppol er ikke ferdigsti
 NorwayNativeVatCode=Norsk MVA-kode
 
 NorwayNativeVatBoth=Salg og kjøp
+
+NorwayManualVatTitle=MVA på manuelt bilag
+NorwayManualVatHelp=Velg kode på MVA-linjen. Grunnlag fylles bare ut for utgående MVA, med motsatt fortegn ved tilbakeføring. Inngående MVA hentes fra det bokførte beløpet; la grunnlaget stå tomt. Bare ordinære norske satser støttes her. Ingen beløp bokføres av dette skjemaet.
+NorwayManualVatCodeLabel=MVA-kode
+NorwayManualVatBaseLabel=Grunnlag (utgående MVA, NOK)
+NorwayManualVatOutput=Utgående
+NorwayManualVatInput=Inngående
+NorwayManualVatAccess=Du har ikke tilgang til å endre MVA-opplysningene for denne linjen.
+NorwayManualVatLocked=MVA-opplysningene kan ikke endres når bilaget er låst, eksportert eller utenfor åpen regnskapsperiode.
+NorwayManualVatChanged=Bilaget eller MVA-opplysningene er endret. Åpne bilaget på nytt og registrer riktige opplysninger.
+NorwayManualVatCode=Velg en aktiv ordinær norsk kode som er koblet til denne MVA-kontoen i satsregisteret.
+NorwayManualVatBase=Oppgi riktig grunnlag med maksimalt to desimaler for utgående MVA. Beløp og fortegn må samsvare med MVA-linjen. La feltet stå tomt for inngående MVA.
+NorwayManualVatDatabase=MVA-opplysningene kunne ikke leses eller lagres. Kontroller at moduloppdateringen er fullført.
