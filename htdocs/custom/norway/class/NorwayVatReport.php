@@ -1,6 +1,7 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
 require_once __DIR__.'/NorwayManualVat.php';
+require_once __DIR__.'/NorwayPurchaseVat.php';
 /** Read-only supported-code extract, reconciled to native vouchers, never a complete VAT return. */
 class NorwayVatReport
 {
@@ -72,7 +73,7 @@ class NorwayVatReport
         $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null);
         if($conf->currency!=='NOK' || ($mysoc->country_code??'')!=='NO'){self::issue($report,'Setup','',0);}
         $manualChoices=NorwayManualVat::choices($db,$entity);
-        $choices=$manualChoices;unset($choices['86']); // Manual deduction metadata must never substitute an inactive invoice rate.
+        $choices=$manualChoices;unset($choices['86'],$choices['87']); // Manual deduction metadata must never substitute an inactive invoice rate.
         $choices=NorwayVatRates::zeroChoices($db,$entity)+$choices;$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
         foreach($manualChoices as $code=>$spec){if(!empty($spec['manual_only'])){$specs[$code]=$spec;}}
         $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux<>0') as $row){
@@ -116,23 +117,34 @@ class NorwayVatReport
                 if(count($all)!==count($posted)){self::issue($report,'Date',$type,$id,$piece);}
                 foreach($posted as $b){if(substr($b->doc_date,0,10)!==substr($h->datef,0,10) || (int)$b->piece_num!==$piece || (int)$b->fk_docdet!==0){self::issue($report,'Date',$type,$id,$piece);}}
                 $groups=array();$expected=array();$sumBase=0;$sumTax=0;
-                foreach(self::rows($db,'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid') as $line){
+                $lineSql=$sale?'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid':'SELECT d.*,e.norway_vat_deduction FROM '.$p.$lines.' d LEFT JOIN '.$p.'facture_fourn_det_extrafields e ON e.fk_object=d.rowid WHERE d.'.$fk.'='.$id.' ORDER BY d.rowid';
+                foreach(self::rows($db,$lineSql) as $line){
                     $code=(string)$line->vat_src_code;$spec=$choices[$code]??null;
                     if($spec && (!empty($spec['manual_only']) || ((!empty($spec['export']) || !empty($spec['reverse_rate']))!==($h->country_code!=='NO')
-                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1 || (int)$line->fk_product<=0))))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
+                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1))))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                     if(!$spec || $spec['type']!==($sale?1:2) || (float)$line->tva_tx!==(float)$spec['rate'] || (int)$line->info_bits!==0
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}
                     $base=self::amount($line->total_ht);$tax=self::amount($sale?$line->total_tva:$line->tva);
                     if((!empty($spec['zero']) && $tax!==0) || abs(round(self::cents($base)*$spec['rate']/100)-self::cents($tax))>1 || ($tax!==0 && ($base===0 || (($base<0)!==($tax<0))))){self::issue($report,'Mismatch',$type,$id,$piece);}
                     $sumBase=self::add($sumBase,$base);$sumTax=self::add($sumTax,$tax);
-                    $groups[$code]['base']=self::add($groups[$code]['base']??0,$base);$groups[$code]['tax']=self::add($groups[$code]['tax']??0,$tax);
+                    $sourceCode=$code;$deducted=$tax;
+                    if(!$sale){
+                        try{$percent=NorwayPurchaseVat::percent($line->norway_vat_deduction,$code);}
+                        catch(Throwable $error){self::issue($report,'Code',$type,$id,$piece);continue;}
+                        if(empty($spec['zero']) && $percent!==10000){$deducted=NorwayPurchaseVat::deductionAmount($tax,$percent);}
+                        if(empty($spec['zero']) && $percent===0){$code='NO0';$spec=$choices['NO0']??null;if(!$spec){self::issue($report,'Code',$type,$id,$piece);continue;}}
+                        if(!empty($spec['reverse_rate']) && $percent===0){$code='87';$spec=$choices['87']??null;if(!$spec){self::issue($report,'Code',$type,$id,$piece);continue;}}
+                    }
+                    $groups[$code]['base']=self::add($groups[$code]['base']??0,(!$sale && $sourceCode!==$code && $code==='NO0')?self::add($base,$tax):$base);$groups[$code]['tax']=self::add($groups[$code]['tax']??0,$sale?$tax:$deducted);
                     if(!empty($spec['reverse_rate'])){
                         $reverse=self::reverseTax($base);$groups[$code]['reverse_tax']=self::add($groups[$code]['reverse_tax']??0,$reverse);
                         $expected[$spec['reverse_credit']]=self::add($expected[$spec['reverse_credit']]??0,-$reverse);
-                        $expected[$spec['reverse_debit']]=self::add($expected[$spec['reverse_debit']]??0,$reverse);
+                        $recoverable=NorwayPurchaseVat::deductionAmount($reverse,$percent);
+                        $groups[$code]['reverse_deduction']=self::add($groups[$code]['reverse_deduction']??0,$recoverable);
+                        $expected[$spec['reverse_debit']]=self::add($expected[$spec['reverse_debit']]??0,$recoverable);
                     }
-                    if(empty($spec['zero'])){$expected[$spec['account']]=self::add($expected[$spec['account']]??0,$tax);}
+                    if(empty($spec['zero'])){$expected[$spec['account']]=self::add($expected[$spec['account']]??0,$sale?$tax:$deducted);}
                 }
                 if(!$groups || self::cents($sumBase)!==self::cents(self::amount($h->total_ht)) || self::cents($sumTax)!==self::cents(self::amount($h->total_tva))){self::issue($report,'Mismatch',$type,$id,$piece);}
                 $counterpart=$sale?$h->accountancy_code_customer_general:$h->accountancy_code_supplier_general;
@@ -157,12 +169,12 @@ class NorwayVatReport
                 foreach($groups as $code=>$g){$spec=$choices[$code];
                     if(!empty($spec['reverse_rate'])){
                         self::entry($report,$type,$id,$piece,$code,$g['base'],$g['reverse_tax'],array_replace($spec,array('type'=>1,'rate'=>$spec['reverse_rate'])));
-                        self::entry($report,$type,$id,$piece,$code,0,$g['reverse_tax'],array_replace($spec,array('type'=>2,'rate'=>$spec['reverse_rate'])));
+                        if((string)$code!=='87'){self::entry($report,$type,$id,$piece,$code,0,$g['reverse_deduction'],array_replace($spec,array('type'=>2,'rate'=>$spec['reverse_rate'])));}
                     }else{self::entry($report,$type,$id,$piece,$code,$g['base'],$g['tax'],$spec);}
                 }
             }
         }
-        foreach($report['entries'] as $entry){$code=$entry['code'];$key=$code==='86'?$code.'/'.$entry['type']:$code;if(!isset($report['groups'][$key])){$report['groups'][$key]=array('code'=>$code,'type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0,'reported'=>$entry['reported']);}
+        foreach($report['entries'] as $entry){$code=$entry['code'];$key=in_array($code,array('86'),true)?$code.'/'.$entry['type']:$code;if(!isset($report['groups'][$key])){$report['groups'][$key]=array('code'=>$code,'type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0,'reported'=>$entry['reported']);}
             $report['groups'][$key]['tax']=self::add($report['groups'][$key]['tax'],$entry['tax']);
             if($entry['base']!==null){$report['groups'][$key]['base']=self::add($report['groups'][$key]['base'],$entry['base']);}
         }

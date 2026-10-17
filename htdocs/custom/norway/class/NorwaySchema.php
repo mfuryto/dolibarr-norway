@@ -3,7 +3,8 @@
 /** Versioned, additive schema foundation. Does not create accounting evidence. */
 class NorwaySchema
 {
-    const VERSION=2;
+    const VERSION=3;
+    const PURCHASE_CHECKSUM='f7449867bca6906706c9665ac525bd5033850921f6a7e0cfccc185df6eed39f8';
     const MANUAL_CHECKSUM='147db0dc0aafd3145b0fc821504b8a92dc99d1e686976ad93d46f108c97239c5';
     const CHECKSUM='6fa45031fee65c6c80562d83290430291d2af375dbb5cbb16268ba85530f17c5';
     private static function prefix($db)
@@ -18,8 +19,8 @@ class NorwaySchema
     }
     private static function statements($version=1)
     {
-        $file=__DIR__.'/../migrations/'.($version===1?'001-tax-evidence.sql':'002-manual-vat.sql');
-        $checksum=$version===1?self::CHECKSUM:self::MANUAL_CHECKSUM;
+        $file=__DIR__.'/../migrations/'.array(1=>'001-tax-evidence.sql',2=>'002-manual-vat.sql',3=>'003-purchase-deduction.sql')[$version];
+        $checksum=array(1=>self::CHECKSUM,2=>self::MANUAL_CHECKSUM,3=>self::PURCHASE_CHECKSUM)[$version];
         if (!is_file($file) || hash_file('sha256',$file)!==$checksum) { throw new RuntimeException('Migration checksum'); }
         return array_values(array_filter(array_map('trim',explode(';',file_get_contents($file)))));
     }
@@ -58,19 +59,33 @@ class NorwaySchema
             'tax_code'=>'varchar(2)','tax_base'=>'decimal(24,8)','source_hash'=>'char(64)','fk_user'=>'int(11)','updated_at'=>'datetime'),
             array('PRIMARY'=>array('entity','fk_bookkeeping')));
     }
+    private static function purchaseShape($db)
+    {
+        $p=self::prefix($db);
+        $r=self::query($db,"SHOW COLUMNS FROM ".$p."facture_fourn_det_extrafields WHERE Field='norway_vat_deduction'");
+        $column=$db->fetch_object($r);
+        if(!$column || strtolower($column->Type)!=='decimal(7,2)' || $column->Null!=='YES' || $column->Default!==null){throw new RuntimeException('Purchase deduction column mismatch');}
+        $r=self::query($db,"SELECT * FROM ".$p."extrafields WHERE name='norway_vat_deduction' AND elementtype='facture_fourn_det'");
+        $field=$db->fetch_object($r);
+        if(!$field || $db->fetch_object($r) || (int)$field->entity!==0 || $field->type!=='double' || $field->size!=='7,2'
+            || (int)$field->alwayseditable!==0 || (int)$field->emptyonclone!==0 || $field->list!=='3'
+            || !empty($field->fieldcomputed) || !empty($field->fielddefault) || !empty($field->fieldrequired)){
+            throw new RuntimeException('Purchase deduction field mismatch');
+        }
+    }
     private static function history($db)
     {
         $r=self::query($db,'SELECT version,checksum FROM '.self::prefix($db).'norway_schema ORDER BY version'); $rows=array();
         while ($row=$db->fetch_object($r)) { $rows[]=$row; }
         foreach ($rows as $i=>$row) {
-            $expected=array(self::CHECKSUM,self::MANUAL_CHECKSUM);
+            $expected=array(self::CHECKSUM,self::MANUAL_CHECKSUM,self::PURCHASE_CHECKSUM);
             if ((int)$row->version!==$i+1 || !isset($expected[$i]) || $row->checksum!==$expected[$i]) { throw new RuntimeException('Unknown or altered schema history'); }
         }
         return $rows;
     }
     public static function verify($db)
     {
-        self::statements(); self::statements(2); self::shapes($db); self::manualShape($db);
+        self::statements(); self::statements(2); self::statements(3); self::shapes($db); self::manualShape($db); self::purchaseShape($db);
         if (count(self::history($db))!==self::VERSION) { throw new RuntimeException('Schema migration incomplete'); }
         return true;
     }
@@ -100,6 +115,11 @@ class NorwaySchema
                 $count=$db->fetch_object(self::query($db,'SELECT COUNT(*) AS n FROM '.$p.'norway_manual_vat'));
                 if (!$count || (int)$count->n!==0) { throw new RuntimeException('Untracked manual VAT data'); }
                 self::query($db,"INSERT INTO ".$p."norway_schema (version,checksum,applied_at) VALUES (2,'".self::MANUAL_CHECKSUM."',UTC_TIMESTAMP())");
+            }
+            if(count($history)<3){
+                foreach(self::statements(3) as $statement){self::query($db,str_replace('llx_',$p,$statement));}
+                self::purchaseShape($db);
+                self::query($db,"INSERT INTO ".$p."norway_schema (version,checksum,applied_at) VALUES (3,'".self::PURCHASE_CHECKSUM."',UTC_TIMESTAMP())");
             }
             return self::verify($db);
         } finally { self::query($db,"SELECT RELEASE_LOCK('".$lock."')"); }

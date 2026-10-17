@@ -13,13 +13,19 @@ const {chromium}=require('playwright');
   await page.goto(base+'/societe/list.php');
   const partyLink=await page.locator('a[href*="/societe/card.php?socid="]').first().getAttribute('href');
   const partyId=partyLink&&partyLink.match(/[?&]socid=([0-9]+)/);if(!partyId)throw Error('Synthetic customer missing');
-  const paths=['/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
+  await page.goto(base+'/fourn/facture/list.php');
+  const supplierLinks=await page.locator('a[href*="/fourn/facture/card.php"]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')));
+  const supplierLink=supplierLinks.find(h=>/[?&](?:id|facid)=[0-9]+/.test(h));if(!supplierLink)throw Error('Synthetic supplier invoice missing');
+  const paths=[supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
   for(const width of [1440,1024,768,390])for(const lang of ['nb_NO','en_US']){
    await page.setViewportSize({width,height:900});
    for(const path of paths){
     const response=await page.goto(base+path+(path.includes('?')?'&':'?')+'lang='+lang);
     if(response.status()!==200||await page.locator('input[name=username]').count())throw Error('Page unavailable: '+path);
     if(!await page.locator('link[href*="layout-0.5.0.css"]').count())throw Error('Module style missing');
+    if(path.includes('/fourn/facture/card.php')){
+     if(await page.locator('.facture_fourn_det_extras_norway_vat_deduction').count()===0)throw Error('Native purchase deduction missing');
+    }
     if(path.includes('type=2')){
      const row=page.locator('#norway-original-reference');
      if(!await row.isVisible())throw Error('External original reference hidden');

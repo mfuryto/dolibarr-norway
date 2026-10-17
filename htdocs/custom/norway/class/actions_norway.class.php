@@ -30,8 +30,8 @@ class ActionsNorway
             try{$form=new Form($db);$this->resprints=$form->load_tva($parameters['htmlname'],in_array($selected,array('','-1'),true)?'0':$selected,
                 $norwegianSeller,$buyer,(int)($parameters['idprod']??0),0,$parameters['type']??'',$parameters['options_only']??false,(int)$parameters['mode'],2);}
             finally{$this->renderingVat=false;}
-            // If all ordinary zero choices were removed, the browser must not default to code 86.
-            if(in_array($selected,array('','-1'),true) && preg_match('/<option\b[^>]*value="0(?:\.0+)? \(86\)"[^>]*\sselected(?=[\s>])[^>]*>/',$this->resprints,$match)){
+            // If all ordinary zero choices were removed, the browser must not default to a reverse-charge code.
+            if(in_array($selected,array('','-1'),true) && preg_match('/<option\b[^>]*value="0(?:\.0+)? \((?:86|87)\)"[^>]*\sselected(?=[\s>])[^>]*>/',$this->resprints,$match)){
                 $this->resprints=str_replace($match[0],preg_replace('/\sselected(?=[\s>])/','',$match[0]),$this->resprints);
                 $plain='<option value="0" selected>0%</option>';
                 $this->resprints=!empty($parameters['options_only'])?$plain.$this->resprints:preg_replace('/(<select\b[^>]*>)/','$1'.$plain,$this->resprints,1);
@@ -69,6 +69,20 @@ class ActionsNorway
         $this->resprints=$html;return 1;
     }
 
+    private function purchaseJournal()
+    {
+        return ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/journal/purchasesjournal.php';
+    }
+    public function printFieldListSelect($parameters,&$object,&$action,$hookmanager)
+    {
+        $this->resprints='';if(!$this->purchaseJournal()){return 0;}
+        require_once __DIR__.'/NorwayPurchaseVat.php';$this->resprints=NorwayPurchaseVat::selectSql();return 0;
+    }
+    public function printFieldListFrom($parameters,&$object,&$action,$hookmanager)
+    {
+        global $db;$this->resprints='';if(!$this->purchaseJournal()){return 0;}
+        require_once __DIR__.'/NorwayPurchaseVat.php';$this->resprints=NorwayPurchaseVat::fromSql($db);return 0;
+    }
     private function invoicePage()
     {
         return ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/compta/facture/card.php';

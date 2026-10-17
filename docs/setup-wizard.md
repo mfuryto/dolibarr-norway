@@ -24,7 +24,8 @@ nummerering, dokumenter, perioder/overgang, utenlandshandel/fradrag,
 MVA-grunnlag/melding, EHF, SAF-T, årsavslutning, næringsspesifikasjon/skattemelding
 og bevaring/drift. Betingede behov må vurderes for faktisk virksomhet.
 
-Kontoklasser og teknisk saldoovergang er kvalifisert i 0.77.0. Normalflyt for
-ingen/delvis fradrag, full årsavslutning og flere rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
+Kontoklasser og teknisk saldoovergang er kvalifisert i 0.77.0. Normal kjøpsflyt med
+fradragsandel er kvalifisert i 0.79.0 for [støttet omfang](purchase-vat.md).
+Full årsavslutning og flere rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
 skriver regnskapsdata. Den er en veiledning til oppgavene; løpende arbeid skjer
 fortsatt i kjernens vanlige menyer.

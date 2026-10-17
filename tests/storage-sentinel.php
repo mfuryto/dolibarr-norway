@@ -78,9 +78,9 @@ if(getenv('NORWAY_CREATE_SENTINEL')==='1') {
 $r=$db->query('SELECT * FROM '.$db->prefix().'norway_manual_vat WHERE entity='.(int)$conf->entity.' AND fk_bookkeeping=2147483000');$marker=$r?$db->fetch_object($r):null;
 if(!$marker || $marker->tax_code!=='1' || $marker->tax_base!=='0.00000000' || $marker->source_hash!==$manualHash || $marker->updated_at!=='2026-01-01 00:00:00' || (int)$marker->fk_user!==1){throw new RuntimeException('Manual VAT fields lost through update/restore');}
 print "PASS manual VAT storage preserved through update/restore\n";
-$zeroRows=array();$r=$db->query('SELECT * FROM '.$db->prefix()."c_tva WHERE entity=".(int)$conf->entity." AND fk_pays=173 AND code IN ('NO0','5','6','7','52','86') ORDER BY code");
+$zeroRows=array();$r=$db->query('SELECT * FROM '.$db->prefix()."c_tva WHERE entity=".(int)$conf->entity." AND fk_pays=173 AND code IN ('NO0','5','6','7','52','86','87') ORDER BY code");
 while($r && $row=$db->fetch_object($r)){$zeroRows[]=(array)$row;}
-if(count($zeroRows)!==6){throw new RuntimeException('Missing synthetic zero choices');}
+if(count($zeroRows)!==7){throw new RuntimeException('Missing synthetic zero choices');}
 $zeroMarker='/var/www/documents/norway-zero-code-marker.json';$zeroJson=json_encode($zeroRows,JSON_THROW_ON_ERROR);
 if(getenv('NORWAY_CREATE_SENTINEL')==='1'){if(file_put_contents($zeroMarker,$zeroJson)===false){throw new RuntimeException('Zero marker write');}}
 elseif(file_get_contents($zeroMarker)!==$zeroJson){throw new RuntimeException('Native zero choices changed through update/restore');}
@@ -105,4 +105,14 @@ $result = $db->query("SELECT COUNT(*) AS total FROM ".$db->prefix()."accounting_
 if (!$result || (int) $db->fetch_object($result)->total !== 745) { throw new RuntimeException('Norwegian chart was not preserved'); }
 print "PASS synthetic persistent content, Norwegian chart and imported chart account\n";
 print "PASS legacy payloads and hashes preserved without the retired writers\n";
+
+
+// Native line metadata has no document/ledger semantics in this storage-only sentinel.
+if(getenv('NORWAY_CREATE_SENTINEL')==='1'){
+    if(!$db->query('INSERT INTO '.$db->prefix().'facture_fourn_det_extrafields (fk_object,norway_vat_deduction) VALUES (2147482999,37.50)')){throw new RuntimeException('Deduction storage marker');}
+}
+$r=$db->query('SELECT norway_vat_deduction FROM '.$db->prefix().'facture_fourn_det_extrafields WHERE fk_object=2147482999');$deduction=$r?$db->fetch_object($r):null;
+if(!$deduction || $deduction->norway_vat_deduction!=='37.50'){throw new RuntimeException('Deduction lost through update/restore');}
+print "PASS native deduction percentage preserved through update/restore\n";
+
 $db->close();

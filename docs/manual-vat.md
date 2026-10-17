@@ -1,5 +1,9 @@
 # MVA på manuelle bilag
 
+Nye kjøp i støttet omfang registreres fra 0.79.0 som [vanlig leverandørfaktura
+med fradragsandel](purchase-vat.md). Rutinene for separat fradragsretting og
+hele manuelle 87-kjøp nedenfor beholdes for eldre bilag og reservebruk.
+
 Fra modul 0.68.0 kan avgiftskode og grunnlag registreres nederst på det
 vanlige bilagskortet i Regnskap. Feltene vises på manuelle MVA-linjer når
 satsregisteret har en entydig, aktiv norsk kode og tilhørende MVA-konto.

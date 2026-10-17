@@ -524,3 +524,25 @@ Systembytte bruker native standalone-kreditnota og `ref_ext`, med registrering
 på fakturakortet, retting i kladd og skrivevern etter utstedelse. Native hovedbok,
 MVA-fortegn og refusjonsregistrering inngår i prøven. Ingen skjemaendring.
 Dokumentert omfang er teknisk kvalifisert; R03/R04 og resten av etappe 3 er åpne.
+
+## 0.79.0 — vanlig kjøpsflyt med fradrag
+
+R03/R04 lukkes for innenlandske varer/tjenester med 25/15/12 prosent og
+NOK-fjernleverbare utenlandstjenester med 25 prosent beregnet avgift.
+MVA-fradrag velges på den vanlige kjøpslinjen, også i fritekst. Native
+kreditnotaer kopierer valget. Kjøpsjournalen bruker en avgrenset SQL-projeksjon
+og bokfører selv ett samlet bilag med kostnad, faktisk fradrag, beregnet
+utgående avgift og uendret leverandørgjeld. Ingen manuell etterretting kreves
+for nye kjøp i omfanget. Produktets senere sats påvirker ikke beregningen.
+
+Migrering 003 legger ett valgfritt native linjeekstrafelt til. Originalbeløp,
+gamle manuelle rettinger, arkivdata, egne kontoer og tidligere valg beholdes.
+Native skjema, prosent/desimalkomma, kopierte kreditnotaer, øreavrunding,
+SE/US, produktendring, fradrag per dokument i uttrekket, betaling/refusjon,
+feilvalg og gjentatt overføring inngår i akseptprøven. Schemaoppgradering
+v1/v2 til v3 og backup/gjenoppretting prøves separat.
+
+Dokumentdelen av denne arbeidsflyten ble levert i 0.78.0. Hele dokument-/
+kjøpsetappen er nå dekket for oppgitt omfang. R05/historisk oppsettsendring,
+full MVA-melding/innsending, vareimport, EHF, SAF-T og årsoppgjør/skatt gjenstår.
+Se [kjøpsveiledningen](purchase-vat.md) og [samlet plan](delivery-plan.md).
