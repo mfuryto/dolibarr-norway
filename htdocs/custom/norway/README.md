@@ -1,6 +1,6 @@
-# Norway 0.70.0
+# Norway 0.71.0
 
-**Versjon 0.70.0 · Under utvikling**
+**Versjon 0.71.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -34,7 +34,7 @@ Fradragsandel avgjøres faglig og bokføres manuelt i kjernen; NPR er en fransk
 særordning og endrer prisberegningen. Ingen egen kjøpsflyt eller fradragshistorikk
 innføres. Fakturauttrekket er fortsatt ikke en komplett norsk MVA-melding.
 
-## Norske MVA-koder i 0.70.0
+## Norske MVA-koder
 
 Det eksisterende MVA-oppsettet kan opprette separate ordinære salgskoder
 3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister for nye, ubrukte oppsett.
@@ -43,8 +43,8 @@ Standardvalget i de prøvde skjermbildene er avgrenset til riktig salgs-/kjøpsr
 Eksisterende regnskap og produkter legges ikke om automatisk. Ingen ny meny,
 kontrollside, kodemodell eller lagringstabell innføres.
 
-MVA-meldingen er fortsatt uferdig. Manuelle bilags norske avgiftsopplysninger,
-nullsats-/utlandstilfeller og komplett avstemming/innsending gjenstår.
+MVA-meldingen er fortsatt uferdig. Manuelle nullsatsbilag, utlandstilfeller og komplett
+avstemming/innsending gjenstår.
 
 Fra 0.70.0 finnes et lesende MVA-uttrekk under regnskapsrapportene for
 ordinære norske koder, med avstemming av fakturaer, kreditnotaer og manuelle
@@ -55,3 +55,10 @@ Full MVA-melding, særtilfeller og innsending gjenstår.
 inntekt som ikke er MVA-omsetning (7) i samme uttrekk. Manglende kodevalg
 gjøres tilgjengelige i det native satsregisteret; eksisterende dokumenter
 omklassifiseres ikke. Kode 7 holdes utenfor meldingsgrunnlaget i CSV.
+
+0.71.0 støtter innenlandske kjøp uten MVA-behandling i samme uttrekk.
+Velg `0 (NO0)` på leverandørfakturalinjen; NO0 er et lokalt navn for norsk
+kode 0 fordi kjernen mister den bokstavelige verdien «0». Uttrekket viser
+kode 0 separat, uten fradrag eller meldingsgrunnlag. Vanlig kjøpsjournal,
+kreditnotaer og varer/tjenester gjenbrukes. Kjøp med MVA uten fradragsrett
+krever fortsatt den ordinære fradragsrettingen; NO0 erstatter ikke dette.

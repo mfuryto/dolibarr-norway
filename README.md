@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.70.0 · Under utvikling**
+**Versjon 0.71.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -129,7 +129,7 @@ Se [oppsettsveiledningen](docs/norwegian-setup-guide.md) for et regneeksempel.
 Norsk MVA-melding gjenstår; kjernens fakturauttrekk tar ikke automatisk med
 separate fradragsomposteringer.
 
-## Norske MVA-koder i 0.70.0
+## Norske MVA-koder
 
 Det eksisterende MVA-oppsettet kan opprette separate ordinære salgskoder
 3/31/33 og kjøpskoder 1/11/13 i kjernens satsregister for nye, ubrukte oppsett.
@@ -138,8 +138,8 @@ Standardvalget i de prøvde skjermbildene er avgrenset til riktig salgs-/kjøpsr
 Eksisterende regnskap og produkter legges ikke om automatisk. Ingen ny meny,
 kontrollside, kodemodell eller lagringstabell innføres.
 
-MVA-meldingen er fortsatt uferdig. Manuelle bilags norske avgiftsopplysninger,
-nullsats-/utlandstilfeller og komplett avstemming/innsending gjenstår.
+MVA-meldingen er fortsatt uferdig. Manuelle nullsatsbilag, utlandstilfeller og komplett
+avstemming/innsending gjenstår.
 
 Fra 0.70.0 finnes et lesende MVA-uttrekk under regnskapsrapportene for
 ordinære norske koder, med avstemming av fakturaer, kreditnotaer og manuelle
@@ -152,3 +152,10 @@ inntekt som ikke er MVA-omsetning (7) i samme uttrekk. Manglende kodevalg
 gjøres tilgjengelige i det native satsregisteret; eksisterende dokumenter
 omklassifiseres ikke. Kode 7 holdes utenfor meldingsgrunnlaget i CSV.
 Se [kodevalg og avgrensning](docs/vat-rates.md).
+
+0.71.0 støtter innenlandske kjøp uten MVA-behandling i samme uttrekk.
+Velg `0 (NO0)` på leverandørfakturalinjen; NO0 er et lokalt navn for norsk
+kode 0 fordi kjernen mister den bokstavelige verdien «0». Uttrekket viser
+kode 0 separat, uten fradrag eller meldingsgrunnlag. Vanlig kjøpsjournal,
+kreditnotaer og varer/tjenester gjenbrukes. Kjøp med MVA uten fradragsrett
+krever fortsatt den ordinære fradragsrettingen; NO0 erstatter ikke dette.

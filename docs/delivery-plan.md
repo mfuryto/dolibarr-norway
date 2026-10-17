@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.70.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.71.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -69,7 +69,14 @@ En ukodet nullsats blir ikke gjettet til en behandling. Ingen ny meny, database-
 modell eller begrunnelsesside innføres. Faglig vilkårsvurdering er fortsatt
 brukerens oppgave i den vanlige dokumentflyten.
 
-Neste arbeid er aktuelle utenlandstilfeller og kjøp uten MVA, deretter
+0.71.0 bruker kjernens kjøpsjournal og linjekode NO0 for innenlandske kjøp
+uten MVA-behandling. Det lokale navnet unngår kjernens tap av bokstavelig
+kode 0 i velger/lagring. Uttrekket viser norsk kode 0 med separat beløp uten
+fradrag/meldingsgrunnlag. Native rene/blandede fakturaer og kreditnotaer,
+varer/tjenester og bevaring gjennom oppdatering/gjenoppretting er prøvd.
+Ingen nye tabeller, menyer eller lagringsinngrep innføres.
+
+Neste arbeid er aktuelle utenlandstilfeller, deretter
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og

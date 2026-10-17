@@ -68,9 +68,9 @@ Ingen kjernefil endres.
 ## Begrensning
 
 Dette er nødvendige kildeopplysninger for norsk rapportering, ikke en ferdig
-MVA-melding. Manuelle bilag har fortsatt ikke egne norske avgiftsfelt i kjernen.
-Rapporteringen må bruke faktisk bokført fradrag og kunne behandle disse bilagene
-før fullstendighet eller innsending kan godkjennes.
+MVA-melding. Kjernen mangler egne norske avgiftsfelt for manuelle bilag; modulen har
+[avgrenset støtte på det vanlige bilagskortet](manual-vat.md). Rapporteringen
+må bruke faktisk bokført fradrag; fullstendighet og innsending gjenstår.
 
 ## Innenlands salg uten beregnet MVA fra 0.70.0
 
@@ -97,5 +97,27 @@ eller bekreftelsesrunde innføres.
 Dette gjelder innenlandske fakturaer/kreditnotaer i NOK i det prøvde,
 MVA-registrerte oppsettet. Vilkårene for fritak/unntak og fradragsrett avgjøres
 ikke av kodevalget. Rene unntatte foretak, registreringsovergang, manuelle
-nullsatsbilag, kjøp uten MVA og utenlandskjøp/-salg er fortsatt ikke kvalifisert.
+nullsatsbilag og utenlandskjøp/-salg er fortsatt ikke kvalifisert.
 Import/eksport skal ikke presses inn under de innenlandske kodene.
+
+## Kjøp uten MVA-behandling i 0.71.0
+
+På en innenlandsk leverandørfaktura i NOK velges **`0 (NO0)`** når kjøpet
+ikke har MVA-behandling. Kodevalget settes på den vanlige fakturalinjen;
+kostnadskonto velges som ellers for varen eller tjenesten. Kode 0 gir ingen
+fradragsført MVA og rapporteres ikke i MVA-meldingen. Uttrekket viser beløpet
+separat. Kreditnota bruker kjernens vanlige kreditnotaflyt.
+
+NO0 er et fast lokalt navn for norsk kode 0, uten eget koblingsregister.
+Dolibarr 24.0.1 behandler teksten «0» som tom ved visning og lagring; NO0
+bevares av den native satsvelgeren, linjelagringen og redigeringen.
+Uttrekket oversetter bare dette eksplisitte valget til 0. Et eksisterende
+ukodet nullvalg eller en bokstavelig kode 0 konverteres ikke automatisk.
+Manglende NO0 opprettes ved oppdatering som aktiv kjøpsrad, uten MVA-konto
+eller standardvalg. Eksisterende NO0-rader, også deaktiverte eller feilaktige,
+beholdes og må eventuelt rettes i kjernens satsregister.
+
+Bruk ikke NO0 til utenlandskjøp, import, omvendt avgiftsplikt eller som en
+snarvei for kjøp med MVA der fradragsretten er begrenset/mangler. For sistnevnte
+brukes [den prøvde fradragsrettingen](norwegian-setup-guide.md). Ingen nullklassifisering
+velges automatisk. Manuelt førte nullbilag er fortsatt utenfor uttrekkets omfang.

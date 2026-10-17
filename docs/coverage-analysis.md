@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.69.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.71.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -234,3 +234,14 @@ Ingen ny rapportmotor, kontrollside, databaseendring eller integrasjon er
 implementert i denne gjennomgangen. Foretaksformer og bransjer får bare
 støtte etter konkrete prøver. Lønn, kassasystem og andre betingede områder
 utvider ikke automatisk leveransen. Papirløs flyt tas fortsatt til slutt.
+
+## Kjøpskode 0: konkret lagringsgap
+
+I den låste Dolibarr 24.0.1-revisjonen bruker satsvelgeren sannhetsverdien av
+`code` i `core/class/html.form.class.php`, og `fournisseur.facture.ligne.class.php`
+bruker `empty(vat_src_code)` i både INSERT og UPDATE. Teksten «0» mister derfor
+klassifiseringen selv når den er eksplisitt valgt. Et ordinært satsvalg NO0
+bevares av kjernen; 0.71.0 bruker dette som fast lokalt navn for norsk kode 0
+og oversetter ved lesing i det eksisterende uttrekket. Ingen kjerneendring,
+trigger som skriver om bilag, ny koblingstabell eller egen velger trengs.
+Ukodede nullkjøp og utenlandsbehandling blir ikke automatisk klassifisert.

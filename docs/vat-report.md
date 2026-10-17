@@ -125,7 +125,7 @@ for innsendings-API-et.
 Manglende, deaktiverte, feilrettede eller tvetydige kodeoppsett gir uavklart
 uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske motparter og
 51/52 er fortsatt utenfor prøvd omfang. Det samme gjelder manuelt nullgrunnlag,
-kjøp uten MVA, registreringsovergang og MVA-oppgjør/åpningsposter.
+registreringsovergang og MVA-oppgjør/åpningsposter.
 
 Kildene er [Skatteetatens forklaring av fritak/unntak](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/slik-fungerer-mva/forskjellen-pa-fritak-og-unntak-fra-merverdiavgift/),
 [offisielle SAF-T-koder](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv)
@@ -134,3 +134,23 @@ med [kodebiblioteket](https://github.com/Skatteetaten/mva-meldingen/blob/master/
 lest 2026-10-17. Kodebiblioteket har 5/6, mens modellen uttrykkelig unntar 7
 fra rapportering. Dette utvider teknisk dekning og gir ikke full faglig
 produksjonsaksept.
+
+## Innenlandske kjøp uten MVA-behandling i 0.71.0
+
+Eksplisitte `NO0`-linjer på innenlandske NOK-leverandørfakturaer/kreditnotaer
+avstemmes i samme uttrekk, både alene og sammen med ordinære MVA-linjer.
+NO0 vises som norsk kode **0**, «Kjøp uten MVA-behandling». Beløpet vises som
+separat grunnlag uten avgift eller fradrag. CSV har `vat_code=0`,
+`direction=input`, `vat_return=excluded`, beløpet i `excluded_base_nok` og
+tomme felt for sats og meldingsgrunnlag. Kreditering trekker fra beløpet.
+Netto MVA endres ikke av disse linjene. Koden krever ingen MVA-postering,
+men linjens avgift må være eksakt null og hele fakturaen må fortsatt stemme
+mot reskontro og bokføring. Vanlige MVA-kjøp har fortsatt tomt grunnlagsfelt.
+
+Skatteetatens modell utelater uttrykkelig kode 0 fra MVA-meldingen, som for
+kode 7. Kildene ovenfor ble kontrollert 2026-10-17. NO0 er et lokalt navn
+fordi kjernen mister teksten «0» ved lagring; [bruk og avgrensning](vat-rates.md)
+forklarer valget. Ingen eksisterende bilag omklassifiseres. Manglende kode,
+deaktivert/feilrettet sats, ikke-null avgift og kildedrift gir uavklart uttrekk.
+Prøvene omfatter native journaler, varer/tjenester, rene/blandede fakturaer,
+kreditnotaer, CSV, lesing uten dataskriving og backup/gjenoppretting.
