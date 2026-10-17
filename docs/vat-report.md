@@ -217,7 +217,8 @@ skiller grunnlag/sats for utgående MVA fra inngående fradrag. Lest 2026-10-17.
 
 ## Manuell kode 87 i 0.74.0
 
-Komplette, manuelt bokførte tjenestekjøp uten fradragsrett kan nå inngå med
+Dette er en manuell reservevei; vanlig leverandørfakturaflyt uten fradrag
+gjenstår. Komplette, manuelt bokførte tjenestekjøp uten fradragsrett kan inngå med
 kode 87, sats 25 % og konto 2704. Kode og nettogrunnlag registreres på det
 vanlige bilagskortet etter at hele kjøpet er bokført. Se [føring og avgrensning](manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740).
 Koden er bare tilgjengelig for manuelle bilag. Den opprettes ikke som en
@@ -237,6 +238,9 @@ gir uavklart uttrekk uten netto/CSV.
 
 
 ## Delvis fradrag med separat 86-retting i 0.75.0
+
+Dette er en manuell reservevei. Delvis fradrag valgt og håndtert i vanlig
+fakturaregistrering er fortsatt et åpent gap.
 
 En faktura med native omvendt avgiftsplikt og fullt fradrag kan suppleres med
 et vanlig rettingsbilag som reduserer faktisk inngående MVA på 2714. Velg 86
