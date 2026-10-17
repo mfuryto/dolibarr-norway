@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.80.0 · Under utvikling**
+**Versjon 0.81.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -140,3 +140,8 @@ periodelåsing bruker kjernen. Se [MVA og periodeavslutning](docs/vat-period-clo
 Portalinnlogging og levering gjøres av brukeren; ingen innsending skjer fra modulen.
 Vareimport, særordninger, EHF, SAF-T og årsoppgjør/skatt gjenstår.
 Se [samlet leveranseplan](docs/delivery-plan.md) for støttet omfang og neste etappe.
+
+Fra **0.81.0** finnes en tilpasset åpen EHF-generator og sending begrenset til
+separat testnettverk. Native beløp/referanser og offisielle formatregler prøves i
+CI. **Faktisk testnettverkslevering gjenstår; produksjonssending er sperret.**
+Se [EHF-kvalifisering og privat testoppsett](docs/ehf-qualification.md).

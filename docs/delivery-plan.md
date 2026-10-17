@@ -1,6 +1,6 @@
 # Samlet leveranseplan for norsk lokalisering
 
-Oppdatert 2026-10-17. Gjeldende modulversjon: **0.80.0**. Planen følger
+Oppdatert 2026-10-17. Gjeldende utviklingsversjon: **0.81.0**. Planen følger
 [gjennomgangen av 0.75.0](review-0.75.0.md), med funn R01–R17. Dette er én
 samlet mangelliste og prioritering. [Leveransehistorikken](delivery-history.md)
 beskriver fortiden; den utvider ikke bestillingen.
@@ -38,7 +38,7 @@ kopieres ukritisk. Referanser finnes i [dekningsanalysen](coverage-analysis.md#r
   kontoklasser og prøvd resultat/saldoovergang, ett native oppsett for kontoer,
   journaler og flere bankkonti, supplering av manglende MVA-kodevalg i brukt
   oppsett og uavhengig låsing av hver nummerserie. Gamle poster/numre bevares.
-  Full årsavslutning og skatt tilhører fortsatt etappe 6.
+  Full årsavslutning og skatt tilhører fortsatt etappe 7–8.
 - 0.78.0 leverer dokumentdelen av etappe 3: ENK/AS/ASA på norsk/engelsk,
   «Foretaksregisteret» for AS/ASA og kreditnota for original i tidligere system
   via kjernens referansefelt og standalone-funksjon. Leveringsperiode/-sted og
@@ -62,10 +62,12 @@ veilederen, README og denne planen skal vise de samme kjente begrensningene.
 | 2. Norsk grunnoppsett | **Levert i 0.77.0 for grunnoppsettet.** R02, R07–R10: native kontoklasser, kontokoblinger, journaler, bank og uavhengige nummerserier. | Et nytt og et allerede brukt regnskap kan settes opp med forståelige native verktøy. Balanse-/resultatgrupper virker i kjernen. Egne kontonavn og flere bankkonti håndteres. Utstedte numre og gamle posteringer bevares. |
 | 3. Vanlig dokument-/kjøpsflyt | **Levert i 0.78.0/0.79.0 for dokumentert omfang.** R03, R04, R06: dokumentinnhold, innenlands/utland, ingen/delvis/full fradragsrett, kreditnota og betalingsoppfølging. | Behandling velges ved vanlig registrering, og riktig kostnad/MVA/gjeld bokføres. Kjøp, fritekst der relevant, kreditnota og betaling henger sammen. Et separat rettingsbilag er ikke hovedvei for hvert kjøp. Norske/engelske PDF-er er prøvd for støttet omfang. |
 | 4. Bank, perioder og MVA | **Levert i 0.80.0 for ordinær tomånedlig portalvei og støttede koder.** R05, bank/reskontro, registreringsovergang, oppgjør, retting og periodelåsing. | Samlet syntetisk periode avstemmer dokumenter, betalinger, hovedbok og bank. Senere oppsett endrer ikke historiske beløp. Brukeren valgte Skatteetatens portal som første leveringsvei: bruker logger inn, kontrollerer og leverer, og oppbevarer faktisk kvittering på kjernens MVA-oppgjør. Native vedlegg/opphenting er prøvd; ingen faktisk myndighetsinnsending eller direkte integrasjon er utført. |
-| 5. EHF og SAF-T | Eksisterende EHF-/Peppol-tillegg kvalifiseres; norsk SAF-T leveres med riktig mapping. EHF-undersøkelse kan gå parallelt fra etappe 2. | EHF-faktura/kreditnota er validert og sendt med mottakerreferanser og sporbar status gjennom valgt løsning. SAF-T er skjemavalid og avstemt mot komplett regnskap, med kontoer, avgifter, motparter og bilag. 1.40 er målformat for 2027. Ingen avtale, kjøp eller mottakerregistrering gjøres uten uttrykkelig bestilling. |
-| 6. Årsavslutning og skatt | Kjernens avslutning, kontogrupper og resultatdisponering; næringsspesifikasjon og skattemelding som egen leveranse. | Inngående saldoer og årsresultat avstemmes. Foretaksform/inntektsår, skattemessige forskjeller, avskrivninger og tilleggsopplysninger er håndtert. En konkret leveringsvei er kvalifisert. SAF-T erstatter ikke skattemeldingen. |
-| 7. Samlet aksept og drift | R13–R16 og rester: vedlikeholdsvindu, moduloverganger, skjermbredde, valgfrie hjelpemidler, tilgang og bevaring. | Hele akseptmatrisen under består i fersk og oppgradert installasjon. Feil, låsing, retting, bevaring og gjenoppretting er prøvd. Støttet bruk og alle eksterne avhengigheter er dokumentert. |
-| 8. Papirløs bilagsflyt | Kjernens eksisterende mottak/vedlegg og aktuelle tillegg brukes først. | Registrering og matching er prøvd uten en parallell bokføringsmotor. Tas sist som avtalt. |
+| 5. EHF | **Pågår.** Åpen generator er tilpasset uten modulavgift etter kvalifisering av tre tillegg. Dokumenter og simulert transport består lokale prøver; faktisk levering i testnettverk gjenstår. Se [EHF-kvalifisering](ehf-qualification.md). Første omfang er utgående vanlig faktura og kreditnota fra kjernen. | Norske avsender-/mottakeridentifikatorer, kjøper-/ordrereferanse, betalingsopplysninger, riktige avgiftskategorier og beløp består gjeldende XSD og Peppol-/norske regler. Sending, avvisning, usikkert utfall, duplikatvern og status/transportkvittering er prøvd gjennom valgt aksesspunkt. Tilgang, kostnad og oppsett er dokumentert. XML alene lukker ikke steget. |
+| 6. SAF-T | **Venter på ferdig EHF.** Norsk SAF-T med eksplisitt kontoplan-/avgiftsmapping og kildekoblinger. | Filen består aktuelt norsk skjema og avstemmes mot komplett støttet regnskapsperiode, med kontoer, avgifter, motparter, bilag og kreditnotaer. Historikk og eksportrettigheter er prøvd. Formatversjon og inntektsår er oppgitt; 1.40 er mål for 2027. |
+| 7. Årsavslutning | **Venter på ferdig SAF-T.** Kjernens avslutning, periodisering, avskrivninger, kontogrupper og resultatdisponering. | Hele årsskiftet er prøvd med overskudd/underskudd, avstemt resultat/balanse og inngående saldo uten dobbeltføring. Låsing, dokumentert retting og nødvendig foretaksform er dekket for oppgitt omfang. Teknisk saldoovergang fra 0.77.0 er ikke alene ferdig årsavslutning. |
+| 8. Skattemelding og næringsspesifikasjon | **Venter på ferdig årsavslutning.** Konkret leveringsvei for støttet foretaksform og inntektsår. | Skattemessige forskjeller, avskrivninger og nødvendige tilleggsopplysninger avstemmes mot regnskapet. Leveringsveien, nødvendige tilganger og kvittering er kvalifisert. SAF-T erstatter ikke skattemeldingen. |
+| 9. Samlet aksept og drift | R13–R16 og rester: vedlikeholdsvindu, moduloverganger, skjermbredde, valgfrie hjelpemidler, tilgang og bevaring. | Hele akseptmatrisen under består i fersk og oppgradert installasjon. Feil, låsing, retting, bevaring og gjenoppretting er prøvd. Støttet bruk og alle eksterne avhengigheter er dokumentert. |
+| 10. Papirløs bilagsflyt | Kjernens eksisterende mottak/vedlegg og aktuelle tillegg brukes først. | Registrering og matching er prøvd uten en parallell bokføringsmotor. Tas sist som avtalt. Inngående EHF-import innføres ikke som en sideoppgave til utgående EHF. |
 
 Etappe 4 gjelder én NOK-enhet, ordinære tomånedlige terminer og kodene
 3/31/33, 1/11/13, 5/6/52 og 86/87; 0/7 vises utenfor meldingen. Oppgjøret
@@ -74,7 +76,12 @@ forslag og faktisk portalkvittering. Vareimport, særordninger, andre
 terminordninger og spesifikasjoner som uttak/kompensasjon er ikke kvalifisert.
 De er betingede gap, ikke skjulte deler av ferdigmeldingen. Direkte innsending
 inngår ikke i den valgte portalveien. [Arbeidsflyt og prøvebevis](vat-period-close.md).
-Neste etappe er EHF/SAF-T; papirløs bilagsflyt ligger fortsatt sist.
+Avtalt rekkefølge for resten er **EHF → SAF-T → årsavslutning →
+skattemelding/næringsspesifikasjon**. Hvert steg må oppfylle sine ferdigkriterier
+før neste starter. Et avhengig steg starter heller ikke mens EHF venter på
+leverandørvalg eller testtilgang. Papirløs bilagsflyt ligger fortsatt sist.
+Ingen avtale, kjøp eller registrering av foretak hos et aksesspunkt gjøres
+uten uttrykkelig bestilling.
 
 ## Felles akseptmatrise — hele arbeidsflyter
 

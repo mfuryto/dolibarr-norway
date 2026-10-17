@@ -158,9 +158,21 @@ class ActionsNorway
         $this->resprints='<tr><td>'.dol_escape_htmltag($langs->trans('Type')).'</td><td><input type="hidden" name="doc_type" value="vat_settlement">'.dol_escape_htmltag($langs->trans('NorwayVatSettlementType')).'</td></tr>';
         print $this->resprints; $this->resprints='';return 0;
     }
+    public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db,$user,$langs;
+        if (!$this->invoicePage()) { return 0; }
+        require_once __DIR__.'/NorwayEhfInvoice.php';
+        print NorwayEhfInvoice::render($db,$object,$user,$langs);return 0;
+    }
+
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        if ($this->invoicePage() && in_array($action,array('norway_ehf_send','norway_ehf_status'),true)) {
+            require_once __DIR__.'/NorwayEhfInvoice.php';
+            NorwayEhfInvoice::action($db,$object,$action,$langs);$action='';return 1;
+        }
         if(($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/bookkeeping/card.php' && GETPOST('mode','aZ09')==='_tmp' && $action==='valid'){
             // Core transformTransaction filters out closed rows before deleting the draft.
             // Check the whole draft first so no rows can disappear on a closed period.

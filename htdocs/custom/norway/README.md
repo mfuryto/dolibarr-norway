@@ -1,6 +1,6 @@
-# Norway 0.80.0
+# Norway 0.81.0
 
-**Versjon 0.80.0 · Under utvikling**
+**Versjon 0.81.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -34,3 +34,7 @@ sperres mot dobbel overføring. Modulen lager ingen nye kontrollkopier.
 
 Se prosjektets README, docs/purchase-vat.md, docs/norwegian-setup-guide.md og
 docs/delivery-plan.md. GPL-3.0-or-later; kontoplanens kilde og lisens følger dataene.
+
+Fra 0.81.0 prøves en tilpasset åpen EHF-generator med native fakturaer og
+offisielle formatregler. Sending kan bare aktiveres i separat testnettverk.
+Faktisk nettverkslevering er ikke kvalifisert, og produksjonssending er sperret.

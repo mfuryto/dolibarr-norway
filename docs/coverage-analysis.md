@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.80.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.81.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -417,3 +417,13 @@ til oppgjørsbilag. Brukeren leverer i portalen; kvittering lagres med kjernens
 MVA-dokumenter. Full arbeidsflyt, kildegrunnlag og grenser står i
 [periodeveiledningen](vat-period-close.md). Dette er ingen påstand om faktisk
 myndighetsinnsending eller full dekning av særordninger/vareimport.
+
+
+## Oppfølging i 0.81.0 — EHF-kvalifisering på staging
+
+Åpen generator er tilpasset etter konkrete feil i tre undersøkte tillegg.
+Native kildebeløp, norske identifikatorer, opprinnelig faktura og kjernens
+linjeenheter bevares. XSD/EN16931/Peppol og simulert transport inngår i CI.
+Sending er begrenset til separat testnettverk og er av som standard.
+Faktisk levering/kvittering og komplett normalflyt må kvalifiseres før EHF
+kan avsluttes. Produksjonssending er sperret. Se [EHF-kvalifisering](ehf-qualification.md).

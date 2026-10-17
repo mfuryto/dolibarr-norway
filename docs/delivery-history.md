@@ -565,3 +565,15 @@ Registreringsovergang, lukket periodes datogrense, gjenåpning, retting,
 kvitteringens byteinnhold og begge språk inngår i prøvene. Faktisk portaltilgang,
 levering og kvittering tilhører brukeren; ingen myndighetsinnsending er utført.
 Vareimport, særordninger og øvrige etapper er fortsatt åpne. Neste del er EHF/SAF-T.
+
+
+## 0.81.0 — EHF-dokumenter og avgrenset testtransport (staging)
+
+Åpent generatorgrunnlag tilpasset for norske identifikatorer, MVA-kategorier,
+kreditnotareferanser og bevarte kildebeløp. Native faktura-/kreditnotaprøver,
+offisiell XSD/Schematron og simulert transport inngår i CI. Normal drift
+aktiverer ingen EHF-funksjon. Bare eksplisitt konfigurert separat testnettverk
+kan sende; produksjon er sperret. Ingen skjemaendringer eller ny regnskapsmodell.
+
+EHF-steget står åpent til faktisk levering og kvittering er kvalifisert.
+Se [kvalifisering og gjenværende omfang](ehf-qualification.md).
