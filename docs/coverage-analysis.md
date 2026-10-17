@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.73.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.74.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -276,3 +276,15 @@ leverandørfaktura med omvendt avgiftsplikt, uten å endre motpart eller velge k
 fradragsført MVA i begge retninger under 86. Ingen ny bokføringsmotor,
 lagringsmodell eller kontrollside. Kode 87 og delvis fradrag er neste gap,
 ikke noe som utledes fra en nullsats eller fremmed leverandør alene.
+
+## Kode 87 på manuelle kjøpsbilag
+
+Kjernens automatiske reverse-charge-gren fører både kredit- og debetavgift.
+Den har ikke en dokumentert, kvalifisert norsk null-fradragsflyt i dette
+prosjektet. I 0.74.0 utvides derfor bare de eksisterende manuelle MVA-feltene
+med 87 på konto 2704, samt lesing i samme uttrekk. Hele kjøpet må være manuelt
+bokført, med avgiften i kostnaden og uten inngående fradrag. Ingen ny
+fakturasats, kjøpsmotor, tabell, kontrollside eller betalingsflyt innføres.
+Kodevalget er uttrykkelig og endrer ikke hovedboken. Kode 87 på leverandør-
+fakturaer og delvis fradrag gjenstår; en vanlig faktura skal ikke bokføres
+på nytt som manuelt kjøp for å bruke denne støtten.

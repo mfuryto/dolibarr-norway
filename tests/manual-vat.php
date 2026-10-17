@@ -25,7 +25,7 @@ try {
   mvSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,localtax1,localtax2,active,accountancy_code_sell,accountancy_code_buy) VALUES (".$entity.",173,'".$spec['code']."',".$spec['type'].",".$spec['rate'].",0,0,0,1,'".($spec['type']===1?$account:'')."','".($spec['type']===2?$account:'')."')");
  }
  // Native manual entry creation and its real balancing line; both signs, all six codes.
- foreach(NorwayManualVat::choices($db,$entity) as $code=>$spec){foreach(array(1,-1) as $sign){
+ foreach(array_filter(NorwayManualVat::choices($db,$entity),fn($spec)=>empty($spec['manual_only'])) as $code=>$spec){foreach(array(1,-1) as $sign){
   $piece=(new BookKeeping($db))->getNextNumMvt();$tax=$spec['rate']*$sign*($spec['type']===2 && $sign<0?0.5:1);
   foreach(array($spec['account']=>($spec['type']===2?$tax:-$tax),'1920'=>($spec['type']===2?-$tax:$tax)) as $account=>$amount){
    $o=new BookKeeping($db);$o->entity=$entity;$o->doc_date=dol_mktime(12,0,0,2,10,2026);$o->doc_type='';$o->doc_ref='SYNTHETIC MANUAL VAT '.$run;$o->fk_doc=0;$o->fk_docdet=0;

@@ -72,6 +72,7 @@ class NorwayVatReport
         $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null);
         if($conf->currency!=='NOK' || ($mysoc->country_code??'')!=='NO'){self::issue($report,'Setup','',0);}
         $choices=NorwayManualVat::choices($db,$entity)+NorwayVatRates::zeroChoices($db,$entity);$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
+        foreach($choices as $code=>$spec){if(!empty($spec['manual_only'])){$specs[$code]=$spec;}}
         $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux<>0') as $row){
             foreach(array($row->accountancy_code_sell,$row->accountancy_code_buy) as $account){if(trim((string)$account)!==''){$watch[$account]=true;}}
         }
@@ -88,7 +89,7 @@ class NorwayVatReport
             if(!$taxAccount && empty($line->tax_code)){$report['other_lines']++;continue;}
             $spec=$specs[$line->tax_code??'']??null;
             if(!in_array((string)$line->doc_type,array('','manual'),true) || (int)$line->fk_doc!==0 || (int)$line->fk_docdet!==0){self::issue($report,'Unsupported','ledger',(int)$line->rowid,$piece);continue;}
-            if(!$spec){self::issue($report,'MissingCode','ledger',(int)$line->rowid,$piece);continue;}
+            if(!$spec || (!empty($spec['manual_only']) && $line->numero_compte!==$spec['account'])){self::issue($report,'MissingCode','ledger',(int)$line->rowid,$piece);continue;}
             if(!NorwayManualVat::current($line)){self::issue($report,'Changed','ledger',(int)$line->rowid,$piece);continue;}
             if(($debit!==0 && $credit!==0) || ($debit===0 && $credit===0)){self::issue($report,'Mismatch','ledger',(int)$line->rowid,$piece);continue;}
             $tax=$spec['type']===1?$credit-$debit:$debit-$credit;$base=self::amount($line->tax_base);
@@ -115,8 +116,8 @@ class NorwayVatReport
                 $groups=array();$expected=array();$sumBase=0;$sumTax=0;
                 foreach(self::rows($db,'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid') as $line){
                     $code=(string)$line->vat_src_code;$spec=$choices[$code]??null;
-                    if($spec && ((!empty($spec['export']) || !empty($spec['reverse_rate']))!==($h->country_code!=='NO')
-                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1 || (int)$line->fk_product<=0)))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
+                    if($spec && (!empty($spec['manual_only']) || ((!empty($spec['export']) || !empty($spec['reverse_rate']))!==($h->country_code!=='NO')
+                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1 || (int)$line->fk_product<=0))))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                     if(!$spec || $spec['type']!==($sale?1:2) || (float)$line->tva_tx!==(float)$spec['rate'] || (int)$line->info_bits!==0
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}

@@ -51,6 +51,14 @@ class NorwayManualVat
             $r=self::query($db,'SELECT '.$field.' AS account FROM '.$db->prefix().'c_tva WHERE entity='.(int)$entity." AND code='".$spec['code']."' AND fk_pays=(SELECT rowid FROM ".$db->prefix()."c_country WHERE code='NO')");
             $row=$db->fetch_object($r);if(!$row || trim((string)$row->account)===''){continue;}
             $spec['account']=$row->account;$result[$spec['code']]=$spec;
+        }
+        // Code 87 classifies a manual reverse-charge liability, never a supplier-invoice rate.
+        global $conf,$mysoc;
+        if(($mysoc->country_code??'')==='NO' && $conf->currency==='NOK' && !empty($mysoc->tva_assuj)){
+            $r=self::query($db,'SELECT a.account_number FROM '.$db->prefix().'accounting_account a JOIN '.$db->prefix().'accounting_system s ON s.pcg_version=a.fk_pcg_version'
+                .' WHERE a.entity='.(int)$entity.' AND a.active=1 AND s.active=1 AND s.rowid='.(int)getDolGlobalString('CHARTOFACCOUNTS')." AND a.account_number='2704'");
+            $rows=array();while($row=$db->fetch_object($r)){$rows[]=$row;}
+            if(count($rows)===1 && (string)$rows[0]->account_number==='2704'){$result['87']=array('code'=>'87','rate'=>25,'type'=>1,'account'=>'2704','manual_only'=>true);}
         }return $result;
     }
     public static function editable($db,$line,$user)
@@ -114,12 +122,12 @@ class NorwayManualVat
                 $html.='<form method="POST" action="'.DOL_URL_ROOT.'/accountancy/bookkeeping/card.php"><input type="hidden" name="token" value="'.$e(newToken()).'">'
                     .'<input type="hidden" name="action" value="norway_save_manual_vat"><input type="hidden" name="piece_num" value="'.(int)$piece.'">'
                     .'<input type="hidden" name="norway_vat_line" value="'.(int)$line->rowid.'"><input type="hidden" name="norway_vat_token" value="'.self::editToken($line).'">';
-                $html.='<label>'.$e($langs->trans('NorwayManualVatCodeLabel')).' <select name="norway_vat_code"><option value="">'.$e($langs->trans('None')).'</option>';
-                foreach($options as $code=>$spec){$html.='<option value="'.$e($code).'"'.((string)$code===(string)$line->tax_code?' selected':'').'>'.$e($code).' · '.$e($spec['rate']).'% · '.$e($langs->trans($spec['type']===1?'NorwayManualVatOutput':'NorwayManualVatInput')).'</option>';}
+                $html.='<label>'.$e($langs->trans('NorwayManualVatCodeLabel')).' <select name="norway_vat_code" style="max-width:100%;box-sizing:border-box"><option value="">'.$e($langs->trans('None')).'</option>';
+                foreach($options as $code=>$spec){$html.='<option value="'.$e($code).'"'.((string)$code===(string)$line->tax_code?' selected':'').'>'.$e($code).(!empty($spec['manual_only'])?' · '.$e($langs->trans('NorwayVatCode'.$code)):'').' · '.$e($spec['rate']).'% · '.$e($langs->trans($spec['type']===1?'NorwayManualVatOutput':'NorwayManualVatInput')).'</option>';}
                 $html.='</select></label> <label>'.$e($langs->trans('NorwayManualVatBaseLabel')).' <input type="text" inputmode="decimal" name="norway_vat_base" size="14" value="'
-                    .$e(in_array((string)$line->tax_code,array('3','31','33'),true)?rtrim(rtrim((string)$line->tax_base,'0'),'.'):'').'"></label> '
+                    .$e(in_array((string)$line->tax_code,array('3','31','33','87'),true)?rtrim(rtrim((string)$line->tax_base,'0'),'.'):'').'"></label> '
                     .'<button class="button" type="submit">'.$e($langs->trans('Save')).'</button></form>';
-            } else {$html.='<p>'.$e($langs->trans('NorwayManualVatLocked')).'</p>';if(in_array((string)$line->tax_code,array('3','31','33'),true)){$html.='<p>'.$e($langs->trans('NorwayManualVatBaseLabel')).': '.$e(price($line->tax_base)).'</p>';}}
+            } else {$html.='<p>'.$e($langs->trans('NorwayManualVatLocked')).'</p>';if(in_array((string)$line->tax_code,array('3','31','33','87'),true)){$html.='<p>'.$e($langs->trans('NorwayManualVatBaseLabel')).': '.$e(price($line->tax_base)).'</p>';}}
             $html.='</div>';
         }
         if(!$visible){return '';}

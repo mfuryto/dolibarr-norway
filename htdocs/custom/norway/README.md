@@ -1,6 +1,6 @@
-# Norway 0.73.0
+# Norway 0.74.0
 
-**Versjon 0.73.0 · Under utvikling**
+**Versjon 0.74.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -77,3 +77,11 @@ Uttrekket avstemmer og viser begge retninger under 86. Kjernens funksjon
 må settes opp før bruk; eksisterende kontovalg og fakturaer endres ikke.
 Se kodeveiledningen i prosjektets dokumentasjon før bruk.
 Ingen/delvis fradragsrett, andre satser og vareimport gjenstår.
+
+0.74.0 støtter kode 87 på manuelt bokførte NOK-tjenestekjøp uten fradragsrett,
+med 25 % beregnet MVA på 2704 og grunnlag på det vanlige bilagskortet.
+Uttrekket viser bare utgående avgift for 87. Denne avgrensede flyten oppretter
+ikke leverandørfaktura eller betalingsoppfølging i fakturamodulen; den må
+ikke brukes i tillegg til en allerede bokført faktura for samme kjøp.
+Se veiledningen for manuelle MVA-bilag i prosjektets dokumentasjon.
+Automatisk leverandørfakturaflyt for 87 og delvis fradragsrett gjenstår.

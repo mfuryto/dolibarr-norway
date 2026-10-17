@@ -1185,7 +1185,7 @@ NorwayNativeVatCode=Norsk MVA-kode
 NorwayNativeVatBoth=Salg og kjøp
 
 NorwayManualVatTitle=MVA på manuelt bilag
-NorwayManualVatHelp=Velg kode på MVA-linjen. Grunnlag fylles bare ut for utgående MVA, med motsatt fortegn ved tilbakeføring. Inngående MVA hentes fra det bokførte beløpet; la grunnlaget stå tomt. Bare ordinære norske satser støttes her. Ingen beløp bokføres av dette skjemaet.
+NorwayManualVatHelp=Velg kode på MVA-linjen. Grunnlag fylles bare ut for utgående MVA, med motsatt fortegn ved tilbakeføring. Inngående MVA bruker bokført beløp; la grunnlaget stå tomt. Kode 87 gjelder manuelt bokført tjenestekjøp uten fradragsrett, 25 %, på 2704. Ingen beløp bokføres av dette skjemaet.
 NorwayManualVatCodeLabel=MVA-kode
 NorwayManualVatBaseLabel=Grunnlag (utgående MVA, NOK)
 NorwayManualVatOutput=Utgående
@@ -1198,7 +1198,7 @@ NorwayManualVatBase=Oppgi riktig grunnlag med maksimalt to desimaler for utgåen
 NorwayManualVatDatabase=MVA-opplysningene kunne ikke leses eller lagres. Kontroller at moduloppdateringen er fullført.
 
 NorwayVatReportTitle=MVA-uttrekk (støttede koder)
-NorwayVatReportScope=Lesende uttrekk for ordinære norske koder 3/31/33 og 1/11/13, innenlands 5/6/7 og NO0 (kode 0), eksport 52 og tjenestekjøp med omvendt avgiftsplikt, 25 % og full fradragsrett (86). Bokføringsdato bestemmer perioden. Kode 0/7 er utenfor MVA-meldingen. Full melding, innsending, øvrig import, registreringsovergang og særtilfeller gjenstår.
+NorwayVatReportScope=Lesende uttrekk for støttede norske koder, inkludert eksport 52, tjenestekjøp med fullt fradrag 86 og manuelt bokførte tjenestekjøp uten fradrag 87 (25 %). Bokføringsdato bestemmer perioden. Kode 0/7 er utenfor MVA-meldingen. Full melding, innsending, automatisk leverandørfakturaflyt for 87, delvis fradrag og øvrige særtilfeller gjenstår.
 NorwayVatReportDatabase=Uttrekket kunne ikke leses samlet fra databasen.
 NorwayVatReportAmount=Uttrekket inneholder et beløp som ikke kan summeres innenfor støttet nøyaktighet.
 NorwayVatReportPeriod=Velg gyldige fra- og til-datoer i samme kalenderår.
@@ -1237,3 +1237,4 @@ NorwayVatCode0=Kjøp uten MVA-behandling
 NorwayVatCodeNO0=Kjøp uten MVA-behandling (NO0 → 0)
 NorwayVatCode52=Utførsel av varer og tjenester
 NorwayVatCode86=Tjenestekjøp fra utlandet, 25 % og full fradragsrett
+NorwayVatCode87=Tjenestekjøp fra utlandet uten fradragsrett

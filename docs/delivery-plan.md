@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.73.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.74.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -90,8 +90,14 @@ Uttrekket avstemmer faktisk avgift i begge retninger og viser inngående
 fradrag uten nytt grunnlag. Ingen egen kjøpsmotor, tabell eller kontrollside.
 Kjernens konto-/driftsinnstillinger må settes opp; de overskrives ikke.
 
-Neste arbeid er ingen/delvis fradragsrett ved utenlandskjøp og andre aktuelle
-importtilfeller, deretter
+0.74.0 støtter kode 87 på hele, manuelt bokførte NOK-tjenestekjøp uten
+fradragsrett ved 25 %. Kjernens bilag, eksisterende MVA-felt og konto 2704
+gjenbrukes. Kostnaden inkluderer avgiften; uttrekket viser bare utgående
+MVA og grunnlag. Ingen ny satsrad, side, tabell eller betalingsflyt innføres.
+Denne flyten oppretter ikke leverandørfakturaer eller betalingsoppfølging.
+
+Neste arbeid er delvis fradragsrett og eventuell videre gjenbruk for
+leverandørfakturaflyt uten fradrag, samt andre aktuelle importtilfeller, deretter
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og

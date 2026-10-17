@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.73.0';
+        $this->version = '0.74.0';
         $this->picto = 'accountancy';
     }
 

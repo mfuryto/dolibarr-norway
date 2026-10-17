@@ -214,3 +214,23 @@ må fortsatt kvalifiseres. Dette er ikke full MVA-melding eller innsending.
 [Skatteetatens kodebibliotek](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
 angir både inngående og utgående MVA for 86; [informasjonsmodellen](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/)
 skiller grunnlag/sats for utgående MVA fra inngående fradrag. Lest 2026-10-17.
+
+## Manuell kode 87 i 0.74.0
+
+Komplette, manuelt bokførte tjenestekjøp uten fradragsrett kan nå inngå med
+kode 87, sats 25 % og konto 2704. Kode og nettogrunnlag registreres på det
+vanlige bilagskortet etter at hele kjøpet er bokført. Se [føring og avgrensning](manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740).
+Koden er bare tilgjengelig for manuelle bilag. Den opprettes ikke som en
+ny fakturasats, og koden godtas ikke på fakturalinjer i dette uttrekket.
+
+CSV bruker `source_type=ledger`, `vat_code=87`, `direction=output`, sats 25,
+grunnlag i `output_base_nok` og faktisk avgift i `vat_nok`. `vat_return` er
+`included`. Ingen inngående fradragsrad lages. Kreditnota reduserer grunnlag
+og avgift. Kolonner og eksisterende metadatalagring er uendret.
+
+Dette gir ikke automatisk kode 87 på leverandørfakturaer eller betalings-
+oppfølging. Delvis fradragsrett er fortsatt utenfor støttet omfang. Kode,
+aktiv konto, beløpsforhold, kildeintegritet og balanse behandles som ved
+øvrige manuelle MVA-bilag. Uttrekket leser; det korrigerer ikke feilføringer
+eller avgjør fradragsretten. Manglende kode, inaktiv konto og endret kilde
+gir uavklart uttrekk uten netto/CSV.
