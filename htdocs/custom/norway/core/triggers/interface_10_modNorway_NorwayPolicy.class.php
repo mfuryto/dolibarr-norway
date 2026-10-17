@@ -9,7 +9,7 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.79.0';
+        $this->version = '0.80.0';
         $this->picto = 'accountancy';
     }
 
@@ -26,12 +26,14 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         if ($action==='BOOKKEEPING_CREATE') {
             require_once __DIR__.'/../../class/NorwayLegacyArchive.php';
             try { NorwayLegacyArchive::guardPosting($this->db,(int)$conf->entity,$object);
+                require_once __DIR__.'/../../class/NorwayVatLedger.php';
+                NorwayVatLedger::capture($this->db,$object,(int)$conf->entity);
                 if(($object->doc_type??'')==='supplier_invoice' && (int)($object->fk_doc??0)>0){
                     require_once __DIR__.'/../../class/NorwayPurchaseVat.php';
                     NorwayPurchaseVat::guardJournal($this->db,(int)$conf->entity,(int)$object->fk_doc);
                 }
             }
-            catch (Throwable $error) { $langs->load('norway@norway');$this->error=$langs->trans($error->getMessage()==='NorwayPurchaseVatInvalid'?'NorwayPurchaseVatInvalid':'NorwayArchiveProtected');$object->error=$this->error;return -1; }
+            catch (Throwable $error) { $langs->load('norway@norway');$key=$error->getMessage()==='NorwayPurchaseVatInvalid'?'NorwayPurchaseVatInvalid':(strpos($error->getMessage(),'NorwayVatReport')===0?'NorwayVatLedgerBlocked':'NorwayArchiveProtected');$this->error=$langs->trans($key);$object->error=$this->error;return -1; }
             return 0;
         }
         if ($action==='BILL_CREATE' && (int)$object->type===2 && (int)$object->fk_facture_source<=0

@@ -26,10 +26,14 @@ uavklarte. Dato er bokføringsdato; ulik fakturadato, delvis overføring eller
 posteringer fordelt på flere perioder/bilag må avklares. Betaling flytter
 ikke avgiften i dette uttrekket.
 
-MVA-koder og tilhørende kontoer må finnes entydig i det native satsregisteret.
-Rapporten bruker dagens fakturakilde og kontokoblinger; den utgir dem ikke
-for å være et arkiv av det opprinnelige oppsettet. Endrede kontokoblinger kan
-gi avvik mot eldre bokføring. Historiske dokumenter omklassifiseres ikke.
+Fra 0.80.0 leses historiske kode-/kontoroller fra den faktiske bokføringen.
+Nye overføringer bruker kjernens eksisterende `extraparams` til korte roller
+og et fingeravtrykk av fakturakilden; beløp lagres ikke på nytt. Endring,
+sletting eller deaktivering av dagens satser, kontoplan og foretaksstatus
+omtolker ikke gamle posteringer. Eldre poster leses fra eksplisitte
+bokføringstekster og ordinære norske MVA-kontoer. En eldre egendefinert
+kontobruk uten tilstrekkelig kildeinformasjon kan fortsatt bli uavklart;
+dagens oppsett brukes ikke til å dikte opp historisk behandling.
 
 [Manuelle MVA-opplysninger](manual-vat.md) brukes på egne manuelle bilag,
 inkludert separate fradragsrettinger. Avgiften kommer fra den faktiske
@@ -55,14 +59,17 @@ utenfor de støttede kodene vises ved kilden. Delsummer kan leses, men netto
 og CSV er utilgjengelig så lenge slike poster finnes. CSV-kallet håndhever
 samme regel og beregner rapporten på nytt ved nedlasting.
 
-Kontoer fra satsregisteret og MVA-standardene, samt norske 270x/271x-kontoer,
-brukes til å finne mulige manuelle MVA-poster som må klassifiseres. Dette er
-ikke en automatisk avgiftsklassifisering. Flytting til oppgjørskonto og
-andre manuelle bevegelser på MVA-kontoer blir heller ikke gjettet bort;
-slike uklassifiserte bevegelser gir uavklart uttrekk inntil deres behandling
-er kvalifisert. Egendefinerte MVA-kontoer må være registrert i oppsettet.
+Norske 270x/271x-kontoer og allerede dokumenterte avgiftskontoer brukes til
+å finne uklassifiserte manuelle avgiftslinjer. Klassifiserte oppgjørsbilag
+(`vat_settlement`) påvirker kontoavstemmingen, men rapporteres ikke som ny
+omsetning eller nytt fradrag. Et oppgjør må være balansert, ha én dato og
+bestå av avgiftskontoer, 2740 og eventuell 7740. Ukjent behandling blir
+uavklart; konto alene velger ikke en avgiftskode.
 
-**Dette er ikke en fullstendig norsk MVA-melding eller innsending.**
+Fra 0.80.0 finnes termintall og forslag til oppgjør for den valgte
+[portalveien](vat-period-close.md). Ingen XML/API-innsending opprettes.
+
+**Dekningen gjelder de oppgitte kodene og ordinær portalvei.**
 Førsteversjonen dekket ikke nullsats/fritak/unntak; 0.70.0-utvidelsen
 nedenfor dekker eksplisitte innenlandske 5/6/7, 0.71.0 kjøpskode 0 og 0.72.0
 eksportkode 52. Utenlandskjøp utover den dokumenterte 86/87-flyten, registreringsovergang,
@@ -194,8 +201,8 @@ Se [kjøp og MVA-fradrag](purchase-vat.md). Andelen velges ved vanlig
 registrering, også for friteksttjenester fra utlandet. Uttrekket viser faktisk
 fradrag, fulle beregnede utgående beløp under 86, og bare utgående beløp under
 87 når det ikke er fradrag. Innenlandske kjøp uten fradrag vises som kode 0
-utenfor meldingen. Gamle manuelle bilag beholdes. Full melding og innsending,
-R05 om legitimt endret historisk oppsett og øvrige importtilfeller gjenstår.
+utenfor meldingen. Gamle manuelle bilag beholdes. R05 og ordinær portalvei leveres i 0.80.0.
+Øvrige importtilfeller og særordninger er fortsatt utenfor omfanget.
 
 ## Tjenestekjøp med kode 86 i 0.73.0
 

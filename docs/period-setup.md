@@ -1,3 +1,9 @@
+Fra 0.80.0 brukes kjernens regnskapsperioder; se [periodeavslutning og retting](vat-period-close.md).
+En avgrenset sperre bevarer hele native utkastet dersom godkjenning ville filtrert
+bort rader i lukket periode. Den syntetiske perioden prøver datogrenser,
+gjenåpning og uendret historisk rapport. Beskrivelsen nedenfor er historisk
+bakgrunn for den utgåtte separate diagnostikken.
+
 > Historisk dokumentasjon til og med 0.64.0. Funksjonen er fjernet i 0.65.0.
 > Se [gjeldende plan](delivery-plan.md). Eldre tilleggshistorikk beholdes i arkivet.
 

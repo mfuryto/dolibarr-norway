@@ -1,6 +1,6 @@
-# Norway 0.79.0
+# Norway 0.80.0
 
-**Versjon 0.79.0 · Under utvikling**
+**Versjon 0.80.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -19,8 +19,13 @@ Originalbeløp og tidligere manuelle rettinger bevares. Skjemamigrering 003
 legger ett valgfritt native linjeekstrafelt til; ingen ny hovedboksmotor.
 
 MVA-uttrekket avstemmer støttede koder og faktisk fradrag mot bokføringen.
-Full MVA-melding/innsending, historisk oppsettsendring (R05), vareimport,
-EHF/Peppol, norsk SAF-T og årsoppgjør/skatt gjenstår. Ingen versjon har samlet
+Fra 0.80.0 finnes termingrunnlag for manuell levering i Skatteetatens portal,
+historisk rapportering etter oppsettsendring og forslag til oppgjørsbilag.
+Bankavstemming, oppgjørsbilag, kvittering, betaling og perioder bruker kjernen.
+Ved manuell modulinstallasjon aktiveres også kjernens avgifts-/MVA-betalingsmodul
+for oppgjør og vedlegg. Standard Compose-oppsett gjør dette automatisk.
+Vareimport, særordninger, direkte innsending, EHF/Peppol, norsk SAF-T og
+årsoppgjør/skatt gjenstår. Ingen versjon har samlet
 regnskapsfaglig produksjonsaksept.
 
 Utgåtte kontrollsider og særskilt kjøpsbokføring er fjernet. Eldre

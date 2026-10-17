@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.79.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.80.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -398,3 +398,22 @@ Se [konkret gap, vurdert kjerne/tillegg, kilder og akseptprøver](purchase-vat.m
 R03/R04 er lukket for innenlandske 25/15/12-kjøp og NOK-fjernleverbare tjenester
 med 25 prosent beregnet avgift i registrert foretak. R05, øvrig import,
 full melding/innsending og samlet produksjonsaksept er fortsatt åpne.
+
+## Oppfølging i 0.80.0 — bank, perioder og portalgrunnlag (R05)
+
+Kjernens bankjournal, reskontro, avstemming, MVA-oppgjør/betaling, vedlegg og
+regnskapsperioder er brukt i én syntetisk periode. Ingen bankadapter eller
+innsendingsmotor er lagt til. R05 løses med opprinnelige koder/bokføring og
+korte roller i kjernens metadata ved overføring, uten nye historikktabeller.
+Dagens sats-/kontovalg og MVA-status brukes ikke til historisk omtolking.
+
+Kjernen filtrerer lukkede rader i `transformTransaction` før hele utkastet
+slettes. En avgrenset `bookkeepingcard`-sperre kontrollerer hele utkastet
+før native godkjenning. Denne beskyttelsen gjelder det vanlige skjemaet;
+direkte tredjepartskall til kjernens klasse må også respektere native periodelås.
+
+Brukeren har valgt portal først. Rapporten gir ordinære termintall og forslag
+til oppgjørsbilag. Brukeren leverer i portalen; kvittering lagres med kjernens
+MVA-dokumenter. Full arbeidsflyt, kildegrunnlag og grenser står i
+[periodeveiledningen](vat-period-close.md). Dette er ingen påstand om faktisk
+myndighetsinnsending eller full dekning av særordninger/vareimport.

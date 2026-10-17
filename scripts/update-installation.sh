@@ -17,7 +17,7 @@ python3 scripts/migrate-storage.py
 "${compose[@]}" up -d --wait --wait-timeout 300
 # Refuse to configure using stale code from a reused upstream custom volume.
 "${compose[@]}" exec -T web cmp -s /opt/norway-module/core/modules/modNorway.class.php /var/www/html/custom/norway/core/modules/modNorway.class.php
-"${compose[@]}" exec -T web php < scripts/configure-sales.php
+"${compose[@]}" exec -T --user www-data web php < scripts/configure-sales.php
 # Read-only checks, including retained instance key and secured installer.
 # Administrator passwords may have changed since installation: do not log in.
 "${compose[@]}" exec -T web php < scripts/verify-installation.php

@@ -16,7 +16,7 @@ const {chromium}=require('playwright');
   await page.goto(base+'/fourn/facture/list.php');
   const supplierLinks=await page.locator('a[href*="/fourn/facture/card.php"]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')));
   const supplierLink=supplierLinks.find(h=>/[?&](?:id|facid)=[0-9]+/.test(h));if(!supplierLink)throw Error('Synthetic supplier invoice missing');
-  const paths=[supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
+  const paths=['/custom/norway/vat.php?year=2040&term=1','/accountancy/bookkeeping/card.php?action=create&doc_type=vat_settlement','/compta/tva/list.php',supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
   for(const width of [1440,1024,768,390])for(const lang of ['nb_NO','en_US']){
    await page.setViewportSize({width,height:900});
    for(const path of paths){

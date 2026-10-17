@@ -75,7 +75,7 @@ export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" cp tests/legacy-evidence.json web:/tmp/norway-legacy-evidence.json
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.79.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.80.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 # Seed each removed executable into the reused module volume before replacement.
 "${compose[@]}" exec -T web sh -c 'while IFS= read -r retired; do mkdir -p "/var/www/html/custom/norway/$(dirname "$retired")"; echo "<?php exit; // SYNTHETIC RETIRED CODE" > "/var/www/html/custom/norway/$retired"; done < /opt/norway-module/data/retired-files.txt'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
@@ -146,7 +146,7 @@ gzip -dc "$backup_dir/conf.tar.gz" | "${compose[@]}" run --rm -T --no-deps --ent
 "${compose[@]}" start web
 wait_ready
 "${compose[@]}" exec -T web grep -qx 'synthetic backup marker' /var/www/documents/norway-backup-marker
-"${compose[@]}" exec -T web php < scripts/configure-sales.php
+"${compose[@]}" exec -T --user www-data web php < scripts/configure-sales.php
 "${compose[@]}" exec -T web php < scripts/verify-installation.php
 # Run the negative path from the host; production PHP disables subprocess APIs.
 if "${compose[@]}" exec -T -e DOLI_INSTANCE_UNIQUE_ID=SYNTHETIC-INTENTIONAL-MISMATCH web php < scripts/verify-installation.php \

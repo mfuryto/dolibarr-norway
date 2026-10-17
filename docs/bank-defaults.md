@@ -14,3 +14,7 @@ Dette er oppsett av koblinger. Betaling, bankavstemming, saldoimport og
 bankintegrasjon er separate oppgaver. Den syntetiske installasjonsprøven
 oppretter to bankkonti gjennom kjernens skjema og redigerer en konto etter
 historikk, uten å endre eksisterende hovedbokspost.
+
+Fra 0.80.0 er ordinær bank-/MVA-periode prøvd gjennom kjernen, med
+portalinnlevering som valgt leveringsvei. Se [bank, MVA og periodeavslutning](vat-period-close.md)
+for betaling, kvittering, oppgjør, retting og avgrensning.

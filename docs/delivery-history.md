@@ -546,3 +546,22 @@ Dokumentdelen av denne arbeidsflyten ble levert i 0.78.0. Hele dokument-/
 kjøpsetappen er nå dekket for oppgitt omfang. R05/historisk oppsettsendring,
 full MVA-melding/innsending, vareimport, EHF, SAF-T og årsoppgjør/skatt gjenstår.
 Se [kjøpsveiledningen](purchase-vat.md) og [samlet plan](delivery-plan.md).
+
+## 0.80.0 — bank, perioder og portalvei
+
+Etappe 4 leveres for støttede koder og ordinær tomånedlig melding med manuell
+portalinnlevering, valgt av brukeren. Native bank, reskontro, MVA-betaling,
+kvitteringsvedlegg og perioder inngår i samlet syntetisk regnskapsperiode.
+Rapporten gir hele kroner per kode og et lesende forslag til native oppgjørsbilag.
+Retting gir full ny meldingssum og bare differansen i oppgjørsforslaget.
+
+R05 løses med kildenes opprinnelige koder, faktiske bokføringskontoer og korte
+roller/fingeravtrykk i native metadata, uten nye tabeller eller endring av gamle
+beløp. Senere sats-/konto-/registreringsendring omtolker ikke historiske beløp.
+Native godkjenning av utkast i lukket periode får en avgrenset sperre slik at
+rader ikke filtreres bort før utkastet slettes. Originaldata bevares.
+
+Registreringsovergang, lukket periodes datogrense, gjenåpning, retting,
+kvitteringens byteinnhold og begge språk inngår i prøvene. Faktisk portaltilgang,
+levering og kvittering tilhører brukeren; ingen myndighetsinnsending er utført.
+Vareimport, særordninger og øvrige etapper er fortsatt åpne. Neste del er EHF/SAF-T.

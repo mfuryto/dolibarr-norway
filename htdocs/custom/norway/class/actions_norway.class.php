@@ -150,9 +150,29 @@ class ActionsNorway
         return 0;
     }
 
+    public function bookkeepingAddLine($parameters,&$object,&$action,$hookmanager)
+    {
+        global $langs;$this->resprints='';
+        if(!$this->bookkeepingPage() || $action!=='create' || GETPOST('doc_type','aZ09')!=='vat_settlement'){return 0;}
+        $langs->load('norway@norway');
+        $this->resprints='<tr><td>'.dol_escape_htmltag($langs->trans('Type')).'</td><td><input type="hidden" name="doc_type" value="vat_settlement">'.dol_escape_htmltag($langs->trans('NorwayVatSettlementType')).'</td></tr>';
+        print $this->resprints; $this->resprints='';return 0;
+    }
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        if(($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/bookkeeping/card.php' && GETPOST('mode','aZ09')==='_tmp' && $action==='valid'){
+            // Core transformTransaction filters out closed rows before deleting the draft.
+            // Check the whole draft first so no rows can disappear on a closed period.
+            require_once DOL_DOCUMENT_ROOT.'/accountancy/class/bookkeeping.class.php';
+            require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+            require_once __DIR__.'/NorwayVatPeriod.php';require_once __DIR__.'/NorwayVatReport.php';
+            $native=new BookKeeping($db);$rows=array();
+            $r=$db->query('SELECT * FROM '.$db->prefix().'accounting_bookkeeping_tmp WHERE entity='.(int)$conf->entity.' AND piece_num='.GETPOSTINT('piece_num'));
+            $blocked=!$r;if($r){while($b=$db->fetch_object($r)){$rows[]=$b;if($native->validBookkeepingDate($db->jdate($b->doc_date))!==1){$blocked=true;}}}
+            if(array_filter($rows,static fn($b)=>$b->doc_type==='vat_settlement') && !NorwayVatPeriod::settlement($rows,NorwayVatLedger::taxAccounts($db,(int)$conf->entity))){$blocked=true;}
+            if($blocked){$langs->load('norway@norway');setEventMessages($langs->trans('NorwayVatPeriodBlocked'),null,'errors');$action='';return 1;}
+        }
         if($this->invoicePage() && $action==='norway_credit_reference'){
             require_once __DIR__.'/NorwayCreditReference.php';$langs->load('norway@norway');
             try{
