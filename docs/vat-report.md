@@ -61,7 +61,7 @@ er kvalifisert. Egendefinerte MVA-kontoer må være registrert i oppsettet.
 **Dette er ikke en fullstendig norsk MVA-melding eller innsending.**
 Førsteversjonen dekket ikke nullsats/fritak/unntak; 0.70.0-utvidelsen
 nedenfor dekker eksplisitte innenlandske 5/6/7, 0.71.0 kjøpskode 0 og 0.72.0
-eksportkode 52. Utenlandskjøp, omvendt avgiftsplikt, registreringsovergang,
+eksportkode 52. Utenlandskjøp utover kode 86-flyten nedenfor, registreringsovergang,
 avgiftsoppgjør/åpningsposter og andre særtilfeller er ikke kvalifisert.
 Øvrige manuelle hovedbokslinjer uten MVA-klassifisering telles separat;
 manuell omsetning uten MVA blir ikke automatisk med. En avstemt ordinær
@@ -124,7 +124,7 @@ med i kodegrunnlaget. Filen er fremdeles et avstemmingsuttrekk, ikke en fil
 for innsendings-API-et.
 
 Manglende, deaktiverte, feilrettede eller tvetydige kodeoppsett gir uavklart
-uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske kjøpsmotparter og kode
+uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske kjøpsmotparter utenfor 86-flyten og kode
 51 er fortsatt utenfor prøvd omfang, sammen med manuelle nullgrunnlag,
 registreringsovergang og MVA-oppgjør/åpningsposter. Eksportkode 52 er beskrevet nedenfor.
 
@@ -171,7 +171,7 @@ Kode 52 har `vat_return=included`, sats 0 og netto eksportbeløp i
 Det [eksisterende kodebiblioteket for MVA-meldingen](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
 har kode 52. Kildene er kontrollert 2026-10-17.
 
-Kundens land setter ikke avgiftskoden. Utenlandske kjøp eller innenlandske
+Kundens land setter ikke avgiftskoden. Utenlandske kjøp utenfor 86-flyten eller innenlandske
 kodevalg på utenlandske salg gir fortsatt uavklart uttrekk. Kode 52 med norsk
 mottaker er også utenfor dette avgrensede omfanget, selv om særskilte faktiske
 eksporttilfeller kan finnes. Tomt land, feil/deaktivert kode, avgiftsbeløp,
@@ -183,3 +183,34 @@ avstemmes uten avgift og uten at lesing endrer dokumenter/bokføring.
 [Brukerveiledningen](vat-rates.md#eksportkode-52-i-0720) beskriver vilkår,
 vanlige vedlegg og begrensninger. Dette kvalifiserer den tekniske flyten,
 ikke brukerens fritaksvurdering eller full norsk regnskapsmessig etterlevelse.
+
+## Tjenestekjøp med kode 86 i 0.73.0
+
+Det eksisterende uttrekket støtter nå den avgrensede native flyten for
+utenlandske tjenestekjøp i NOK med 25 % og full fradragsrett. Fakturaen må ha
+omvendt avgiftsplikt, eksplisitt `0 (86)`, katalogtjeneste og faktisk bokført
+2704/2714-avgift. Leverandørens avgift skal være eksakt null. Kjøpsjournalen
+gjenbrukes; lesing oppretter ingen avgiftspostering eller ny kjøpshistorikk.
+Se [engangsoppsett og vanlig bruk](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730).
+
+Rapport og CSV viser kode 86 i **to retninger**: beregnet utgående avgift
+med grunnlag og sats 25, og inngående fradrag uten grunnlag eller sats.
+Begge har `vat_return=included`. Det er samme offisielle kode, ikke et
+innenlandsk kode 1-fradrag i tillegg. CSV har én rad per retning/dokument.
+Kolonnene er uendret. Begge beløp avstemmes mot faktisk bokføring; fradraget
+blir ikke antatt bare fordi linjen heter 86. Fullt fradrag gir netto null,
+mens kreditnota tilbakefører begge retninger og reduserer grunnlaget.
+
+Kjernen runder beregnet 25-prosentavgift per linje. Uttrekket sammenligner
+samme beregning med summene på 2704/2714 og avstemmer leverandørgjeld
+mot leverandørens fakturabeløp uten beregnet norsk MVA. Manglende kode,
+flagget av, vare-/fritekstlinje, avgiftsbeløp på kilden, ufullstendige
+posteringer eller kode-/kildeavvik gir uavklart uttrekk uten netto/CSV.
+
+SE/US, native kjøpsfakturaer/kreditnotaer, satsvelger på utkast, flere linjer
+med øreavrunding, riktige kontoer, begge retninger og lesing uten skriving er
+prøvd. Kode 87, delvis fradrag, andre satser, varer og manuelle importbilag
+må fortsatt kvalifiseres. Dette er ikke full MVA-melding eller innsending.
+[Skatteetatens kodebibliotek](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml)
+angir både inngående og utgående MVA for 86; [informasjonsmodellen](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/)
+skiller grunnlag/sats for utgående MVA fra inngående fradrag. Lest 2026-10-17.

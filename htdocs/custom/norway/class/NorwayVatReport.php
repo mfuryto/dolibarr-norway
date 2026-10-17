@@ -31,6 +31,10 @@ class NorwayVatReport
     {
         return ($cents<0?'-':'').intdiv(abs($cents),100).'.'.str_pad((string)(abs($cents)%100),2,'0',STR_PAD_LEFT);
     }
+    private static function reverseTax($base)
+    {
+        return self::cents(intdiv($base,100)*25+intdiv(($base%100)*25,100))*1000000;
+    }
     private static function period($start,$end)
     {
         foreach(array($start,$end) as $date){
@@ -103,7 +107,7 @@ class NorwayVatReport
                 $piece=(int)$posted[0]->piece_num;$before=count($report['issues']);
                 $headers=self::rows($db,'SELECT f.*,s.accountancy_code_customer_general,s.accountancy_code_supplier_general,c.code AS country_code FROM '.$p.$header.' f LEFT JOIN '.$p.'societe s ON s.rowid=f.fk_soc AND s.entity='.$entity.' LEFT JOIN '.$p.'c_country c ON c.rowid=s.fk_pays WHERE f.entity='.$entity.' AND f.rowid='.$id);
                 $h=$headers[0]??null;
-                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || !preg_match('/^[A-Z]{2}$/D',(string)$h->country_code) || (!$sale && $h->country_code!=='NO')
+                if(!$h || (int)$h->fk_statut<=0 || !in_array((int)$h->type,array(0,2),true) || !preg_match('/^[A-Z]{2}$/D',(string)$h->country_code) || (!$sale && $h->country_code!=='NO' && (int)($h->vat_reverse_charge??0)!==1)
                     || !in_array((string)$h->multicurrency_code,array('','NOK'),true)) {self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                 $all=self::rows($db,'SELECT * FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity." AND doc_type='".$type."' AND fk_doc=".$id);
                 if(count($all)!==count($posted)){self::issue($report,'Date',$type,$id,$piece);}
@@ -111,7 +115,8 @@ class NorwayVatReport
                 $groups=array();$expected=array();$sumBase=0;$sumTax=0;
                 foreach(self::rows($db,'SELECT * FROM '.$p.$lines.' WHERE '.$fk.'='.$id.' ORDER BY rowid') as $line){
                     $code=(string)$line->vat_src_code;$spec=$choices[$code]??null;
-                    if($spec && !empty($spec['export'])!==($h->country_code!=='NO')){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
+                    if($spec && ((!empty($spec['export']) || !empty($spec['reverse_rate']))!==($h->country_code!=='NO')
+                        || (!empty($spec['reverse_rate']) && ($sale || empty($mysoc->tva_assuj) || (int)($h->vat_reverse_charge??0)!==1 || (int)$line->product_type!==1 || (int)$line->fk_product<=0)))){self::issue($report,'Unsupported',$type,$id,$piece);continue;}
                     if(!$spec || $spec['type']!==($sale?1:2) || (float)$line->tva_tx!==(float)$spec['rate'] || (int)$line->info_bits!==0
                         || !in_array((int)$line->product_type,array(0,1),true) || (int)$line->special_code!==0
                         || self::amount($line->total_localtax1??'0')!==0 || self::amount($line->total_localtax2??'0')!==0){self::issue($report,'Code',$type,$id,$piece);continue;}
@@ -119,6 +124,11 @@ class NorwayVatReport
                     if((!empty($spec['zero']) && $tax!==0) || abs(round(self::cents($base)*$spec['rate']/100)-self::cents($tax))>1 || ($tax!==0 && ($base===0 || (($base<0)!==($tax<0))))){self::issue($report,'Mismatch',$type,$id,$piece);}
                     $sumBase=self::add($sumBase,$base);$sumTax=self::add($sumTax,$tax);
                     $groups[$code]['base']=self::add($groups[$code]['base']??0,$base);$groups[$code]['tax']=self::add($groups[$code]['tax']??0,$tax);
+                    if(!empty($spec['reverse_rate'])){
+                        $reverse=self::reverseTax($base);$groups[$code]['reverse_tax']=self::add($groups[$code]['reverse_tax']??0,$reverse);
+                        $expected[$spec['reverse_credit']]=self::add($expected[$spec['reverse_credit']]??0,-$reverse);
+                        $expected[$spec['reverse_debit']]=self::add($expected[$spec['reverse_debit']]??0,$reverse);
+                    }
                     if(empty($spec['zero'])){$expected[$spec['account']]=self::add($expected[$spec['account']]??0,$tax);}
                 }
                 if(!$groups || self::cents($sumBase)!==self::cents(self::amount($h->total_ht)) || self::cents($sumTax)!==self::cents(self::amount($h->total_tva))){self::issue($report,'Mismatch',$type,$id,$piece);}
@@ -141,12 +151,17 @@ class NorwayVatReport
                 $allocated=array();foreach($groups as $code=>$g){if(!empty($choices[$code]['zero'])){continue;}$account=$choices[$code]['account'];$allocated[$account]=self::add($allocated[$account]??0,self::cents($g['tax']));}
                 foreach($allocated as $account=>$amount){if($amount!==self::cents($actual[$account]??0)){self::issue($report,'Mismatch',$type,$id,$piece);}}
                 if(count($report['issues'])!==$before){continue;}
-                foreach($groups as $code=>$g){self::entry($report,$type,$id,$piece,$code,$g['base'],$g['tax'],$choices[$code]);}
+                foreach($groups as $code=>$g){$spec=$choices[$code];
+                    if(!empty($spec['reverse_rate'])){
+                        self::entry($report,$type,$id,$piece,$code,$g['base'],$g['reverse_tax'],array_replace($spec,array('type'=>1,'rate'=>$spec['reverse_rate'])));
+                        self::entry($report,$type,$id,$piece,$code,0,$g['reverse_tax'],array_replace($spec,array('type'=>2,'rate'=>$spec['reverse_rate'])));
+                    }else{self::entry($report,$type,$id,$piece,$code,$g['base'],$g['tax'],$spec);}
+                }
             }
         }
-        foreach($report['entries'] as $entry){$code=$entry['code'];if(!isset($report['groups'][$code])){$report['groups'][$code]=array('type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0,'reported'=>$entry['reported']);}
-            $report['groups'][$code]['tax']=self::add($report['groups'][$code]['tax'],$entry['tax']);
-            if($entry['base']!==null){$report['groups'][$code]['base']=self::add($report['groups'][$code]['base'],$entry['base']);}
+        foreach($report['entries'] as $entry){$code=$entry['code'];$key=$code==='86'?$code.'/'.$entry['type']:$code;if(!isset($report['groups'][$key])){$report['groups'][$key]=array('code'=>$code,'type'=>$entry['type'],'rate'=>$entry['rate'],'base'=>$entry['base']===null?null:0,'tax'=>0,'reported'=>$entry['reported']);}
+            $report['groups'][$key]['tax']=self::add($report['groups'][$key]['tax'],$entry['tax']);
+            if($entry['base']!==null){$report['groups'][$key]['base']=self::add($report['groups'][$key]['base'],$entry['base']);}
         }
         ksort($report['groups'],SORT_NUMERIC);
         if(!$report['issues']){$report['net']=0;foreach($report['groups'] as $group){if(!$group['reported']){continue;}$report['net']=self::add($report['net'],$group['type']===1?$group['tax']:-$group['tax']);}}

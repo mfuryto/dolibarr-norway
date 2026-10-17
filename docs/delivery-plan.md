@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.72.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.73.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -83,7 +83,15 @@ eksportgrunnlaget uten avgift; innenlandske kodevalg blir ikke brukt som
 utenlandsregel. Dokumentasjon beholdes i den vanlige dokumentflyten.
 Ingen nye menyer, tabeller, kontrollsider eller bokføringsmotor innføres.
 
-Neste arbeid er utenlandskjøp og omvendt avgiftsplikt, deretter
+0.73.0 bruker kjernens omvendte avgiftsplikt på NOK-tjenestekjøp med 25 %
+og full fradragsrett. Eksplisitt kode 86, katalogtjeneste, native avgiftsvalg,
+kjøpsjournal, kreditnotaer og kontoene 2704/2714/2400 er prøvd med SE/US.
+Uttrekket avstemmer faktisk avgift i begge retninger og viser inngående
+fradrag uten nytt grunnlag. Ingen egen kjøpsmotor, tabell eller kontrollside.
+Kjernens konto-/driftsinnstillinger må settes opp; de overskrives ikke.
+
+Neste arbeid er ingen/delvis fradragsrett ved utenlandskjøp og andre aktuelle
+importtilfeller, deretter
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og

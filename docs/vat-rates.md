@@ -163,3 +163,77 @@ Kilder, lest 2026-10-17:
 - [Skatteetatens SAF-T-koder, kode 52](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv).
 - [Utførsel av varer og dokumentasjon](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-21/M-6-21.2/).
 - [Fjernleverbare tjenester, § 6-22 annet ledd](https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/gjeldende/M-6/M-6-22/M-6-22.4/).
+
+## Tjenestekjøp med omvendt avgiftsplikt i 0.73.0
+
+Denne flyten gjelder MVA-registrert virksomhet, NOK-faktura fra utenlandsk
+leverandør uten norsk/utenlandsk MVA, fjernleverbar tjeneste med norsk sats
+25 % og **full fradragsrett**. Bruk ikke flyten for vareimport, andre satser,
+ingen/delvis fradragsrett eller leverandørfakturert MVA. Kode 86 er et
+uttrykkelig valg etter vurdering av kjøpet, ikke en generell utenlandsregel.
+
+### Engangsoppsett i kjernen
+
+1. Under **Regnskap → Innstillinger**, på kjernens oppsettsside
+   (`accountancy/admin/index.php`), aktiver **Aktiver styring av omvendt
+   avgiftsplikt på leverandørkjøp**. Dette gjør det vanlige valget tilgjengelig
+   på leverandørfakturaen; det er ikke en godkjenning av hvert kjøp.
+2. Under kjernens **Standardkontoer** (`accountancy/admin/defaultaccounts.php`)
+   velger du **2704** for kredit og **2714** for debet ved omvendt avgiftsplikt.
+   Feltene heter teknisk `ACCOUNTING_VAT_BUY_REVERSE_CHARGES_CREDIT` og
+   `ACCOUNTING_VAT_BUY_REVERSE_CHARGES_DEBIT`. Kontoene finnes i medfølgende
+   norske kontoplan. Eksisterende kontovalg endres ikke av oppdateringen.
+3. For leverandører utenfor EU: Under **Oppsett → Annet** (`admin/other.php`)
+   sett den innebygde konstanten `ACCOUNTING_REVERSE_CHARGE_ALSO_NON_EEC`
+   til **1**. Den utvider kjernens behandling til leverandører utenfor EU;
+   norske regler er ikke begrenset til EU. Dette velger fortsatt ikke
+   behandling på fakturaen automatisk.
+
+Aktivering/oppdatering oppretter bare en manglende norsk kjøpsrad **`0 (86)`**
+i satsregisteret. Dette er leverandørens nullavgift på fakturalinjen; norsk
+beregnet avgift er 25 %. Det settes ingen ny standard på eksisterende
+produkter/fakturaer. En eksisterende 86-rad beholdes, også hvis den er
+inaktiv eller avvikende. Ikke endre brukt satsoppsett for å omklassifisere
+eldre bilag; avklar først hvordan disse allerede er bokført.
+
+### Vanlig faktura- og kreditnotaflyt
+
+1. Registrer leverandøren med riktig utenlandsk land. Ikke slå på et generelt
+   leverandørstandardvalg hvis leverandøren også leverer varer/særtilfeller.
+2. Bruk en **katalogtjeneste** med sats **25 %** på tjenestekortet. Kjernen
+   henter beregningssatsen derfra ved journaloverføringen. Velg riktig
+   kostnadskonto for tjenesten; 6790 er brukt i den syntetiske prøven, ikke
+   en universell standard for alle tjenestekjøp.
+3. Opprett leverandørfaktura i NOK og merk **omvendt avgiftsplikt** på fakturaen.
+   Velg katalogtjenesten på linjen, oppgi leverandørens nettobeløp og velg
+   uttrykkelig **`0 (86)`** i satslisten. Det norske kjøpsvalget blir synlig
+   i den vanlige listen når fakturaen har omvendt avgiftsplikt. Ingen kode
+   86 velges automatisk av modulen. Fritekstlinjer uten katalogtjeneste gir
+   ikke kjernen en beregningssats og er utenfor denne kvalifiserte flyten.
+4. Kontroller fakturabeløpet mot leverandørdokumentet, oppbevar grunnlaget og
+   overfør gjennom den vanlige kjøpsjournalen. Kreditnota følger kjernens
+   vanlige kreditnotaflyt, med samme kode, tjeneste og avgiftsvalg.
+5. Åpne **MVA-uttrekk (støttede koder)** under regnskapsrapportene. Kode 86
+   vises både som beregnet utgående MVA med grunnlag og som inngående fradrag
+   uten nytt grunnlag. Klassifiser ikke det samme fradraget en gang til som
+   innenlandsk kode 1.
+
+For et nettokjøp på 1 000 NOK fører kjernen kostnad debet 1 000 og
+leverandørgjeld kredit 1 000, samt 2704 kredit 250 og 2714 debet 250.
+Netto MVA er null når full fradragsrett gjelder, men begge avgiftsbeløp
+må fortsatt med i kodegrunnlaget. Uttrekket bruker de faktiske posteringene,
+ikke en antakelse om at utenlandskjøp alltid har fullt fradrag.
+Kjernen beregner per linje; avrunding kan derfor avvike fra én beregning
+på hele fakturasummen. Endringer i tjenestens sats før overføring påvirker
+kjernens beregning og må kontrolleres før journalføring.
+
+Uttrekket krever de prøvde 2704/2714-posteringene og støtter ikke et vilkårlig
+annet reverse-charge-oppsett. En manglende/feil avgiftspostering gir uavklart
+uttrekk og ingen netto/CSV. Kode 87, forholdsmessig fradrag, særskilt melding
+for uregistrerte foretak, utenlandsk valuta og andre importforhold gjenstår.
+
+Kilder, lest 2026-10-17: [Skatteetatens tjenestekjøpsveiledning](https://www.skatteetaten.no/satser/mva-satser-kjop-av-tjenester-fra-utlandet-svalbard-og-jan-mayen/),
+[SAF-T-kodene 86/87](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv)
+og [meldingskodebibliotekets kode 86 med både inngående og utgående MVA](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml).
+Den dokumenterte norske plikten og fradragsretten må vurderes for det faktiske
+kjøpet. Teknisk prøving erstatter ikke denne vurderingen.
