@@ -1,6 +1,6 @@
-# Norway 0.75.0
+# Norway 0.76.0
 
-**Versjon 0.75.0 · Under utvikling**
+**Versjon 0.76.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -95,5 +95,10 @@ De manuelle fradragsrutinene og kode 87-flyten over er **reserveveier**.
 En sammenhengende normalflyt for ingen/delvis fradragsrett gjenstår:
 behandling ved registrering, bokføring, kreditnota og rapportering. Separate
 rettingsbilag skal ikke regnes som ferdig standardflyt. Dette prioriteres
-før flere importtilfeller. Modulversjonen er fortsatt 0.75.0; denne
-presiseringen endrer bare dokumentasjon og utviklingsprioritering.
+før flere importtilfeller. Fra 0.76.0 gir oppstartsveilederen én statustabell med forklaring og lenker
+til kjernens relevante verktøy. Uferdig støtte vises uttrykkelig, uten
+lagrede fullføringsmerker eller ekstra godkjenninger.
+
+Full [gjennomgang av tidligere tilpasninger](../../../docs/review-0.75.0.md)
+og [samlet leveranseplan med ferdigkriterier](../../../docs/delivery-plan.md)
+er grunnlaget for videre arbeid. Hele modulen er fortsatt under utvikling.

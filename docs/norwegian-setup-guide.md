@@ -10,6 +10,12 @@ Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 
 
 Dette dokumentet samler norske oppsettforhold, men erklærer ikke komplett lovdekning. Omfanget er ett norsk foretak, NOK-salgsdokumenter og norsk/engelsk. Modulen er generell for varer og tjenester. Andre foretaksformer, ansatte, kontantsalg og særregler må vurderes særskilt. Full norsk MVA-rapport, SAF-T, kvalifisert EHF og produksjonsaksept gjenstår.
 
+
+Fra 0.76.0 er oppstartsveilederen én [statustabell](setup-wizard.md), med
+oppgave, forklaring og lenke. Overskriftene nedenfor er kapitler i veiledningen,
+ikke steg eller ekstra godkjenninger i programmet. Status i oversikten viser
+lagrede innstillinger og kjente mangler, uten å godkjenne regnskapet.
+
 ## 1. Avklar virksomheten før oppsett
 
 Noter foretaksform, organisasjonsnummer, regnskapsårets start, oppstartsdato i systemet, MVA-status og virkningsdato. Avklar også land, kunde-/leverandørtyper, hva som faktisk leveres, betalingsmåter og om tidligere regnskap skal videreføres.

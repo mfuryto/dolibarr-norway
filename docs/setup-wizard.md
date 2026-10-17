@@ -1,14 +1,30 @@
-# Norsk oppsettsveileder
+# Norsk oppstartsoversikt
 
-Fra 0.65.0 er veilederen en enkel veiledning til innstillingene. Den har ingen
-lagrede fullføringsmerker, kontrollkopier eller godkjenningsstatus.
+Fra 0.76.0 viser oppstartsveilederen én tabell med **oppgave, status og hva du
+gjør**, med lenke til riktig verktøy. De elleve stegene og fram/tilbake-knappene
+er fjernet. Gamle steglenker åpner samme oversikt.
 
-Åpne modulinnstillingene og følg stegene for foretak, valuta, MVA,
-kontoplan, standardkontoer, journaler, bank, varer/tjenester, dokumenter,
-perioder og drift. Nummerserier og dokumentoppsett finnes i steg 7.
-Lenkene åpner innstillingene der arbeidet utføres. Regnskap → Innstillinger →
-Norsk regnskapsoppsett samler de norske oppsetthjelperne.
+Status leses fra dagens innstillinger der det er mulig. **Oppsett funnet**
+betyr at de aktuelle feltene er fylt ut, ikke at alle norske krav er oppfylt.
+**Må settes opp** gjelder manglende grunninnstillinger; **Vurderes manuelt** gjelder
+oppgaver som krever brukerens vurdering. **Delvis støtte** og **Ikke levert**
+viser konkrete funksjonsmangler. Feil ved lesing vises som **Kan ikke leses**.
+Det finnes ingen egen fullføringsstatus, godkjenning, bekreftelse eller historikk.
 
-Bruk kjernens dokumenter og bokføring etter oppsett. Veilederen erstatter
-ikke faglig vurdering av MVA, utenlandshandel, fradrag eller årsavslutning.
-MVA-rapportering, SAF-T og EHF er fortsatt uferdig.
+Oppdater oversikten etter at du har lagret på siden lenken åpner. Foretak,
+brukere, standardkontoer, journaler, MVA-kontoer, bank, dokumentmodeller,
+regnskapsperioder og avslutningsoppsett bruker kjernens sider. Norsk tillegg
+brukes ved kontoplaninstallering, norske kodevalg, bestilte nummerserier og
+MVA-uttrekket. Den separate bankkoblingshjelperen og overlappende kontooppgaver
+inngår ikke i veilederen.
+
+Tabellen dekker foretak/tilgang, valuta/språk, MVA-registrering, kontoplan,
+standardkontoer/journaler, satser/kontoer, bank, kunder/varer/tjenester,
+nummerering, dokumenter, perioder/overgang, utenlandshandel/fradrag,
+MVA-grunnlag/melding, EHF, SAF-T, årsavslutning, næringsspesifikasjon/skattemelding
+og bevaring/drift. Betingede behov må vurderes for faktisk virksomhet.
+
+Kontoplanens rapportgrupper, normalflyt for ingen/delvis fradrag og flere
+rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
+skriver regnskapsdata. Den er en veiledning til oppgavene; løpende arbeid skjer
+fortsatt i kjernens vanlige menyer.

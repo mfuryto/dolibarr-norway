@@ -1,6 +1,7 @@
 # Bekreftet bankkobling
 
-Fra modul 0.17.0: åpne **Norsk oppsettsveiviser → steg 5 → Koble ny bankkonto til bokføring**, eller lenken på kontrollsiden for kontoplan/bokføringsoppsett.
+Den eldre bankkoblingshjelperen finnes fra **Norsk regnskapsoppsett**.
+Oppstartsoversikten lenker til bankkontoens vanlige oppsett som normalvei.
 
 Opprett den faktiske bankkontoen i Dolibarr først. Den nye siden oppretter ingen bankkonto, saldo, betaling eller bilag. Den viser kontoens referanse/navn, eksisterende koblinger og forslag. Bankkontonummer, IBAN, eier og saldo vises ikke. Bekreft bare når forslagene passer virksomheten og du har en fersk backup.
 

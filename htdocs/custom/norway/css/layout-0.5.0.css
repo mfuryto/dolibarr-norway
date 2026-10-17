@@ -55,3 +55,18 @@
 /* The VAT report scrolls within its column instead of splitting short accounting labels. */
 #norway-vat-report .div-table-responsive { display: block; width: 100%; overflow-x: auto; }
 #norway-vat-report .div-table-responsive > table { min-width: 32rem; overflow-wrap: normal; }
+
+/* One setup overview; keep each task readable without horizontal scrolling. */
+.norway-setup-overview { table-layout: fixed; width: 100%; }
+.norway-setup-overview th, .norway-setup-overview td { text-align: left; vertical-align: top; padding: .8rem; }
+.norway-setup-overview thead th:first-child { width: 23%; }
+.norway-setup-overview thead th:nth-child(2) { width: 17%; }
+.norway-setup-overview td p { margin: 0 0 .5rem; }
+.norway-setup-links a { display: inline-block; margin: 0 .8rem .3rem 0; }
+@media (max-width: 700px) {
+  .norway-setup-overview thead { display: none; }
+  .norway-setup-overview, .norway-setup-overview tbody, .norway-setup-overview tr,
+  .norway-setup-overview th, .norway-setup-overview td { display: block; width: auto; }
+  .norway-setup-overview tr { border-bottom: 1px solid #aaa; padding: .6rem 0; }
+  .norway-setup-overview th, .norway-setup-overview td { padding: .3rem .6rem; height: auto !important; }
+}

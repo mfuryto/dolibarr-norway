@@ -1,6 +1,6 @@
 # Norske standardkontoer og lukkingskontoer
 
-Veiviserens steg 4 åpner en samlet oversikt over 46 kontofelt fra Dolibarr
+Norsk regnskapsoppsett åpner en samlet oversikt over 46 kontofelt fra Dolibarr
 24.0.1: standardkontoene under Regnskap og de to resultatkontoene under
 årsavslutning. Dette er kontoforslag knyttet til funksjon, ikke en automatisk
 kontering av alle transaksjoner eller dokumentasjon på NS 4102-samsvar.
@@ -97,7 +97,7 @@ og [kobling av fakturalinjer](https://github.com/Dolibarr/dolibarr/blob/b7958385
 
 ## Gjennomgang av kodene på kortene
 
-Fra 0.38.0 åpner veiviserens steg 6 en lesende oversikt over kontokandidater
+Fra 0.38.0 åpner det tidligere oppsettets produktoppgave en lesende oversikt over kontokandidater
 for varer og tjenester. Oversikten finnes også fra standardkontosiden.
 Den viser kortets egen kode, aktuell standardkonto og om kontokandidaten
 finnes entydig og er aktiv i valgt kontoplan. Vare-/tjenestereferansen åpner
