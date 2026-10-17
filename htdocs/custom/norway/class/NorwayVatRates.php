@@ -18,6 +18,41 @@ class NorwayVatRates
             array('rate'=>12,'type'=>1,'code'=>'33'),array('rate'=>12,'type'=>2,'code'=>'13'),
         );
     }
+    /** Explicit domestic sales classifications; 7 is outside the VAT return. Never infer from a zero amount. */
+    public static function zeroCodes()
+    {
+        return array(array('rate'=>0,'type'=>1,'code'=>'5','reported'=>true),
+            array('rate'=>0,'type'=>1,'code'=>'6','reported'=>true),array('rate'=>0,'type'=>1,'code'=>'7','reported'=>false));
+    }
+    public static function zeroChoices($db,$entity)
+    {
+        if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
+        $choices=array();
+        foreach(self::zeroCodes() as $spec){
+            $rows=self::rows($db,"SELECT t.* FROM ".$db->prefix()."c_tva t JOIN ".$db->prefix()."c_country c ON c.rowid=t.fk_pays WHERE t.entity=".(int)$entity." AND c.code='NO' AND c.active=1 AND t.code='".$spec['code']."'");
+            if(count($rows)===1 && (string)$rows[0]['code']===$spec['code'] && (int)$rows[0]['active']===1 && (int)$rows[0]['type_vat']===1
+                && (float)$rows[0]['taux']===0.0 && self::plain($rows[0])){$choices[$spec['code']]=$spec+array('zero'=>true);}
+        }return $choices;
+    }
+    /** Add missing explicit zero-sales choices on activation; never repair, default or reclassify existing rows. */
+    public static function ensureZeroCodes($db,$entity)
+    {
+        if((int)$entity<=0 || (int)$entity!==(int)$GLOBALS['conf']->entity){throw new InvalidArgumentException('Entity');}
+        $db->begin();
+        try {
+            $country=self::rows($db,"SELECT rowid FROM ".$db->prefix()."c_country WHERE code='NO' AND active=1 FOR UPDATE");
+            if(count($country)!==1){throw new RuntimeException('Norwegian country');}
+            $country=(int)$country[0]['rowid'];$p=$db->prefix();
+            $existing=self::rows($db,'SELECT code FROM '.$p.'c_tva WHERE entity='.(int)$entity.' AND fk_pays='.$country.' FOR UPDATE');
+            $codes=array_map(static fn($r)=>trim((string)$r['code']),$existing);$created=0;
+            foreach(self::zeroCodes() as $spec){
+                if(in_array($spec['code'],$codes,true)){continue;}
+                if(!$db->query('INSERT INTO '.$p.'c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES ('
+                    .(int)$entity.','.$country.",0,1,'".$spec['code']."',0,1,0,'Norwegian VAT code ".$spec['code']."')")){throw new RuntimeException('Norwegian zero code');}$created++;
+            }
+            if($db->commit()<=0){throw new RuntimeException('Commit');}return $created;
+        }catch(Throwable $error){$db->rollback();throw $error;}
+    }
     private static function plain($r)
     {
         return (int)$r['recuperableonly']===0 && empty($r['fk_department_buyer']) && empty($r['einvoice_vatex'])
@@ -56,7 +91,7 @@ class NorwayVatRates
         $usage['products']=self::rows($db,'SELECT rowid FROM '.$p.'product WHERE entity='.$entity.' ORDER BY rowid'.$db->plimit(1));
         $blocked=$blocked || (bool)$usage['products'];
         $changes=array();
-        foreach (self::codes() as $spec) {
+        foreach (array_merge(self::codes(),self::zeroCodes()) as $spec) {
             $matches=array_values(array_filter($rates,static fn($r)=>trim((string)$r['code'])===$spec['code']));
             $valid=count($matches)===1 && (string)$matches[0]['code']===$spec['code'] && (int)$matches[0]['type_vat']===$spec['type']
                 && (float)$matches[0]['taux']===(float)$spec['rate'] && self::plain($matches[0]) && (int)$matches[0]['active']===1;
@@ -93,7 +128,7 @@ class NorwayVatRates
             $saved=0;$country=(int)$preview['country'][0]['rowid'];
             foreach ($preview['changes'] as $change) {
                 if ($change['action']==='Create') {
-                    $sql='INSERT INTO '.$p."c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES (".$entity.','.$country.','.$change['rate'].','.$change['type'].",'".$db->escape($change['code'])."',0,1,0,'Norwegian ordinary VAT ".$change['rate']."%')";
+                    $sql='INSERT INTO '.$p."c_tva (entity,fk_pays,taux,type_vat,code,recuperableonly,active,use_default,note) VALUES (".$entity.','.$country.','.$change['rate'].','.$change['type'].",'".$db->escape($change['code'])."',0,1,0,'Norwegian VAT code ".$change['code']."')";
                 } elseif ($change['action']==='Deactivate') {
                     $sql='UPDATE '.$p.'c_tva SET active=0 WHERE entity='.$entity.' AND rowid='.$change['id'].' AND active=1';
                 } else { continue; }

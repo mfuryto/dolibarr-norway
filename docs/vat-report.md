@@ -1,6 +1,6 @@
-# MVA-uttrekk for ordinære koder
+# MVA-uttrekk for støttede koder
 
-Fra modul 0.69.0 ligger **MVA-uttrekk (ordinære koder)** under
+Fra modul 0.69.0 finnes uttrekket, fra 0.70.0 kalt **MVA-uttrekk (støttede koder)** under
 **Regnskap → Regnskap → Rapporter** i den vanlige menyen. Velg fra- og
 med / til- og med-dato i samme kalenderår. Standardvalget er inneværende
 måned. Uttrekket leser bokføring og eksisterende kilder uten å endre dem.
@@ -59,7 +59,8 @@ slike uklassifiserte bevegelser gir uavklart uttrekk inntil deres behandling
 er kvalifisert. Egendefinerte MVA-kontoer må være registrert i oppsettet.
 
 **Dette er ikke en fullstendig norsk MVA-melding eller innsending.**
-Nullsats, fritak/unntak, utenlandshandel, registreringsovergang,
+Førsteversjonen dekket ikke nullsats/fritak/unntak; 0.70.0-utvidelsen
+nedenfor dekker eksplisitte innenlandske 5/6/7. Utenlandshandel, registreringsovergang,
 avgiftsoppgjør/åpningsposter og andre særtilfeller er ikke kvalifisert.
 Øvrige manuelle hovedbokslinjer uten MVA-klassifisering telles separat;
 manuell omsetning uten MVA blir ikke automatisk med. En avstemt ordinær
@@ -97,3 +98,39 @@ skiller kode og avgift fra grunnlag/sats, som bare fylles ut for utgående MVA.
 Modellen har også behandlinger som dette avgrensede uttrekket ikke dekker.
 Kilden ble lest 2026-10-17. Teknisk avstemming er ikke godkjenning av selve
 avgiftsbehandlingen eller full regnskapsmessig produksjonsaksept.
+
+## Innenlandske 5/6/7 i 0.70.0
+
+Rapporten heter nå **MVA-uttrekk (støttede koder)** på samme sted i menyen.
+Innenlandske, eksplisitt kodede salgslinjer med 5, 6 og 7 inngår i avstemmingen,
+både alene og sammen med ordinære linjer, for varer/tjenester og kreditnotaer.
+Native linjefelt og journaler brukes. Helt avgiftsfrie fakturaer kan avstemmes
+mot reskontro/netto uten at det finnes en MVA-postering på bilaget.
+MVA-beløpet må være eksakt null; små feilaktige beløp rundes ikke bort.
+
+5 er innenlands fritak med nullsats. 6 gjelder omsetning utenfor MVA-loven;
+grunnlaget kan høre til MVA-meldingen for et foretak som har rapporteringsplikt.
+7 er inntekt som ikke er MVA-omsetning, og skal ikke være meldingsgrunnlag.
+Rapportens nye brukskolonne viser skillet. Kode 6/7 får ingen vist MVA-sats.
+Dette er klassifisering fra dagens fakturakilde, ikke en avgjørelse om at
+vilkårene i den aktuelle transaksjonen er oppfylt.
+
+CSV beholder de første ti kolonnene fra 0.69.0 og legger til `vat_return`
+(`included`/`excluded`) og `excluded_base_nok`. Kode 7 har tomme felt for
+sats og meldingsgrunnlag, og beløpet står bare i den separate siste kolonnen.
+5/6 har meldingsgrunnlag og ingen avgift. Netto summerer bare kodene som er
+med i kodegrunnlaget. Filen er fremdeles et avstemmingsuttrekk, ikke en fil
+for innsendings-API-et.
+
+Manglende, deaktiverte, feilrettede eller tvetydige kodeoppsett gir uavklart
+uttrekk. En ukodet nullsats tolkes ikke automatisk. Utenlandske motparter og
+51/52 er fortsatt utenfor prøvd omfang. Det samme gjelder manuelt nullgrunnlag,
+kjøp uten MVA, registreringsovergang og MVA-oppgjør/åpningsposter.
+
+Kildene er [Skatteetatens forklaring av fritak/unntak](https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/slik-fungerer-mva/forskjellen-pa-fritak-og-unntak-fra-merverdiavgift/),
+[offisielle SAF-T-koder](https://github.com/Skatteetaten/saf-t/blob/05179521e435d82feb0b2d6c89a92a32a4f2d02f/Standard%20Tax%20Codes/CSV/Standard_Tax_Codes.csv)
+og [meldingsmodellen](https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/)
+med [kodebiblioteket](https://github.com/Skatteetaten/mva-meldingen/blob/master/docs/informasjonsmodell_filer/kodelister/mvaKodeSAFT.xml),
+lest 2026-10-17. Kodebiblioteket har 5/6, mens modellen uttrykkelig unntar 7
+fra rapportering. Dette utvider teknisk dekning og gir ikke full faglig
+produksjonsaksept.

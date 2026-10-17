@@ -483,3 +483,14 @@ sperrer netto/CSV. Ingen ny lagringsmodell, kontrollkopi eller oppstartsoppgave.
 Native journalprøver, øreavrunding, kildebevaring, rettigheter/foretak og
 HTTP-eksport inngår. [Omfang](vat-report.md). Neste arbeid gjelder nullsats,
 utland, registreringsovergang og særposteringer; full melding/innsending gjenstår.
+
+## Innenlandske nullbehandlinger i 0.70.0
+
+Kodene 5/6/7 bruker det native satsregisteret og fakturalinjene. Manglende
+valg opprettes append-only, uten standardvalg eller endring av eksisterende
+rader/dokumenter. Det samme uttrekket avstemmer rene og blandede fakturaer,
+varer/tjenester og kreditnotaer uten å kreve en kunstig MVA-postering.
+Kode 7 vises utenfor meldingsgrunnlaget, også i CSV. Konflikter og feilaktige
+nullbeløp sperrer uttrekket. Oppdatering, bevaring og gjenoppretting er prøvd.
+Faglige vilkår, utenlandstilfeller og øvrige begrensninger står i
+[kodeveiledningen](vat-rates.md); ingen ny kontrollflyt eller meny er opprettet.

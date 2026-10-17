@@ -20,10 +20,10 @@ llxHeader('',$langs->trans('NorwayVatRatesTitle'));
 print '<div class="norway-page">'.load_fiche_titre($langs->trans('NorwayVatRatesTitle'),'','accountancy').'<p>'.$langs->trans('NorwayVatRatesScope').'</p><p>'.$langs->trans('NorwayVatRatesLimits').'</p>';
 try {
     $preview=NorwayVatRates::preview($db,$conf->entity);$count=0;
-    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayVatSetupRate').'</th><th>'.$langs->trans('NorwayVatSetupDirection').'</th><th>'.$langs->trans('NorwayNativeVatCode').'</th><th>'.$langs->trans('NorwayVatSetupStatus').'</th></tr>';
+    print '<div class="div-table-responsive"><table class="noborder centpercent"><tr><th>'.$langs->trans('NorwayVatSetupRate').'</th><th>'.$langs->trans('NorwayVatSetupDirection').'</th><th>'.$langs->trans('NorwayNativeVatCode').'</th><th>'.$langs->trans('NorwayVatTreatment').'</th><th>'.$langs->trans('NorwayVatSetupStatus').'</th></tr>';
     foreach ($preview['changes'] as $change) {
         $count+=(int)in_array($change['action'],array('Create','Deactivate'),true);
-        print '<tr><td>'.dol_escape_htmltag($change['rate'].' %'.($change['id'] ? ' (#'.$change['id'].')' : '')).'</td><td>'.$langs->trans($change['type']===1?'NorwayVatSetupsell':($change['type']===2?'NorwayVatSetupbuy':'NorwayNativeVatBoth')).'</td><td>'.dol_escape_htmltag($change['code']).'</td><td>'.$langs->trans('NorwayVatRates'.$change['action']).'</td></tr>';
+        print '<tr><td>'.dol_escape_htmltag($change['rate'].' %'.($change['id'] ? ' (#'.$change['id'].')' : '')).'</td><td>'.$langs->trans($change['type']===1?'NorwayVatSetupsell':($change['type']===2?'NorwayVatSetupbuy':'NorwayNativeVatBoth')).'</td><td>'.dol_escape_htmltag($change['code']).'</td><td>'.$langs->trans(in_array($change['code'],array('5','6','7'),true)?'NorwayVatCode'.$change['code']:'NorwayVatOrdinary').'</td><td>'.$langs->trans('NorwayVatRates'.$change['action']).'</td></tr>';
     }print '</table></div>';
     if (!$preview['blocked'] && $count>0) {
         $nonce=bin2hex(random_bytes(16));
