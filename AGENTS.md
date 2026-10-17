@@ -39,3 +39,15 @@
   diagnostikk. «Fortsett» utvider ikke omfanget med nye produktideer.
 - Følg forenklingsprioriteringen i docs/delivery-plan.md. Vurder eksisterende
   kontrollag før videre utvidelse; bevar regnskapsdata og historikk ved opprydding.
+
+- Bruk normal arbeidsflyt som ferdigkriterium: behandling velges ved vanlig
+  faktura-/bilagsregistrering og følger bokføring, kreditnota og rapportering.
+  Få kodelinjer er ikke en forenkling hvis brukeren får flere manuelle steg.
+- Før ny eller vesentlig endret regnskapsflyt implementeres, sammenlign
+  relevant leverandørdokumentasjon fra
+  etablerte norske regnskapsprogrammer og undersøk kjernen/eksisterende tillegg.
+  Bruk mønstrene som inspirasjon; norske krav verifiseres mot primære regelkilder.
+  Ikke kopier leverandørspesifikke kontoer eller kodeverdier ukritisk.
+- Manuelle omposteringer og separate klassifiseringer skal beskrives som
+  reservevei når de kompenserer for manglende normalflyt. De lukker ikke gapet.
+  Bevar allerede bokførte data og lesestøtte ved senere forenkling.

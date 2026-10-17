@@ -176,6 +176,8 @@ støttet i uttrekket. Denne flyten oppretter ikke leverandørfakturaer eller
 betalingsoppfølging. Fra 0.75.0 kan delvis fradrag på den native 86-flyten
 håndteres med [separat rettingsbilag på 2714](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
 Fradragsandelen må beregnes og dokumenteres; kreditnota krever motsatt retting.
+Disse manuelle 86-/87-rutinene er reserveveier. Normalflyt for ingen/delvis
+fradrag er fortsatt uferdig og prioriteres før flere importtilfeller.
 Automatisk kode 87 i leverandørfakturaflyten, andre satser og vareimport
 er fortsatt ikke kvalifisert.
 

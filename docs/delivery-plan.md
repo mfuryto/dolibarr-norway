@@ -15,6 +15,34 @@ en ny kontrollside, tabell, historikkmodell eller bekreftelsesrunde.
 Egne kontroll- og historikkfunksjoner er fjernet fra vanlig arbeidsflyt.
 Generelle «fortsett»-beskjeder utvider ikke oppgaven med nye produktideer.
 
+## Normal arbeidsflyt er ferdigkriteriet
+
+Presisert 2026-10-17 etter brukerens tilbakemelding: En teknisk prøvd manuell
+reservevei er ikke ferdig støtte for vanlig bruk. Enkel implementasjon må også
+gi enkel bruk. Løsninger som krever gjentatt ompostering, separat kodevalg og
+manuell oppfølging av kreditnota, skal ikke bli normalflyten av hensyn til
+minst mulig tilleggskode.
+
+Før videre implementasjon skal den aktuelle arbeidsflyten sammenlignes med
+leverandørenes dokumentasjon for etablerte norske regnskapsprogrammer.
+[Referansene i dekningsanalysen](coverage-analysis.md#referanser-for-normal-arbeidsflyt)
+er inspirasjon til brukerflyt, ikke regelkilder eller et vedtak om å bygge
+samme modell. Deretter prøves kjernen og aktuelle eksisterende tillegg.
+Norske regnskapskrav avgjøres med primære regelkilder.
+
+Neste konkrete oppgave er å gjennomgå de manuelle fradragsrutinene fra
+0.66.0/0.75.0 og kode 87-flyten fra 0.74.0 mot dette kriteriet, før flere
+importtilfeller legges til. Normalmålet er avgiftsbehandling/fradragsandel
+ved registrering, riktig kostnad og MVA ved bokføring, og tilsvarende håndtering
+av kreditnota og rapportering. Det skal avklares hva kjernen/tillegg faktisk
+kan gjenbruke før en nødvendig tilpasning velges. Ingen ny bokføringsmotor,
+kontrollside eller fradragsmodell er bestilt ved denne presiseringen.
+
+De eksisterende manuelle rutinene beholdes som dokumenterte reserveveier.
+Allerede bokførte beløp, metadata og rapportlesing skal bevares ved forenkling.
+Planpunkt 2 er fortsatt åpent for en sammenhengende normalflyt uten/delvis
+fradrag. Grønne tekniske tester alene lukker ikke dette gapet.
+
 ## Gjenstående leveranser
 
 | Rekkefølge | Oppgave | Ferdig når |
@@ -103,8 +131,8 @@ fradrag summeres uten nytt grunnlag. Kjøp/kreditnota og begge fortegn er
 prøvd med 50 % fradrag. Prosent og kobling til faktura automatiseres ikke.
 Ingen nye tabeller, menyer eller kontrollsider.
 
-Neste arbeid er eventuell videre gjenbruk for leverandørfakturaflyt uten
-fradrag og andre aktuelle importtilfeller, deretter
+Før videre utvidelse prioriteres gjennomgangen av normalflyt beskrevet ovenfor.
+Deretter følger aktuelle importtilfeller,
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og
@@ -174,6 +202,10 @@ Før ny tilleggskode skal den korte begrunnelsen vise:
 1. Kravet eller det uttrykkelig bestilte behovet.
 2. Hva kjernen eller et eksisterende tillegg faktisk dekker i prøvd versjon.
 3. Det konkrete gapet og den minste endringen som løser det.
+4. Referanse for vanlig brukerflyt og hvilke ekstra steg løsningen krever,
+   også ved kreditnota. En reservevei skal merkes og gapet for normalflyt
+   holdes åpent. Dette dokumenteres i utviklingsgrunnlaget, ikke som en ny
+   bekreftelsesrunde for brukeren.
 
 Relevant test og dokumentasjon følger endringen. Main krever fortsatt PR,
 bestått CI på aktuell revisjon og tydelig akseptert omfang. Eksisterende

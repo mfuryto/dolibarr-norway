@@ -79,6 +79,7 @@ full norsk regnskapsmessig produksjonsaksept.
 
 ## Tjenestekjøp uten fradragsrett: kode 87 i 0.74.0
 
+**Manuell reservevei:** Normal leverandørfakturaflyt uten fradrag gjenstår.
 Denne støtten gjelder **hele kjøpet ført som manuelt bilag**, ikke automatisk
 behandling av en leverandørfaktura. Den gjelder MVA-registrert norsk virksomhet,
 NOK-grunnlag, avgiftspliktig fjernleverbar tjeneste fra utlandet, sats 25 % og
@@ -140,6 +141,9 @@ lest 2026-10-17. Kodebiblioteket angir bare utgående MVA for 87. Dette er
 teknisk støtte for det beskrevne manuelle omfanget, ikke full MVA-melding.
 
 ## Delvis fradrag på tjenestekjøp: kode 86 i 0.75.0
+
+**Manuell reservevei:** Dette lukker ikke gapet for delvis fradrag i vanlig
+registrering og bokføring. Kreditnota krever en separat, motsatt retting.
 
 Kjernens automatiske kjøpsjournal fører fullt fradrag. Fra 0.75.0 kan et
 separat, vanlig rettingsbilag redusere dette fradraget med kode **86** på

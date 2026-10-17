@@ -187,3 +187,10 @@ Beregnet MVA og grunnlag beholdes; faktisk inngående fradrag summeres i
 uttrekket. Prosenten velges ikke automatisk, og kreditnota krever motsatt
 retting. Ingen ny side, tabell eller bokføringsmotor.
 Se [føring av delvis fradrag](docs/manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
+
+De manuelle fradragsrutinene og kode 87-flyten over er **reserveveier**.
+En sammenhengende normalflyt for ingen/delvis fradragsrett gjenstår:
+behandling ved registrering, bokføring, kreditnota og rapportering. Separate
+rettingsbilag skal ikke regnes som ferdig standardflyt. Dette prioriteres
+før flere importtilfeller. Modulversjonen er fortsatt 0.75.0; denne
+presiseringen endrer bare dokumentasjon og utviklingsprioritering.

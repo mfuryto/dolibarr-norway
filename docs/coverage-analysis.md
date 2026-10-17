@@ -306,3 +306,30 @@ som inngående 86 uten grunnlag/sats. Manglende kode, feil grunnlag, feil konto,
 inaktiv konto og endret kilde avvises. Lesing endrer ikke regnskapsdata.
 Dette kvalifiserer den dokumenterte manuelle rettingen, ikke automatisk valg
 av fradragsandel eller kobling ved kreditnota. Se [rutine og primærkilder](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
+
+
+## Referanser for normal arbeidsflyt
+
+Lest 2026-10-17 etter brukerens presisering om enkel, vanlig regnskapsflyt.
+Dette er leverandørdokumentasjon om brukeropplevelse, ikke selvstendige
+rettskilder eller dokumentasjon på at Dolibarr støtter samme funksjoner.
+
+| Problemstilling | Referanse | Relevant mønster |
+| --- | --- | --- |
+| Forholdsmessig MVA | [Tripletex: Slik fører du forholdsmessig mva](https://hjelp.tripletex.no/hc/no/articles/18168752046225-Slik-f%C3%B8rer-du-forholdsmessig-mva) | Fradragsprosent settes på en MVA-kode som velges i vanlig bilagsføring. Systemet beregner fradrag og kostnadsført rest. |
+| Forholdsmessig MVA | [DNB Regnskap: Forholdsmessig mva](https://hjelp.dnbregnskap.dnb.no/no/article/forholdsmessig-mva-16zoi3c/) | Fradragsgruppe kan knyttes til konto eller velges ved bilagsføring; fradragsprosent kan også angis der. |
+
+Referansene viser alternativer til å bokføre fullt fradrag og deretter kreve
+et separat bilag ved hvert kjøp. Artiklene kvalifiserer ikke i seg selv den
+konkrete utenlandsflyten, kreditnotaer eller norske konto-/kodemappinger.
+Disse delene må undersøkes og prøves særskilt. Det skal ikke utledes et behov
+for egne koderegistre, grupper eller prosentskjema fra sammenligningen alene.
+
+0.66.0/0.75.0 sine separate fradragsrettinger og 0.74.0 sin manuelle 87-flyt
+klassifiseres nå som **reserveveier**. De tekniske prøvene beholdes, men de
+viser ikke ferdig normalflyt. Gjenstående gap er å håndtere riktig fradrag
+og kostnad ved vanlig registrering/bokføring, med bevart leverandørfaktura,
+betalingsoppfølging og tilsvarende behandling ved kreditnota. Før flere
+importtilfeller prioriteres, gjennomgås disse rutinene mot kjernen og aktuelle
+tillegg. En eventuell endring skal bevare regnskapsdata og lesing av tidligere
+klassifiserte bilag. Ingen runtime-endring eller ny funksjon innføres her.
