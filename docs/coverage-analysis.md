@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.74.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.75.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -288,3 +288,21 @@ fakturasats, kjøpsmotor, tabell, kontrollside eller betalingsflyt innføres.
 Kodevalget er uttrykkelig og endrer ikke hovedboken. Kode 87 på leverandør-
 fakturaer og delvis fradrag gjenstår; en vanlig faktura skal ikke bokføres
 på nytt som manuelt kjøp for å bruke denne støtten.
+
+
+## Delvis fradrag på den native 86-flyten i 0.75.0
+
+Kjernen bokfører fullt fradrag, men dekker en separat reduksjon gjennom vanlige
+rettingsbilag. Det konkrete rapporteringsgapet var at 2714-rettingen manglet
+kodevalg. Eksisterende manuelle MVA-felt støtter nå kode 86 på aktiv 2714;
+rapporten summerer faktisk retting med fakturaens inngående avgift. Utgående
+grunnlag og beregnet avgift forblir uendret. Ingen ny modell, side eller
+bokføringsmotor. Fakturaflyten krever fortsatt en gyldig native 86-sats;
+manuell kode kan ikke erstatte en deaktivert fakturasats.
+
+`tests/vat-report.php` prøver SE/US-kjøp og kreditnotaer med faktisk native
+journaloverføring og separate 50 %-rettinger, begge fortegn. CSV viser retting
+som inngående 86 uten grunnlag/sats. Manglende kode, feil grunnlag, feil konto,
+inaktiv konto og endret kilde avvises. Lesing endrer ikke regnskapsdata.
+Dette kvalifiserer den dokumenterte manuelle rettingen, ikke automatisk valg
+av fradragsandel eller kobling ved kreditnota. Se [rutine og primærkilder](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).

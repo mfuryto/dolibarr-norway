@@ -1,6 +1,6 @@
-# Norway 0.74.0
+# Norway 0.75.0
 
-**Versjon 0.74.0 · Under utvikling**
+**Versjon 0.75.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Kjernen endres ikke.
 Ett foretak og NOK som basis- og dokumentvaluta støttes.
@@ -84,4 +84,9 @@ Uttrekket viser bare utgående avgift for 87. Denne avgrensede flyten oppretter
 ikke leverandørfaktura eller betalingsoppfølging i fakturamodulen; den må
 ikke brukes i tillegg til en allerede bokført faktura for samme kjøp.
 Se veiledningen for manuelle MVA-bilag i prosjektets dokumentasjon.
-Automatisk leverandørfakturaflyt for 87 og delvis fradragsrett gjenstår.
+Automatisk leverandørfakturaflyt for 87 gjenstår. Delvis fradrag kan fra
+0.75.0 håndteres med separat, vanlig rettingsbilag med kode 86 på 2714.
+Beregnet MVA og grunnlag beholdes; faktisk inngående fradrag summeres i
+uttrekket. Prosenten velges ikke automatisk, og kreditnota krever motsatt
+retting. Ingen ny side, tabell eller bokføringsmotor.
+Se [føring av delvis fradrag](../../../docs/manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).

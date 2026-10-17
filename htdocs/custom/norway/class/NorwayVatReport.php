@@ -71,8 +71,10 @@ class NorwayVatReport
         global $conf,$mysoc;
         $p=$db->prefix();$report=array('start'=>$start,'end'=>$end,'groups'=>array(),'entries'=>array(),'issues'=>array(),'other_lines'=>0,'net'=>null);
         if($conf->currency!=='NOK' || ($mysoc->country_code??'')!=='NO'){self::issue($report,'Setup','',0);}
-        $choices=NorwayManualVat::choices($db,$entity)+NorwayVatRates::zeroChoices($db,$entity);$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
-        foreach($choices as $code=>$spec){if(!empty($spec['manual_only'])){$specs[$code]=$spec;}}
+        $manualChoices=NorwayManualVat::choices($db,$entity);
+        $choices=$manualChoices;unset($choices['86']); // Manual deduction metadata must never substitute an inactive invoice rate.
+        $choices=NorwayVatRates::zeroChoices($db,$entity)+$choices;$specs=array();foreach(NorwayVatRates::codes() as $spec){$specs[$spec['code']]=$spec;}
+        foreach($manualChoices as $code=>$spec){if(!empty($spec['manual_only'])){$specs[$code]=$spec;}}
         $watch=array();foreach(self::rows($db,'SELECT accountancy_code_sell,accountancy_code_buy FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux<>0') as $row){
             foreach(array($row->accountancy_code_sell,$row->accountancy_code_buy) as $account){if(trim((string)$account)!==''){$watch[$account]=true;}}
         }

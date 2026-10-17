@@ -1185,7 +1185,7 @@ NorwayNativeVatCode=Norsk MVA-kode
 NorwayNativeVatBoth=Salg og kjøp
 
 NorwayManualVatTitle=MVA på manuelt bilag
-NorwayManualVatHelp=Velg kode på MVA-linjen. Grunnlag fylles bare ut for utgående MVA, med motsatt fortegn ved tilbakeføring. Inngående MVA bruker bokført beløp; la grunnlaget stå tomt. Kode 87 gjelder manuelt bokført tjenestekjøp uten fradragsrett, 25 %, på 2704. Ingen beløp bokføres av dette skjemaet.
+NorwayManualVatHelp=Velg kode på MVA-linjen. Grunnlag fylles bare ut for utgående MVA, med motsatt fortegn ved tilbakeføring. Inngående MVA bruker bokført beløp; la grunnlaget stå tomt. Kode 87 gjelder manuelt bokført tjenestekjøp uten fradragsrett, 25 %, på 2704. Kode 86 på 2714 gjelder separat fradragsretting etter en bokført faktura med omvendt avgiftsplikt. Ingen beløp bokføres av dette skjemaet.
 NorwayManualVatCodeLabel=MVA-kode
 NorwayManualVatBaseLabel=Grunnlag (utgående MVA, NOK)
 NorwayManualVatOutput=Utgående
@@ -1236,5 +1236,5 @@ NorwayVatCode7=Inntekt som ikke er MVA-omsetning
 NorwayVatCode0=Kjøp uten MVA-behandling
 NorwayVatCodeNO0=Kjøp uten MVA-behandling (NO0 → 0)
 NorwayVatCode52=Utførsel av varer og tjenester
-NorwayVatCode86=Tjenestekjøp fra utlandet, 25 % og full fradragsrett
+NorwayVatCode86=Tjenestekjøp fra utlandet, 25 % med fradragsrett
 NorwayVatCode87=Tjenestekjøp fra utlandet uten fradragsrett

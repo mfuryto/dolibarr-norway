@@ -173,8 +173,11 @@ Fra 0.73.0 er NOK-kjøp av fjernleverbare tjenester med 25 % og full fradragsret
 prøvd med kjernens omvendte avgiftsplikt og kode 86. Se [engangsoppsett og bruk](vat-rates.md#tjenestekjøp-med-omvendt-avgiftsplikt-i-0730)
 før du aktiverer dette. Fra 0.74.0 er [hele, manuelt bokførte kjøp uten fradragsrett med kode 87](manual-vat.md#tjenestekjøp-uten-fradragsrett-kode-87-i-0740)
 støttet i uttrekket. Denne flyten oppretter ikke leverandørfakturaer eller
-betalingsoppfølging. Automatisk kode 87 i leverandørfakturaflyten, delvis
-fradrag, andre satser og vareimport er fortsatt ikke kvalifisert.
+betalingsoppfølging. Fra 0.75.0 kan delvis fradrag på den native 86-flyten
+håndteres med [separat rettingsbilag på 2714](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
+Fradragsandelen må beregnes og dokumenteres; kreditnota krever motsatt retting.
+Automatisk kode 87 i leverandørfakturaflyten, andre satser og vareimport
+er fortsatt ikke kvalifisert.
 
 ## 9. Inngående saldoer, perioder og løpende rutiner
 

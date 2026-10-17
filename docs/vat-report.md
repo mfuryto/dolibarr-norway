@@ -229,8 +229,23 @@ grunnlag i `output_base_nok` og faktisk avgift i `vat_nok`. `vat_return` er
 og avgift. Kolonner og eksisterende metadatalagring er uendret.
 
 Dette gir ikke automatisk kode 87 på leverandørfakturaer eller betalings-
-oppfølging. Delvis fradragsrett er fortsatt utenfor støttet omfang. Kode,
+oppfølging. Delvis fradragsrett er beskrevet nedenfor fra 0.75.0. Kode,
 aktiv konto, beløpsforhold, kildeintegritet og balanse behandles som ved
 øvrige manuelle MVA-bilag. Uttrekket leser; det korrigerer ikke feilføringer
 eller avgjør fradragsretten. Manglende kode, inaktiv konto og endret kilde
 gir uavklart uttrekk uten netto/CSV.
+
+
+## Delvis fradrag med separat 86-retting i 0.75.0
+
+En faktura med native omvendt avgiftsplikt og fullt fradrag kan suppleres med
+et vanlig rettingsbilag som reduserer faktisk inngående MVA på 2714. Velg 86
+på den manuelle MVA-linjen og la grunnlaget stå tomt. Se [trinn og avgrensning](manual-vat.md#delvis-fradrag-på-tjenestekjøp-kode-86-i-0750).
+Uttrekket beholder fakturaens fulle utgående grunnlag/avgift og summerer
+inngående 86 med rettingen. En kreditnota krever motsatt fradragsretting.
+
+CSV beholder kolonnene: rettingen har `source_type=ledger`, `vat_code=86`,
+`direction=input`, tom sats og tomt grunnlag. Kredit på 2714 reduserer
+fradraget; debet øker det. Manglende klassifisering, endret kilde eller inaktiv
+2714 gir uavklart uttrekk uten netto/CSV. Prosenten beregnes ikke av rapporten.
+Dette er ikke støtte for hele manuelle 86-kjøp eller en fullstendig MVA-melding.

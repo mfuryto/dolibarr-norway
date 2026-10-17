@@ -52,13 +52,15 @@ class NorwayManualVat
             $row=$db->fetch_object($r);if(!$row || trim((string)$row->account)===''){continue;}
             $spec['account']=$row->account;$result[$spec['code']]=$spec;
         }
-        // Code 87 classifies a manual reverse-charge liability, never a supplier-invoice rate.
+        // Manual liability (87) and deduction correction (86); never supplier-invoice rates.
         global $conf,$mysoc;
         if(($mysoc->country_code??'')==='NO' && $conf->currency==='NOK' && !empty($mysoc->tva_assuj)){
             $r=self::query($db,'SELECT a.account_number FROM '.$db->prefix().'accounting_account a JOIN '.$db->prefix().'accounting_system s ON s.pcg_version=a.fk_pcg_version'
-                .' WHERE a.entity='.(int)$entity.' AND a.active=1 AND s.active=1 AND s.rowid='.(int)getDolGlobalString('CHARTOFACCOUNTS')." AND a.account_number='2704'");
-            $rows=array();while($row=$db->fetch_object($r)){$rows[]=$row;}
-            if(count($rows)===1 && (string)$rows[0]->account_number==='2704'){$result['87']=array('code'=>'87','rate'=>25,'type'=>1,'account'=>'2704','manual_only'=>true);}
+                .' WHERE a.entity='.(int)$entity.' AND a.active=1 AND s.active=1 AND s.rowid='.(int)getDolGlobalString('CHARTOFACCOUNTS')." AND a.account_number IN ('2704','2714')");
+            $rows=array();while($row=$db->fetch_object($r)){$rows[(string)$row->account_number][]=$row;}
+            foreach(array('87'=>array('2704',1),'86'=>array('2714',2)) as $code=>[$account,$type]){
+                if(count($rows[$account]??array())===1){$result[$code]=array('code'=>(string)$code,'rate'=>25,'type'=>$type,'account'=>$account,'manual_only'=>true);}
+            }
         }return $result;
     }
     public static function editable($db,$line,$user)

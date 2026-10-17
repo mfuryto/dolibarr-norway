@@ -1,7 +1,7 @@
 # Arbeidsplan for norsk lokalisering
 
 Oppdatert 2026-10-17 etter opprydding og presisering av næringsspesifikasjonen.
-Gjeldende programversjon er 0.74.0. Oppryddingen er gjennomført;
+Gjeldende programversjon er 0.75.0. Oppryddingen er gjennomført;
 videre arbeid skal følge prioriteringen nedenfor. [Leveransehistorikken](delivery-history.md)
 beskriver hva som allerede er bygget; den er ikke en bestilling av mer kode.
 
@@ -96,8 +96,15 @@ gjenbrukes. Kostnaden inkluderer avgiften; uttrekket viser bare utgående
 MVA og grunnlag. Ingen ny satsrad, side, tabell eller betalingsflyt innføres.
 Denne flyten oppretter ikke leverandørfakturaer eller betalingsoppfølging.
 
-Neste arbeid er delvis fradragsrett og eventuell videre gjenbruk for
-leverandørfakturaflyt uten fradrag, samt andre aktuelle importtilfeller, deretter
+0.75.0 støtter delvis fradrag på den prøvde native 86-fakturaflyten ved et
+separat rettingsbilag med kode 86 på 2714. Kjernens bilag og eksisterende
+MVA-felt gjenbrukes. Full beregnet avgift/grunnlag beholdes; faktisk inngående
+fradrag summeres uten nytt grunnlag. Kjøp/kreditnota og begge fortegn er
+prøvd med 50 % fradrag. Prosent og kobling til faktura automatiseres ikke.
+Ingen nye tabeller, menyer eller kontrollsider.
+
+Neste arbeid er eventuell videre gjenbruk for leverandørfakturaflyt uten
+fradrag og andre aktuelle importtilfeller, deretter
 registreringsovergang og særposteringer som MVA-oppgjør. Manuelle nullsatsbilag,
 rene unntatte/uregistrerte foretak og andre behandlinger må kvalifiseres.
 Støttede koder alene utgjør ikke en fullstendig norsk melding. Innsending og
