@@ -40,3 +40,14 @@ class/NorwayVatHistoryView.php
 class/NorwayVatRegistration.php
 class/NorwayVatSetup.php
 class/NorwayWizardProgress.php
+admin/defaults.php
+admin/standardaccounts.php
+admin/journals.php
+admin/vataccounts.php
+admin/bankdefaults.php
+class/NorwayBankDefaults.php
+class/NorwayBankSetup.php
+class/NorwayJournalSetup.php
+class/NorwayVatAccounts.php
+class/NorwayDefaultAccounts.php
+class/NorwayStandardAccounts.php

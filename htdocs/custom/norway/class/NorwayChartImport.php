@@ -17,7 +17,7 @@ class NorwayChartImport
         return hash('sha256', json_encode(array((int) $entity, (int) $chartId, $report), JSON_THROW_ON_ERROR));
     }
 
-    public static function apply($db, $entity, $chartId, $csv, $fingerprint, $user)
+    public static function apply($db, $entity, $chartId, $csv, $fingerprint, $user, $preserveExisting = false)
     {
         global $conf;
         if ((int) $entity <= 0 || (int) $conf->entity !== (int) $entity || empty($user->admin) || (int) $user->id <= 0) {
@@ -39,7 +39,7 @@ class NorwayChartImport
                 "SELECT rowid FROM ".$db->prefix()."accounting_bookkeeping WHERE entity=".(int) $entity." AND numero_compte IN (".$in.") FOR UPDATE") as $sql) {
                 if (!$db->query($sql)) { throw new RuntimeException('Import'); }
             }
-            $report = NorwayChartPreview::report($db, $entity, $chartId, $csv);
+            $report = NorwayChartPreview::report($db, $entity, $chartId, $csv, $preserveExisting);
             if (!hash_equals(self::fingerprint($entity, $chartId, $report), (string) $fingerprint)
                 || !self::eligible($report)) { throw new InvalidArgumentException('Changed'); }
             $created = 0;

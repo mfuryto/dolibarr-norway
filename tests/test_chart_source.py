@@ -22,3 +22,11 @@ class ChartSourceTests(unittest.TestCase):
         self.assertEqual(len({row['code'] for row in original}), 745)
         self.assertEqual(converted, [{'account_number': row['code'], 'label': row['name@nb_NO']} for row in original])
         self.assertIn("'license': 'LGPL-3'", (DATA / 'odoo-no-manifest.txt').read_text())
+
+    def test_account_classes_match_pinned_source_types(self):
+        with (DATA / 'odoo-no-original.csv').open() as stream:
+            rows = list(csv.DictReader(stream))
+        for row in rows:
+            balance = row['code'][0] in '12'
+            self.assertEqual(balance, row['account_type'].startswith(('asset_', 'liability_', 'equity')), row['code'])
+            self.assertIn(row['code'][0], '12345678')

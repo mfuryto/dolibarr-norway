@@ -54,6 +54,19 @@ try {
   nuAssert($invoice->addline('Synthetic numbering only',10,1,25)>0,'Real line failed');
   nuAssert($invoice->validate($user)>0,'Real invoice validation failed: '.$invoice->error);
   nuAssert($invoice->fetch($invoice->id)>0 && $invoice->ref===$expected,'Real invoice numbering wrong: '.$invoice->ref);
+  if(count($createdInvoices)===1){
+   $independent=$input;$independent['credit_start']=701;$independent['proposal_start']=901;
+   $series=NorwayNumbering::preview($db,$entity,$independent,$user);
+   nuAssert($series['series_locked']===array('invoice'=>true,'credit'=>false,'proposal'=>false,'customer'=>false,'supplier'=>false),'Invoice locks unrelated series');
+   nuAssert($series['next']['credit']==='K000701' && $series['next']['proposal']==='T000901','Unused series cannot be adjusted');
+   $legacy=NorwayNumbering::record($db,$entity);$legacy['version']=2;unset($legacy['series_baselines']);
+   nuSql("UPDATE ".$p."const SET value='".$db->escape(json_encode($legacy))."' WHERE entity=".$entity." AND name='".NorwayNumbering::SETTING."'");
+   $series=NorwayNumbering::preview($db,$entity,$independent,$user);
+   nuAssert($series['series_locked']['invoice'] && !$series['series_locked']['credit'] && !$series['series_locked']['proposal'],'Legacy profile cross-locks unused series');
+   $migrate=NorwayNumbering::preview($db,$entity,$input,$user);NorwayNumbering::save($db,$entity,$input,$migrate['fingerprint'],$user);
+   nuAssert(NorwayNumbering::record($db,$entity)['version']===3,'Legacy numbering not upgraded');
+   $record=NorwayNumbering::record($db,$entity);
+  }
  }
  foreach (array(2026=>'T000301',2027=>'T000302') as $year=>$expected) {
   $proposal=new Propal($db); $proposal->socid=(int)$source->socid; $proposal->entity=$entity; $proposal->date=dol_mktime(12,0,0,1,1,$year); $proposal->duree_validite=30; $proposal->multicurrency_code='NOK'; $proposal->multicurrency_tx=1;
@@ -70,6 +83,7 @@ try {
   $partner=new Societe($db); $partner->name='SYNTHETIC NUMBERING PARTNER ONLY'; $partner->client=$client; $partner->fournisseur=$supplier;
   $partner->code_client=$client ? 'auto' : ''; $partner->code_fournisseur=$supplier ? 'auto' : ''; $partner->country_id=173;
   nuAssert($partner->create($user)>0,'Real partner create failed: '.$partner->error); $createdPartners[]=(int)$partner->id;
+  if(count($createdPartners)===1){$independent=$input;$independent['supplier_start']=501;$series=NorwayNumbering::preview($db,$entity,$independent,$user);nuAssert($series['series_locked']['customer'] && !$series['series_locked']['supplier'] && $series['next']['supplier']==='00501','Customer locks unused supplier series');}
   nuAssert($partner->fetch($partner->id)>0 && (string)$partner->code_client===$customerCode && (string)$partner->code_fournisseur===$supplierCode,'Automatic five-digit partner numbers wrong');
  }
  $partnerState=NorwayNumbering::preview($db,$entity,$input,$user);

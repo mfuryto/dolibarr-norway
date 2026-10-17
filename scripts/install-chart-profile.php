@@ -12,7 +12,7 @@ try {
     $preview = NorwayChartProfile::preview($db, $conf->entity);
     $created = NorwayChartProfile::install($db, $conf->entity, NorwayChartProfile::fingerprint($conf->entity, $preview), $user);
     print 'Norsk kontoplan valgt: '.NorwayChartProfile::VERSION.'; nye kontoer: '.$created."\n";
-    print "Standardkontoer, journaler, MVA-behandling og SAF-T-mapping er ikke automatisk konfigurert.\n";
+    print "Kontoklasser er utfylt; egne grupper er bevart. Standardkontoer, journaler, MVA-behandling og SAF-T-mapping er ikke automatisk konfigurert.\n";
 } catch (Throwable $error) {
     file_put_contents('php://stderr', "Kontoplaninstallering stoppet: eksisterende plan/historikk, konflikt eller teknisk feil. Ingen eksisterende plan erstattes. Bruk modulens kontoplanside for kontroll.\n");
     exit(1);

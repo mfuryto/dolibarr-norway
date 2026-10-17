@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 if (PHP_SAPI!=='cli' || getenv('NORWAY_SYNTHETIC_TEST')!=='1' || getenv('DOLI_DB_NAME')!=='norway_test') { exit(1); }
 require '/var/www/html/master.inc.php';require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatRates.php';
-require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayVatAccounts.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.facture.class.php';
 function vrAssert($ok,$message) { if (!$ok) { throw new RuntimeException($message); } }
@@ -18,29 +17,28 @@ try {
  vrSql("UPDATE ".$p."c_tva SET accountancy_code_sell='CUSTOM',use_default=1 WHERE entity=".$entity." AND taux=25");
  vrSql("INSERT INTO ".$p."c_tva (entity,fk_pays,taux,type_vat,code,active) VALUES (".$entity.",1,8,0,'',1)");
  $custom=NorwayVatRates::preview($db,$entity);vrAssert($custom['blocked'],'Existing default/account was silently reclassified');
- try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($custom),$user);throw new LogicException('Custom default changed');}catch(InvalidArgumentException $expected){}
+ try{NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($custom),$user);throw new LogicException('Custom default changed');}catch(InvalidArgumentException $expected){}
  $retained=$db->fetch_object(vrSql('SELECT accountancy_code_sell,use_default,active FROM '.$p.'c_tva WHERE entity='.$entity.' AND fk_pays=173 AND taux=25'));vrAssert($retained->accountancy_code_sell==='CUSTOM'&&(int)$retained->use_default===1&&(int)$retained->active===1,'Blocked preview changed choices');
  // Clear only this synthetic choice explicitly; production requires native manual review.
  vrSql("UPDATE ".$p."c_tva SET accountancy_code_sell='',use_default=0 WHERE entity=".$entity." AND fk_pays=173 AND taux=25");
  $preview=NorwayVatRates::preview($db,$entity);vrAssert(!$preview['blocked'] && count($preview['changes'])===15,'Initial code scope failed');
  $reader=clone $user;$reader->admin=0;
- try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$reader);throw new LogicException('Nonadmin accepted');}catch(InvalidArgumentException $expected){}
+ try{NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($preview),$reader);throw new LogicException('Nonadmin accepted');}catch(InvalidArgumentException $expected){}
  $failing=new class($db){private $db;private $writes=0;public function __construct($db){$this->db=$db;}public function __call($name,$args){return $this->db->$name(...$args);}public function query($sql,...$args){if((strpos($sql,'INSERT INTO '.$this->db->prefix().'c_tva ')===0 || strpos($sql,'UPDATE '.$this->db->prefix().'c_tva SET ')===0) && ++$this->writes===3){return false;}return $this->db->query($sql,...$args);}};
- try{NorwayVatRates::apply($failing,$entity,NorwayDefaultAccounts::fingerprint($preview),$user);throw new LogicException('Partial write accepted');}catch(RuntimeException $expected){}
+ try{NorwayVatRates::apply($failing,$entity,NorwayVatRates::fingerprint($preview),$user);throw new LogicException('Partial write accepted');}catch(RuntimeException $expected){}
  vrAssert(NorwayVatRates::preview($db,$entity)===$preview,'Atomic rollback failed');
- $db->begin();try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user);throw new LogicException('Nested transaction accepted');}catch(RuntimeException $expected){}finally{$db->rollback();}
- vrAssert(NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user)===15,'Expected twelve coded rows and three retained/deactivated rows');
+ $db->begin();try{NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($preview),$user);throw new LogicException('Nested transaction accepted');}catch(RuntimeException $expected){}finally{$db->rollback();}
+ vrAssert(NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($preview),$user)===15,'Expected twelve coded rows and three retained/deactivated rows');
  $after=NorwayVatRates::preview($db,$entity);vrAssert(!$after['blocked'] && count($after['rates'])===16,'Rows deleted or duplicated');
  foreach($after['rates'] as $r){$expectedActive=$r['code']!=='' || (float)$r['taux']===0.0;vrAssert((int)$r['active']===(int)$expectedActive,'Incorrect active coded/legacy row');}
- $accountPreview=NorwayVatAccounts::preview($db,$entity);vrAssert(NorwayVatAccounts::apply($db,$entity,NorwayDefaultAccounts::fingerprint($accountPreview),$user)===6,'Six directional VAT accounts not filled');
  foreach(NorwayVatRates::codes() as $spec){$row=$db->fetch_object(vrSql("SELECT * FROM ".$p."c_tva WHERE entity=".$entity." AND code='".$spec['code']."'"));$map=array(25=>array('2700','2710'),15=>array('2701','2711'),12=>array('2703','2713'));
   vrAssert((int)$row->type_vat===$spec['type']&&(float)$row->taux===(float)$spec['rate'],'Wrong directional code/rate');
-  vrAssert($row->{$spec['type']===1?'accountancy_code_sell':'accountancy_code_buy'}===$map[$spec['rate']][$spec['type']-1],'Wrong directional VAT account');
+  vrSql("UPDATE ".$p."c_tva SET ".($spec['type']===1?'accountancy_code_sell':'accountancy_code_buy')."='".$map[$spec['rate']][$spec['type']-1]."' WHERE rowid=".(int)$row->rowid);
  }
  $after=NorwayVatRates::preview($db,$entity);
  $foreign=$db->fetch_object(vrSql('SELECT active FROM '.$p.'c_tva WHERE entity='.$entity.' AND fk_pays=1'));vrAssert((int)$foreign->active===1,'Foreign rate changed');
- vrAssert(NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($after),$user)===0,'Repeat failed');
- try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($preview),$user);throw new LogicException('Stale preview accepted');}catch(InvalidArgumentException $expected){}
+ vrAssert(NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($after),$user)===0,'Repeat failed');
+ try{NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($preview),$user);throw new LogicException('Stale preview accepted');}catch(InvalidArgumentException $expected){}
  vrSql("UPDATE ".$p."c_tva SET type_vat=2 WHERE entity=".$entity." AND code='31'");vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Wrong code direction accepted');vrSql("UPDATE ".$p."c_tva SET type_vat=1 WHERE entity=".$entity." AND code='31'");
  vrSql("INSERT INTO ".$p."c_tva(entity,fk_pays,code,type_vat,taux,active) VALUES (".$entity.",173,'3',1,24,1)");$duplicate=(int)$db->last_insert_id($p.'c_tva');vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Duplicate standard code accepted');vrSql('DELETE FROM '.$p.'c_tva WHERE rowid='.$duplicate);
  vrSql('UPDATE '.$p.'c_tva SET active=0 WHERE entity='.$entity.' AND taux=15');vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Inactive current rate overwritten');
@@ -48,7 +46,7 @@ try {
  vrSql("UPDATE ".$p."c_tva SET code='SPECIAL' WHERE entity=".$entity." AND fk_pays=173 AND taux=8");vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Special historical rate accepted');
  vrSql("UPDATE ".$p."c_tva SET code='',use_default=1 WHERE entity=".$entity." AND fk_pays=173 AND taux=8");vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Historical default overwritten');
  vrSql('UPDATE '.$p.'c_tva SET use_default=0 WHERE entity='.$entity.' AND fk_pays=173 AND taux=8');
- vrSql("INSERT INTO ".$p."product (ref,label,entity,tva_tx) VALUES ('SYN-OLD-RATE','Synthetic',".$entity.",8)");vrAssert(NorwayVatRates::preview($db,$entity)['blocked'],'Product use ignored');vrSql('DELETE FROM '.$p.'product WHERE entity='.$entity);
+ vrSql("INSERT INTO ".$p."product (ref,label,entity,tva_tx) VALUES ('SYN-OLD-RATE','Synthetic',".$entity.",8)");vrAssert(!NorwayVatRates::preview($db,$entity)['blocked'],'Product prevents append-only setup');vrSql('DELETE FROM '.$p.'product WHERE entity='.$entity);
  vrSql("INSERT INTO ".$p."societe (nom,entity,client,status) VALUES ('Synthetic rate history',".$entity.",1,1)");$party=(int)$db->last_insert_id($p.'societe');
  // Render the actual core widgets: core default lookup chooses code 1 for both directions.
  require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
@@ -102,8 +100,12 @@ try {
  vrAssert(NorwayVatRates::ensureZeroCodes($db,$entity)===6 && NorwayVatRates::ensureZeroCodes($db,$entity)===0,'Missing zero rows not provisioned with existing documents');
  vrAssert(NorwayVatRates::zeroChoices($db,$entity)===$zeroBefore,'Zero choice semantics changed');
 
- $blocked=NorwayVatRates::preview($db,$entity);vrAssert($blocked['blocked'],'Draft document use ignored');
- try{NorwayVatRates::apply($db,$entity,NorwayDefaultAccounts::fingerprint($blocked),$user);throw new LogicException('Used setup accepted');}catch(InvalidArgumentException $expected){}
+ // Existing documents must not prevent adding a missing native code, or deactivate old rates.
+ vrSql("DELETE FROM ".$p."c_tva WHERE entity=".$entity." AND code='33'");
+ vrSql("UPDATE ".$p."c_tva SET active=1 WHERE entity=".$entity." AND fk_pays=173 AND taux=8 AND code=''");
+ $used=NorwayVatRates::preview($db,$entity);vrAssert(!$used['blocked'],'Used entity cannot add a missing code');
+ vrAssert(NorwayVatRates::apply($db,$entity,NorwayVatRates::fingerprint($used),$user)===1,'Used setup changed existing rows');
+ $oldRate=$db->fetch_object(vrSql('SELECT active FROM '.$p.'c_tva WHERE entity='.$entity.' AND taux=8 AND fk_pays=173 ORDER BY rowid DESC LIMIT 1'));vrAssert((int)$oldRate->active===1,'Historical rate deactivated');
  try{NorwayVatRates::preview($db,$entity+1);throw new LogicException('Foreign entity accepted');}catch(InvalidArgumentException $expected){}
 } finally {
  $db->rollback();vrSql('DELETE FROM '.$p.'facturedet WHERE fk_facture IN (SELECT rowid FROM '.$p.'facture WHERE entity='.$entity.')');vrSql('DELETE FROM '.$p.'facture_fourn_det WHERE fk_facture_fourn IN (SELECT rowid FROM '.$p.'facture_fourn WHERE entity='.$entity.')');foreach(array('c_tva','facture_fourn','facture','product','societe','accounting_account','const') as $table){vrSql('DELETE FROM '.$p.$table.' WHERE entity='.$entity);}

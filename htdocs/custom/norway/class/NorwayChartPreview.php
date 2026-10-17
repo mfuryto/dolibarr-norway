@@ -31,7 +31,7 @@ class NorwayChartPreview
         return $rows;
     }
 
-    public static function report($db, $entity, $chartId, $csv)
+    public static function report($db, $entity, $chartId, $csv, $preserveExisting = false)
     {
         if ((int) $entity <= 0) { throw new InvalidArgumentException('Chart'); }
         $rows = self::parse($csv);
@@ -64,8 +64,8 @@ class NorwayChartPreview
             $row['existing_label'] = count($matches) === 1 ? $matches[0]->label : '';
             $row['usage'] = $used[$row['number']] ?? 0;
             $row['status'] = !$matches ? ($row['usage'] > 0 ? 'Historical' : 'New')
-                : (count($matches) > 1 ? 'Conflict' : ((int) $matches[0]->active !== 1 ? 'Inactive'
-                    : ((string) $matches[0]->label !== $row['label'] ? 'Conflict' : 'Keep')));
+                : (count($matches) > 1 ? 'Conflict' : ($preserveExisting ? 'Keep' : ((int) $matches[0]->active !== 1 ? 'Inactive'
+                    : ((string) $matches[0]->label !== $row['label'] ? 'Conflict' : 'Keep'))));
         }
         unset($row);
         return array('rows' => $rows, 'chart' => $chart[0]->pcg_version, 'format' => self::FORMAT);

@@ -16,7 +16,7 @@ Fradragsrett og andel må vurderes særskilt. Denne tabellen er ikke et komplett
 oppsett for nullsats, fritak, unntak, utenlandshandel eller omvendt avgiftsplikt.
 Ingen kode velges automatisk bare fordi en linje har 0 prosent.
 
-## Nytt, ubrukt oppsett
+## Oppsett
 
 1. Velg den medfølgende norske kontoplanen.
 2. Åpne Norsk regnskapsoppsett → Norske MVA-satser og koder.
@@ -36,16 +36,11 @@ Kodeoppsettet velger ingen ny standardmarkering og fyller ikke kontoene selv.
 
 ## Eksisterende regnskap eller produkter
 
-Automatisk omlegging er sperret når foretaket allerede har produkter,
-fakturaer, tilbud, ordre eller hovedbok. Oppdatering av modulen gjør ingen
-omlegging av disse dataene. Ikke slett dokumenter for å omgå vernet.
-
-Bruk kjernens MVA-register fra lenken på samme side. Ved manuell gjennomgang
-kan egne rader opprettes med sats, kode og bruk som i tabellen. Vurder når
-ukodede rader skal deaktiveres for nye valg, og angi riktige MVA-kontoer.
-Ikke skriv om gamle fakturalinjer eller gjenbruk en historisk kode til en
-annen behandling. Eksisterende produkter og leverandørpriser må gjennomgås
-for fremtidige dokumenter; gamle dokumenter beholder sine lagrede opplysninger.
+Fra 0.77.0 kan manglende kodevalg legges til også når produkter og dokumenter
+finnes. Eksisterende koder, kontoer, standardmarkeringer og historiske satser
+beholdes. Ukodede gamle satser deaktiveres bare i et helt ubrukt oppsett.
+En konflikt med en eksisterende norsk kode krever retting i kjernens register;
+modulen overstyrer ikke valget. Ingen fakturalinje eller hovedbokspost endres.
 
 ## Standardvalg i skjermbildene
 

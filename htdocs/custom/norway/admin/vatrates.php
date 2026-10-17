@@ -27,9 +27,9 @@ try {
     }print '</table></div>';
     if (!$preview['blocked'] && $count>0) {
         $nonce=bin2hex(random_bytes(16));
-        $_SESSION['norway_vat_rates']=array('entity'=>(int)$conf->entity,'user'=>(int)$user->id,'expires'=>time()+600,'nonce'=>$nonce,'fingerprint'=>NorwayDefaultAccounts::fingerprint($preview));
+        $_SESSION['norway_vat_rates']=array('entity'=>(int)$conf->entity,'user'=>(int)$user->id,'expires'=>time()+600,'nonce'=>$nonce,'fingerprint'=>NorwayVatRates::fingerprint($preview));
         print '<form method="post"><input type="hidden" name="token" value="'.newToken().'"><input type="hidden" name="action" value="savevatrates"><input type="hidden" name="preview_nonce" value="'.$nonce.'"><p><label><input type="checkbox" name="confirmed" value="1" required> '.$langs->trans('NorwayVatRatesConfirm').'</label></p><button class="button" type="submit">'.$langs->trans('NorwayDefaultsConfirm').'</button></form>';
     } else { unset($_SESSION['norway_vat_rates']);print '<p>'.$langs->trans(count(array_filter($preview['changes'],static fn($c)=>$c['action']!=='Keep'))>0 ? 'NorwayVatRatesBlocked' : 'NorwayDefaultsNothing').'</p>'; }
 } catch (Throwable $error) { unset($_SESSION['norway_vat_rates']);print '<div class="error">'.$langs->trans('NorwayDefaultsFailed').'</div>'; }
-foreach (array('/custom/norway/admin/vataccounts.php'=>'NorwayVatAccountsTitle','/admin/dict.php?id=10'=>'NorwayVatSetupDictionary','/custom/norway/admin/wizard.php?step=4'=>'NorwayWizard') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
+foreach (array('/admin/dict.php?id=10'=>'NorwayVatSetupDictionary','/custom/norway/admin/wizard.php?step=4'=>'NorwayWizard') as $path=>$label) { print '<p><a href="'.DOL_URL_ROOT.$path.'">'.$langs->trans($label).'</a></p>'; }
 print '<p><a href="https://skatteetaten.github.io/mva-meldingen/mvameldingen/informasjonsmodell/" target="_blank" rel="noopener noreferrer">'.$langs->trans('NorwayVatRatesSource').'</a></p></div>';llxFooter();$db->close();

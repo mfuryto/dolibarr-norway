@@ -47,7 +47,7 @@ class NorwayChartProfile
             }
         }
         if ($plan) {
-            $report = NorwayChartPreview::report($db, $entity, $plan->rowid, self::csv());
+            $report = NorwayChartPreview::report($db, $entity, $plan->rowid, self::csv(), true);
         } else {
             $rows = NorwayChartPreview::parse(self::csv());
             foreach ($rows as &$row) {
@@ -95,8 +95,10 @@ class NorwayChartProfile
             if ($preview['selected'] !== (int) $chart && dolibarr_set_const($db, 'CHARTOFACCOUNTS', $chart, 'chaine', 0, '', $entity) <= 0) {
                 throw new RuntimeException('Profile');
             }
-            $report = NorwayChartPreview::report($db, $entity, $chart, self::csv());
-            $created = NorwayChartImport::apply($db, $entity, $chart, self::csv(), NorwayChartImport::fingerprint($entity, $chart, $report), $user);
+            $report = NorwayChartPreview::report($db, $entity, $chart, self::csv(), true);
+            $created = NorwayChartImport::apply($db, $entity, $chart, self::csv(), NorwayChartImport::fingerprint($entity, $chart, $report), $user, true);
+            require_once __DIR__.'/NorwayChartGroups.php';
+            NorwayChartGroups::complete($db, $entity);
             if ($db->commit() <= 0) { throw new RuntimeException('Profile'); }
             return $created;
         } catch (Throwable $error) {
