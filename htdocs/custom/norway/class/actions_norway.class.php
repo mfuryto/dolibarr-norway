@@ -177,6 +177,19 @@ class ActionsNorway
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        if(($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/closure/index.php'
+            && $action==='confirm_step_2' && GETPOST('confirm','alpha')==='yes'){
+            require_once __DIR__.'/NorwayYearEnd.php';$langs->load('norway@norway');
+            try{
+                if(($_SERVER['REQUEST_METHOD']??'')!=='POST' || !$user->hasRight('accounting','fiscalyear','write')
+                    || empty($_SESSION['token']) || !hash_equals($_SESSION['token'],GETPOST('token','alphanohtml'))){throw new RuntimeException('NorwayYearEndBlocked');}
+                NorwayYearEnd::guard($db,(int)$conf->entity,GETPOSTINT('fiscal_period_id'),GETPOSTINT('new_fiscal_period_id'),
+                    (bool)GETPOSTINT('generate_bookkeeping_records'),(bool)GETPOSTINT('separate_auxiliary_account'));
+            }catch(Throwable $error){
+                $key=in_array($error->getMessage(),array('NorwayYearEndBlocked','NorwayYearEndBusy','NorwayYearEndAuxiliary'),true)?$error->getMessage():'NorwayYearEndBlocked';
+                setEventMessages($langs->trans($key),null,'errors');$action='';return 1;
+            }
+        }
         require_once __DIR__.'/NorwaySaftUi.php';
         if(NorwaySaftUi::action($db,$action,$user,$langs)){$action='';return 1;}
         if ($this->invoicePage() && in_array($action,array('norway_ehf_send','norway_ehf_status'),true)) {

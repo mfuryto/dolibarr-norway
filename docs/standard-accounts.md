@@ -33,8 +33,9 @@ resultatet føres som egenkapital i inngående balanse. Feltene foreslår derfor
 **Valg av lukkingskontoer er ikke et ferdig årsoppgjør.** Kjernens
 [årsavslutningsoppsett](https://github.com/Dolibarr/dolibarr/blob/b7958385f00a92219f76a4dfea67dae93df97a25/htdocs/accountancy/admin/closure.php)
 krever også journal og riktige kontogrupper for balanse og resultat.
-Fra 0.77.0 får den medfølgende planen kontoklasse 1–2 for balanse og 3–8 for resultat, med prøvd teknisk saldoovergang. Automatisk norsk
-årsavslutning er ikke akseptert produksjonsomfang. Moduloppdatering utfører ingen årsavslutning eller postering.
+Fra 0.77.0 får den medfølgende planen kontoklasse 1–2 for balanse og 3–8 for resultat, med prøvd teknisk saldoovergang. Fra 0.84.0 er [ordinært ENK-årsskifte](year-end.md) prøvd med
+årsjusteringer, resultatdisponering og reskontro. Et automatisk norsk
+årsoppgjørssystem og andre foretaksformer inngår ikke. Moduloppdatering utfører ingen årsavslutning eller postering.
 
 ## Andre kilder og avgrensninger
 

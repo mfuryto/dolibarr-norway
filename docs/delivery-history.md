@@ -601,3 +601,25 @@ bank-/saldo-/avgiftsfasit, gjentatt eksport, ugyldige/ufullstendige kilder,
 tilgang og norsk/engelsk HTTP-nedlasting. Avgrensningene i
 [SAF-T-veiledningen](saft-export.md) gjelder; EHF-testnettverk, forskuddsskatt,
 årsavslutning og skattemelding er separate gjenstående leveranser.
+
+## 0.84.0 — ENK: forskuddsskatt, årsavslutning og portalgrunnlag
+
+Native bankflyt er prøvd med endrede terminer, refusjon, tilleggsforskudd,
+reserveoverføring via nullstilt mellomkonto og gjentatt bankjournal. Ingen
+ny skattekravsmodell eller beregningsmotor er lagt til.
+
+Et fullt syntetisk 2025-år prøver periodisering, lager, saldoavskrivning,
+privatuttak/skatt, resultatdisponering, reskontro, låsing og videre tapssaldo.
+Vern på kjernens avslutningshandling hindrer gjentatt/samtidig avslutning,
+ugyldige perioder og generering uten hjelpekontoer. Ingen skjemaendring.
+
+Portalveien for ordinært ENK uten regnskaps-/revisjonsplikt er dokumentert med
+avstemt eksempel: resultat42 250, tillegg750, næringsinntekt43 000 og egenkapital
+222 250. Veiledningen dekker tilleggsopplysninger, personinntekt, avskrivning
+uten dobbelt fradrag, egen innlogging, korrigering og mottakskvittering. Ingen
+faktisk privat innsending/kvittering eller API-integrasjon er kvalifisert.
+Endelig 2026-portalutfylling må kontrolleres ved levering i 2027.
+
+Støttet omfang og begrensninger står i `year-end.md` og `enk-tax-return.md`.
+Dette er ikke samlet norsk produksjonsaksept; EHF avventer fortsatt ekstern
+testtilgang og papirløs bilagsflyt tas sist.

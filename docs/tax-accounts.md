@@ -4,8 +4,8 @@
 kontokoblinger for skatt-/avgiftsmodulen. Dette er en egen ordbok, ikke selve
 kontoplanen. Den norske modulen oppretter ingen typer eller koblinger her.
 
-Fra 0.40.1 finnes veiledningen på standardkontosiden og som valgfri hjelp i
-veiviserens steg 4. Dette er informasjon; oppsett og bilag endres ikke.
+Veiledningen lenkes fra oppstartsoversikten. Den bruker kjernens skjemaer;
+modulen oppretter ingen parallelle skattekrav eller betalingsregistre.
 
 | Sted | Hva det brukes til |
 | --- | --- |
@@ -44,10 +44,10 @@ eller skatteberegning følger av at kontoene finnes.
 
 ## Forskuddsskatt gjennom året
 
-Status 2026-10-18: kontoene finnes og arbeidsbeskrivelsen er dokumentert.
-Den konkrete bank-/bilagsflyten skal fortsatt prøves samlet i etappe 7 av
-[leveranseplanen](delivery-plan.md), før årsavslutning. Dette er ikke en
-ferdigmelding av regnskapsstøtten.
+Kvalifisert med syntetiske data i `tests/advance-tax-cycle.php`: endret
+terminbeløp, tilbakebetaling, tilleggsforskudd, intern reserveoverføring,
+bankavstemming og gjentatt overføring fra bankjournalen uten duplikat.
+Ingen faktisk betaling eller endring av skattekort er utført.
 
 1. Oppgi forventet årlig overskudd under «Næring» i ditt personlige
    skattekort hos Skatteetaten. Oppdater anslaget ved endringer; regnskapets
@@ -59,7 +59,10 @@ ferdigmelding av regnskapsstøtten.
 3. Betalt fra foretakets bank: bokfør betalingen én gang som debet **2070**
    og kredit bankens faktiske hovedbokskonto, uten MVA. Eksempel: 10 000 kroner
    betalt fra en bank koblet til 1920 gir debet 2070 og kredit 1920 med
-   10 000 kroner. Bruk kjernens bank-/bilagsføring; ikke registrer en vanlig
+   10 000 kroner. Bruk **Bank → Diverse betalinger → Ny betaling**
+   (`/compta/bank/various_payment/card.php?action=create`): utbetaling,
+   faktisk dato og beløp, aktuell bank og regnskapskode 2070. Overfør deretter
+   bankjournalen til hovedboken som for øvrige betalinger. Ikke registrer en vanlig
    leverandørkostnad i tillegg. Oppbevar krav og betalingsunderlag med bilaget
    og avstem mot bank og hovedbok.
 4. Betalt privat: personlig skatt trenger ikke registreres i foretaksregnskapet.
@@ -67,13 +70,22 @@ ferdigmelding av regnskapsstøtten.
 
 En eventuell reserve på en annen av foretakets bankkonti er bare en intern
 bankoverføring, ikke betalt skatt. Konto 2070 brukes først ved skattebetalingen.
+Bruk **Bank → Intern overføring** (`/compta/bank/transfer.php`). Begge
+bankkonti må ha hver sin hovedbokskonto og bankjournal. Velg en egen
+balansekonto for «Overføringer mellom bankkontoer» i kjernens standardkontoer
+(f.eks. en opprettet 1999 mellomkonto). Ved overført og bokført bevegelse på
+begge banker skal mellomkontoen være null. Ikke bruk 1950 Skattetrekk som en
+generell reservekonto for innehaverens skatt; opprett f.eks. 1921 for en egen
+foretaksbank. Testen bruker 1920/1921 og 1999 og gir bank -22 000/+3 000,
+2070 debet 17 000 og 2072 debet 2 000 uten resultat-/MVA-effekt.
+
 En fast reserveprosent erstatter ikke Skatteetatens personlige beregning.
 Forskuddsskatt er separat fra MVA-melding og MVA-oppgjør.
 
 Tilleggsforskudd og restskatt må skilles fra ordinære terminer og fra eventuelle
 renter. Konto 2072 finnes til skattebeløpet; ikke bruk den ukritisk på hele
 kravet. Skatteetaten beskriver tilleggsforskudd innen 31. mai året etter som
-mulighet for å unngå renter på restskatt. Årsavslutningen skal senere avstemme
+mulighet for å unngå renter på restskatt. [Årsavslutningen](year-end.md) avstemmer
 personlige skattebetalinger som egenkapitalbevegelser, ikke driftskostnader.
 
 ## Andre foretaksformer og ansatte

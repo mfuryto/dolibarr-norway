@@ -21,7 +21,9 @@ try{
    httpAssert(strpos($overview,'<form')===false,'Overview still contains a form');
    httpAssert(strpos($overview,'name="workstate"')===false && preg_match('/href="[^"]*[?&]step=/',$overview)!==1,'Overview still uses step navigation');
    httpAssert(preg_match('/data-setup-task="Saft"(?:(?!<\/tr>).)*data-setup-status="Review"/s',$body)===1,'SAF-T must link to qualified native export and explicit mapping');
-   foreach(array('Ehf','Tax') as $task){httpAssert(preg_match('/data-setup-task="'.$task.'"(?:(?!<\/tr>).)*data-setup-status="Unavailable"/s',$body)===1,'Unavailable feature presented as ready: '.$task);}
+   foreach(array('Ehf') as $task){httpAssert(preg_match('/data-setup-task="'.$task.'"(?:(?!<\/tr>).)*data-setup-status="Unavailable"/s',$body)===1,'Unavailable feature presented as ready: '.$task);}
+   foreach(array('YearEnd','Tax') as $task){httpAssert(preg_match('/data-setup-task="'.$task.'"(?:(?!<\/tr>).)*data-setup-status="Review"/s',$body)===1,'Qualified ENK guide missing: '.$task);}
+   foreach(array('year-end.md','enk-tax-return.md','tax-accounts.md') as $guide){httpAssert(strpos($body,$guide)!==false,'Annual workflow guide missing');}
    httpAssert(preg_match('/data-setup-task="Foreign".*?data-setup-status="Partial"/s',$body)===1,'Manual fallback presented as normal support');
    foreach(array('/admin/company.php','/accountancy/admin/defaultaccounts.php','/accountancy/admin/journals_list.php','/admin/dict.php?id=10','/compta/bank/list.php','/accountancy/admin/fiscalyear.php','/accountancy/admin/closure.php') as $core){httpAssert(strpos($body,$core)!==false,'Core setup link missing: '.$core);}
    foreach(array('defaults','standardaccounts','vataccounts','bankdefaults','journals','invoiceperiod','audit','salestaxbasis','taxmappings','registration','productaccounts') as $removed){httpAssert(strpos($body,'/norway/admin/'.$removed.'.php')===false,'Duplicate or retired wizard task remains: '.$removed);}

@@ -109,3 +109,16 @@ Kjernen S2 er undersøkt i `core/lib/functions.lib.php` (standardoppslag),
 `core/class/html.form.class.php` (`load_tva` og `type_vat`),
 `core/tpl/objectline_create.tpl.php` og produkt-/prisbildene.
 Native widgetvalg og kodelagring er prøvd i `tests/vat-rates.php`.
+
+## ENK: forskuddsskatt og årsoppgjør — kontrollert 2026-10-18
+
+- [Skatteetaten: forskuddsskatt ENK](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/forskuddsskatt/forskuddsskatt-for-enkeltpersonforetak/) — personlig skattekort, endringer, terminer og tilleggsforskudd.
+- [Skatteetaten: eiendeler](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/fradrag/eiendeler-utstyr-eiendom/bedriftens-eiendeler/kjope-eiendeler-til-bedriften/) og [satser](https://www.skatteetaten.no/satser/avskrivningssatser/) — skattemessige saldoer og skillet mot lineær avskrivning.
+- [Skatteetaten: personinntekt](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/fradrag/inntekt-formue-gjeld/personinntekt-i-enkeltpersonforetak/) og [innsending/kvittering](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/hjelp-til-skattemelding/innsending/) — tilleggsgrunnlag og faktisk levering.
+- [DNB Regnskap: ENK-uttak](https://hjelp.dnbregnskap.dnb.no/no/article/uttak-enkeltpersonsforetak-amp22n/) og [Tripletex: ENK-driftsmidler](https://hjelp.tripletex.no/hc/no/articles/20560625350801-Varige-driftsmidler-for-enkeltpersonforetak) — sammenligning av normal arbeidsflyt før implementasjon, ikke regelkilder.
+
+[Årsavslutning](year-end.md) og [portalvei](enk-tax-return.md) skiller prøvd
+regnskapsgrunnlag fra veiledet, personlig innlevering. 2025 er regneeksemplets
+inntektsår. Ingen faktisk privat innsending eller automatisk skatteberegning
+er kvalifisert. Skatteetatens publiserte 2026-modeller/tekster erstatter ikke
+kontroll av den endelige 2026-portalen ved levering i 2027.
