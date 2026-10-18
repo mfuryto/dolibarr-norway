@@ -1,0 +1,4 @@
+# Exact historical false positive: two public tax field identifiers, not credentials.
+# The line assigns annenDriftskostnad/6995 and annenDriftskostnad/6998.
+# See htdocs/custom/norway/data/tax/manifest.json for the official source.
+82ea7246a26ff0d4b3432876edcd63b539aa7f0b:htdocs/custom/norway/class/NorwayAnnualReport.php:generic-api-key:87

@@ -84,10 +84,10 @@ final class NorwayAnnualReport
                     if($n==='2068' && !empty($known[$n])){$private+=$delta;}elseif(!empty($known[$n]) && in_array($n,array('6900','6903','6907','6909'),true)){$phone+=$delta;}elseif($delta!==0){$onlyPhone=false;}
                 }
                 if(!$onlyPhone || $private===0 || $phone!==-$private){if($private!==0 && !$ownerClearing && !$privateBank){$report['issues'][]=array('key'=>'NorwayAnnualPhoneUnresolved','detail'=>(string)$v['piece']);}continue;}
-                $costKey='annenDriftskostnad/6995';$benefitKey='annenDriftskostnad/6998';
-                if(!isset($report['fields'][$costKey]) || !isset($fields[$benefitKey])){$report['issues'][]=array('key'=>'NorwayAnnualPhoneUnresolved','detail'=>(string)$v['piece']);continue;}
-                if(!isset($report['fields'][$benefitKey])){$report['fields'][$benefitKey]=$fields[$benefitKey]+array('opening'=>0,'value'=>0,'adjustment'=>0,'accounts'=>array('2068'),'balance'=>false);}
-                $report['fields'][$costKey]['adjustment']+=$private;$report['fields'][$benefitKey]['adjustment']+=$private;
+                $costField='annenDriftskostnad/6995';$benefitField='annenDriftskostnad/6998';
+                if(!isset($report['fields'][$costField]) || !isset($fields[$benefitField])){$report['issues'][]=array('key'=>'NorwayAnnualPhoneUnresolved','detail'=>(string)$v['piece']);continue;}
+                if(!isset($report['fields'][$benefitField])){$report['fields'][$benefitField]=$fields[$benefitField]+array('opening'=>0,'value'=>0,'adjustment'=>0,'accounts'=>array('2068'),'balance'=>false);}
+                $report['fields'][$costField]['adjustment']+=$private;$report['fields'][$benefitField]['adjustment']+=$private;
                 $report['phone_private']+=$private;$report['phone_projection'][]=array('piece'=>$v['piece'],'amount'=>$private);
             }
             if(isset($report['accounts']['7530']) && $report['accounts']['7530']['shipped_meaning'] && $report['accounts']['7530']['movement']!==0){$report['issues'][]=array('key'=>'NorwayDeductionPersonal','detail'=>'7530');}
