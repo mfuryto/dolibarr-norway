@@ -16,7 +16,7 @@ const {chromium}=require('playwright');
   await page.goto(base+'/fourn/facture/list.php');
   const supplierLinks=await page.locator('a[href*="/fourn/facture/card.php"]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')));
   const supplierLink=supplierLinks.find(h=>/[?&](?:id|facid)=[0-9]+/.test(h));if(!supplierLink)throw Error('Synthetic supplier invoice missing');
-  const paths=['/fourn/facture/list.php','/accountancy/bookkeeping/balance.php','/custom/norway/vat.php?year=2040&term=1','/accountancy/bookkeeping/card.php?action=create&doc_type=vat_settlement','/compta/tva/list.php',supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
+  const paths=['/custom/norway/balance.php?mainmenu=accountancy&leftmenu=accountancy_accountancy&asof=2000-01-31','/fourn/facture/list.php','/accountancy/bookkeeping/balance.php','/custom/norway/vat.php?year=2040&term=1','/accountancy/bookkeeping/card.php?action=create&doc_type=vat_settlement','/compta/tva/list.php',supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
   for(const width of [1440,1024,768,390])for(const lang of ['nb_NO','en_US']){
    await page.setViewportSize({width,height:900});
    for(const path of paths){
@@ -28,6 +28,7 @@ const {chromium}=require('playwright');
      if(await page.locator('#norway-paperless').count()!==1)throw Error('Native documentation panel missing or duplicated');
      if(width<1800&&await page.locator('.norway-paperless-workspace').evaluate(e=>getComputedStyle(e).display!=='block'))throw Error('Preview must not squeeze native registration');
     }
+    if(path.includes('/norway/balance.php')){if(await page.locator('#id-left a[href*="/norway/balance.php"]').count()!==1)throw Error('Balance menu missing');if(await page.locator('#norway-balance .norway-balance-summary [data-balance]').count()!==3)throw Error('Balance overview missing');}
     if(path.includes('type=2')){
      const row=page.locator('#norway-original-reference');
      if(!await row.isVisible())throw Error('External original reference hidden');

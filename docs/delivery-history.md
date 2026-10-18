@@ -675,3 +675,23 @@ installasjonsbackup etter at filene faktisk er fjernet. Norsk/engelsk og
 Bestillingen prioriterte denne flyten mens EHF avventer ekstern testtilgang.
 OCR, e-postmottak, mobilapp, bankfeed og innkommende EHF inngår ikke. Samlet
 produksjonsaksept og faktisk EHF-levering står fortsatt åpne.
+
+## 0.86.0 — Balanseoversikt under Regnskap
+
+Brukerbestilt samlet visning av eiendeler, egenkapital og gjeld per valgt dato.
+Den bruker kjernens `BookKeeping::fetchAllBalance()` uten listebegrensning og
+regner gjenværende resultat som én presentasjonsrad. Native saldooverføring
+avgrenser tidligere historie, og resultatdisponering dobles ikke. Kontolinjer
+lenker til native hovedbok med riktig konto og datoomfang. Norsk menynavn
+«Kontobalanse» er rettet i aktuell veiledning.
+
+Syntetisk fasit er eiendeler 14 200 = egenkapital 10 300 + gjeld 3 900.
+Datogrense, åpent foregående år, resultatdisponering, faktisk native
+årsavslutning, senere tap 100 og historisk gjenfinning prøves. Ubalansert
+hovedbok vises med faktisk differanse; ukjent kontoklassifisering gir ikke
+ufullstendige summer. HTTP prøver native meny, språk, ugyldig dato, uoverført
+kjøp og en vanlig bruker med kun leserett til hovedboken.
+
+Ingen postering, kontoplanendring, tabell eller skjemamigrering innføres av
+rapporten. EHF, skatterapporteringens årsomfang og samlet produksjonsaksept
+er uendret. [Arbeidsflyt, kilder og prøvebevis](balance-overview.md).

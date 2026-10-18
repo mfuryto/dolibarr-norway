@@ -1,6 +1,6 @@
 # Samlet leveranseplan for norsk lokalisering
 
-Oppdatert 2026-10-18. Gjeldende utviklingsversjon: **0.85.0**. Planen følger
+Oppdatert 2026-10-18. Gjeldende utviklingsversjon: **0.86.0**. Planen følger
 [gjennomgangen av 0.75.0](review-0.75.0.md), med funn R01–R17. Dette er én
 samlet mangelliste og prioritering. [Leveransehistorikken](delivery-history.md)
 beskriver fortiden; den utvider ikke bestillingen.
@@ -50,6 +50,11 @@ kopieres ukritisk. Referanser finnes i [dekningsanalysen](coverage-analysis.md#r
   tjenestekjøp fra utlandet med 25 prosent beregnet avgift: fradrag på vanlig
   linje, fritekst, ett native bilag, kreditnota, betaling/refusjon og avstemt
   faktisk fradrag. Se [omfang, eksempler og prøvebevis](purchase-vat.md).
+
+0.86.0 leverer brukerbestilt [Balanseoversikt](balance-overview.md) under Regnskap.
+Den gjenbruker kjernens kontosummer per dato, viser udisponert resultat uten
+dobbelt disponering og lenker til kontobevegelser. Dette er en skrivebeskyttet
+rapport; ingen ny kontroll-/godkjenningsflyt eller regnskapsmodell innføres.
 
 Hele modulen har **ikke** samlet regnskapsfaglig produksjonsaksept. Status i
 veilederen, README og denne planen skal vise de samme kjente begrensningene.

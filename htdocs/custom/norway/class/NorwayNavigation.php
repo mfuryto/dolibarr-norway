@@ -1,6 +1,6 @@
 <?php
 // SPDX-License-Identifier: GPL-3.0-or-later
-/** Settings and the VAT extract follow the native accounting hierarchy. */
+/** Settings and user-requested reports follow the native accounting hierarchy. */
 class NorwayNavigation
 {
     public static function menus()
@@ -13,6 +13,10 @@ class NorwayNavigation
                 'titre'=>'NorwayVatReportTitle','langs'=>'norway@norway','url'=>'/norway/vat.php?mainmenu=accountancy&leftmenu=accountancy_accountancy_report',
                 'position'=>185,'enabled'=>'isModEnabled("norway") && isModEnabled("accounting") && ($leftmenu=="accountancy_accountancy_report" || $leftmenu=="all")',
                 'perms'=>'!$user->socid && $user->hasRight("accounting","mouvements","lire") && $user->hasRight("accounting","comptarapport","lire")',
-                'target'=>'','user'=>0));
+                'target'=>'','user'=>0),
+            array('fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=accountancy','mainmenu'=>'accountancy','leftmenu'=>'norway_balance','type'=>'left',
+                'titre'=>'NorwayBalanceTitle','langs'=>'norway@norway','url'=>'/norway/balance.php?mainmenu=accountancy&leftmenu=accountancy_accountancy',
+                'position'=>175,'enabled'=>'isModEnabled("norway") && isModEnabled("accounting") && ($leftmenu=="" || $leftmenu=="accountancy_accountancy" || $leftmenu=="accountancy_accountancy_report" || $leftmenu=="accountancy_accountancy_closure" || $leftmenu=="all")',
+                'perms'=>'!$user->socid && $user->hasRight("accounting","mouvements","lire")','target'=>'','user'=>0));
     }
 }
