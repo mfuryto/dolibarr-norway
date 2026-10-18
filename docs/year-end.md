@@ -97,10 +97,20 @@ periodisert leie 3 000/forhåndsbetalt 9 000, lager 5 000, kontormaskin
 50 000/avskrivning 15 000/rest 35 000, privatuttak/skatt 20 000, åpne
 kundefordringer 2 500 og leverandørgjeld 1 250. Resultat 42 250,
 skattegrunnlag i eksemplet 43 000, disponert egenkapital 222 250. Native
-saldooverføring er balansert og bevarer reskontro. Neste års underskudd 100
-reduserer egenkapitalen én gang. Lukket år sperrer ny postering; historikken
+saldooverføring er balansert og bevarer reskontro. I 2026 oppløses forskuddsbetalt leie 9 000, neste saldoavskrivning er
+10 500 og et dokumentert rettingsbilag er 100. Underskudd 19 600 overføres
+én gang av kjernen, uten separat disponeringsbilag, til egenkapital 202 650. Lukket år sperrer ny postering; historikken
 bevares. `tests/year-end-http.php` prøver også faktisk native avslutningsdialog,
 konkurrerende kall og gjentatt innsending.
+
+Kjerneundersøkelse: `assetdepreciationoptions.class.php` har degressive valg,
+men `Asset::generateDepreciation()` i den låste versjonen fordeler et
+avskrivningsgrunnlag over varighet og periodiserer etter dato. Det er ingen
+kvalifisert norsk samlesaldo med årets tilganger/salg og beløpsgrense i denne
+flyten. Derfor brukes portalens saldoopplysninger og et ordinært årlig bilag,
+slik at den eksisterende regnskapsmotoren beholdes. Et automatisk norsk
+saldoregister er et faktisk funksjonsgap, ikke noe som erklæres levert av
+kontoplanen eller av denne prøven.
 
 Dette kvalifiserer den beskrevne ENK-arbeidsflyten. AS, regnskapspliktig ENK,
 årsregnskapsinnsending, kompliserte driftsmiddelsalg, særnæringer og automatisk

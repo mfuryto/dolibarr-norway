@@ -623,3 +623,9 @@ Endelig 2026-portalutfylling må kontrolleres ved levering i 2027.
 Støttet omfang og begrensninger står i `year-end.md` og `enk-tax-return.md`.
 Dette er ikke samlet norsk produksjonsaksept; EHF avventer fortsatt ekstern
 testtilgang og papirløs bilagsflyt tas sist.
+
+XML-testverktøyets lxml er oppdatert til 6.1.0 med offisielle PyPI-wheelhasher
+etter GHSA-vfmq-68hx-4jfw. Dette verktøyet installeres ikke i programbildet.
+De samme 13 EHF-dokumentene består formatreglene, og syv ugyldige grunnlag
+blokkeres fortsatt. Den eksisterende parseren har også eksplisitt forbud mot
+eksterne entiteter.
