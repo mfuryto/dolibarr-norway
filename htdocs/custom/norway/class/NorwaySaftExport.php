@@ -113,6 +113,10 @@ class NorwaySaftExport
             $delta=self::cents($r['debit'])-self::cents($r['credit']);$balance['closing']+=$delta;
             if(substr($r['doc_date'],0,10)<$s['start'] || $r['doc_type']==='closure'){$balance['opening']+=$delta;}unset($balance);
         }
+        foreach($this->parties as $key=>&$party){foreach($party['accounts'] as $number=>$balance){
+            if(!isset($s['accounts'][$number])){unset($party['accounts'][$number]);}
+        }}unset($party);
+        foreach($this->parties as $key=>$party){if(!$party['accounts']){unset($this->parties[$key]);}}
         ksort($this->parties,SORT_NATURAL);
     }
     private function info($rowId,$code,$standard,$rate,$base,$tax,$percent)

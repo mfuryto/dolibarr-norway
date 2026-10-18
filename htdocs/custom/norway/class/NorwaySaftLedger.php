@@ -85,6 +85,8 @@ class NorwaySaftLedger
             foreach($out['vouchers'] as $voucher){if($voucher['balance']!==0){throw new RuntimeException('NorwaySaftVoucher');}}
             if($out['total_debit']!==$out['total_credit'] || array_filter($complete,static fn($value)=>$value!==0)){throw new RuntimeException('NorwaySaftBalance');}
             foreach($out['accounts'] as $account){if(self::add($account['opening'],$account['movement'])!==$account['closing']){throw new RuntimeException('NorwaySaftBalance');}}
+            $active=array();foreach($out['lines'] as $r){$active[(string)$r['numero_compte']]=true;}
+            foreach($out['accounts'] as $number=>$a){if(!isset($active[$number]) && $a['opening']===0 && $a['closing']===0){unset($out['accounts'][$number]);}}
             ksort($out['accounts'],SORT_NATURAL);ksort($out['vouchers'],SORT_NUMERIC);
             if(!$snapshot && !$db->commit()){throw new RuntimeException('NorwaySaftDatabase');}return $out;
         }catch(Throwable $error){if(!$snapshot){$db->rollback();}throw $error;}

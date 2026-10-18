@@ -22,7 +22,7 @@ class NorwaySaftUi
                 if(!self::exportPage() || !self::allowed($user)){throw new RuntimeException('NorwaySaftAccess');}
                 $result=NorwaySaftExport::build($db,(int)$conf->entity,GETPOST('norway_saft_start','alphanohtml'),GETPOST('norway_saft_end','alphanohtml'),$user);
                 $org=preg_replace('/\D/','',(string)$GLOBALS['mysoc']->idprof1);
-                $filename='SAF-T_Financial_'.$org.'_'.gmdate('YmdHis').'_1_1.xml';
+                $filename='SAF-T Financial_'.$org.'_'.gmdate('YmdHis').'_A_1_1.xml';
                 header('Content-Type: application/xml; charset=UTF-8');header('Content-Disposition: attachment; filename="'.$filename.'"');
                 header('Cache-Control: no-store, private');header('Pragma: no-cache');header('X-Content-Type-Options: nosniff');
                 print $result['xml'];exit;

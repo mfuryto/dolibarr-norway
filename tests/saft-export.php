@@ -36,13 +36,15 @@ try{
  sxAssert($x->evaluate('string(//s:Account[s:AccountID="1920"]/s:ClosingDebitBalance)')==='989.85','Closing balance');
  sxAssert(serialize($before)===serialize(sxRows('SELECT * FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity.' ORDER BY rowid')),'Export changed source');
  sxSql('UPDATE '.$p."accounting_bookkeeping SET date_export='2026-03-01' WHERE entity=$entity");$again=NorwaySaftExport::build($db,$entity,'2026-01-01','2026-12-31',$user);sxAssert($again['xml']===$e['xml'],'Repeated export lost previously exported rows');
+ sxVoucher('2026-03-01',array('9998'=>100,'1920'=>-100));sxVoucher('2026-03-02',array('9998'=>-100,'1920'=>100));
+ $empty=NorwaySaftExport::build($db,$entity,'2026-06-01','2026-06-30',$user);sxAssert($empty['entries']===0 && strpos($empty['xml'],'<AccountID>9998</AccountID>')===false,'Unused zero-balance historical account forced mapping');
  $id=(int)sxRows('SELECT rowid FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity.' AND piece_num='.$piece.' ORDER BY rowid')[0]->rowid;
  sxSql('UPDATE '.$p.'accounting_bookkeeping SET debit=debit+0.001 WHERE rowid='.$id);
  sxFailure(fn()=>NorwaySaftExport::build($db,$entity,'2026-02-02','2026-02-28',$user),'NorwaySaftPrecision');
  sxSql('UPDATE '.$p.'accounting_bookkeeping SET debit=debit-0.001 WHERE rowid='.$id);
  $bank=sxRows('SELECT rowid FROM '.$p.'accounting_account WHERE entity='.$entity." AND account_number='1920'")[0];
  sxSql('UPDATE '.$p."accounting_account SET label='Synthetic renamed bank' WHERE rowid=".(int)$bank->rowid);
- sxFailure(fn()=>NorwaySaftExport::build($db,$entity,'2026-01-01','2026-12-31',$user),'NorwaySaftAccountMapping:1920');
+ sxFailure(fn()=>NorwaySaftExport::build($db,$entity,'2026-01-01','2026-02-28',$user),'NorwaySaftAccountMapping:1920');
  NorwaySaftMapping::save($db,$entity,2026,$bank->rowid,'balanseverdiForOmloepsmiddel/1920',$user);
  sxAssert(NorwaySaftExport::build($db,$entity,'2026-02-01','2026-02-28',$user)['entries']===1,'Explicit renamed-account mapping');
  sxFailure(fn()=>NorwaySaftExport::build($db,$entity,'2025-01-01','2025-12-31',$user),'NorwaySaftAccountMapping:1920');
