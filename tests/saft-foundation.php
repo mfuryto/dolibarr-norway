@@ -9,7 +9,7 @@ function sfAssert($value,$label){if(!$value){throw new RuntimeException($label);
 function sfSql($sql){global $db;$r=$db->query($sql);sfAssert((bool)$r,$db->lasterror());return $r;}
 function sfRows($sql){global $db;$out=array();$r=sfSql($sql);while($o=$db->fetch_object($r)){$out[]=$o;}return $out;}
 function sfFailure($callback,$expected){$message='';try{$callback();}catch(RuntimeException $error){$message=$error->getMessage();}sfAssert($message===$expected,'Expected '.$expected.', got '.$message);}
-sfAssert($user->fetch('','testadmin')>0,'Admin');$user->loadRights('',1);$p=$db->prefix();$entity=(int)$conf->entity;$pieces=array();$run=bin2hex(random_bytes(4));
+sfAssert($user->fetch('','testadmin')>0,'Admin');$user->loadRights('',1);$p=$db->prefix();$oldEntity=$conf->entity;$conf->entity=987645;$conf->global->ACCOUNTANCY_FISCAL_PERIOD_MODE='blockedonclosed';$conf->cache=array();$entity=(int)$conf->entity;$pieces=array();$run=bin2hex(random_bytes(4));
 $start='2049-01-10';$end='2049-01-31';sfAssert(!sfRows('SELECT rowid FROM '.$p."accounting_bookkeeping WHERE entity=$entity AND doc_date BETWEEN '2049-01-01' AND '2049-12-31'"),'Fresh synthetic year');
 function sfVoucher($date,$amounts){
  global $db,$user,$p,$entity,$pieces,$run;
@@ -60,5 +60,6 @@ try {
  sfFailure(fn()=>NorwaySaftLedger::read($db,$entity,$start,$end,$external),'NorwaySaftAccess');
  echo "PASS pinned SAF-T 1.40 references, explicit mandatory grouping, native full-period read, source preservation, re-export inclusion, balances, boundary completeness, entity and access\n";
 }finally{
+ $conf->entity=$oldEntity;
  if($pieces){sfSql('DELETE FROM '.$p.'accounting_bookkeeping WHERE entity='.$entity.' AND piece_num IN ('.implode(',',$pieces).')');}
 }

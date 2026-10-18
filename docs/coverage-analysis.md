@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.82.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.83.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -13,7 +13,7 @@ Tidligere forslag om egne kontrollkopier og historikkmodeller videreføres ikke.
 | --- | --- | --- |
 | Ordinær regnskapsflyt | Kjernen har faktura, kreditnota, kjøpsjournal, hovedbok, reskontro, bank og perioder. Salgs-/kjøpsflyt, kreditnotaer og vern mot dobbeltføring inngår i 0.65-testene. | Behold kjernens arbeidsflyt. Dette kvalifiserer ikke alle avgiftsscenarioer eller årsavslutningen. |
 | Norsk MVA-melding | Kjernen har faktura-/betalingsbaserte MVA-uttrekk, men ingen norsk melding eller innsendingsadapter ble identifisert i undersøkte kataloger. | Prøv uttrekk mot bokføringen før en avgrenset norsk rapporteringsutvidelse velges. En oversikt over MVA-satser eller saldo på MVA-kontoer er ikke komplett meldingsgrunnlag. |
-| Norsk SAF-T | Kjernen har hovedbokseksport. Ingen norsk SAF-T-generator ble funnet i regnskaps-, MVA- eller modulkatalogene. | Norsk eksport er fortsatt et gap. Gjenbruk hovedbok og kildekoblinger; velg eksportutvidelse før egen generator. Ingen ny regnskapsmotor. |
+| Norsk SAF-T | Kjernen har hovedbokseksport. Ingen norsk SAF-T-generator ble funnet i regnskaps-, MVA- eller modulkatalogene. | 0.83.0 leverer SAF-T 1.40 for dokumentert NOK-/2025–2026-omfang via native eksportside; avgrensning og prøvebevis står i docs/saft-export.md. Ingen ny regnskapsmotor. |
 | EHF/Peppol | Det finnes eksterne Peppol-moduler med dokumentgenerering og sending. | Prøv eksisterende løsning før egen integrasjon. Norsk profil, aktuelle PHP-/Dolibarr-versjoner, tilgangspunkt, lisens og kostnader må kvalifiseres. |
 | Næringsspesifikasjon og skattemelding | Kjernen gir regnskapsdata, men ingen norsk årsoppgjørs-/skattemeldingsleveranse ble identifisert i gjennomgangen. Skatteetaten publiserer modeller og integrasjonsdokumentasjon. | Egen leveranse: årsversjon og foretaksform, kontokoblinger, skattemessige forskjeller, avstemming og konkret leveringsvei. Ikke anta at SAF-T eller en kontoplan utfører skatteberegningen. |
 
@@ -436,3 +436,14 @@ uttrekk bevarer komplette native bilag og eksporterte rader uten skriving.
 Konto-/avgiftskoblinger, reskontro, saldoovergang og full brukerrettet XML-eksport
 gjenstår. Ingen SAF-T-produksjonsaksept eller eksportknapp.
 Se [arbeid og aksept](saft-export.md).
+
+## Oppfølging i 0.83.0 — SAF-T for dokumentert omfang
+
+Generatoren bruker native hovedbok, fakturakilder og bankbetalinger fra én
+lesevisning. Norsk 1.40-XSD, kontogrupper for 2025–2026, eksplisitte valg for
+egne/tvetydige kontoer, MVA på grunnlagslinjer og motpartssaldoer er prøvd.
+Native faktura-/kjøps-/bankflyt og kreditnota avstemmes mot uavhengige beløp,
+og norsk/engelsk nedlasting fra kjernens eksportside er prøvd. Åpningssaldo
+bruker native saldooverføring uten dobbelttelling. Se [omfang og bevis](saft-export.md);
+2027, vareimport, lønn, andre valutaer og tvetydige eldre manuelle MVA-bilag
+er ikke inkludert i aksepten. EHF og samlet årsoppgjør/skatt står fortsatt åpne.

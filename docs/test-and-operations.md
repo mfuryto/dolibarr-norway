@@ -1,6 +1,6 @@
 # Testmiljø, installasjon og drift
 
-Oppdatert 2026-10-18 for modul 0.82.0. Kjernen er fortsatt **Dolibarr 24.0.1**,
+Oppdatert 2026-10-18 for modul 0.83.0. Kjernen er fortsatt **Dolibarr 24.0.1**,
 med låst image-digest og MariaDB 10.11. En moduloppdatering oppgraderer ikke
 kjernen til 24.0.2. Kjerneoppgraderinger krever egen kompatibilitetsprøve.
 
@@ -22,13 +22,13 @@ Kildejobben kjører Python-prøver, grenpolicy, hemmelighetsskanning av hentet
 historikk og pakkebygging. Integrasjonsjobben kjører fersk Dolibarr,
 PHP-syntaks, modul-/migreringsprøver, norsk oppsett og native dokument-,
 bokførings-, betalings- og rapportprøver. Den kjører også installasjonsprøven.
-Fra 0.82.0 prøves også låste SAF-T 1.40-referanser og første native
-periodeuttrekk. Dette er ikke en prøve av ferdig SAF-T-eksport;
-[konto-/avgiftskoblinger, reskontro og XML-generering gjenstår](saft-export.md).
+Fra 0.83.0 prøves SAF-T 1.40 mot låst offisielt XSD, native saldooverføring,
+komplett faktura-/kjøps-/betalingsflyt, MVA og motpartssaldoer. Se
+[SAF-T-omfang og prøvebevis](saft-export.md).
 Se skriptene og [leveranseplanens akseptmatrise](delivery-plan.md) for faktisk
 omfang. Grønn CI er ikke i seg selv norsk regnskapsmessig produksjonsaksept.
 
-Modulpakken heter `dist/module_norway-0.82.0.zip`. Pakkebyggingen krever at
+Modulpakken heter `dist/module_norway-0.83.0.zip`. Pakkebyggingen krever at
 README-versjonene stemmer med modulversjonen, og tar med modul og lisens.
 Testdata og driftshemmeligheter pakkes ikke inn.
 

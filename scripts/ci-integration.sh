@@ -39,6 +39,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/invoice-check.php
 "${compose[@]}" exec -T web php /opt/norway-tests/pdf-identity.php
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-currency.php
+"${compose[@]}" exec -T web php /opt/norway-tests/saft-cycle.php
 "${compose[@]}" exec -T web php /opt/norway-tests/integration.php
 "${compose[@]}" exec -T web php /opt/norway-tests/schema-migration.php
 "${compose[@]}" exec -T web php /opt/norway-tests/company-setup.php
@@ -49,6 +50,7 @@ fi
 "${compose[@]}" exec -T web php /opt/norway-tests/document-flow.php
 "${compose[@]}" exec -T web php /opt/norway-tests/ehf-document.php
 "${compose[@]}" exec -T web php /opt/norway-tests/saft-foundation.php
+"${compose[@]}" exec -T web php /opt/norway-tests/saft-export.php
 "${compose[@]}" cp web:/tmp/norway-ehf-probe-results/norway "$ci_root/ehf-documents"
 python3 -m venv "$ci_root/ehf-validator"
 "$ci_root/ehf-validator/bin/pip" install --disable-pip-version-check --only-binary=:all: --require-hashes -r tests/ehf/requirements.txt

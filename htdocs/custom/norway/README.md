@@ -1,6 +1,6 @@
-# Norway 0.82.0
+# Norway 0.83.0
 
-**Versjon 0.82.0 · Under utvikling**
+**Versjon 0.83.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -24,7 +24,7 @@ historisk rapportering etter oppsettsendring og forslag til oppgjørsbilag.
 Bankavstemming, oppgjørsbilag, kvittering, betaling og perioder bruker kjernen.
 Ved manuell modulinstallasjon aktiveres også kjernens avgifts-/MVA-betalingsmodul
 for oppgjør og vedlegg. Standard Compose-oppsett gjør dette automatisk.
-Vareimport, særordninger, direkte innsending, EHF/Peppol, norsk SAF-T og
+Vareimport, særordninger, direkte innsending, EHF/Peppol og
 årsoppgjør/skatt gjenstår. Ingen versjon har samlet
 regnskapsfaglig produksjonsaksept.
 
@@ -39,6 +39,7 @@ Fra 0.81.0 prøves en tilpasset åpen EHF-generator med native fakturaer og
 offisielle formatregler. Sending kan bare aktiveres i separat testnettverk.
 Faktisk nettverkslevering er ikke kvalifisert, og produksjonssending er sperret.
 
-Fra 0.82.0 er SAF-T 1.40-formatgrunnlag og et internt, skrivebeskyttet
-periodeuttrekk under arbeid. Full eksport med kontokoblinger, MVA og reskontro
-er ikke levert; ingen SAF-T-eksportknapp er aktivert.
+Fra **0.83.0** finnes SAF-T 1.40 på kjernens regnskapseksportside, med
+kontokoblinger, MVA, reskontro, avstemte saldoer og komplett periodevalg.
+Første omfang er NOK og kalenderårene **2025–2026**; øvrige år og ukjent
+behandling avvises. [Arbeidsflyt, prøvebevis og avgrensning](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/saft-export.md).

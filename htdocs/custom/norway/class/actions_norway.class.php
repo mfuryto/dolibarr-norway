@@ -90,8 +90,10 @@ class ActionsNorway
 
     public function formObjectOptions($parameters,&$object,&$action,$hookmanager)
     {
-        global $user,$langs;
+        global $user,$langs,$db;
         $this->resprints='';
+        require_once __DIR__.'/NorwaySaftUi.php';
+        if(NorwaySaftUi::setupPage()){$this->resprints=NorwaySaftUi::setupFields($db,$user,$langs);return 0;}
         if(!$this->invoicePage() || !empty($user->socid) || !$user->hasRight('facture','creer') || $action!=='create'){return 0;}
         require_once __DIR__.'/NorwayCreditReference.php';
         $this->resprints='<tr id="norway-original-reference"><td colspan="4">'.NorwayCreditReference::field(GETPOST('norway_original_invoice_ref','alphanohtml'),$langs).'</td></tr>'
@@ -166,9 +168,17 @@ class ActionsNorway
         print NorwayEhfInvoice::render($db,$object,$user,$langs);return 0;
     }
 
+    public function addMoreActionsButtonsList($parameters,&$object,&$action,$hookmanager)
+    {
+        global $user,$langs;require_once __DIR__.'/NorwaySaftUi.php';$this->resprints='';
+        if(NorwaySaftUi::exportPage()){$this->resprints=NorwaySaftUi::exportFields($user,$langs);}return 0;
+    }
+
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        require_once __DIR__.'/NorwaySaftUi.php';
+        if(NorwaySaftUi::action($db,$action,$user,$langs)){$action='';return 1;}
         if ($this->invoicePage() && in_array($action,array('norway_ehf_send','norway_ehf_status'),true)) {
             require_once __DIR__.'/NorwayEhfInvoice.php';
             NorwayEhfInvoice::action($db,$object,$action,$langs);$action='';return 1;

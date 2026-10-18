@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.82.0 · Under utvikling**
+**Versjon 0.83.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -92,7 +92,7 @@ Se den [oppdaterte arbeidsplanen](docs/delivery-plan.md).
 ## Regnskapsmessig omfang
 
 Modulen gir norsk oppsett og kontroller, men full norsk MVA-rapportering,
-SAF-T-eksport og EHF/Peppol er ikke ferdigstilt. Den er foreløpig ikke en
+EHF/Peppol og årsoppgjør/skatt er ikke ferdigstilt. SAF-T har avgrenset støtte. Den er foreløpig ikke en
 komplett løsning for norsk produksjonsregnskap. Kontoplan og kontokoblinger
 alene bekrefter ikke riktig avgiftsbehandling eller fradragsrett.
 
@@ -138,7 +138,7 @@ satsregister, kontokobling og registreringsstatus. Rapporten viser et forslag
 til oppgjørsbilag; bilag, MVA-betaling, kvitteringsvedlegg, bankavstemming og
 periodelåsing bruker kjernen. Se [MVA og periodeavslutning](docs/vat-period-close.md).
 Portalinnlogging og levering gjøres av brukeren; ingen innsending skjer fra modulen.
-Vareimport, særordninger, EHF, SAF-T og årsoppgjør/skatt gjenstår.
+Vareimport, særordninger, EHF og årsoppgjør/skatt gjenstår.
 Se [samlet leveranseplan](docs/delivery-plan.md) for støttet omfang og neste etappe.
 
 Fra **0.81.0** finnes en tilpasset åpen EHF-generator og sending begrenset til
@@ -146,7 +146,7 @@ separat testnettverk. Native beløp/referanser og offisielle formatregler prøve
 CI. **Faktisk testnettverkslevering gjenstår; produksjonssending er sperret.**
 Se [EHF-kvalifisering og privat testoppsett](docs/ehf-qualification.md).
 
-Fra 0.82.0 er SAF-T 1.40-formatgrunnlag og et internt, skrivebeskyttet
-periodeuttrekk under arbeid. Full eksport med kontokoblinger, MVA og reskontro
-er ikke levert; ingen SAF-T-eksportknapp er aktivert.
-Se [SAF-T-arbeidet og ferdigkriteriene](docs/saft-export.md).
+Fra **0.83.0** finnes SAF-T 1.40 på kjernens regnskapseksportside, med
+kontokoblinger, MVA, reskontro, avstemte saldoer og komplett periodevalg.
+Første omfang er NOK og kalenderårene **2025–2026**; øvrige år og ukjent
+behandling avvises. [Arbeidsflyt, prøvebevis og avgrensning](docs/saft-export.md).

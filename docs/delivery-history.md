@@ -586,3 +586,18 @@ fortsetter SAF-T: offisielle 1.40-referanser, obligatorisk gruppering og et
 skrivebeskyttet periodeuttrekk er prøvd. Full eksport er ikke levert. Ingen
 meny, ekstra kontrollside, regnskapsmodell eller skjemamigrering er innført.
 [Underetapper og gjenstående arbeid](saft-export.md).
+
+## 0.83.0 — SAF-T 1.40 med native eksport
+
+Komplette perioder for NOK og 2025–2026 kan lastes ned fra kjernens
+regnskapseksport. Kontoplanoppsettet har eksplisitt gruppevalg og 357
+standardkoblinger for vanlige, uendrede kontobetydninger. Én lesevisning
+avstemmer hovedbok, kildefakturaer/kreditnotaer, MVA, bank og reskontro.
+Native saldooverføring erstatter tidligere års summer uten dobbelttelling.
+Ingen eksportmarkeringer, regnskapsdata eller eksisterende dokumenter endres.
+
+Kvalifisert med offisielt XSD, native dokument-/betalingsflyt, uavhengig
+bank-/saldo-/avgiftsfasit, gjentatt eksport, ugyldige/ufullstendige kilder,
+tilgang og norsk/engelsk HTTP-nedlasting. Avgrensningene i
+[SAF-T-veiledningen](saft-export.md) gjelder; EHF-testnettverk, forskuddsskatt,
+årsavslutning og skattemelding er separate gjenstående leveranser.

@@ -37,7 +37,7 @@ $rows=array(
     'Foreign'=>array('Partial',array($guide.'#8-offentlige-kunder-og-utenlandshandel'=>'NorwayWizardGuide','/fourn/facture/list.php'=>'NorwaySetupLinkPurchases')),
     'VatReport'=>array('Partial',array('/custom/norway/vat.php'=>'NorwayVatReportTitle')),
     'Ehf'=>array('Unavailable',array($guide.'#8-offentlige-kunder-og-utenlandshandel'=>'NorwayWizardGuide')),
-    'Saft'=>array('Unavailable',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
+    'Saft'=>array('Review',array('/accountancy/bookkeeping/export.php'=>'NorwaySetupTaskSaft','/accountancy/admin/account.php'=>'NorwaySetupLinkChart')),
     'YearEnd'=>array('Partial',array('/accountancy/admin/closure.php'=>'NorwaySetupLinkYearEnd',$guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
     'Tax'=>array('Unavailable',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),
     'Retention'=>array('Review',array($guide.'#10-rapportering-oppbevaring-og-sikker-drift'=>'NorwayWizardGuide')),

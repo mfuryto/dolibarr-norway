@@ -51,7 +51,9 @@ class NorwaySaftReference
         $old=libxml_use_internal_errors(true);
         try{
             $doc=new DOMDocument();
-            if(!$doc->loadXML($xml,LIBXML_NONET) || !$doc->schemaValidate(self::file('schema-1.40.xsd'),LIBXML_NONET)){throw new RuntimeException('NorwaySaftXml');}
+            if(!$doc->loadXML($xml,LIBXML_NONET) || !$doc->schemaValidate(self::file('schema-1.40.xsd'),LIBXML_NONET)){
+                if(PHP_SAPI==='cli' && getenv('NORWAY_SYNTHETIC_TEST')==='1' && getenv('DOLI_DB_NAME')==='norway_test' && getenv('DOLI_COMPANY_NAME')==='SYNTHETIC NORWAY TEST ONLY'){foreach(libxml_get_errors() as $e){file_put_contents('php://stderr','Synthetic SAF-T XSD: '.trim($e->message).PHP_EOL);}}
+                throw new RuntimeException('NorwaySaftXml');}
             $xp=new DOMXPath($doc);$xp->registerNamespace('s','urn:StandardAuditFile-Taxation-Financial:NO');
             if($xp->evaluate('string(/s:AuditFile/s:Header/s:AuditFileVersion)')!==self::FORMAT){throw new RuntimeException('NorwaySaftXml');}
             return $doc;
