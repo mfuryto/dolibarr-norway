@@ -1463,3 +1463,20 @@ NorwayAnnualDetails=Show equity, payments and other totals
 NorwayAnnualAccountGroup=The account group disagrees with its report destination. Resolve chart and closing groups before using the result:
 
 NorwayAnnualResultReceiver=The undisposed result lacks a unique equity destination. Resolve the result account in native closing setup:
+
+NorwayPaperlessTitle=Voucher documentation
+NorwayPaperlessHelp=The original belongs to this voucher. Open the preview while entering lines. Uploading alone does not post the purchase. Payments and bank reconciliation use the normal core workflow.
+NorwayPaperlessMissing=Documentation missing. Upload the invoice, receipt or other relevant evidence (PDF, PNG or JPEG).
+NorwayPaperlessPosted=Transferred to the general ledger
+NorwayPaperlessUnposted=Not transferred to the general ledger
+NorwayPaperlessUpload=Upload original document (maximum 20 MB)
+NorwayPaperlessRetained=The documentation and its association are retained. Add a new file for supplements or corrections; retain the original and use a credit note or documented correcting voucher for accounting errors.
+NorwayPaperlessDuplicate=The file already exists, has the same content as an existing attachment, or the supplier reference already exists. Review the existing voucher before entering it again.
+NorwayPaperlessUnavailable=Voucher documentation could not be retrieved. Check access and try again.
+NorwayPaperlessBusy=This voucher is already being processed. Wait for the upload and review the attachments before retrying.
+NorwayPaperlessFile=The file could not be saved. Use a readable PDF, PNG or JPEG of at most 20 MB with a plain filename. Also check the server upload limit.
+NorwayPaperlessSaved=The original document was saved. Review readability and complete the normal registration.
+NorwayPaperlessArchive=Download voucher documentation (ZIP)
+NorwayPaperlessArchivePeriod=Select valid start and end dates within one year using the date fields beside SAF-T.
+NorwayPaperlessArchiveSize=The document bundle exceeds 200 MB. Select a shorter period; no incomplete archive was delivered.
+NorwayPaperlessOpen=Open original in a separate window

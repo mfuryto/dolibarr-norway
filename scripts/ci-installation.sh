@@ -75,7 +75,7 @@ export NORWAY_BACKUP_DIR="$install_root/backups"
 "${compose[@]}" cp tests/legacy-evidence.json web:/tmp/norway-legacy-evidence.json
 "${compose[@]}" exec -T -e NORWAY_EXPECT_EMPTY=1 -e NORWAY_CREATE_SENTINEL=1 web php < tests/storage-sentinel.php
 # Reproduce an old image's reused custom volume without the new entrypoint.
-"${compose[@]}" exec -T web sh -c 'sed -i s/0.84.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
+"${compose[@]}" exec -T web sh -c 'sed -i s/0.85.0/0.1.0/g /var/www/html/custom/norway/core/modules/modNorway.class.php; mkdir -p /var/www/html/custom/synthetic-other-module; echo SYNTHETIC > /var/www/html/custom/synthetic-other-module/retained'
 # Seed each removed executable into the reused module volume before replacement.
 "${compose[@]}" exec -T web sh -c 'while IFS= read -r retired; do mkdir -p "/var/www/html/custom/norway/$(dirname "$retired")"; echo "<?php exit; // SYNTHETIC RETIRED CODE" > "/var/www/html/custom/norway/$retired"; done < /opt/norway-module/data/retired-files.txt'
 "${compose[@]}" exec -T web sh -c 'grep -q 0.1.0 /var/www/html/custom/norway/core/modules/modNorway.class.php'
@@ -139,7 +139,7 @@ web_id=$("${compose[@]}" ps -q web)
 "${compose[@]}" stop web
 "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb -uroot accounting -e "DROP TABLE llx_const"'
 gzip -dc "$backup_dir/database.sql.gz" | "${compose[@]}" exec -T db sh -c 'export MYSQL_PWD="$MARIADB_ROOT_PASSWORD"; exec mariadb -uroot accounting'
-"${compose[@]}" run --rm --no-deps --entrypoint sh web -c 'rm -f /var/www/documents/norway-backup-marker'
+"${compose[@]}" run --rm --no-deps --entrypoint sh web -c 'rm -f /var/www/documents/norway-backup-marker /var/www/documents/norway-paperless-sentinel/original.pdf /var/www/documents/norway-paperless-sentinel/receipt.png'
 gzip -dc "$backup_dir/documents.tar.gz" | "${compose[@]}" run --rm -T --no-deps --entrypoint tar web -xf - -C /var/www/documents
 gzip -dc "$backup_dir/custom.tar.gz" | docker cp - "$web_id:/var/www/html/custom"
 gzip -dc "$backup_dir/conf.tar.gz" | "${compose[@]}" run --rm -T --no-deps --entrypoint tar web -xf - -C /var/www/html/conf

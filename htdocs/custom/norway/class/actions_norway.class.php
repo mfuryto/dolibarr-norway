@@ -5,6 +5,7 @@ class ActionsNorway
     public $results = array();
     public $resprints = '';
     public $error = '';
+    public $errors = array();
 
     public function __construct($db) {}
 
@@ -67,6 +68,49 @@ class ActionsNorway
                 0,$parameters['type'] ?? '',$parameters['options_only'] ?? false,(int)($parameters['mode'] ?? 0),$type);
         } finally {$this->renderingVat=false;}
         $this->resprints=$html;return 1;
+    }
+
+    private function supplierList()
+    {
+        return ($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/fourn/facture/list.php' && empty($GLOBALS['user']->socid);
+    }
+    public function printFieldListTitle($parameters,&$object,&$action,$hookmanager)
+    {
+        global $langs;$this->resprints='';if(!$this->supplierList()){return 0;}
+        $langs->load('norway@norway');$this->resprints='<th>'.dol_escape_htmltag($langs->trans('NorwayPaperlessTitle')).'</th>';$parameters['totalarray']['nbfield']++;return 0;
+    }
+    public function printFieldListOption($parameters,&$object,&$action,$hookmanager)
+    {
+        $this->resprints=$this->supplierList()?'<td></td>':'';return 0;
+    }
+    public function printFieldListValue($parameters,&$object,&$action,$hookmanager)
+    {
+        global $db,$conf,$user,$langs;$this->resprints='';if(!$this->supplierList()){return 0;}
+        require_once __DIR__.'/NorwayPaperless.php';$langs->load('norway@norway');
+        try{$owner=NorwayPaperless::owner($db,(int)$conf->entity,'supplier',(int)$parameters['obj']->facid);
+            $files=NorwayPaperless::files($owner);$key=!$files?'NorwayPaperlessMissing':($owner['entries']?'NorwayPaperlessPosted':'NorwayPaperlessUnposted');
+            $text=$langs->trans($key);$url=DOL_URL_ROOT.$owner['back'].'#norway-paperless';
+        }catch(Throwable $error){$text=$langs->trans('NorwayPaperlessUnavailable');$url='';}
+        $this->resprints='<td class="norway-paperless-status">'.($url?'<a href="'.dol_escape_htmltag($url).'">':'').dol_escape_htmltag($text).($url?'</a>':'').'</td>';return 0;
+    }
+    public function moveUploadedFile($parameters,&$object,&$action,$hookmanager)
+    {
+        return file_exists($parameters['dest_file'])?$this->paperlessFileGuard($parameters['dest_file']):0;
+    }
+    public function deleteFile($parameters,&$object,&$action,$hookmanager)
+    {
+        return $this->paperlessFileGuard($parameters['file']);
+    }
+    public function renameUploadedFile($parameters,&$object,&$action,$hookmanager)
+    {
+        return $this->paperlessFileGuard($parameters['upload_dir'].'/'.$parameters['filenamefrom']);
+    }
+    private function paperlessFileGuard($path)
+    {
+        global $db,$conf,$langs;
+        require_once __DIR__.'/NorwayPaperless.php';
+        try{$protected=NorwayPaperless::protectedFile($db,(int)$conf->entity,$path);}catch(Throwable $error){$protected=true;}
+        if(!$protected){return 0;}$langs->load('norway@norway');$this->error=$langs->trans('NorwayPaperlessRetained');$this->errors=array($this->error);setEventMessages($this->error,null,'errors');return -1;
     }
 
     private function purchaseJournal()
@@ -133,6 +177,16 @@ class ActionsNorway
     {
         global $db,$conf,$user,$langs;
         $this->resprints='';
+        require_once __DIR__.'/NorwayPaperless.php';
+        $script=$_SERVER['SCRIPT_FILENAME']??'';
+        $kind=$script===DOL_DOCUMENT_ROOT.'/fourn/facture/card.php'?'supplier':($this->bookkeepingPage()?'voucher':'');
+        $paperId=$kind==='supplier'?(int)($GLOBALS['object']->id??0):GETPOSTINT('piece_num');
+        if($kind && $paperId && empty($action)){
+            try{$this->resprints=NorwayPaperless::panel($db,(int)$conf->entity,$kind,$paperId,$user,$langs);}
+            catch(Throwable $error){if($error->getMessage()!=='NorwayPaperlessSource'){$langs->load('norway@norway');$this->resprints='<p class="warning">'.dol_escape_htmltag($langs->trans('NorwayPaperlessUnavailable')).'</p>';}}
+            // Continue to the existing manual VAT form; both belong on the native voucher.
+            if($kind==='supplier'){return 0;}
+        }
         require_once __DIR__.'/NorwayAnnualUi.php';
         if(NorwayAnnualUi::page()){
             $this->resprints='<script>jQuery(function(){document.querySelectorAll("#searchFormList > table.liste").forEach(function(t){if(t.closest(".div-table-responsive")){return;}var w=document.createElement("div");w.className="div-table-responsive";t.parentNode.insertBefore(w,t);w.appendChild(t);});});</script>';return 0;
@@ -151,7 +205,7 @@ class ActionsNorway
         if(!$this->bookkeepingPage() || !GETPOSTINT('piece_num')){return 0;}
         require_once __DIR__.'/NorwayManualVat.php';
         if(!NorwayManualVat::allowed($user)){return 0;}
-        try{$this->resprints=NorwayManualVat::render($db,(int)$conf->entity,GETPOSTINT('piece_num'),$user,$langs);}
+        try{$this->resprints.=NorwayManualVat::render($db,(int)$conf->entity,GETPOSTINT('piece_num'),$user,$langs);}
         catch(Throwable $error){$langs->load('norway@norway');$this->resprints='<div class="error">'.dol_escape_htmltag($langs->trans('NorwayManualVatDatabase')).'</div>';}
         return 0;
     }
@@ -177,7 +231,7 @@ class ActionsNorway
     public function addMoreActionsButtonsList($parameters,&$object,&$action,$hookmanager)
     {
         global $user,$langs;require_once __DIR__.'/NorwaySaftUi.php';$this->resprints='';
-        if(NorwaySaftUi::exportPage()){$this->resprints=NorwaySaftUi::exportFields($user,$langs);}return 0;
+        if(NorwaySaftUi::exportPage()){require_once __DIR__.'/NorwayPaperlessArchive.php';$this->resprints=NorwaySaftUi::exportFields($user,$langs).NorwayPaperlessArchive::fields($user,$langs);}return 0;
     }
 
     public function printFieldPreListTitle($parameters,&$object,&$action,$hookmanager)
@@ -191,6 +245,8 @@ class ActionsNorway
         global $db, $langs, $conf, $user;
         require_once __DIR__.'/NorwayAnnualUi.php';
         if(NorwayAnnualUi::action($db,$action,$user,$langs)){$action='';return 1;}
+        require_once __DIR__.'/NorwayPaperlessArchive.php';
+        if(NorwayPaperlessArchive::action($db,$action,$user,$langs)){$action='';return 1;}
         if(($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/closure/index.php'
             && $action==='confirm_step_2' && GETPOST('confirm','alpha')==='yes'){
             require_once __DIR__.'/NorwayYearEnd.php';$langs->load('norway@norway');

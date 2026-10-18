@@ -1,6 +1,6 @@
 # Samlet leveranseplan for norsk lokalisering
 
-Oppdatert 2026-10-18. Gjeldende utviklingsversjon: **0.84.0**. Planen følger
+Oppdatert 2026-10-18. Gjeldende utviklingsversjon: **0.85.0**. Planen følger
 [gjennomgangen av 0.75.0](review-0.75.0.md), med funn R01–R17. Dette er én
 samlet mangelliste og prioritering. [Leveransehistorikken](delivery-history.md)
 beskriver fortiden; den utvider ikke bestillingen.
@@ -13,7 +13,7 @@ kvalifisert rapportering. Kjernens dokumenter, kjøpsjournal, bank, reskontro,
 hovedbok og perioder skal brukes. Foretaksform og faktisk bruksområde avgjør
 hvilke norske regler som gjelder; støtte loves først for kvalifisert omfang.
 Valgfrie prefikser/startnummer og sperring av sjekker beholdes som bestilt.
-Papirløs bilagsflyt tas sist. Eventuell ekstern lisensadapter er valgfri og
+Papirløs bilagsflyt ble prioritert etter ENK-årsleveransen mens EHF avventer, etter brukerens uttrykkelige bestilling 2026-10-18. Eventuell ekstern lisensadapter er valgfri og
 skal ikke være en avhengighet fra regnskapskjernen.
 
 Få kodelinjer er ikke en forenkling hvis brukeren får flere manuelle steg.
@@ -68,7 +68,7 @@ veilederen, README og denne planen skal vise de samme kjente begrensningene.
 | 8. Årsavslutning | **Levert i 0.84.0 for beskrevet ENK-omfang.** [Arbeidsflyt og prøvebevis](year-end.md). Kjernens avslutning, periodisering, avskrivninger, kontogrupper og resultatdisponering. | Hele årsskiftet er prøvd med overskudd/underskudd, avstemt resultat/balanse og inngående saldo uten dobbeltføring. Låsing, dokumentert retting og nødvendig foretaksform er dekket for oppgitt omfang. Teknisk saldoovergang fra 0.77.0 er utvidet med full ENK-årsprøve i 0.84.0. AS/regnskapspliktig ENK og kompliserte særtilfeller inngår ikke. |
 | 9. Skattemelding og næringsspesifikasjon | **Samlet ENK-årsrapport, fradragsoversikt og portalveiledning i 0.84.0.** [Omfang, år og faktisk levering](enk-tax-return.md). Ingen automatisk skatteberegning eller API-innsending; faktisk portalutfylling/kvittering er brukerens oppgave. Konkret leveringsvei for støttet foretaksform og inntektsår. | Skattemessige forskjeller, avskrivninger og nødvendige tilleggsopplysninger avstemmes mot regnskapet. For portalveien er tilgang, utfylling og kvittering beskrevet med primærkilder; faktisk privat levering og kvittering er ikke utført. Automatisk årsoppgjør/innsending er ikke levert. SAF-T erstatter ikke skattemeldingen. |
 | 10. Samlet aksept og drift | R13–R16 og rester: vedlikeholdsvindu, moduloverganger, skjermbredde, valgfrie hjelpemidler, tilgang og bevaring. | Hele akseptmatrisen under består i fersk og oppgradert installasjon. Feil, låsing, retting, bevaring og gjenoppretting er prøvd. Støttet bruk og alle eksterne avhengigheter er dokumentert. |
-| 11. Papirløs bilagsflyt | Kjernens eksisterende mottak/vedlegg og aktuelle tillegg brukes først. | Registrering og matching er prøvd uten en parallell bokføringsmotor. Tas sist som avtalt. Inngående EHF-import innføres ikke som en sideoppgave til utgående EHF. |
+| 11. Papirløs bilagsflyt | **Levert i 0.85.0 for manuell PC-flyt.** [Arbeidsflyt, kjerneundersøkelse og prøvebevis](paperless-accounting.md). Originalvedlegg/forhåndsvisning, native oversikt, manuelle bilag, bevaring og ZIP-eksport. | Vanlig kjøpsregistrering og brukerbekreftet bankavstemming er prøvd med delbetaling, refusjon og gebyr uten ny bokføringsmotor. PDF/bilde, tilgang, samtidighet, duplikater og restore er prøvd. OCR, e-post, bankfeed, mobilapp og inngående EHF-import inngår ikke. EHF og samlet aksept står fortsatt åpne. |
 
 Etappe 4 gjelder én NOK-enhet, ordinære tomånedlige terminer og kodene
 3/31/33, 1/11/13, 5/6/52 og 86/87; 0/7 vises utenfor meldingen. Oppgjøret
@@ -88,7 +88,7 @@ portalveien for skattemelding, med årsrapport ved kjernens saldobalanse og
 fradragsoversikt. Postkoder, fortegn, privat telefonbruk, kostnader og
 personlige premier inngår i prøvene. Regnskapsgrunnlaget er prøvd; faktisk privat
 innlogging, utfylling og mottakskvittering er ikke utført. 2025-eksemplet lover
-ikke ferdig 2026-portalutfylling før årets endelige løsning er tilgjengelig. Papirløs bilagsflyt ligger fortsatt sist.
+ikke ferdig 2026-portalutfylling før årets endelige løsning er tilgjengelig. Brukeren bestilte 2026-10-18 papirløs bilagsflyt før de eksternt avventende punktene. 0.85.0 leverer det avtalte manuelle A3/C1-omfanget; etappe 10 og faktisk EHF-levering står fortsatt åpne.
 Ingen avtale, kjøp eller registrering av foretak hos et aksesspunkt gjøres
 uten uttrykkelig bestilling.
 

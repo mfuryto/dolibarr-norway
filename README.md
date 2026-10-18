@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.84.0 · Under utvikling**
+**Versjon 0.85.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -162,3 +162,5 @@ rapporter og avslutning brukes. Et vern hindrer gjentatt
 revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget støtter
 2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Direkte innsending
 og et automatisk norsk årsoppgjørssystem er ikke levert.
+
+Fra **0.85.0** finnes [papirløs bilagsflyt](docs/paperless-accounting.md) med originalvedlegg og forhåndsvisning på vanlige kjøps-/bilagskort, dokument-/hovedbokstatus, bevaringsvern og samlet ZIP-eksport. Betaling og bankavstemming bruker kjernen. Manuell PC-opplasting av PDF/PNG/JPEG inngår; OCR, e-postmottak og banktilkobling inngår ikke.

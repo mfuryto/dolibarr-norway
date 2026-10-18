@@ -1,6 +1,6 @@
-# Norway 0.84.0
+# Norway 0.85.0
 
-**Versjon 0.84.0 · Under utvikling**
+**Versjon 0.85.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -24,8 +24,8 @@ historisk rapportering etter oppsettsendring og forslag til oppgjørsbilag.
 Bankavstemming, oppgjørsbilag, kvittering, betaling og perioder bruker kjernen.
 Ved manuell modulinstallasjon aktiveres også kjernens avgifts-/MVA-betalingsmodul
 for oppgjør og vedlegg. Standard Compose-oppsett gjør dette automatisk.
-Vareimport, særordninger, direkte innsending, EHF/Peppol og
-årsoppgjør/skatt gjenstår. Ingen versjon har samlet
+Vareimport, særordninger, direkte innsending og faktisk EHF-levering gjenstår.
+ENK-årsavslutning og portalgrunnlag for skatt har avgrenset støtte. Ingen versjon har samlet
 regnskapsfaglig produksjonsaksept.
 
 Utgåtte kontrollsider og særskilt kjøpsbokføring er fjernet. Eldre
@@ -54,3 +54,5 @@ rapporter og avslutning brukes. Et vern hindrer gjentatt
 revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget støtter
 2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Direkte innsending
 og et automatisk norsk årsoppgjørssystem er ikke levert.
+
+Fra **0.85.0** finnes papirløs bilagsflyt på vanlige kjøps-/bilagskort: originalvedlegg, forhåndsvisning, dokument-/hovedbokstatus, bevaring og samlet ZIP fra kjernens eksportside. Betaling og bankavstemming bruker kjernen. [Arbeidsflyt og omfang](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/paperless-accounting.md).

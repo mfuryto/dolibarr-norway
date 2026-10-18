@@ -80,4 +80,5 @@ python3 -m venv "$ci_root/ehf-validator"
 # ownership contract, then run the full period with the actual application user.
 "${compose[@]}" exec -T web chown -R www-data:www-data /var/www/documents
 "${compose[@]}" exec -T --user www-data web php /opt/norway-tests/period-cycle.php
+"${compose[@]}" exec -T --user www-data web php /opt/norway-tests/paperless-cycle.php
 "${compose[@]}" exec -T web php /opt/norway-tests/legacy-cleanup.php
