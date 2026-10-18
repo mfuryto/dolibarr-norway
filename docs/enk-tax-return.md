@@ -27,6 +27,9 @@ saldobalansesiden. Den viser:
   nødvendige tilleggsopplysninger.
 
 CSV inkluderer også full kontospesifikasjon med IB, årets bevegelse og UB.
+Udisponert resultat presenteres i valgt egenkapitalpost også når kjernen
+fører resultatet først i neste års inngående balanse. Beløpet tas med én gang;
+et allerede disponert resultat legges ikke til igjen. Ingen postering opprettes.
 «Grunnlag etter kjent korreksjon» er ikke et løfte om endelig fradragsrett:
 skatteverdier, personinntekt og ukjente/private forhold må avklares. Rapporten
 skjuler ikke manglende kontokoblinger som null. Ingen økonomiske data eller
@@ -40,7 +43,7 @@ som automatisk fritak fra levering.
 
 Omsetning over 50 000 kroner utløser ikke alene krav om systeminnsending av
 skattemeldingen. Systemkravet følger regnskaps-/revisjonsplikten. Grensen for
-MVA-registrering gjelder relevant avgiftspliktig omsetning over en rullerende
+MVA-registrering gjelder omsetning og uttak som omfattes av merverdiavgiftsloven over en rullerende
 12-månedersperiode, og er en annen vurdering enn forenklet næringsspesifikasjon.
 Ikke bruk beløpsgrensen som et generelt fritak fra bokføring eller levering.
 Fristen i mai må også leses med gjeldende helge-/helligdagsregler og eventuell

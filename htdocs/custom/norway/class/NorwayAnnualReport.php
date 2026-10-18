@@ -97,6 +97,19 @@ final class NorwayAnnualReport
             $draft=NorwaySaftMapping::rows($db,"SELECT COUNT(*) n FROM {$p}accounting_bookkeeping_tmp WHERE entity=".(int)$entity." AND doc_date>='$start' AND doc_date<='$end 23:59:59' AND (debit<>0 OR credit<>0)");if((int)$draft[0]->n>0){$report['issues'][]=array('key'=>'NorwayAnnualUnposted','detail'=>'bilagskladd: '.(int)$draft[0]->n);}
             $report['unallocated_result']=$report['profit']-$report['disposal'];
             $report['other_equity_movements']=$report['closing_equity']-$report['opening_equity']-$report['disposal']+$report['owner_cash'];
+            // Native closing can dispose of profit only in next year's opening. Present
+            // the same result in the annual equity basis without posting or double disposal.
+            if($report['unallocated_result']!==0){
+                $receiver=getDolGlobalString($report['unallocated_result']>0?'ACCOUNTING_RESULT_PROFIT':'ACCOUNTING_RESULT_LOSS');
+                if($receiver==='' && isset($details['2050']) && $details['2050']->fk_pcg_version===NorwayChartProfile::VERSION && ($original['2050']??null)===$details['2050']->label){$receiver='2050';}
+                $choice=$receiver!=='' && isset($details[$receiver])?NorwaySaftMapping::load($db,$entity,$year,array($receiver),true):array();$m=$choice[$receiver]??null;$key=$m?$m['category'].'/'.$m['code']:'';
+                if(!$m || $m['category']!=='egenkapital' || !isset($fields[$key])){$report['issues'][]=array('key'=>'NorwayAnnualResultReceiver','detail'=>$receiver);}
+                else{
+                    if(!isset($report['fields'][$key])){$report['fields'][$key]=$fields[$key]+array('opening'=>0,'value'=>0,'adjustment'=>0,'accounts'=>array((string)$receiver),'balance'=>true);}
+                    $report['fields'][$key]['adjustment']+=$report['unallocated_result']*($fields[$key]['polarity']==='negativ'?-1:1);
+                }
+            }
+
             $report['tax_basis_before_other_adjustments']=$report['profit']+$report['known_addback']-$report['known_deduction'];
             foreach($report['fields'] as &$field){$field['basis']=$field['value']+$field['adjustment'];}unset($field);
             uasort($report['fields'],static function($a,$b){return ($a['balance']<=>$b['balance'])?:strnatcmp($a['code'],$b['code']);});if(!$db->commit()){throw new RuntimeException('NorwaySaftDatabase');}return $report;

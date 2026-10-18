@@ -25,6 +25,7 @@ try{
  ddAssert($r['phone_projection']===array(array('piece'=>(int)$benefit,'amount'=>439200)),'Phone presentation trace');
  ddAssert($r['fields']['annenDriftskostnad/6500']['basis']===500000,'Direct equipment mapped to actual ENK field instead of SAF-T IT category');
  ddAssert(count($r['personal_premiums'])===1 && $r['personal_premiums'][0]['amount']===100000,'Personal NAV evidence retained after owner clearing');
+ ddAssert($r['fields']['egenkapital/2050']['basis']===8200000,'Annual equity includes undisposed result exactly once and matches bank82000');
  $topics=NorwayDeductions::topics($r);ddAssert($topics['Phone']['amount']===760800 && $topics['Equipment']['amount']===500000 && $topics['Home']['amount']===300000 && $topics['Startup']['amount']===null,'Deduction topics reflect booked evidence, not extra expense');
  $csv=NorwayAnnualUi::csv($r,$langs);ddAssert(strpos($csv,'6998;')!==false && strpos($csv,'4392.00')!==false && strpos($csv,'Fradragsoversikt')!==false,'Fields, known return and deductions in CSV');
  $bad=$r;$bad['accounts']['6907']['label']='=HYPERLINK("https://example.invalid")';$csv=NorwayAnnualUi::csv($bad,$langs);ddAssert(strpos($csv,"'=HYPERLINK")!==false,'Spreadsheet formula escaping');

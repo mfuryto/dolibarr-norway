@@ -49,6 +49,7 @@ try{
  // Tax reconciliation: no second depreciation deduction or advance-tax deduction.
  $taxable=ycResult(2025)+750;ycAssert($taxable===43000.0 && $preDisposal['1280']===35000.0,'Independent tax result 43000 and closing asset 35000');
  ycVoucher(array('8800'=>42250,'2050'=>-42250),12,31,2025,'SYNTHETIC RESULT DISPOSAL');ycAssert(ycResult(2025)===0.0,'Disposal zeros result exactly once');
+ ycAssert($annualBefore['fields']['egenkapital/2050']['basis']===22225000,'Annual equity before disposal matches native closing');
  $annualAfter=NorwayAnnualReport::build($db,$entity,2025,$user);ycAssert($annualAfter['profit']===$annualBefore['profit'] && $annualAfter['advance_tax']===1700000 && $annualAfter['closing_equity']===22225000 && $annualAfter['unallocated_result']===0,'Result disposal must not erase profit or actual tax payments in report');
  $langs->load('norway@norway');$csv=NorwayAnnualUi::csv($annualAfter,$langs);ycAssert(strpos($csv,'43000.00')!==false && strpos($csv,'Kontospesifikasjon')!==false,'Complete annual CSV with independent tax basis and account detail');
  $history=ycRows("SELECT * FROM {$p}accounting_bookkeeping WHERE entity=$entity ORDER BY rowid");$b=new BookKeeping($db);ycAssert($b->validateMovementForFiscalPeriod(dol_mktime(0,0,0,1,1,2025),dol_mktime(23,59,59,12,31,2025))>=0,'Native validation');
@@ -71,6 +72,7 @@ try{
  ycVoucher(array('6030'=>10500,'1280'=>-10500),12,31,2026,'SYNTHETIC SECOND YEAR DEPRECIATION');
  ycAssert(ycResult(2026)===-19600.0,'Second-year rent release, depreciation and correction');
  ycAssert($b->closeFiscalPeriod($years[2026],$years[2027],true,true)>0,'Native loss close');$conf->cache=array();$lossOpening=ycBalances("doc_type='closure' AND fk_doc=".$years[2026]);$expected['1920']-=100;$expected['2050']+=19600;$expected['1280']-=10500;unset($expected['1700']);ycAssert($lossOpening===$expected && array_sum($lossOpening)===0.0,'Loss reduces ENK equity once');
+ $annualLoss=NorwayAnnualReport::build($db,$entity,2026,$user);ycAssert(!$annualLoss['issues'] && $annualLoss['profit']===-1960000 && $annualLoss['fields']['egenkapital/2050']['basis']===20265000,'Annual report agrees with native loss disposed only in next opening');
  foreach($history as $old){$now=ycRows("SELECT * FROM {$p}accounting_bookkeeping WHERE rowid=".(int)$old->rowid)[0];unset($old->date_validated,$now->date_validated,$old->fk_user_modif,$now->fk_user_modif,$old->tms,$now->tms);ycAssert($old==$now,'Historical source changed');}
  print "PASS ENK full year: prepaids, stock, asset/depreciation, owner tax/withdrawals, profit42250/tax43000, native disposal and balanced opening/equity222250, open subledgers, closed-year block, documented correction, prepaid release, second-year depreciation and loss19600 carried without double result\n";
 }finally{$db->rollback();ycRows("SELECT RELEASE_LOCK('norway-year-end-$entity')");foreach(array('accounting_bookkeeping','accounting_bookkeeping_tmp','accounting_account','accounting_journal','accounting_fiscalyear','const') as $table){ycRows("DELETE FROM {$p}{$table} WHERE entity=$entity");}$conf->entity=$originalEntity;$conf->global=$originalGlobal;$conf->cache=array();}

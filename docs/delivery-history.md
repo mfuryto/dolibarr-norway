@@ -648,3 +648,9 @@ Uavklarte koblinger vises, og ingen faktisk privat innlevering er utført.
 språk. Kjernens bare saldobalansetabell får lokal horisontal rulling via
 footer-kroken. Hovedsummer vises først; detaljer kan åpnes. CSV inneholder
 alltid alle detaljer. Ingen kjernfil endres.
+
+Årsrapportens egenkapitalgrunnlag er prøvd før/etter disponering og med
+kjernens alternative disponering først i neste års inngående balanse.
+Resultatet presenteres én gang i relevant egenkapitalpost uten ny bokføring.
+Fradragsprøvens bank82000 avstemmes mot samlet egenkapital82000;
+årsrapport2026 avstemmes mot tapsført inngående egenkapital202650 i 2027.

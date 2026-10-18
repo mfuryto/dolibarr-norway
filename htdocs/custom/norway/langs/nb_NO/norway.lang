@@ -1411,7 +1411,7 @@ NorwayAnnualUnallocated=Årets resultat som ennå ikke er disponert
 NorwayAnnualOwner=Netto privatuttak/skatt via bank (innskudd vises negativt)
 NorwayAnnualOtherEquity=Andre bokførte egenkapitalbevegelser, inkludert direkte innskudd
 NorwayAnnualClosingEquity=Utgående bokført egenkapital, uten eventuelt udisponert resultat
-NorwayAnnualTaxHelp=Korreksjonene er forslag fra uendrede standardkontoer, ikke en full skatteberegning. Ta hensyn til øvrige forskjeller, privat bruk og fremføringer. Avskrivningen er allerede med i resultatet og skal ikke trekkes fra en gang til. I portalen må hver korreksjon bare tas med én gang.
+NorwayAnnualTaxHelp=Korreksjonene er forslag fra uendrede standardkontoer, ikke en full skatteberegning. Ta hensyn til øvrige forskjeller, privat bruk og fremføringer. Avskrivningen er allerede med i resultatet og skal ikke trekkes fra en gang til. Rapporten presenterer også udisponert resultat i egenkapitalen. Dette endrer ikke hovedboken. I portalen må hver korreksjon bare tas med én gang.
 NorwayAnnualFields=Poster i næringsspesifikasjonen
 NorwayAnnualCode=Postkode
 NorwayAnnualField=Post
@@ -1461,3 +1461,5 @@ NorwayAnnualBalanceRows=Balanse – bokførte verdier som må avstemmes mot skat
 NorwayAnnualDetails=Vis egenkapital, betalinger og øvrige summer
 
 NorwayAnnualAccountGroup=Kontogruppen stemmer ikke med kontoens rapportpost. Avklar kontoplan og avslutningsgrupper før resultatet brukes:
+
+NorwayAnnualResultReceiver=Årets udisponerte resultat mangler en entydig egenkapitalpost. Avklar resultatkonto i kjernens avslutningsoppsett:

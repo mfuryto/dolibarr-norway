@@ -1411,7 +1411,7 @@ NorwayAnnualUnallocated=Current-year result not yet disposed
 NorwayAnnualOwner=Net cash owner withdrawals/tax (contributions are negative)
 NorwayAnnualOtherEquity=Other booked equity movements, including direct contributions
 NorwayAnnualClosingEquity=Closing book equity, excluding any undisposed result
-NorwayAnnualTaxHelp=Corrections are suggestions from unchanged standard account meanings, not a complete tax calculation. Consider other adjustments, private use and carry-forwards. Depreciation is already included in profit; do not deduct it twice. Apply each portal correction only once.
+NorwayAnnualTaxHelp=Corrections are suggestions from unchanged standard account meanings, not a complete tax calculation. Consider other adjustments, private use and carry-forwards. Depreciation is already included in profit; do not deduct it twice. The report also presents undisposed profit in equity without changing the ledger. Apply each portal correction only once.
 NorwayAnnualFields=Norwegian business-specification fields
 NorwayAnnualCode=Field code
 NorwayAnnualField=Field
@@ -1461,3 +1461,5 @@ NorwayAnnualBalanceRows=Balance sheet – book values to reconcile with tax valu
 NorwayAnnualDetails=Show equity, payments and other totals
 
 NorwayAnnualAccountGroup=The account group disagrees with its report destination. Resolve chart and closing groups before using the result:
+
+NorwayAnnualResultReceiver=The undisposed result lacks a unique equity destination. Resolve the result account in native closing setup:
