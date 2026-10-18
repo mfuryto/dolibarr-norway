@@ -1,0 +1,24 @@
+{
+  "repository": "https://github.com/Skatteetaten/saf-t",
+  "revision": "10c8fd82a6ff47e53385bc33c7638c5fde239a4f",
+  "checked": "2026-10-18",
+  "format": "1.40",
+  "grouping_years": [
+    2025,
+    2026
+  ],
+  "files": {
+    "schema-1.40.xsd": {
+      "path": "SAF-T_Financial_1.4/Norwegian_SAF-T_Financial_Schema_v_1.40.xsd",
+      "sha256": "272d5a3eff9df07cdff15a4792e34a31ab4359e27dc3215951dd017b76b89d01"
+    },
+    "grouping-2025-2026.csv": {
+      "path": "Grouping Category Code 2025-2026/CSV/naeringsspesifikasjon.csv",
+      "sha256": "88277d2cffae1abd74b31b8eea057d595c7621ff6de54633fa942104ce28bb7f"
+    },
+    "tax-codes.csv": {
+      "path": "Standard Tax Codes/CSV/Standard_Tax_Codes.csv",
+      "sha256": "b58bf18d72ed8381c849d56d55af82a9982731c2c9343fa2cc95f56b1a5e8b53"
+    }
+  }
+}

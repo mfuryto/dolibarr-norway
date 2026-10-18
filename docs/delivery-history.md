@@ -577,3 +577,12 @@ kan sende; produksjon er sperret. Ingen skjemaendringer eller ny regnskapsmodell
 
 EHF-steget står åpent til faktisk levering og kvittering er kvalifisert.
 Se [kvalifisering og gjenværende omfang](ehf-qualification.md).
+
+
+## 0.82.0 — første SAF-T-grunnlag på staging
+
+EHF avventer ekstern testbekreftelse. Etter brukerens beslutning 2026-10-18
+fortsetter SAF-T: offisielle 1.40-referanser, obligatorisk gruppering og et
+skrivebeskyttet periodeuttrekk er prøvd. Full eksport er ikke levert. Ingen
+meny, ekstra kontrollside, regnskapsmodell eller skjemamigrering er innført.
+[Underetapper og gjenstående arbeid](saft-export.md).

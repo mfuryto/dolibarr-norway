@@ -138,4 +138,5 @@ modulaktivering/sending; nedlastet kilde ligger utenfor webroten og inngår ikke
 
 Før steget lukkes gjenstår: reell testnettverkslevering av faktura og kreditnota,
 bekreftet mottaker/dokumentstøtte, avvisning og transportkvittering, eventuell utenlandsk mottaker og øvrige avtalte normalflyter samt en dokumentert beslutning
-om produksjonsaktivering. SAF-T starter ikke mens dette står åpent.
+om produksjonsaktivering. Brukeren har 2026-10-18 bedt om at SAF-T går videre mens EHF avventer testtilgang.
+EHF blir ikke regnet som levert av den grunn.

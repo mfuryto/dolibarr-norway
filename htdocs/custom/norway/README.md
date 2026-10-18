@@ -1,6 +1,6 @@
-# Norway 0.81.0
+# Norway 0.82.0
 
-**Versjon 0.81.0 · Under utvikling**
+**Versjon 0.82.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -38,3 +38,7 @@ docs/delivery-plan.md. GPL-3.0-or-later; kontoplanens kilde og lisens følger da
 Fra 0.81.0 prøves en tilpasset åpen EHF-generator med native fakturaer og
 offisielle formatregler. Sending kan bare aktiveres i separat testnettverk.
 Faktisk nettverkslevering er ikke kvalifisert, og produksjonssending er sperret.
+
+Fra 0.82.0 er SAF-T 1.40-formatgrunnlag og et internt, skrivebeskyttet
+periodeuttrekk under arbeid. Full eksport med kontokoblinger, MVA og reskontro
+er ikke levert; ingen SAF-T-eksportknapp er aktivert.

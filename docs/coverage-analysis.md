@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.81.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.82.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -427,3 +427,12 @@ linjeenheter bevares. XSD/EN16931/Peppol og simulert transport inngår i CI.
 Sending er begrenset til separat testnettverk og er av som standard.
 Faktisk levering/kvittering og komplett normalflyt må kvalifiseres før EHF
 kan avsluttes. Produksjonssending er sperret. Se [EHF-kvalifisering](ehf-qualification.md).
+
+
+## Oppfølging i 0.82.0 — SAF-T-format og første kildeuttrekk
+
+Låst SAF-T 1.40-XSD og offisielle 2025–2026-grupper er på plass. Internt
+uttrekk bevarer komplette native bilag og eksporterte rader uten skriving.
+Konto-/avgiftskoblinger, reskontro, saldoovergang og full brukerrettet XML-eksport
+gjenstår. Ingen SAF-T-produksjonsaksept eller eksportknapp.
+Se [arbeid og aksept](saft-export.md).

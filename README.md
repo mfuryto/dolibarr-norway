@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.81.0 · Under utvikling**
+**Versjon 0.82.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -145,3 +145,8 @@ Fra **0.81.0** finnes en tilpasset åpen EHF-generator og sending begrenset til
 separat testnettverk. Native beløp/referanser og offisielle formatregler prøves i
 CI. **Faktisk testnettverkslevering gjenstår; produksjonssending er sperret.**
 Se [EHF-kvalifisering og privat testoppsett](docs/ehf-qualification.md).
+
+Fra 0.82.0 er SAF-T 1.40-formatgrunnlag og et internt, skrivebeskyttet
+periodeuttrekk under arbeid. Full eksport med kontokoblinger, MVA og reskontro
+er ikke levert; ingen SAF-T-eksportknapp er aktivert.
+Se [SAF-T-arbeidet og ferdigkriteriene](docs/saft-export.md).
