@@ -33,3 +33,8 @@ fortsatt i kjernens vanlige menyer.
 Fra 0.80.0 er ordinær bank-/MVA-periode prøvd gjennom kjernen, med
 portalinnlevering som valgt leveringsvei. Se [bank, MVA og periodeavslutning](vat-period-close.md)
 for betaling, kvittering, oppgjør, retting og avgrensning.
+
+Fra 0.83.0 lenker SAF-T-raden til kjernens regnskapseksport og kontoplanoppsett.
+Status «Vurderes manuelt» gjelder periode, koblinger og støttet omfang, ikke en
+ny godkjenningsrunde. [SAF-T-arbeidsflyten](saft-export.md) dekker 2025–2026 og
+NOK; andre år/behandlinger har uttrykkelige begrensninger.

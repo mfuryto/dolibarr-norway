@@ -565,3 +565,39 @@ Registreringsovergang, lukket periodes datogrense, gjenåpning, retting,
 kvitteringens byteinnhold og begge språk inngår i prøvene. Faktisk portaltilgang,
 levering og kvittering tilhører brukeren; ingen myndighetsinnsending er utført.
 Vareimport, særordninger og øvrige etapper er fortsatt åpne. Neste del er EHF/SAF-T.
+
+
+## 0.81.0 — EHF-dokumenter og avgrenset testtransport (staging)
+
+Åpent generatorgrunnlag tilpasset for norske identifikatorer, MVA-kategorier,
+kreditnotareferanser og bevarte kildebeløp. Native faktura-/kreditnotaprøver,
+offisiell XSD/Schematron og simulert transport inngår i CI. Normal drift
+aktiverer ingen EHF-funksjon. Bare eksplisitt konfigurert separat testnettverk
+kan sende; produksjon er sperret. Ingen skjemaendringer eller ny regnskapsmodell.
+
+EHF-steget står åpent til faktisk levering og kvittering er kvalifisert.
+Se [kvalifisering og gjenværende omfang](ehf-qualification.md).
+
+
+## 0.82.0 — første SAF-T-grunnlag på staging
+
+EHF avventer ekstern testbekreftelse. Etter brukerens beslutning 2026-10-18
+fortsetter SAF-T: offisielle 1.40-referanser, obligatorisk gruppering og et
+skrivebeskyttet periodeuttrekk er prøvd. Full eksport er ikke levert. Ingen
+meny, ekstra kontrollside, regnskapsmodell eller skjemamigrering er innført.
+[Underetapper og gjenstående arbeid](saft-export.md).
+
+## 0.83.0 — SAF-T 1.40 med native eksport
+
+Komplette perioder for NOK og 2025–2026 kan lastes ned fra kjernens
+regnskapseksport. Kontoplanoppsettet har eksplisitt gruppevalg og 357
+standardkoblinger for vanlige, uendrede kontobetydninger. Én lesevisning
+avstemmer hovedbok, kildefakturaer/kreditnotaer, MVA, bank og reskontro.
+Native saldooverføring erstatter tidligere års summer uten dobbelttelling.
+Ingen eksportmarkeringer, regnskapsdata eller eksisterende dokumenter endres.
+
+Kvalifisert med offisielt XSD, native dokument-/betalingsflyt, uavhengig
+bank-/saldo-/avgiftsfasit, gjentatt eksport, ugyldige/ufullstendige kilder,
+tilgang og norsk/engelsk HTTP-nedlasting. Avgrensningene i
+[SAF-T-veiledningen](saft-export.md) gjelder; EHF-testnettverk, forskuddsskatt,
+årsavslutning og skattemelding er separate gjenstående leveranser.

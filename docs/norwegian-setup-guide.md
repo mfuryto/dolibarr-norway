@@ -8,7 +8,7 @@ og regnskap i det daglige. Se [veilederens omfang](setup-wizard.md).
 
 Du skal ikke måtte kjenne Dolibarrs interne konstanter eller velge alle de 745 kontoene. Følg rekkefølgen nedenfor. «Automatisk» betyr utført av installasjons-/oppdateringsskriptet; «manuelt» betyr at administratoren må lagre eller kontrollere valget. «Gjenstår» betyr at dokumentasjonen ikke kan erstattes med en innstilling i dagens modul.
 
-Dette dokumentet samler norske oppsettforhold, men erklærer ikke komplett lovdekning. Omfanget er ett norsk foretak, NOK-salgsdokumenter og norsk/engelsk. Modulen er generell for varer og tjenester. Andre foretaksformer, ansatte, kontantsalg og særregler må vurderes særskilt. Full norsk MVA-rapport, SAF-T, kvalifisert EHF og produksjonsaksept gjenstår.
+Dette dokumentet samler norske oppsettforhold, men erklærer ikke komplett lovdekning. Omfanget er ett norsk foretak, NOK-salgsdokumenter og norsk/engelsk. Modulen er generell for varer og tjenester. Andre foretaksformer, ansatte, kontantsalg og særregler må vurderes særskilt. Full norsk MVA-rapport, kvalifisert EHF og samlet produksjonsaksept gjenstår. SAF-T har [avgrenset støtte](saft-export.md).
 
 
 Fra 0.76.0 er oppstartsveilederen én [statustabell](setup-wizard.md), med
@@ -55,7 +55,7 @@ for manglende norske satsrader. Det er ingen egen registreringshistorikk
 eller avgiftskodekobling å vedlikeholde i modulen. Bevar vedtak og annet
 registreringsgrunnlag sammen med regnskapsdokumentasjonen.
 
-**Gjenstår:** komplett norsk MVA-rapportering, SAF-T-eksport og faglig kvalifisering
+**Gjenstår:** komplett norsk MVA-rapportering og samlet faglig kvalifisering
 av særtilfeller. En korrekt konto er ikke alene bevis på riktig avgiftsbehandling.
 
 Fra 0.67.0 kan [MVA-oppsettet](vat-rates.md) legge ordinære norske salgskoder
@@ -210,7 +210,7 @@ Avklar regnskapsår, bilagsdatoer, periodisering, godkjenning, periodelåsing og
 
 ## 10. Rapportering, oppbevaring og sikker drift
 
-Avklar hvem som gjør MVA-melding, skattemelding/næringsspesifikasjon, eventuell årsregnskapsinnsending og andre rapporteringer som følger av virksomheten. Direkte innsending er ikke levert. SAF-T er en separat eksportplikt og ingen erstatning for disse meldingene. Norsk SAF-T-eksport er ikke implementert; lav omsetning alene fritar ikke elektronisk regnskap. Se [Skatteetatens SAF-T-veiledning](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/).
+Avklar hvem som gjør MVA-melding, skattemelding/næringsspesifikasjon, eventuell årsregnskapsinnsending og andre rapporteringer som følger av virksomheten. Direkte innsending er ikke levert. SAF-T er en separat eksportplikt og ingen erstatning for disse meldingene. Fra 0.83.0 brukes [SAF-T-eksport på kjernens eksportside](saft-export.md) for støttet omfang; lav omsetning alene fritar ikke elektronisk regnskap. Se [Skatteetatens SAF-T-veiledning](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/).
 
 Dokumenter oppbevaringsansvar, lagringsland, tilgang, oppbevaringstid og gjenoppretting. Primærdokumentasjon har normalt fem års oppbevaring, med særregler; avtaler kan være del av dokumentasjonsgrunnlaget. Vurder også elektronisk tilgjengelighet og reglene ved utenlandsk lagring. Se [Altinns oppbevaringsveiledning](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/oppbevaring-av-regnskapsmateriale).
 

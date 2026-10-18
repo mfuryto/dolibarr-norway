@@ -33,6 +33,8 @@ services:
       DOLI_COMPANY_NAME: SYNTHETIC NORWAY TEST ONLY
       DOLI_CRON: '0'
       NORWAY_SYNTHETIC_TEST: '1'
+      NORWAY_EHF_MODE: ${NORWAY_EHF_MODE:-disabled}
+      NORWAY_EHF_TEST_API_KEY: ${NORWAY_EHF_TEST_API_KEY:-}
       PHP_INI_DATE_TIMEZONE: Europe/Oslo
     ports: ['127.0.0.1:8087:80']
     volumes:

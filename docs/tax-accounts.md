@@ -42,6 +42,40 @@ Konto **2072 Tilleggsforskudd/restskatt** finnes også i kontoplanprofilen;
 klassifiser betalingen etter faktisk grunnlag. Ingen automatisk bokføring
 eller skatteberegning følger av at kontoene finnes.
 
+## Forskuddsskatt gjennom året
+
+Status 2026-10-18: kontoene finnes og arbeidsbeskrivelsen er dokumentert.
+Den konkrete bank-/bilagsflyten skal fortsatt prøves samlet i etappe 7 av
+[leveranseplanen](delivery-plan.md), før årsavslutning. Dette er ikke en
+ferdigmelding av regnskapsstøtten.
+
+1. Oppgi forventet årlig overskudd under «Næring» i ditt personlige
+   skattekort hos Skatteetaten. Oppdater anslaget ved endringer; regnskapets
+   resultat er grunnlag for vurderingen, ikke en full personlig skatteberegning.
+2. Betal etter Skatteetatens krav og godkjente endringer. Ordinære frister er
+   15. mars, 15. juni, 15. september og 15. desember, med justering for
+   helg/helligdag. Bruk betalingsopplysningene på det aktuelle kravet.
+   En innsendt endring i skattekortet er ikke i seg selv godkjent reduksjon.
+3. Betalt fra foretakets bank: bokfør betalingen én gang som debet **2070**
+   og kredit bankens faktiske hovedbokskonto, uten MVA. Eksempel: 10 000 kroner
+   betalt fra en bank koblet til 1920 gir debet 2070 og kredit 1920 med
+   10 000 kroner. Bruk kjernens bank-/bilagsføring; ikke registrer en vanlig
+   leverandørkostnad i tillegg. Oppbevar krav og betalingsunderlag med bilaget
+   og avstem mot bank og hovedbok.
+4. Betalt privat: personlig skatt trenger ikke registreres i foretaksregnskapet.
+   Ikke før uttak fra foretaksbanken når ingen slik betaling har skjedd.
+
+En eventuell reserve på en annen av foretakets bankkonti er bare en intern
+bankoverføring, ikke betalt skatt. Konto 2070 brukes først ved skattebetalingen.
+En fast reserveprosent erstatter ikke Skatteetatens personlige beregning.
+Forskuddsskatt er separat fra MVA-melding og MVA-oppgjør.
+
+Tilleggsforskudd og restskatt må skilles fra ordinære terminer og fra eventuelle
+renter. Konto 2072 finnes til skattebeløpet; ikke bruk den ukritisk på hele
+kravet. Skatteetaten beskriver tilleggsforskudd innen 31. mai året etter som
+mulighet for å unngå renter på restskatt. Årsavslutningen skal senere avstemme
+personlige skattebetalinger som egenkapitalbevegelser, ikke driftskostnader.
+
 ## Andre foretaksformer og ansatte
 
 ENK-eksempelet er ikke en generell skattekobling for AS eller andre
@@ -52,13 +86,18 @@ for disse funksjonene.
 
 ## Kilder og teknisk grunnlag
 
-Kontrollert 2026-10-13:
+Kontrollert 2026-10-18:
 
 - [Skatteetaten: Forskuddsskatt for enkeltpersonforetak](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/forskuddsskatt/forskuddsskatt-for-enkeltpersonforetak)
   beskriver personlig forskuddsskatt og felles skattekort.
 - [Conta: Konto 2070](https://conta.no/kontohjelp/2070-forskuddsskatt)
   forklarer bruk når skatten betales fra foretakets bankkonto og at den ikke
   påvirker virksomhetens kostnader.
+- [Conta: Bokføre skatteoppgjør](https://hjelp.conta.no/regnskap/bilag/bokfore-skatteoppgjor/)
+  viser ordinær bilagsføring mot 2070 og bank.
+- [Fiken: Skatt for enkeltpersonforetak](https://hjelp.fiken.no/skatt-for-enkeltpersonforetak)
+  skiller personlig skatt fra foretakets kostnader og registrering ved privat betaling.
+  Disse brukes som arbeidsflytinspirasjon; Skatteetaten er regelkilden.
 - Kontonumre og navn kontrolleres mot den låste norske
   [kontoplanprofilen](standard-accounts.md).
 - Dolibarr 24.0.1: `htdocs/core/menus/standard/eldy.lib.php` peker

@@ -1,0 +1,2 @@
+# Preserve the pinned authority schema byte-for-byte, including its original whitespace.
+htdocs/custom/norway/data/saft/schema-1.40.xsd -text -whitespace

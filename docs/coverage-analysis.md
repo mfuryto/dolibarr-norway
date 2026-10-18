@@ -1,6 +1,6 @@
 # Dekningsanalyse etter forenkling
 
-Kontrollert 2026-10-17. Modul 0.80.0, støttet Dolibarr 24.0.1 ved
+Kontrollert 2026-10-17. Modul 0.83.0, støttet Dolibarr 24.0.1 ved
 [kjernerevisjon b795838](https://github.com/Dolibarr/dolibarr/tree/b7958385f00a92219f76a4dfea67dae93df97a25).
 Dette er en kildegjennomgang og beslutning om neste arbeid. Tredjepartstillegg
 nedenfor er ikke installert eller funksjonstestet. Ingen norsk produksjonsaksept
@@ -13,7 +13,7 @@ Tidligere forslag om egne kontrollkopier og historikkmodeller videreføres ikke.
 | --- | --- | --- |
 | Ordinær regnskapsflyt | Kjernen har faktura, kreditnota, kjøpsjournal, hovedbok, reskontro, bank og perioder. Salgs-/kjøpsflyt, kreditnotaer og vern mot dobbeltføring inngår i 0.65-testene. | Behold kjernens arbeidsflyt. Dette kvalifiserer ikke alle avgiftsscenarioer eller årsavslutningen. |
 | Norsk MVA-melding | Kjernen har faktura-/betalingsbaserte MVA-uttrekk, men ingen norsk melding eller innsendingsadapter ble identifisert i undersøkte kataloger. | Prøv uttrekk mot bokføringen før en avgrenset norsk rapporteringsutvidelse velges. En oversikt over MVA-satser eller saldo på MVA-kontoer er ikke komplett meldingsgrunnlag. |
-| Norsk SAF-T | Kjernen har hovedbokseksport. Ingen norsk SAF-T-generator ble funnet i regnskaps-, MVA- eller modulkatalogene. | Norsk eksport er fortsatt et gap. Gjenbruk hovedbok og kildekoblinger; velg eksportutvidelse før egen generator. Ingen ny regnskapsmotor. |
+| Norsk SAF-T | Kjernen har hovedbokseksport. Ingen norsk SAF-T-generator ble funnet i regnskaps-, MVA- eller modulkatalogene. | 0.83.0 leverer SAF-T 1.40 for dokumentert NOK-/2025–2026-omfang via native eksportside; avgrensning og prøvebevis står i docs/saft-export.md. Ingen ny regnskapsmotor. |
 | EHF/Peppol | Det finnes eksterne Peppol-moduler med dokumentgenerering og sending. | Prøv eksisterende løsning før egen integrasjon. Norsk profil, aktuelle PHP-/Dolibarr-versjoner, tilgangspunkt, lisens og kostnader må kvalifiseres. |
 | Næringsspesifikasjon og skattemelding | Kjernen gir regnskapsdata, men ingen norsk årsoppgjørs-/skattemeldingsleveranse ble identifisert i gjennomgangen. Skatteetaten publiserer modeller og integrasjonsdokumentasjon. | Egen leveranse: årsversjon og foretaksform, kontokoblinger, skattemessige forskjeller, avstemming og konkret leveringsvei. Ikke anta at SAF-T eller en kontoplan utfører skatteberegningen. |
 
@@ -417,3 +417,33 @@ til oppgjørsbilag. Brukeren leverer i portalen; kvittering lagres med kjernens
 MVA-dokumenter. Full arbeidsflyt, kildegrunnlag og grenser står i
 [periodeveiledningen](vat-period-close.md). Dette er ingen påstand om faktisk
 myndighetsinnsending eller full dekning av særordninger/vareimport.
+
+
+## Oppfølging i 0.81.0 — EHF-kvalifisering på staging
+
+Åpen generator er tilpasset etter konkrete feil i tre undersøkte tillegg.
+Native kildebeløp, norske identifikatorer, opprinnelig faktura og kjernens
+linjeenheter bevares. XSD/EN16931/Peppol og simulert transport inngår i CI.
+Sending er begrenset til separat testnettverk og er av som standard.
+Faktisk levering/kvittering og komplett normalflyt må kvalifiseres før EHF
+kan avsluttes. Produksjonssending er sperret. Se [EHF-kvalifisering](ehf-qualification.md).
+
+
+## Oppfølging i 0.82.0 — SAF-T-format og første kildeuttrekk
+
+Låst SAF-T 1.40-XSD og offisielle 2025–2026-grupper er på plass. Internt
+uttrekk bevarer komplette native bilag og eksporterte rader uten skriving.
+Konto-/avgiftskoblinger, reskontro, saldoovergang og full brukerrettet XML-eksport
+gjenstår. Ingen SAF-T-produksjonsaksept eller eksportknapp.
+Se [arbeid og aksept](saft-export.md).
+
+## Oppfølging i 0.83.0 — SAF-T for dokumentert omfang
+
+Generatoren bruker native hovedbok, fakturakilder og bankbetalinger fra én
+lesevisning. Norsk 1.40-XSD, kontogrupper for 2025–2026, eksplisitte valg for
+egne/tvetydige kontoer, MVA på grunnlagslinjer og motpartssaldoer er prøvd.
+Native faktura-/kjøps-/bankflyt og kreditnota avstemmes mot uavhengige beløp,
+og norsk/engelsk nedlasting fra kjernens eksportside er prøvd. Åpningssaldo
+bruker native saldooverføring uten dobbelttelling. Se [omfang og bevis](saft-export.md);
+2027, vareimport, lønn, andre valutaer og tvetydige eldre manuelle MVA-bilag
+er ikke inkludert i aksepten. EHF og samlet årsoppgjør/skatt står fortsatt åpne.
