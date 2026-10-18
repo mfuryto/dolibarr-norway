@@ -230,3 +230,7 @@ Videre utvikling av veiviseren skal følge denne rekkefølgen, vise gjeldende ve
 Fra 0.80.0 er ordinær bank-/MVA-periode prøvd gjennom kjernen, med
 portalinnlevering som valgt leveringsvei. Se [bank, MVA og periodeavslutning](vat-period-close.md)
 for betaling, kvittering, oppgjør, retting og avgrensning.
+
+## Papirløse bilag
+
+Se [papirløs bilagsflyt](paperless-accounting.md) for originalvedlegg på vanlige kjøps-/bilagskort, betaling, bankavstemming, gjenfinning, eksport og backup. Funksjonene ligger ved oppgavene i kjernen; ingen ny oppsettsrunde kreves.

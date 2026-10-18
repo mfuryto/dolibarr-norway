@@ -9,13 +9,18 @@ class InterfaceNorwayPolicy extends DolibarrTriggers
         parent::__construct($db);
         $this->family = 'financial';
         $this->description = 'Norwegian invoice validation and payment restrictions';
-        $this->version = '0.84.0';
+        $this->version = '0.85.0';
         $this->picto = 'accountancy';
     }
 
     public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf)
     {
         if (!isModEnabled('norway')) { return 0; }
+        if(in_array($action,array('BILL_SUPPLIER_DELETE','BILL_SUPPLIER_UNVALIDATE','BOOKKEEPING_DELETE'),true)){
+            require_once __DIR__.'/../../class/NorwayPaperless.php';
+            try{NorwayPaperless::guardSource($this->db,(int)$conf->entity,$action,$object);}
+            catch(Throwable $error){$langs->load('norway@norway');$this->error=$langs->trans('NorwayPaperlessRetained');$object->error=$this->error;return -1;}
+        }
         if (in_array($action,array('BILL_UNVALIDATE','BILL_DELETE','BILL_MODIFY'),true)) {
             require_once __DIR__.'/../../class/NorwayEhfTransport.php';
             try { NorwayEhfTransport::protect($object); }

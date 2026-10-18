@@ -1463,3 +1463,20 @@ NorwayAnnualDetails=Vis egenkapital, betalinger og øvrige summer
 NorwayAnnualAccountGroup=Kontogruppen stemmer ikke med kontoens rapportpost. Avklar kontoplan og avslutningsgrupper før resultatet brukes:
 
 NorwayAnnualResultReceiver=Årets udisponerte resultat mangler en entydig egenkapitalpost. Avklar resultatkonto i kjernens avslutningsoppsett:
+
+NorwayPaperlessTitle=Bilagsdokumentasjon
+NorwayPaperlessHelp=Originalen følger dette bilaget. Åpne forhåndsvisningen mens du registrerer linjer. Opplasting alene bokfører ikke kjøpet. Betaling og bankavstemming følger kjernens vanlige arbeidsflyt.
+NorwayPaperlessMissing=Dokumentasjon mangler. Last opp faktura, kvittering eller annet relevant underlag (PDF, PNG eller JPEG).
+NorwayPaperlessPosted=Overført til hovedboken
+NorwayPaperlessUnposted=Ikke overført til hovedboken
+NorwayPaperlessUpload=Last opp originalbilag (maks. 20 MB)
+NorwayPaperlessRetained=Dokumentasjonen og koblingen bevares. Legg til en ny fil ved supplering eller retting; behold originalen og bruk kreditnota eller dokumentert rettingsbilag ved regnskapsfeil.
+NorwayPaperlessDuplicate=Filen finnes allerede, har samme innhold som et eksisterende vedlegg, eller leverandørreferansen finnes fra før. Kontroller det eksisterende bilaget før du registrerer på nytt.
+NorwayPaperlessUnavailable=Bilagsdokumentasjonen kunne ikke hentes. Kontroller tilgangen og prøv igjen.
+NorwayPaperlessBusy=Bilaget behandles allerede. Vent til opplastingen er ferdig og kontroller vedleggene før du prøver igjen.
+NorwayPaperlessFile=Filen kunne ikke lagres. Bruk en lesbar PDF, PNG eller JPEG på høyst 20 MB, med et vanlig filnavn uten mappetegn. Kontroller også grensen for opplasting på serveren.
+NorwayPaperlessSaved=Originalbilaget er lagret. Kontroller lesbarheten og fullfør registreringen på vanlig måte.
+NorwayPaperlessArchive=Last ned bilagsdokumentasjon (ZIP)
+NorwayPaperlessArchivePeriod=Velg en gyldig fra- og til-dato innenfor samme år i datofeltene ved SAF-T.
+NorwayPaperlessArchiveSize=Dokumentpakken overstiger 200 MB. Velg en kortere periode; ingen ufullstendig pakke er levert.
+NorwayPaperlessOpen=Åpne original i eget vindu

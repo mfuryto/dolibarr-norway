@@ -1,100 +1,152 @@
-# Papirløst regnskap og bilagsflyt
+# Papirløs bilagsflyt
 
-Vedtatt videre omfang 2026-10-13. Funksjonene inngår i roadmapens A3/C1.
-Prosjekteier har prioritert papirløs bilagsflyt til slutt, etter de øvrige
-planlagte funksjonsleveransene. A3 gjennomføres før C1. Arbeid med bokføring,
-MVA, avstemming, rapportering og øvrige norske krav fortsetter først.
-Dokumentasjons- og arkivkrav ivaretas underveis; E-sporets frister flyttes ikke.
+Levert i **0.85.0** for ett foretak, NOK og manuell bruk i nettleser på PC.
+Dette er den bestilte A3/C1-flyten: originalbilag → vanlig registrering →
+hovedbok → betaling → bankavstemming → gjenfinning og oppbevaring.
+EHF avventer fortsatt ekstern kvalifisering. Ingen OCR, e-postmottak,
+mobilapp, banktilkobling eller ny godkjenningsmodell inngår.
 
-Omfanget er forenklet etter prosjekteiers valg: vanlig bruk i nettleser på PC,
-med manuell opplasting og registrering. Gjenbruk Dolibarrs eksisterende
-funksjoner og hold antall skjermbilder og handlinger lavt.
+## Registrere og finne igjen et kjøp
 
-## Grunnlag og mål
+1. Åpne **Fakturering → Leverandørfakturaer → Ny faktura**. Velg leverandør,
+   dato og referansen fra originalen. Lagre utkastet på vanlig måte.
+2. Under **Bilagsdokumentasjon** på fakturakortet laster du opp PDF, PNG
+   eller JPEG. Åpne forhåndsvisningen og registrer linjer med riktig konto,
+   MVA og fradragsrett. På svært bred skjerm ligger originalen ved siden av kortet;
+   ellers ligger den under. «Åpne original i eget vindu» gjør at originalen
+   kan holdes synlig ved siden av registreringen uten å klemme sammen feltene. Kontroller at hele originalen er lesbar.
+3. Valider når registreringen er riktig. Overfør med kjernens kjøpsjournal.
+   Opplasting eller validering alene betyr ikke at kjøpet er i hovedboken.
+4. Registrer faktisk betaling på fakturaen og avstem bankkontoen.
+   Et kjøp som allerede er betalt, skal ha én betalingsregistrering.
 
-Dolibarr 24.0.1 har dokumentvedlegg på leverandørfakturaer og utlegg.
-Disse funksjonene skal undersøkes og gjenbrukes før egne alternativer bygges.
-Kjernens vedlegg, bilagsbilder, statuser, søk og registreringsflyt kartlegges
-før A3. Oversikt og dokumentvisning i denne planen beskriver brukerbehov,
-ikke en beslutning om å bygge nye skjermer. Gjenbruk de eksisterende
-skjermbildene og dokumentlagringen der de dekker behovet.
-Opplasting av en fil er ikke i seg selv registrering, godkjenning eller
-bokføring av et kjøp. Den samlede norske arbeidsflyten må kvalifiseres.
+Den vanlige fakturalisten har dato-, leverandør-, referanse- og statusfiltre.
+Kolonnen **Bilagsdokumentasjon** viser manglende vedlegg, ikke overført eller
+faktisk overført til hovedboken. Betalingsstatusen er fortsatt kjernens status;
+en fil gjør aldri en faktura betalt. Dokumentasjon kan suppleres senere.
+Kreditnota registreres som vanlig kreditnota med sin egen original og
+kobling til kjøpet. Et generert fakturadokument teller ikke som originalvedlegg.
 
-Brukeren skal kunne følge originaldokumentet fra mottak gjennom behandling,
-bokføring, betaling og senere kontroll. Arbeidsflyten skal fungere for varer
-og tjenester på tvers av bransjer og bevare eksisterende regnskapsdata.
+Kjernens unike kombinasjon av leverandør, leverandørreferanse og foretak
+sperrer dobbelt registrering av samme referanse. Den nye opplastingen
+avviser eksisterende filnavn og identisk filinnhold på samme bilag, også ved
+nytt filnavn. Samtidige opplastinger til samme bilag serialiseres. Like beløp
+alene regnes aldri som duplikatbevis. Dokumenter på forskjellige bilag uten
+samme leverandørreferanse krever fortsatt brukerens vurdering.
 
-## A3 – første leveranse
+## Private utlegg og andre manuelle bilag
 
-- Enkel bilagsoversikt for PDF-er og kvitteringsbilder som lastes opp fra
-  datamaskinen. Undersøk kjernens dokumentfunksjoner først.
-- Dokumentvisning ved siden av registreringen, med tydelig kobling til
-  leverandørfaktura, utlegg eller manuelt bilag og de faktiske posteringene.
-- Enkel status for ubehandlet og bokført dokumentasjon. Betalingsstatus
-  følger faktiske betalinger og avstemminger.
-- Varsler om mulige duplikater og manglende dokumentasjon. Like beløp alene
-  er ikke duplikatbevis; bruk dokument- og leverandørreferanser der de finnes.
-- Søk og gjenfinning via dato, leverandør, dokument-/bilagsreferanse og status,
-  med kontroll av brukerens rettigheter.
-- Bevaring av originaldokument og nødvendige vedlegg i drift, backup,
-  gjenoppretting og eksport. Forhåndsvisninger skal ikke erstatte originalen.
+Et ENK-utlegg betalt privat gir ingen betaling fra foretaksbanken. Bruk
+kjernens **Regnskap → Hovedbok → Nytt bilag** og før relevant kostnad,
+eventuelt dokumentert fradragsberettiget MVA og motpost på aktuell eierkonto
+(eksempelvis 2062 for privat innskudd). Bruk den vanlige MVA-funksjonen på
+bilaget der den er relevant; et vedlegg velger ikke MVA-behandling.
 
-## C1 – etter kvalifisert bilagsflyt og avstemming
+Etter at bilaget er lagret i hovedboken, finnes **Bilagsdokumentasjon** på
+samme bilagskort. Last opp underlaget der. Midlertidige kladder må først
+lagres/overføres til et fast bilagsnummer. Dokumenter fra kjøpsjournalen
+beholdes på leverandørfakturaen og får ikke en ekstra vedleggsplass i hovedboken.
+Ansattutlegg, lønn og reiseregninger er ikke kvalifisert av denne ENK-prøven.
 
-Enkel, brukerbekreftet kobling mellom tilgjengelige banktransaksjoner,
-bilag, fakturaer og betalinger. Håndter delbetaling, gebyr og refusjon
-innenfor avstemmingsomfanget som er kvalifisert under C.
+## Betaling og brukerbekreftet bankavstemming
 
-Mobilopplasting, egen mobilapp, e-postmottak, OCR, skytolking og avansert
-godkjenningsflyt inngår ikke i vedtatt bilagsomfang. Eventuelle senere
-utvidelser krever et nytt konkret behov og en egen omfangsbeslutning.
-E-faktura følger fortsatt det separate E-sporet og dets regelverksfrister.
-Bilag og reelle personopplysninger skal aldri i Git.
+Bruk kjernens betaling på fakturaen og **Bank → Kontoutskrifter/Avstemming**.
+Velg faktisk bankkonto, dato, beløp og betalingsreferanse. Ved delbetaling
+registreres hver betaling med faktisk beløp; resten står åpent. Refusjon
+knyttes til kreditnotaen. Et separat bankgebyr er en egen utgift, ikke en
+reduksjon av fakturaens opprinnelige kostnad/MVA.
 
-Kontroller av dokumentasjon, dubletter og beløp skal følge registrering og
-bokføring, og avvik skal vises på det aktuelle bilaget med en konkret neste
-handling. Den som behandler bilaget har ansvar for oppfølgingen; det kreves
-ikke en separat kontrollrunde eller flere godkjennere som standard. Se
-[arbeidsflytkravet i roadmapen](delivery-plan.md#kontroller-som-del-av-arbeidsflyten).
+Koble de allerede registrerte bankbevegelsene til den faktiske kontoutskriften.
+Når betalingen finnes, skal den avstemmes, ikke opprettes på nytt. Gjentatt
+avstemming oppretter ingen betaling eller ny journalpost. Automatiske forslag
+fra bankfeed eller import av vilkårlige bankformater inngår ikke.
 
-## Lisens, rettigheter og selvstendig implementasjon
+## Rettigheter, retting og bevaring
 
-Funksjonskrav beskrives ut fra brukerbehov og norske regnskapskrav. Andre
-produkters offentlige funksjonsbeskrivelser er referanser for behov, ikke
-materiale som kopieres inn i modulen. Egen utforming skal passe Dolibarr.
-Det brukes ikke tredjeparts merkevarer eller grafikk som modulens egen profil.
+Lesing/opplasting bruker kjernens lese-/opprettingsrettigheter for
+leverandørfaktura eller hovedbok og avviser eksterne brukere. Leverandørens
+vanlige tilgangsbegrensninger og aktivt foretak gjelder også direkte filhenting.
+Originalfiler leveres privat uten cache. Filtype og faktisk innhold valideres
+på den nye opplastingen, maksimalt 20 MB; PHP/proxy kan ha en lavere grense.
+Kjernens opplasting og eventuell konfigurert virusskanning gjenbrukes.
 
-Lisensvilkår kontrolleres for komponentene og materialet som faktisk
-gjenbrukes. Bevar nødvendige krediteringer og lisensmerknader, og bruk
-komponenter som er kompatible med prosjektets GPL-3.0-or-later. Konkrete
-uavklarte rettigheter må løses før det aktuelle materialet tas inn.
+På validerte eller bokførte leverandørfakturaer sperres sletting, overskriving
+og navneendring av originalvedlegg. Genererte dokumenter kan fortsatt
+regenereres. Tilbakeføring til utkast med originalvedlegg sperres slik at
+bevaringen ikke kan omgås. Retting skjer med kreditnota eller dokumentert
+rettingsbilag; suppler underlaget med en ny fil. På ubehandlede utkast kan
+feilvedlegg håndteres under kjernens Dokumenter-fane før validering.
 
-Gjenbruk av Dolibarr følger kjernens lisensvilkår. Proprietær kode, tekster,
-skjermbilder, maler og andre beskyttede ressurser gjenbrukes bare når nødvendig
-rett faktisk er dokumentert. Ingen slik gjenbruk er forutsatt i denne planen.
+Vedlegg på manuelle hovedboksbilag bevares, og sletting av det tilknyttede
+bilaget sperres. Vedlegg knyttes også til kjernens rad-ID, slik at eventuell
+senere gjenbruk av et bilagsnummer ikke viser et annet bilags dokumenter. Korriger med dokumentert nytt bilag. Ingen vedlegg eller
+hovedboksposter flyttes eller omskrives ved oppdatering. Vernet gjelder
+applikasjonens kvalifiserte handlinger; det erstatter ikke tilgangsvern på
+serveren, oppbevaringsrutine og sikkerhetskopiering.
 
-## Aksept og dokumentasjon
+## Nedlasting, eksport og backup
 
-Bruk syntetiske PDF-er og bilder til testing av mottak, filkontroll, tilgang,
-lesbarhet, kobling til korrekt foretak/postering, duplikater, avbrudd og
-samtidige endringer. Prøv bevaring av original, slettingsvern der nødvendig,
-gjenoppretting av dokumenter sammen med databasen og fullstendig eksport.
+Enkeltfiler lastes ned fra bilaget. Under **Regnskap → Eksport** finnes
+**Last ned bilagsdokumentasjon (ZIP)**. Bruk fra-/til-datoene ved SAF-T på
+samme side; dokumentpakken er en separat eksport og krever ikke en SAF-T-mapping.
+Den tar med originale PDF-/bildevedlegg på leverandørfakturaer med dato i
+perioden (også utkast/ikke bokførte), kilder til periodens kjøpsposteringer og
+periodens manuelle bilag. `manifest.json` kobler filer, referanser, kilde-ID-er,
+SHA-256 og periodens hovedboksposter; manglende dokumentasjon vises uttrykkelig.
+Ingen fil regnes som bokført bare fordi den er med i pakken.
 
-Brukerbekreftede bankkoblinger skal ikke gi doble betalinger eller
-posteringer ved gjentakelse.
+Eksporten krever leserett til kjøp og hovedbok samt regnskapseksportrett.
+Den avbryter fremfor å levere en ufullstendig pakke hvis en kilde ikke kan
+leses. Maksimal dokumentmengde er 200 MB per pakke; velg kortere perioder ved
+behov. Dette er en dokumentpakke for kjøp/manuelle bilag, ikke SAF-T, en kopi
+av alle salgsdokumenter eller en full gjenopprettingsbackup.
 
-KR04/KR05/KR11/KR17–KR20 i [kravregisteret](norwegian-requirements.md) gjelder.
-Ferdig funksjon krever dokumentert omfang, rettighetsgrunnlag, relevante tester
-og godkjent leveranse gjennom staging og main. Dette dokumentet er en plan,
-ikke en påstand om at bilagsflyten eller eksterne komponenter er kvalifisert.
+Full backup gjøres med `bash scripts/backup-installation.sh` fra valgt
+installasjonskatalog. Den stopper webskriving mens database, dokumenter,
+konfigurasjon og modul tas samlet. Behold backup privat; den inneholder
+innloggingshemmeligheter. Oppdatering tar backup automatisk, men dette er
+ikke en periodisk backupordning. Administrator må etablere en regelmessig
+kopi også utenfor serveren og prøve gjenoppretting. Se [driftsveiledningen](test-and-operations.md).
 
-## Referanser
+[Altinns oppbevaringsveiledning](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/oppbevaring-av-regnskapsmateriale/)
+beskriver hovedregelen om fem års oppbevaring av primærdokumentasjon, lengre
+særkrav, lesbarhet og elektronisk backup. Behold skannet papirmateriale til
+backup er tatt. Dokumenter hva som kopieres, hyppighet og lagringssteder i
+virksomhetens private driftsrutine. Reelle dokumenter og opplysninger skal aldri i Git.
 
-- [Dolibarr: vedlegg på leverandørfakturaer, 24.0.1](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/fourn/facture/document.php)
-- [Dolibarr: vedlegg på utlegg, 24.0.1](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/expensereport/document.php)
-- [Patentstyret: programvare og rettigheter](https://www.patentstyret.no/artikler/har-du-utviklet-en-ny-programvare-software-eller-en-ny-app)
-- [GNU: lisenskompatibilitet](https://www.gnu.org/licenses/license-compatibility.en.html)
+## Prøvebevis og ferdigkriterium
 
-Referansene er kontrollert 2026-10-13. Rettighetsvurderingen må gjelde de
-komponentene og den implementasjonen som faktisk velges.
+`tests/paperless-cycle.php` bruker faktiske native HTTP-skjermbilder, native
+opplasting/ECM-indeks, syntetisk PDF/PNG og ordinær kjøpsjournal. Prøven dekker
+manglende dokument, forhåndsvisning, bytebevaring, ny nummerering ved validering,
+korrekt hovedbokstatus, referanseduplikat, identisk vedlegg, samtidighet,
+ugyldig fil, CSRF, tilgang/foretak, sletting/overskriving og privat utlegg med kjernens normale
+tomme dokumenttype. En faktisk ikke-administrator prøver lesing, skriving,
+eksportrett og begrensning til tildelte leverandører.
+Delbetaling 40 + 60, kreditnota/refusjon 20 og gebyr 2 gir uavhengig forventet
+bankbevegelse −82; gjentatt brukerbekreftet avstemming skaper ingen dobbeltpost.
+ZIP-eksporten avstemmes mot alle tre originalfiler og kilder i prøven.
+
+`tests/storage-sentinel.php` og `scripts/ci-installation.sh` prøver oppgradering
+og isolert restore: original PDF/PNG fjernes etter backup, gjenopprettes fra
+arkivet og sammenlignes bytevis med hash og den gjenopprettede native ECM-indeksen.
+Skjermbredder prøves ved 1440/1024/768/390 med norsk/engelsk grensesnitt.
+Ingen ny tabell eller skjemamigrering er innført. EHF og samlet produksjonsaksept
+lukkes ikke av denne leveransen.
+
+## Grunnlag undersøkt før implementasjon
+
+Kontrollert 2026-10-18. Fikens offentlige flyt bruker vedlegg på vanlig kjøp,
+etterregistrering av dokumentasjon og separat faktisk betaling. Dette mønsteret
+brukes som inspirasjon; tekster, kode og leverandørspesifikke kontovalg kopieres ikke.
+Dolibarrs eksisterende fakturaliste, dokumentfane, betalingskoblinger og bankavstemming
+gjenbrukes. Det konkrete gapet var vedlegg på manuelle hovedboksbilag,
+tilgjengelig original mens kjøpet registreres, tydelig dokument-/bokføringsstatus
+og originalbevaring. En ekstra innboks eller hovedbok er derfor ikke bygget.
+
+- [Fiken: registrere kjøp og utgifter](https://hjelp.fiken.no/registrere-kjoep-og-utgifter)
+- [Fiken: dokumentasjon](https://hjelp.fiken.no/dokumentasjon-i-et-regnskap)
+- [Fiken: bankavstemming](https://hjelp.fiken.no/hva-er-og-hvordan-fungerer-bankavstemming)
+- [Dolibarr: leverandørfakturaer](https://wiki.dolibarr.org/index.php?title=Module_Suppliers_Invoices)
+- [Kjerne 24.0.1: vedlegg](https://github.com/Dolibarr/dolibarr/blob/24.0.1/htdocs/core/actions_linkedfiles.inc.php)
+- [Altinn: oppbevaring](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/oppbevaring-av-regnskapsmateriale/)

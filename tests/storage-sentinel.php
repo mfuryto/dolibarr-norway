@@ -115,4 +115,29 @@ $r=$db->query('SELECT norway_vat_deduction FROM '.$db->prefix().'facture_fourn_d
 if(!$deduction || $deduction->norway_vat_deduction!=='37.50'){throw new RuntimeException('Deduction lost through update/restore');}
 print "PASS native deduction percentage preserved through update/restore\n";
 
+
+
+// Keep synthetic originals and their native ECM association across update, backup and restore.
+require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+$evidenceDir=DOL_DATA_ROOT.'/norway-paperless-sentinel';
+if(getenv('NORWAY_CREATE_SENTINEL')==='1'){
+    if(dol_mkdir($evidenceDir)<0){throw new RuntimeException('Evidence directory');}
+    $pdf=pdf_getInstance();$pdf->AddPage();$pdf->SetFont('helvetica','',12);$pdf->Write(0,'SYNTHETIC PAPERLESS RESTORE EVIDENCE');$pdf->Output($evidenceDir.'/original.pdf','F');
+    file_put_contents($evidenceDir.'/receipt.png',base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j1ioAAAAASUVORK5CYII='));
+    $hashes=array();foreach(array('original.pdf','receipt.png') as $filename){
+        if(addFileIntoDatabaseIndex($evidenceDir,$filename,'','uploaded')<=0){throw new RuntimeException('Native evidence index');}
+        $hashes[$filename]=hash_file('sha256',$evidenceDir.'/'.$filename);
+    }
+    if(dolibarr_set_const($db,'NORWAY_SYNTHETIC_DOCUMENT_HASHES',json_encode($hashes),'chaine',0,'Synthetic recovery fixture',(int)$conf->entity)<=0){throw new RuntimeException('Evidence hashes');}
+}else{
+    $hashes=json_decode(getDolGlobalString('NORWAY_SYNTHETIC_DOCUMENT_HASHES'),true,512,JSON_THROW_ON_ERROR);
+    foreach($hashes as $filename=>$expected){
+        if(!is_file($evidenceDir.'/'.$filename) || hash_file('sha256',$evidenceDir.'/'.$filename)!==$expected){throw new RuntimeException('Original evidence changed through update/restore');}
+        $r=$db->query("SELECT label FROM ".$db->prefix()."ecm_files WHERE entity=".(int)$conf->entity." AND filepath='norway-paperless-sentinel' AND filename='".$db->escape($filename)."'");
+        $record=$r?$db->fetch_object($r):null;if(!$record || $record->label!==md5_file($evidenceDir.'/'.$filename)){throw new RuntimeException('Native evidence index changed through update/restore');}
+    }
+}
+print "PASS original PDF/image bytes and native ECM association preserved through update/restore\n";
+
 $db->close();

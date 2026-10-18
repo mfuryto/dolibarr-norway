@@ -654,3 +654,24 @@ kjernens alternative disponering først i neste års inngående balanse.
 Resultatet presenteres én gang i relevant egenkapitalpost uten ny bokføring.
 Fradragsprøvens bank82000 avstemmes mot samlet egenkapital82000;
 årsrapport2026 avstemmes mot tapsført inngående egenkapital202650 i 2027.
+
+## 0.85.0 — papirløs bilagsflyt med kjernens verktøy
+
+Original PDF/PNG/JPEG lastes opp og vises på vanlig leverandørfaktura og manuelt
+hovedboksbilag. Den eksisterende fakturalisten viser dokumentasjons-/hovedbokstatus;
+betaling er fortsatt kjernens separate faktiske status. Native leverandørreferanser
+sperrer duplikatkjøp; opplasting sperrer fil-/innholdsduplikat på samme bilag.
+Originaler og kildekoblinger bevares ved kvalifiserte slette-/overskrivingshandlinger.
+Samlet ZIP fra kjernens eksportside inneholder originaler og manifest med
+filhash, kildehenvisninger og periodens hovedbok. Ingen ny tabell eller migrering.
+
+Syntetisk native kjøpsjournal, privat utlegg, delbetaling 40+60, refusjon 20,
+gebyr 2 og gjentatt bankavstemming avstemmer −82. HTTP-prøver dekker opplasting,
+forhåndsvisning, ugyldige filer, CSRF, tilgang, samtidighet, originalbevaring og
+ZIP-fullstendighet. PDF/bilde og native ECM-indeks gjenopprettes fra privat
+installasjonsbackup etter at filene faktisk er fjernet. Norsk/engelsk og
+1440/1024/768/390 prøves. [Bruk og avgrensning](paperless-accounting.md).
+
+Bestillingen prioriterte denne flyten mens EHF avventer ekstern testtilgang.
+OCR, e-postmottak, mobilapp, bankfeed og innkommende EHF inngår ikke. Samlet
+produksjonsaksept og faktisk EHF-levering står fortsatt åpne.
