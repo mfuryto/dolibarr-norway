@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/Skatteetaten/skattemeldingen",
+  "revision": "b668394859f9adcf51709c4207cb98cd74b29357",
+  "checked": "2026-10-18",
+  "files": {
+    "fields-2025.csv": {
+      "source": "src/resources/kodeliste/2025/2025_resultatregnskapOgBalanse.xml",
+      "source_sha256": "a03b261b30405f9b33623bbea67adf2eb9351f8e5b042d4c73f1e29c24f5db27",
+      "sha256": "7c69ad9dbfd6f213556212c21ec77bb3aba92de9c34e31fa4b7159943339feca",
+      "rows": 131
+    },
+    "fields-2026.csv": {
+      "source": "src/resources/kodeliste/2026/2026_resultatregnskapOgBalanse.xml",
+      "source_sha256": "4d3de4f82e36b0c77589eeb8dc8f56b28a76f53982a90979653d837dfe2c60b1",
+      "sha256": "7c69ad9dbfd6f213556212c21ec77bb3aba92de9c34e31fa4b7159943339feca",
+      "rows": 131
+    },
+    "account-overrides.csv": {
+      "sha256": "36975f61ca82087c9822e7697e9f0d0dbd2fc938d27cee24ddf4ca74ffd0a7e8",
+      "purpose": "Explicit ENK report destinations for shipped account meanings where SAF-T grouping differs from the tax-return vocabulary. Not a change to SAF-T mapping."
+    }
+  }
+}

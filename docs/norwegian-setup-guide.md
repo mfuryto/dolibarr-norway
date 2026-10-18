@@ -210,7 +210,10 @@ Avklar regnskapsår, bilagsdatoer, periodisering, godkjenning, periodelåsing og
 
 ## 10. Rapportering, oppbevaring og sikker drift
 
-Avklar hvem som gjør MVA-melding, skattemelding/næringsspesifikasjon, eventuell årsregnskapsinnsending og andre rapporteringer som følger av virksomheten. Direkte innsending er ikke levert. SAF-T er en separat eksportplikt og ingen erstatning for disse meldingene. Fra 0.83.0 brukes [SAF-T-eksport på kjernens eksportside](saft-export.md) for støttet omfang; lav omsetning alene fritar ikke elektronisk regnskap. Se [Skatteetatens SAF-T-veiledning](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/).
+For ENK: følg [forskuddsskatt](tax-accounts.md), [årsavslutning](year-end.md) og
+[skattemelding med næringsspesifikasjon](enk-tax-return.md). Veiledningen bruker
+kjernen og portalutfylling, med tydelig omfang og årsversjon. Avklar eventuell
+årsregnskapsinnsending og andre rapporteringer som følger av virksomheten. Direkte innsending er ikke levert. SAF-T er en separat eksportplikt og ingen erstatning for disse meldingene. Fra 0.83.0 brukes [SAF-T-eksport på kjernens eksportside](saft-export.md) for støttet omfang; lav omsetning alene fritar ikke elektronisk regnskap. Se [Skatteetatens SAF-T-veiledning](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/rutiner-regnskap-og-kassasystem/saf-t-regnskap/).
 
 Dokumenter oppbevaringsansvar, lagringsland, tilgang, oppbevaringstid og gjenoppretting. Primærdokumentasjon har normalt fem års oppbevaring, med særregler; avtaler kan være del av dokumentasjonsgrunnlaget. Vurder også elektronisk tilgjengelighet og reglene ved utenlandsk lagring. Se [Altinns oppbevaringsveiledning](https://info.altinn.no/starte-og-drive/regnskap-og-revisjon/regnskap/oppbevaring-av-regnskapsmateriale).
 

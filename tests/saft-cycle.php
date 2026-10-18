@@ -32,7 +32,7 @@ function pcManual($amounts,$type,$date,$mode=''){
 try{
  foreach($settings as $name=>$value){pcAssert(dolibarr_set_const($db,$name,$value,'chaine',0,'',$entity)>0,'Setting');$conf->global->$name=$value;}$mysoc->tva_assuj=1;$mysoc->country_code='NO';$mysoc->idprof1='123456785';$mysoc->address='Synthetic address';$mysoc->zip='0000';$mysoc->town='Synthetic';
  $chart=$db->fetch_object(pcSql('SELECT pcg_version FROM '.$p.'accounting_system WHERE rowid='.(int)getDolGlobalInt('CHARTOFACCOUNTS')));$accounts=array();foreach(pcRows('SELECT rowid,account_number FROM '.$p.'accounting_account WHERE entity='.$entity." AND fk_pcg_version='".$db->escape($chart->pcg_version)."'") as $a){$accounts[$a->account_number]=(int)$a->rowid;}
- foreach(array('1500','2400','1920','3000','4000','2700','2798','2710','2704','2714','2740','7740','7770') as $number){if(isset($accounts[$number])){continue;}$a=new AccountingAccount($db);$a->fk_pcg_version=$chart->pcg_version;$a->account_number=$number;$a->label='SYNTHETIC '.$number;$a->active=1;pcAssert($a->create($user)>0,'Account');$accounts[$number]=(int)$a->id;$newAccounts[]=(int)$a->id;}
+ foreach(array('1500','2400','1920','3000','4000','2700','2798','2710','2704','2714','2740','7740','7770') as $number){if(isset($accounts[$number])){continue;}$a=new AccountingAccount($db);$a->fk_pcg_version=$chart->pcg_version;$a->account_number=$number;$a->label='SYNTHETIC '.$number;$a->pcg_type=substr($number,0,1);$a->active=1;pcAssert($a->create($user)>0,'Account');$accounts[$number]=(int)$a->id;$newAccounts[]=(int)$a->id;}
  pcSql("DELETE FROM ".$p."c_tva WHERE entity=$entity AND code IN ('3','1','86')");foreach(array('3'=>array(1,25,'2798',''),'1'=>array(2,25,'','2710'),'86'=>array(2,0,'','2714')) as $code=>[$type,$rate,$sell,$buy]){pcSql("INSERT INTO ".$p."c_tva (entity,fk_pays,code,type_vat,taux,recuperableonly,active,accountancy_code_sell,accountancy_code_buy) VALUES ($entity,173,'$code',$type,$rate,0,1,'$sell','$buy')");}
  foreach(array(2=>'sells',3=>'purchases',4=>'bank') as $nature=>$kind){pcSql("INSERT INTO ".$p."accounting_journal (entity,code,label,nature,active) VALUES ($entity,'SYNC$nature-$run','Synthetic cycle',$nature,1)");$journals[$kind]=(int)$db->last_insert_id($p.'accounting_journal');}
  $year=new FiscalYear($db);$year->label='SYNTHETIC CYCLE '.$run;$year->date_start=dol_mktime(0,0,0,1,1,2026);$year->date_end=dol_mktime(0,0,0,2,28,2026);$year->status=0;pcAssert($year->create($user)>0,'Native fiscal period');$fiscal=(int)$year->id;
@@ -74,6 +74,16 @@ try{
   pcAssert(strpos($xml,'<AuditFile')!==false,'Native export download: '.strip_tags(substr($xml,0,120)));
   NorwaySaftReference::validate($xml);
  }
+ require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayAnnualReport.php';
+ $annual=NorwayAnnualReport::build($db,$entity,2026,$user);pcAssert(!$annual['issues'],'Native annual source: '.json_encode($annual['issues']));
+ pcAssert($annual['profit']===34750 && $annual['fields']['salgsinntekt/3000']['value']===80000 && $annual['tax_basis_before_other_adjustments']===34750,'Annual report independent native income/cost basis');
+ foreach(array('nb_NO','en_US') as $lang){
+  $path='/accountancy/bookkeeping/balance.php?lang='.$lang;$html=pcHttp($path);pcAssert(strpos($html,'norway-annual-controls')!==false,'Annual controls on native balance');
+  $params=array('token'=>pcToken($html),'action'=>'list','norway_annual_show'=>1,'norway_annual_year'=>2026,'search_accountancy_code_start'=>'999999','search_accountancy_code_end'=>'999999','limit'=>1,'date_startday'=>1,'date_startmonth'=>2,'date_startyear'=>2026,'date_endday'=>1,'date_endmonth'=>2,'date_endyear'=>2026);
+  $html=pcHttp($path,$params);pcAssert(strpos($html,'id="norway-annual-report"')!==false && strpos($html,'347.50')!==false && strpos($html,'NorwayAnnual')===false,'Bilingual annual display ignores native list filters');
+  $params['token']=pcToken($html);$params['action']='norway_annual_csv';$csv=pcHttp($path,$params);pcAssert(strpos($csv,'347.50')!==false && strpos($csv,'Kontospesifikasjon')!==false && strpos($csv,'salgsinntekt;3000;')!==false,'Native annual CSV has full year and exact fields');
+ }
+ echo "PASS native bilingual ENK annual report and CSV: independent profit347.50, sales800, complete year despite list filters, account detail and explicit additional information\n";
  echo "PASS SAF-T native invoices/credit, domestic60% and foreign50% deduction, native payment/refund and bank journal, statement515, customer/supplier balances, period opening1250, unchanged source and bilingual native download ignoring list filters\n";
  // Qualify additional stored tax codes and credits through the same native journals.
  $moreRates=pcRows("SELECT * FROM ".$p."c_tva WHERE entity=$entity AND code IN ('31','33','11','13','87')");

@@ -1,6 +1,6 @@
-# Norway 0.83.0
+# Norway 0.84.0
 
-**Versjon 0.83.0 · Under utvikling**
+**Versjon 0.84.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -43,3 +43,14 @@ Fra **0.83.0** finnes SAF-T 1.40 på kjernens regnskapseksportside, med
 kontokoblinger, MVA, reskontro, avstemte saldoer og komplett periodevalg.
 Første omfang er NOK og kalenderårene **2025–2026**; øvrige år og ukjent
 behandling avvises. [Arbeidsflyt, prøvebevis og avgrensning](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/saft-export.md).
+
+Fra **0.84.0** er [ENK-forskuddsskatt](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/tax-accounts.md),
+[årsavslutning](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/year-end.md) og [portalveien for skattemelding med
+næringsspesifikasjon](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/enk-tax-return.md) dokumentert og årsgrunnlaget prøvd.
+På Saldobalanse finnes **Årsgrunnlag for ENK**, med postkoder, beløp, kjente
+korreksjoner, fradragsoversikt og CSV med konti/bilag. Kjernens bank, bilag,
+rapporter og avslutning brukes. Et vern hindrer gjentatt
+årsavslutning og saldooverføring uten reskontro. Omfanget er ENK uten regnskaps-/
+revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget støtter
+2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Direkte innsending
+og et automatisk norsk årsoppgjørssystem er ikke levert.

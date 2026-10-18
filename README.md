@@ -1,6 +1,6 @@
 # Dolibarr Norway
 
-**Versjon 0.83.0 · Under utvikling**
+**Versjon 0.84.0 · Under utvikling**
 
 **Norsk modul for Dolibarr**, med norsk kontoplan, foretaksoppsett,
 fakturering og hjelp til å konfigurere regnskapet for norske forhold.
@@ -138,7 +138,8 @@ satsregister, kontokobling og registreringsstatus. Rapporten viser et forslag
 til oppgjørsbilag; bilag, MVA-betaling, kvitteringsvedlegg, bankavstemming og
 periodelåsing bruker kjernen. Se [MVA og periodeavslutning](docs/vat-period-close.md).
 Portalinnlogging og levering gjøres av brukeren; ingen innsending skjer fra modulen.
-Vareimport, særordninger, EHF og årsoppgjør/skatt gjenstår.
+Vareimport, særordninger og faktisk EHF-levering gjenstår. ENK-årsavslutning
+og portalveiledning for skatt beskrives nedenfor.
 Se [samlet leveranseplan](docs/delivery-plan.md) for støttet omfang og neste etappe.
 
 Fra **0.81.0** finnes en tilpasset åpen EHF-generator og sending begrenset til
@@ -150,3 +151,14 @@ Fra **0.83.0** finnes SAF-T 1.40 på kjernens regnskapseksportside, med
 kontokoblinger, MVA, reskontro, avstemte saldoer og komplett periodevalg.
 Første omfang er NOK og kalenderårene **2025–2026**; øvrige år og ukjent
 behandling avvises. [Arbeidsflyt, prøvebevis og avgrensning](docs/saft-export.md).
+
+Fra **0.84.0** er [ENK-forskuddsskatt](docs/tax-accounts.md),
+[årsavslutning](docs/year-end.md) og [portalveien for skattemelding med
+næringsspesifikasjon](docs/enk-tax-return.md) dokumentert og årsgrunnlaget prøvd.
+På Saldobalanse finnes **Årsgrunnlag for ENK**, med postkoder, beløp, kjente
+korreksjoner, fradragsoversikt og CSV med konti/bilag. Kjernens bank, bilag,
+rapporter og avslutning brukes. Et vern hindrer gjentatt
+årsavslutning og saldooverføring uten reskontro. Omfanget er ENK uten regnskaps-/
+revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget støtter
+2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Direkte innsending
+og et automatisk norsk årsoppgjørssystem er ikke levert.

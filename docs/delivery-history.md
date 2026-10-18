@@ -601,3 +601,56 @@ bank-/saldo-/avgiftsfasit, gjentatt eksport, ugyldige/ufullstendige kilder,
 tilgang og norsk/engelsk HTTP-nedlasting. Avgrensningene i
 [SAF-T-veiledningen](saft-export.md) gjelder; EHF-testnettverk, forskuddsskatt,
 årsavslutning og skattemelding er separate gjenstående leveranser.
+
+## 0.84.0 — ENK: forskuddsskatt, årsavslutning og portalgrunnlag
+
+Native bankflyt er prøvd med endrede terminer, refusjon, tilleggsforskudd,
+reserveoverføring via nullstilt mellomkonto og gjentatt bankjournal. Ingen
+ny skattekravsmodell eller beregningsmotor er lagt til.
+
+Et fullt syntetisk 2025-år prøver periodisering, lager, saldoavskrivning,
+privatuttak/skatt, resultatdisponering, reskontro, låsing og videre tapssaldo.
+Vern på kjernens avslutningshandling hindrer gjentatt/samtidig avslutning,
+ugyldige perioder og generering uten hjelpekontoer. Ingen skjemaendring.
+
+Portalveien for ordinært ENK uten regnskaps-/revisjonsplikt er dokumentert med
+avstemt eksempel: resultat42 250, tillegg750, næringsinntekt43 000 og egenkapital
+222 250. Veiledningen dekker tilleggsopplysninger, personinntekt, avskrivning
+uten dobbelt fradrag, egen innlogging, korrigering og mottakskvittering. Ingen
+faktisk privat innsending/kvittering eller API-integrasjon er kvalifisert.
+Endelig 2026-portalutfylling må kontrolleres ved levering i 2027.
+
+Støttet omfang og begrensninger står i `year-end.md` og `enk-tax-return.md`.
+Dette er ikke samlet norsk produksjonsaksept; EHF avventer fortsatt ekstern
+testtilgang og papirløs bilagsflyt tas sist.
+
+XML-testverktøyets lxml er oppdatert til 6.1.0 med offisielle PyPI-wheelhasher
+etter GHSA-vfmq-68hx-4jfw. Dette verktøyet installeres ikke i programbildet.
+De samme 13 EHF-dokumentene består formatreglene, og syv ugyldige grunnlag
+blokkeres fortsatt. Den eksisterende parseren har også eksplisitt forbud mot
+eksterne entiteter.
+
+Årsgrunnlaget er samlet i kjernens saldobalanse etter bestilling om rapporter
+og fradragsstøtte. Rapport/CSV viser årsspesifikke ENK-postkoder og fortegn,
+bokførte beløp/kjente korreksjoner, resultat før disponering, egenkapital,
+driftsmidler, skatt/premier og kontospesifikasjon. Skatteetatens 131 relevante
+poster per år er låst separat fra SAF-T. Normal 2068/telefonkonto vises som
+brutto EK-kostnad og 6998 uten en ekstra resultatjustering. Fradragsoversikten
+lenker til primærkilder og native bilag; ingen ny skrive-/historikkmodell.
+
+Native faktura-/betalingsprøve avstemmer årsrapport347,50 mot salg800 og øvrige
+kostnader, med norsk/engelsk HTML/CSV og uavhengighet fra sidens filtre.
+Fradragsprøven viser telefon12000/privat4392, kostnadsført utstyr5000,
+dokumentert boligandel3000 og personlig NAV1000 uten ekstra driftsfradrag.
+Uavklarte koblinger vises, og ingen faktisk privat innlevering er utført.
+
+Årsrapporten er også prøvd visuelt ved 1440/1024/768/390 piksler på begge
+språk. Kjernens bare saldobalansetabell får lokal horisontal rulling via
+footer-kroken. Hovedsummer vises først; detaljer kan åpnes. CSV inneholder
+alltid alle detaljer. Ingen kjernfil endres.
+
+Årsrapportens egenkapitalgrunnlag er prøvd før/etter disponering og med
+kjernens alternative disponering først i neste års inngående balanse.
+Resultatet presenteres én gang i relevant egenkapitalpost uten ny bokføring.
+Fradragsprøvens bank82000 avstemmes mot samlet egenkapital82000;
+årsrapport2026 avstemmes mot tapsført inngående egenkapital202650 i 2027.

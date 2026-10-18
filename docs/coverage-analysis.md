@@ -224,7 +224,9 @@ API-tilgang må bestilles og vilkår avklares ved eventuell direkte integrasjon.
 
 Leveransen skal omfatte kontokoblinger, relevante skattemessige forskjeller
 og avskrivninger, tilleggsopplysninger og avstemming mot årsavslutningen.
-Velg en konkret overføring til egnet årsoppgjørsløsning eller integrasjon.
+Fra 0.84.0 er første vei [manuell ENK-utfylling i Skatteetatens portal](enk-tax-return.md),
+med dokumentert skatteavstemming og kvalifisert native årsgrunnlag. Regnskaps-/
+revisjonspliktig ENK og andre selskaper trenger fortsatt egnet innsendingssystem.
 En summering av regnskapskontoene eller SAF-T-eksport er ikke tilstrekkelig
 bevis på at hele næringsspesifikasjonen er ferdig.
 

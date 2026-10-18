@@ -26,7 +26,8 @@ og bevaring/drift. Betingede behov må vurderes for faktisk virksomhet.
 
 Kontoklasser og teknisk saldoovergang er kvalifisert i 0.77.0. Normal kjøpsflyt med
 fradragsandel er kvalifisert i 0.79.0 for [støttet omfang](purchase-vat.md).
-Full årsavslutning og flere rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
+ENK-årsavslutning og portalveien for skatt er beskrevet fra 0.84.0; andre
+foretaksformer og flere rapporteringsleveranser gjenstår. Oversikten skjuler ikke disse manglene eller
 skriver regnskapsdata. Den er en veiledning til oppgavene; løpende arbeid skjer
 fortsatt i kjernens vanlige menyer.
 
@@ -38,3 +39,12 @@ Fra 0.83.0 lenker SAF-T-raden til kjernens regnskapseksport og kontoplanoppsett.
 Status «Vurderes manuelt» gjelder periode, koblinger og støttet omfang, ikke en
 ny godkjenningsrunde. [SAF-T-arbeidsflyten](saft-export.md) dekker 2025–2026 og
 NOK; andre år/behandlinger har uttrykkelige begrensninger.
+
+Årsavslutning og skatt lenker til [ENK-årsavslutning](year-end.md),
+[portalveiledning](enk-tax-return.md) og [forskuddsskatt](tax-accounts.md).
+Status «Vurderes manuelt» gjelder omfang/foretaksform og nødvendige årsopplysninger;
+den bekrefter ikke innlevering eller at en personlig skattemelding er ferdig.
+
+Skatteraden åpner også **Årsgrunnlag for ENK** på kjernens saldobalanse.
+Rapporten og [fradragsoversikten](deductions.md) ligger ved rapportene;
+oppstartsoversikten lagrer ikke tall eller fullføringsstatus.
