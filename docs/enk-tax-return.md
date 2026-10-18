@@ -10,10 +10,46 @@ ordinær virksomhet med varer/tjenester. Regnskaps-/revisjonspliktige ENK og
 selskap som AS trenger et egnet innsendingssystem. Se
 [Skatteetaten om ENK og leveringsvalg](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/enk/).
 
+## Bruk årsrapporten i programmet
+
+Åpne **Regnskap → Saldobalanse → Årsgrunnlag for ENK**. Velg inntektsår og
+**Vis årsgrunnlag** eller **Last ned årsgrunnlag (CSV)**. Rapporten bruker hele
+kalenderåret uavhengig av søk, sideinndeling og datoene på den øvrige
+saldobalansesiden. Den viser:
+
+- postkode og norsk navn fra årets offisielle ENK-liste, bokført beløp, kjent
+  korreksjon og grunnlag etter korreksjonen, med lenker til aktuelle konti;
+- resultat før disponering, kjente ikke-fradragsberettigede kostnader og
+  avstemming mot egenkapital, uten at disponering nuller ut årsresultatet;
+- [fradragsoversikt](deductions.md), driftsmiddelbevegelser og personlige
+  skattebetalinger/premier med sporbarhet til bilag;
+- uavklarte kontokoblinger, ikke bokførte dokumenter/bankbevegelser og
+  nødvendige tilleggsopplysninger.
+
+CSV inkluderer også full kontospesifikasjon med IB, årets bevegelse og UB.
+«Grunnlag etter kjent korreksjon» er ikke et løfte om endelig fradragsrett:
+skatteverdier, personinntekt og ukjente/private forhold må avklares. Rapporten
+skjuler ikke manglende kontokoblinger som null. Ingen økonomiske data eller
+kontokoblinger endres av lesing/nedlasting.
+
+Første støttede år er 2025 og 2026, med låste postnavn/fortegn for ENK **uten
+regnskapsplikt**. SAF-T-grupper og næringsposter er ikke identiske; egne
+ENK-koder kontrolleres separat. Endelige felt må fortsatt kontrolleres i
+portalen ved levering. Null bokført aktivitet vises som nullgrunnlag, ikke
+som automatisk fritak fra levering.
+
+Omsetning over 50 000 kroner utløser ikke alene krav om systeminnsending av
+skattemeldingen. Systemkravet følger regnskaps-/revisjonsplikten. Grensen for
+MVA-registrering gjelder relevant avgiftspliktig omsetning over en rullerende
+12-månedersperiode, og er en annen vurdering enn forenklet næringsspesifikasjon.
+Ikke bruk beløpsgrensen som et generelt fritak fra bokføring eller levering.
+Fristen i mai må også leses med gjeldende helge-/helligdagsregler og eventuell
+innvilget utsettelse. Bruk Skatteetatens varsel for det aktuelle året.
+
 ## 1. Hent årets grunnlag
 
 Gjør [årsavslutningens forberedelser](year-end.md) ferdig før endelig innlevering.
-Bruk **Regnskap → Saldobalanse og Hovedbok** for 1. januar–31. desember
+Årsrapporten samler tallene automatisk. Bruk **Regnskap → Saldobalanse og Hovedbok** for 1. januar–31. desember
 (`/accountancy/bookkeeping/balance.php`, `/accountancy/bookkeeping/list.php`).
 Ta med alle årets bokførte poster og inngående balanse, også tidligere
 rapporterte/eksporterte poster. Avstem mot bank, åpne fakturaer, MVA og

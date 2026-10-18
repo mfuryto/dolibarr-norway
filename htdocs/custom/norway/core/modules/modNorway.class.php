@@ -19,7 +19,7 @@ class modNorway extends DolibarrModules
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
         $this->picto = 'accountancy';
-        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('invoicecard', 'bookkeepingcard', 'commonobject', 'main', 'index', 'pdfgeneration', 'admincompany', 'purchasesjournal', 'bookkeepingexport', 'accountancyadminaccount', 'accountancyclosure'));
+        $this->module_parts = array('moduleforexternal' => 0, 'models' => 1, 'societe' => 1, 'triggers' => 1, 'css' => array('/norway/css/layout-0.5.0.css'), 'hooks' => array('invoicecard', 'bookkeepingcard', 'commonobject', 'main', 'index', 'pdfgeneration', 'admincompany', 'purchasesjournal', 'bookkeepingexport', 'accountancyadminaccount', 'accountancyclosure', 'balancelist', 'balancesubaccountlist'));
         $this->config_page_url = array('setup.php@norway');
         $this->langfiles = array('norway@norway');
         $this->phpmin = array(8, 2);

@@ -1286,7 +1286,7 @@ NorwaySetupHelpSaft=SAF-T 1.40 eksporteres fra kjernens regnskapseksport. Først
 NorwaySetupTaskYearEnd=Avstemming og årsavslutning
 NorwaySetupHelpYearEnd=ENK uten regnskaps-/revisjonsplikt: avstem og bokfør nødvendige årsjusteringer, avklar skatteavskrivninger, nullstill privatkonti og disponer resultatet én gang. Bruk kjernens avslutning med reskontro. Veiledningen viser omfang og retting; oppdateringen avslutter ikke året.
 NorwaySetupTaskTax=Næringsspesifikasjon og skattemelding
-NorwaySetupHelpTax=ENK uten regnskaps-/revisjonsplikt bruker Skatteetatens portal med avstemt årsgrunnlag. Veiledningen dekker forskjeller, avskrivninger, personinntekt og kvittering. Eksemplet gjelder 2025; endelig 2026-utfylling kontrolleres ved levering i 2027. Innsending skjer ved egen innlogging. Andre foretak trenger egnet årsoppgjørssystem.
+NorwaySetupHelpTax=ENK uten regnskaps-/revisjonsplikt: åpne årsgrunnlaget fra Saldobalanse. Rapporten viser postkoder, beløp, kjente korreksjoner, fradragsoversikt og bilag. Suppler nødvendige personlige opplysninger i Skatteetatens portal. Årsgrunnlaget støtter 2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Innsending skjer ved egen innlogging. Andre foretak trenger egnet årsoppgjørssystem.
 NorwaySetupTaskRetention=Bilag, backup og oppbevaring
 NorwaySetupHelpRetention=Bevar bilag og vedlegg, sikre tilganger og sett opp regelmessig backup med separat sikret kopi. Prøv gjenoppretting, og avklar oppbevaringstid og lagringsland.
 NorwaySetupLinkUsers=Brukere
@@ -1387,3 +1387,77 @@ NorwaySaftUnposted=Det finnes validerte fakturaer i perioden som ikke er overfø
 NorwayYearEndBlocked=Året kan ikke avsluttes med disse valgene. Kontroller åpne, sammenhengende perioder, tidligere saldooverføring, balansert hovedbok og kontogrupper i valgt kontoplan. Eksisterende posteringer er bevart.
 NorwayYearEndAuxiliary=Velg separate hjelpekontoer/reskontro ved saldooverføring, slik at åpne kunde- og leverandørposter bevares.
 NorwayYearEndBusy=En annen årsavslutning pågår. Vent til den er ferdig før du prøver igjen.
+
+NorwayAnnualTitle=Årsgrunnlag for ENK
+NorwayAnnualShow=Vis årsgrunnlag
+NorwayAnnualDownload=Last ned årsgrunnlag (CSV)
+NorwayAnnualScope=Grunnlag for manuell utfylling av næringsspesifikasjonen – ENK uten regnskaps-/revisjonsplikt, NOK. Hele valgt kalenderår brukes, uavhengig av sidens filtre. Beløpene er bokført grunnlag; avklar skattemessige verdier og tilleggsopplysninger før levering.
+NorwayAnnualYear=Årsgrunnlag støttes for 2025 og 2026. Velg et kvalifisert inntektsår.
+NorwayAnnualFailed=Årsgrunnlaget kunne ikke bygges. Kontroller kontoplan, komplett bokføring, balanserte bilag, inngående saldo og støttet år. Ingen regnskapsdata er endret.
+NorwayAnnualMapping=Konto mangler en gyldig kobling til en ENK-post i valgt års næringsspesifikasjon. Beløpet er ikke skjult; se kontospesifikasjonen i CSV og kontokoblingene i kontoplanoppsettet:
+NorwayAnnualPrivateOpen=Privatkonto har utgående saldo. Avstem og overfør til egenkapital ved årsavslutning:
+NorwayAnnualTaxExpense=Skattekostnad i ENK må avklares. Personlig skatt skal ikke redusere næringsresultatet:
+NorwayAnnualUnposted=Validerte dokumenter eller bankbevegelser er ikke overført til hovedboken. Årsgrunnlaget er ufullstendig:
+NorwayAnnualProfit=Resultat før disponering
+NorwayAnnualAddback=Kjente ikke-fradragsberettigede kostnader (7799/7835)
+NorwayAnnualDeduction=Kjente ikke-skattepliktige inntekter (7825)
+NorwayAnnualTaxBasis=Resultat etter kjente korreksjoner, før øvrige skattemessige justeringer
+NorwayAnnualDepreciation=Bokført avskrivning
+NorwayAnnualAdvance=Betalt forskuddsskatt, netto (2070)
+NorwayAnnualAdditional=Betalt tilleggsforskudd/restskatt, netto (2072)
+NorwayAnnualOpeningEquity=Inngående bokført egenkapital
+NorwayAnnualDisposal=Resultat disponert i årets bilag
+NorwayAnnualUnallocated=Årets resultat som ennå ikke er disponert
+NorwayAnnualOwner=Netto privatuttak/skatt via bank (innskudd vises negativt)
+NorwayAnnualOtherEquity=Andre bokførte egenkapitalbevegelser, inkludert direkte innskudd
+NorwayAnnualClosingEquity=Utgående bokført egenkapital, uten eventuelt udisponert resultat
+NorwayAnnualTaxHelp=Korreksjonene er forslag fra uendrede standardkontoer, ikke en full skatteberegning. Ta hensyn til øvrige forskjeller, privat bruk og fremføringer. Avskrivningen er allerede med i resultatet og skal ikke trekkes fra en gang til. I portalen må hver korreksjon bare tas med én gang.
+NorwayAnnualFields=Poster i næringsspesifikasjonen
+NorwayAnnualCode=Postkode
+NorwayAnnualField=Post
+NorwayAnnualValue=Bokført beløp (NOK)
+NorwayAnnualAccounts=Kontoer – åpne hovedbok
+NorwayAnnualAssets=Driftsmidler – bokført grunnlag
+NorwayAnnualAssetsHelp=Dette viser IB, årets bokførte økninger/reduksjoner og UB. Økninger er ikke automatisk skattemessige tilkjøp; reduksjoner er ikke salgssum. Bruk bilagene og tidligere skattemessig saldo når saldogrupper fylles ut. Skattemessig saldo, salgsvederlag, privat bruk og valgt sats kan ikke bestemmes av en kontosaldo alene.
+NorwayAnnualOpening=IB
+NorwayAnnualIncreases=Økninger
+NorwayAnnualReductions=Reduksjoner
+NorwayAnnualClosing=UB
+NorwayAnnualPayments=Skattebetalinger med bilag
+NorwayAnnualAdditionalTitle=Opplysninger som må suppleres i portalen
+NorwayAnnualAdditionalHelp=Avklar faktisk aktivitet og regnskapsplikt, skattemessige saldoer/saldogrupper og avskrivninger, privat bruk av telefon/bil, fremførbart underskudd og negativ personinntekt, kapitalposter og skjermingsgrunnlag, foretaksrelatert gjeld og eventuelle andre næringer/ektefellefordeling. Kontroller også personlige forhåndsutfylte opplysninger. Regnskapsbeløp skal ikke føres dobbelt. Lever også ved null aktivitet og oppbevar mottakskvitteringen. Rapporten beregner ikke personlig skatt eller endelig personinntekt.
+NorwayAnnualAssetAllocation=Et blandet bilag kan ikke fordele avskrivningen entydig på driftsmiddelkonto. Se bilaget:
+
+NorwayAnnualAdjustment=Kjent korreksjon
+NorwayAnnualBasis=Grunnlag etter kjent korreksjon
+
+NorwayDeductionsTitle=Fradragsoversikt
+NorwayDeductionsScope=Beløpene nedenfor er allerede bokført kostnadsgrunnlag, ikke nye fradrag som skal legges oppå resultatet. Null betyr ingen gjenkjent bokført kostnad; det avgjør ikke fradragsrett. «—» krever eget grunnlag. Bruk kilde og bilag før noe suppleres.
+NorwayDeductionPhone=Telefon og internett
+NorwayDeductionPhoneHelp=Viser bokførte EK-kostnader. Privat bruk skal tilbakeføres i post 6998. Beløpet og eventuell samordning med fordel fra arbeidsgiver må vurderes. Ikke tilbakefør på nytt hvis korreksjonen allerede er med i regnskapet. MVA-fradrag vurderes separat.
+NorwayDeductionEquipment=Utstyr og avskrivning
+NorwayDeductionEquipmentHelp=Viser direkte kostnadsført utstyr/programvare og bokførte avskrivninger. Hele aktiverte anskaffelser er ikke fradrag i tillegg. Avstem saldogrupper, tilganger/salg, skatteverdier og valgt sats med driftsmiddeloversikten.
+NorwayDeductionPremia=Pensjon, sykepenger, forsikring og kontingenter
+NorwayDeductionPremiaHelp=Viser aktuelle bokførte forsikrings-/kontingentkostnader. Rett til fradrag, grenser og om fradraget hører til næringen eller personlig skattemelding må avklares. Egen pensjon og NAV-premier er ikke automatisk ekstra driftskostnader.
+NorwayDeductionHome=Lokaler og egen bolig
+NorwayDeductionHomeHelp=Viser lokalkostnader; de kan gjelde eksterne lokaler. Egen bolig krever et rom som bare brukes i næring. Vurder standardsats eller dokumentert fordeling av faktiske kostnader etter vilkårene. Ikke beregn leie til deg selv eller bruk begge metodene for samme kostnad.
+NorwayDeductionStartup=Oppstartskostnader
+NorwayDeductionStartupHelp=Ingen egen kostnadskonto identifiserer oppstart. Bokfør dokumenterte kostnader på konto etter art. Kostnader i tidligere oppstartsår kan kreve endring av disse årenes skattemelding; ikke samle dem som én ny kostnad i inneværende år.
+NorwayDeductionRules=Skatteetatens regler
+NorwayDeductionVoucher=Registrer manglende årsjustering i kjernens bilag
+NorwayDeductionPersonalPayment=Personlig premie betalt fra foretaksbank, må vurderes i skattemeldingen – ikke automatisk driftsfradrag:
+NorwayDeductionPersonal=Frivillig tilleggstrygd krever vurdering som personlig fradrag, ikke automatisk driftskostnad. Avklar før næringsresultatet brukes:
+
+NorwayAnnualPhonePrivate=Bokført privat telefonbruk presentert i post 6998
+
+NorwayAnnualIncomplete=Ufullstendig – avklar meldinger før tall brukes
+NorwayAnnualSupplement=Bokført grunnlag – vurder skattemessige verdier og tilleggsopplysninger
+
+NorwayAnnualPhoneUnresolved=Privat EK-tilbakeføring kan ikke presenteres entydig i 6995/6998. Avstem bilaget og kontokoblingene før utfylling:
+
+NorwayAnnualResultRows=Resultat – inntekter og kostnader
+NorwayAnnualBalanceRows=Balanse – bokførte verdier som må avstemmes mot skatteverdier
+
+NorwayAnnualDetails=Vis egenkapital, betalinger og øvrige summer
+
+NorwayAnnualAccountGroup=Kontogruppen stemmer ikke med kontoens rapportpost. Avklar kontoplan og avslutningsgrupper før resultatet brukes:

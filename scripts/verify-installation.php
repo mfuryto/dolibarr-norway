@@ -62,6 +62,7 @@ $checks = array(
     'norway_dashboard_hook' => in_array('index', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_manual_vat_hook' => in_array('bookkeepingcard', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_vat_widget_hook' => in_array('commonobject', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
+    'norway_annual_report_hook' => in_array('balancelist', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true) && in_array('balancesubaccountlist', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_year_end_hook' => in_array('accountancyclosure', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_saft_export_hook' => in_array('bookkeepingexport', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),
     'norway_saft_mapping_hook' => in_array('accountancyadminaccount', (array) ($conf->modules_parts['hooks']['norway'] ?? array()), true),

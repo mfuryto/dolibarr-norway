@@ -16,7 +16,7 @@ const {chromium}=require('playwright');
   await page.goto(base+'/fourn/facture/list.php');
   const supplierLinks=await page.locator('a[href*="/fourn/facture/card.php"]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')));
   const supplierLink=supplierLinks.find(h=>/[?&](?:id|facid)=[0-9]+/.test(h));if(!supplierLink)throw Error('Synthetic supplier invoice missing');
-  const paths=['/custom/norway/vat.php?year=2040&term=1','/accountancy/bookkeeping/card.php?action=create&doc_type=vat_settlement','/compta/tva/list.php',supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
+  const paths=['/accountancy/bookkeeping/balance.php','/custom/norway/vat.php?year=2040&term=1','/accountancy/bookkeeping/card.php?action=create&doc_type=vat_settlement','/compta/tva/list.php',supplierLink,'/compta/facture/card.php?action=create&type=2&socid='+partyId[1],'/custom/norway/admin/wizard.php','/custom/norway/admin/setup.php','/custom/norway/admin/accounting.php','/custom/norway/admin/numbering.php','/admin/company.php','/compta/bank/list.php','/compta/bank/card.php?action=create','/societe/list.php','/product/list.php','/compta/facture/list.php'];
   for(const width of [1440,1024,768,390])for(const lang of ['nb_NO','en_US']){
    await page.setViewportSize({width,height:900});
    for(const path of paths){
@@ -38,7 +38,7 @@ const {chromium}=require('playwright');
     if(path.includes('/wizard.php')){
      const overview=page.locator('.norway-setup-overview');
      if(await overview.locator('tr[data-setup-task]').count()!==18||await page.locator('.norway-wizard form').count())throw Error('Overview tasks/forms');
-     for(const task of ['Ehf','Saft','Tax'])if(await overview.locator('[data-setup-task="'+task+'"] [data-setup-status="Unavailable"]').count()!==1)throw Error('Missing support hidden: '+task);
+     for(const task of ['Ehf'])if(await overview.locator('[data-setup-task="'+task+'"] [data-setup-status="Unavailable"]').count()!==1)throw Error('Missing support hidden: '+task);
      const hidden=await overview.locator('a').evaluateAll(nodes=>nodes.filter(n=>{const b=n.getBoundingClientRect();return b.width<1||b.right>innerWidth+2;}).length);
      if(hidden)throw Error('Overview links outside viewport');
      const overlap=await overview.locator('tbody tr').evaluateAll(rows=>rows.some(row=>[...row.querySelectorAll('p,a')].some(child=>child.getBoundingClientRect().bottom>row.getBoundingClientRect().bottom+2)));

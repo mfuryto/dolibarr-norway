@@ -44,3 +44,7 @@ NOK; andre år/behandlinger har uttrykkelige begrensninger.
 [portalveiledning](enk-tax-return.md) og [forskuddsskatt](tax-accounts.md).
 Status «Vurderes manuelt» gjelder omfang/foretaksform og nødvendige årsopplysninger;
 den bekrefter ikke innlevering eller at en personlig skattemelding er ferdig.
+
+Skatteraden åpner også **Årsgrunnlag for ENK** på kjernens saldobalanse.
+Rapporten og [fradragsoversikten](deductions.md) ligger ved rapportene;
+oppstartsoversikten lagrer ikke tall eller fullføringsstatus.

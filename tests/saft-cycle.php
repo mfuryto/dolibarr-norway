@@ -74,6 +74,16 @@ try{
   pcAssert(strpos($xml,'<AuditFile')!==false,'Native export download: '.strip_tags(substr($xml,0,120)));
   NorwaySaftReference::validate($xml);
  }
+ require_once DOL_DOCUMENT_ROOT.'/custom/norway/class/NorwayAnnualReport.php';
+ $annual=NorwayAnnualReport::build($db,$entity,2026,$user);pcAssert(!$annual['issues'],'Native annual source: '.json_encode($annual['issues']));
+ pcAssert($annual['profit']===34750 && $annual['fields']['salgsinntekt/3000']['value']===80000 && $annual['tax_basis_before_other_adjustments']===34750,'Annual report independent native income/cost basis');
+ foreach(array('nb_NO','en_US') as $lang){
+  $path='/accountancy/bookkeeping/balance.php?lang='.$lang;$html=pcHttp($path);pcAssert(strpos($html,'norway-annual-controls')!==false,'Annual controls on native balance');
+  $params=array('token'=>pcToken($html),'action'=>'list','norway_annual_show'=>1,'norway_annual_year'=>2026,'search_accountancy_code_start'=>'999999','search_accountancy_code_end'=>'999999','limit'=>1,'date_startday'=>1,'date_startmonth'=>2,'date_startyear'=>2026,'date_endday'=>1,'date_endmonth'=>2,'date_endyear'=>2026);
+  $html=pcHttp($path,$params);pcAssert(strpos($html,'id="norway-annual-report"')!==false && strpos($html,'347.50')!==false && strpos($html,'NorwayAnnual')===false,'Bilingual annual display ignores native list filters');
+  $params['token']=pcToken($html);$params['action']='norway_annual_csv';$csv=pcHttp($path,$params);pcAssert(strpos($csv,'347.50')!==false && strpos($csv,'Kontospesifikasjon')!==false && strpos($csv,'salgsinntekt;3000;')!==false,'Native annual CSV has full year and exact fields');
+ }
+ echo "PASS native bilingual ENK annual report and CSV: independent profit347.50, sales800, complete year despite list filters, account detail and explicit additional information\n";
  echo "PASS SAF-T native invoices/credit, domestic60% and foreign50% deduction, native payment/refund and bank journal, statement515, customer/supplier balances, period opening1250, unchanged source and bilingual native download ignoring list filters\n";
  // Qualify additional stored tax codes and credits through the same native journals.
  $moreRates=pcRows("SELECT * FROM ".$p."c_tva WHERE entity=$entity AND code IN ('31','33','11','13','87')");

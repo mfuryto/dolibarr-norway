@@ -133,6 +133,10 @@ class ActionsNorway
     {
         global $db,$conf,$user,$langs;
         $this->resprints='';
+        require_once __DIR__.'/NorwayAnnualUi.php';
+        if(NorwayAnnualUi::page()){
+            $this->resprints='<script>jQuery(function(){document.querySelectorAll("#searchFormList > table.liste").forEach(function(t){if(t.closest(".div-table-responsive")){return;}var w=document.createElement("div");w.className="div-table-responsive";t.parentNode.insertBefore(w,t);w.appendChild(t);});});</script>';return 0;
+        }
         $invoice=$GLOBALS['object']??null;
         if($this->invoicePage() && is_object($invoice) && !empty($invoice->id) && (int)($invoice->entity??0)===(int)$conf->entity
             && (int)($invoice->type??0)===2 && (int)($invoice->fk_facture_source??0)<=0 && empty($user->socid) && $user->hasRight('facture','creer')){
@@ -163,6 +167,8 @@ class ActionsNorway
     public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
     {
         global $db,$user,$langs;
+        require_once __DIR__.'/NorwayAnnualUi.php';
+        if(NorwayAnnualUi::page()){print NorwayAnnualUi::controls($user,$langs);return 0;}
         if (!$this->invoicePage()) { return 0; }
         require_once __DIR__.'/NorwayEhfInvoice.php';
         print NorwayEhfInvoice::render($db,$object,$user,$langs);return 0;
@@ -174,9 +180,17 @@ class ActionsNorway
         if(NorwaySaftUi::exportPage()){$this->resprints=NorwaySaftUi::exportFields($user,$langs);}return 0;
     }
 
+    public function printFieldPreListTitle($parameters,&$object,&$action,$hookmanager)
+    {
+        global $db,$conf,$user,$langs;require_once __DIR__.'/NorwayAnnualUi.php';
+        $this->resprints=NorwayAnnualUi::render($db,(int)$conf->entity,$user,$langs);return 0;
+    }
+
     public function doActions($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
+        require_once __DIR__.'/NorwayAnnualUi.php';
+        if(NorwayAnnualUi::action($db,$action,$user,$langs)){$action='';return 1;}
         if(($_SERVER['SCRIPT_FILENAME']??'')===DOL_DOCUMENT_ROOT.'/accountancy/closure/index.php'
             && $action==='confirm_step_2' && GETPOST('confirm','alpha')==='yes'){
             require_once __DIR__.'/NorwayYearEnd.php';$langs->load('norway@norway');

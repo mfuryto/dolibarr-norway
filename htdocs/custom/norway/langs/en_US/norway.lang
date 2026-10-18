@@ -1286,7 +1286,7 @@ NorwaySetupHelpSaft=Export SAF-T 1.40 from native accounting export. Initial sco
 NorwaySetupTaskYearEnd=Reconciliation and year-end
 NorwaySetupHelpYearEnd=Sole proprietors without statutory annual-account or audit obligations: reconcile, post required year-end adjustments, establish tax depreciation, clear owner accounts and dispose of the result once. Use native closing with auxiliary accounts. The guide explains scope and corrections; upgrades never close the year.
 NorwaySetupTaskTax=Business specification and tax return
-NorwaySetupHelpTax=Eligible sole proprietors file through the Tax Administration portal using reconciled annual figures. The guide covers adjustments, depreciation, personal income and receipts. The example uses 2025; final 2026 fields must be reviewed when filing in 2027. Filing requires your own login. Other entities need a suitable year-end system.
+NorwaySetupHelpTax=Eligible sole proprietors: open annual basis from Account balance. The report provides field codes, amounts, known corrections, deduction overview and voucher evidence. Supplement required personal information in the Tax Administration portal. Annual basis supports 2025–2026; final 2026 portal fields must be reviewed when filing in 2027. Filing requires your own login. Other entities need a suitable year-end system.
 NorwaySetupTaskRetention=Vouchers, backup and retention
 NorwaySetupHelpRetention=Retain vouchers and attachments, secure access and arrange regular backups with a separate protected copy. Test recovery and determine retention periods and storage location.
 NorwaySetupLinkUsers=Users
@@ -1387,3 +1387,77 @@ NorwaySaftUnposted=Validated invoices in this period have not been transferred t
 NorwayYearEndBlocked=The year cannot be closed with these choices. Check open consecutive periods, existing carry-forward, balanced ledger and account groups in the selected chart. Existing entries are retained.
 NorwayYearEndAuxiliary=Select separate auxiliary accounts when generating opening balances to retain open customer and supplier subledgers.
 NorwayYearEndBusy=Another year close is in progress. Wait until it finishes before trying again.
+
+NorwayAnnualTitle=Annual basis for sole proprietors
+NorwayAnnualShow=Show annual basis
+NorwayAnnualDownload=Download annual basis (CSV)
+NorwayAnnualScope=Basis for manual Norwegian business-specification filing by eligible sole proprietors, in NOK. The complete selected calendar year is used, ignoring native list filters. Amounts are book values; reconcile tax values and additional information before filing.
+NorwayAnnualYear=Annual basis supports income years 2025 and 2026.
+NorwayAnnualFailed=Could not build annual basis. Check chart, complete posting, balanced vouchers, opening balances and supported year. No financial data was changed.
+NorwayAnnualMapping=Account lacks a valid destination in the selected year’s sole-proprietor specification. It is retained in the CSV account detail. Review mapping in chart setup:
+NorwayAnnualPrivateOpen=Owner account has a closing balance. Reconcile and clear to equity at year end:
+NorwayAnnualTaxExpense=Resolve tax expense for the sole proprietor. Personal income tax must not reduce business profit:
+NorwayAnnualUnposted=Validated documents or bank movements have not been posted. The annual basis is incomplete:
+NorwayAnnualProfit=Profit before disposal
+NorwayAnnualAddback=Known non-deductible costs (7799/7835)
+NorwayAnnualDeduction=Known non-taxable income (7825)
+NorwayAnnualTaxBasis=Result after known corrections, before other tax adjustments
+NorwayAnnualDepreciation=Book depreciation
+NorwayAnnualAdvance=Net advance personal tax paid (2070)
+NorwayAnnualAdditional=Net additional advance/residual personal tax paid (2072)
+NorwayAnnualOpeningEquity=Opening book equity
+NorwayAnnualDisposal=Profit disposed in current-year vouchers
+NorwayAnnualUnallocated=Current-year result not yet disposed
+NorwayAnnualOwner=Net cash owner withdrawals/tax (contributions are negative)
+NorwayAnnualOtherEquity=Other booked equity movements, including direct contributions
+NorwayAnnualClosingEquity=Closing book equity, excluding any undisposed result
+NorwayAnnualTaxHelp=Corrections are suggestions from unchanged standard account meanings, not a complete tax calculation. Consider other adjustments, private use and carry-forwards. Depreciation is already included in profit; do not deduct it twice. Apply each portal correction only once.
+NorwayAnnualFields=Norwegian business-specification fields
+NorwayAnnualCode=Field code
+NorwayAnnualField=Field
+NorwayAnnualValue=Book amount (NOK)
+NorwayAnnualAccounts=Accounts – open ledger
+NorwayAnnualAssets=Fixed assets – book basis
+NorwayAnnualAssetsHelp=Opening, increases, reductions and closing book values. Increases are not automatically tax additions; reductions are not proceeds. Use vouchers and prior tax balances to complete tax pools. Tax values, sale proceeds, private use and chosen rates cannot be inferred from an account balance.
+NorwayAnnualOpening=Opening
+NorwayAnnualIncreases=Increases
+NorwayAnnualReductions=Reductions
+NorwayAnnualClosing=Closing
+NorwayAnnualPayments=Tax payments with vouchers
+NorwayAnnualAdditionalTitle=Information to supplement in the portal
+NorwayAnnualAdditionalHelp=Establish activity and statutory reporting obligations, tax pools/depreciation, private phone/car use, carried losses and negative personal income, capital adjustments and allowance base, business debt and any additional businesses or spouse allocation. Review personal prefilled data. Avoid duplicate amounts. File also with no activity and retain the receipt. This report does not calculate personal tax or final personal income.
+NorwayAnnualAssetAllocation=A mixed voucher cannot allocate depreciation uniquely to asset accounts. Review voucher:
+
+NorwayAnnualAdjustment=Known correction
+NorwayAnnualBasis=Basis after known correction
+
+NorwayDeductionsTitle=Deduction overview
+NorwayDeductionsScope=These are already booked cost amounts, not additional deductions to add to profit. Zero means no recognised booked cost; it does not determine eligibility. “—” requires separate evidence. Review rules and vouchers before supplementing.
+NorwayDeductionPhone=Telephone and internet
+NorwayDeductionPhoneHelp=Booked communication costs. Private use is reported in field 6998. Assess the amount and any employer benefit coordination. Do not reverse private use twice if already corrected in the books. Assess VAT deduction separately.
+NorwayDeductionEquipment=Equipment and depreciation
+NorwayDeductionEquipmentHelp=Directly expensed equipment/software and booked depreciation. Do not deduct the full capitalised acquisition again. Reconcile tax pools, additions/disposals, tax values and chosen rates with the asset schedule.
+NorwayDeductionPremia=Pension, sickness insurance, insurance and subscriptions
+NorwayDeductionPremiaHelp=Relevant booked insurance/subscription costs. Establish eligibility, limits and whether the deduction belongs to business income or the personal return. Own pension and NAV premiums are not automatically extra operating costs.
+NorwayDeductionHome=Premises and own home
+NorwayDeductionHomeHelp=Premises costs may relate to external premises. Own-home relief requires exclusively business-use space. Assess the standard allowance or documented actual-cost allocation under the applicable conditions. Do not charge rent to yourself or use both methods for the same cost.
+NorwayDeductionStartup=Startup costs
+NorwayDeductionStartupHelp=No single expense account identifies startup. Post documented expenses by nature. Earlier startup-year costs may require amending those years’ tax returns; do not collect them as a new current-year cost.
+NorwayDeductionRules=Tax Administration rules
+NorwayDeductionVoucher=Record a missing year-end adjustment in native bookkeeping
+NorwayDeductionPersonalPayment=Personal premium paid from business bank; assess in the tax return, not automatically an operating deduction:
+NorwayDeductionPersonal=Voluntary sickness cover needs assessment as a personal deduction, not automatically an operating cost. Resolve before using business profit:
+
+NorwayAnnualPhonePrivate=Booked private communication adjustment presented in field 6998
+
+NorwayAnnualIncomplete=Incomplete – resolve messages before using the figures
+NorwayAnnualSupplement=Book basis – assess tax values and additional information
+
+NorwayAnnualPhoneUnresolved=Private communication adjustment cannot be presented uniquely in 6995/6998. Reconcile the voucher and account mapping before filing:
+
+NorwayAnnualResultRows=Profit and loss – income and costs
+NorwayAnnualBalanceRows=Balance sheet – book values to reconcile with tax values
+
+NorwayAnnualDetails=Show equity, payments and other totals
+
+NorwayAnnualAccountGroup=The account group disagrees with its report destination. Resolve chart and closing groups before using the result:

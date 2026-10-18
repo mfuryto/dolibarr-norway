@@ -122,3 +122,16 @@ regnskapsgrunnlag fra veiledet, personlig innlevering. 2025 er regneeksemplets
 inntektsår. Ingen faktisk privat innsending eller automatisk skatteberegning
 er kvalifisert. Skatteetatens publiserte 2026-modeller/tekster erstatter ikke
 kontroll av den endelige 2026-portalen ved levering i 2027.
+
+Rapport- og fradragsutvidelsen bruker også [Skatteetatens årsspesifikke
+kodelister](https://github.com/Skatteetaten/skattemeldingen/tree/master/src/resources/kodeliste)
+med låst revisjon i modulens `data/tax/manifest.json`: ENK uten regnskapsplikt,
+postkoder og negativ/positiv post. Disse kontrolleres separat fra SAF-T-grupper.
+[Telefon](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/fradrag/eiendeler-utstyr-eiendom/telefon-og-internett/),
+[premier/pensjon](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/fradrag/utgifter-til-pensjon-sykepenger-og-forsikring/),
+[oppstart](https://www.skatteetaten.no/bedrift-og-organisasjon/starte-og-drive/ny-som-naringsdrivende/oppstartsperiode/)
+og [egen bolig](https://www.skatteetaten.no/bedrift-og-organisasjon/skatt/skattemelding-naringsdrivende/fradrag/eiendeler-utstyr-eiendom/bruke-egen-bolig-i-naring/)
+er kontrollert 2026-10-18. Reglene brukes til forklaring/rapportering, ikke
+antatt individuell fradragsrett eller en full personlig skatteberegning.
+Normal rapportflyt er sammenlignet med [Conta ENK-årsoppgjør](https://hjelp.conta.no/regnskap/rapporter-regnskap/naeringsspesifikasjon-for-enk-2024/)
+og [Tripletex om konti bak rapportpostene](https://hjelp.tripletex.no/hc/no/articles/47753303449361-Slik-ser-og-endrer-du-hvilke-kontoer-som-kobles-til-en-post-i-skattemeldingen).

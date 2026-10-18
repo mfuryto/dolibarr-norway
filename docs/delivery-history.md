@@ -629,3 +629,22 @@ etter GHSA-vfmq-68hx-4jfw. Dette verktøyet installeres ikke i programbildet.
 De samme 13 EHF-dokumentene består formatreglene, og syv ugyldige grunnlag
 blokkeres fortsatt. Den eksisterende parseren har også eksplisitt forbud mot
 eksterne entiteter.
+
+Årsgrunnlaget er samlet i kjernens saldobalanse etter bestilling om rapporter
+og fradragsstøtte. Rapport/CSV viser årsspesifikke ENK-postkoder og fortegn,
+bokførte beløp/kjente korreksjoner, resultat før disponering, egenkapital,
+driftsmidler, skatt/premier og kontospesifikasjon. Skatteetatens 131 relevante
+poster per år er låst separat fra SAF-T. Normal 2068/telefonkonto vises som
+brutto EK-kostnad og 6998 uten en ekstra resultatjustering. Fradragsoversikten
+lenker til primærkilder og native bilag; ingen ny skrive-/historikkmodell.
+
+Native faktura-/betalingsprøve avstemmer årsrapport347,50 mot salg800 og øvrige
+kostnader, med norsk/engelsk HTML/CSV og uavhengighet fra sidens filtre.
+Fradragsprøven viser telefon12000/privat4392, kostnadsført utstyr5000,
+dokumentert boligandel3000 og personlig NAV1000 uten ekstra driftsfradrag.
+Uavklarte koblinger vises, og ingen faktisk privat innlevering er utført.
+
+Årsrapporten er også prøvd visuelt ved 1440/1024/768/390 piksler på begge
+språk. Kjernens bare saldobalansetabell får lokal horisontal rulling via
+footer-kroken. Hovedsummer vises først; detaljer kan åpnes. CSV inneholder
+alltid alle detaljer. Ingen kjernfil endres.

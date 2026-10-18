@@ -155,8 +155,10 @@ behandling avvises. [Arbeidsflyt, prøvebevis og avgrensning](docs/saft-export.m
 Fra **0.84.0** er [ENK-forskuddsskatt](docs/tax-accounts.md),
 [årsavslutning](docs/year-end.md) og [portalveien for skattemelding med
 næringsspesifikasjon](docs/enk-tax-return.md) dokumentert og årsgrunnlaget prøvd.
-Kjernens bank, bilag, rapporter og avslutning brukes. Et vern hindrer gjentatt
+På Saldobalanse finnes **Årsgrunnlag for ENK**, med postkoder, beløp, kjente
+korreksjoner, fradragsoversikt og CSV med konti/bilag. Kjernens bank, bilag,
+rapporter og avslutning brukes. Et vern hindrer gjentatt
 årsavslutning og saldooverføring uten reskontro. Omfanget er ENK uten regnskaps-/
-revisjonsplikt; faktisk innlevering krever egen portalutfylling. Eksemplet gjelder
-2025; endelig 2026-utfylling må kontrolleres ved levering i 2027. Direkte innsending
+revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget støtter
+2025–2026; endelig 2026-portalutfylling kontrolleres ved levering i 2027. Direkte innsending
 og et automatisk norsk årsoppgjørssystem er ikke levert.
