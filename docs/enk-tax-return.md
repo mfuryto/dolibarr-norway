@@ -12,7 +12,7 @@ selskap som AS trenger et egnet innsendingssystem. Se
 
 ## Bruk årsrapporten i programmet
 
-Åpne **Regnskap → Saldobalanse → Årsgrunnlag for ENK**. Velg inntektsår og
+Åpne **Regnskap → Kontobalanse → Årsgrunnlag for ENK**. Velg inntektsår og
 **Vis årsgrunnlag** eller **Last ned årsgrunnlag (CSV)**. Rapporten bruker hele
 kalenderåret uavhengig av søk, sideinndeling og datoene på den øvrige
 saldobalansesiden. Den viser:
@@ -52,7 +52,7 @@ innvilget utsettelse. Bruk Skatteetatens varsel for det aktuelle året.
 ## 1. Hent årets grunnlag
 
 Gjør [årsavslutningens forberedelser](year-end.md) ferdig før endelig innlevering.
-Årsrapporten samler tallene automatisk. Bruk **Regnskap → Saldobalanse og Hovedbok** for 1. januar–31. desember
+Årsrapporten samler tallene automatisk. Bruk **Regnskap → Kontobalanse og Hovedbok** for 1. januar–31. desember
 (`/accountancy/bookkeeping/balance.php`, `/accountancy/bookkeeping/list.php`).
 Ta med alle årets bokførte poster og inngående balanse, også tidligere
 rapporterte/eksporterte poster. Avstem mot bank, åpne fakturaer, MVA og

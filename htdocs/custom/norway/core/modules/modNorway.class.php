@@ -14,7 +14,7 @@ class modNorway extends DolibarrModules
         $this->module_position = '90';
         $this->name = 'Norway';
         $this->description = 'NorwayDescription';
-        $this->version = '0.85.0';
+        $this->version = '0.86.0';
         $this->editor_name = 'dolibarr-norway contributors';
         $this->editor_url = 'https://github.com/mfuryto/dolibarr-norway';
         $this->const_name = 'MAIN_MODULE_NORWAY';
@@ -61,7 +61,7 @@ class modNorway extends DolibarrModules
     public function init($options = '')
     {
         if (DOL_VERSION !== '24.0.1') {
-            $this->error = 'Norway 0.85.0 supports Dolibarr 24.0.1 only.';
+            $this->error = 'Norway 0.86.0 supports Dolibarr 24.0.1 only.';
             return -1;
         }
         require_once __DIR__.'/../../class/NorwaySchema.php';

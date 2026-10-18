@@ -65,6 +65,8 @@ python3 -m venv "$ci_root/ehf-validator"
 "${compose[@]}" exec -T web php /opt/norway-tests/advance-tax-cycle.php
 "${compose[@]}" exec -T web php /opt/norway-tests/year-end-cycle.php
 "${compose[@]}" exec -T web php /opt/norway-tests/deductions-cycle.php
+"${compose[@]}" exec -T web php /opt/norway-tests/balance-overview.php
+"${compose[@]}" exec -T web php /opt/norway-tests/balance-http.php
 "${compose[@]}" exec -T web php /opt/norway-tests/year-end-http.php
 "${compose[@]}" exec -T web php /opt/norway-tests/http-smoke.php
 "${compose[@]}" exec -T web php /opt/norway-tests/company-vat-http.php

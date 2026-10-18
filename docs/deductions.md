@@ -1,6 +1,6 @@
 # Fradrag i ENK – registrering og årsgrunnlag
 
-Åpne **Regnskap → Saldobalanse → Årsgrunnlag for ENK**, velg inntektsår og
+Åpne **Regnskap → Kontobalanse → Årsgrunnlag for ENK**, velg inntektsår og
 **Vis årsgrunnlag**. Fradragsoversikten og CSV-filen samler relevante
 bokførte kostnader, rapportposter, konti og bilag. Manglende koblinger vises.
 Beløpene er allerede med i resultatet: ikke legg dem til som nye fradrag.

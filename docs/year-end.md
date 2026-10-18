@@ -13,7 +13,7 @@ poster som tidligere er eksportert. Avstem bank mot kontoutskrift, kunde- og
 leverandørsaldoer mot åpne dokumenter, og MVA mot leverte meldinger/oppgjør.
 MVA for siste termin kan være ubetalt ved årsskiftet og skal da stå som gjeld.
 
-**Verktøy:** Regnskap → Journaler, Hovedbok og Saldobalanse
+**Verktøy:** Regnskap → Journaler, Hovedbok og Kontobalanse
 (`/accountancy/bookkeeping/list.php`, `/accountancy/bookkeeping/balance.php`),
 Bank → Kontoutskrifter, Fakturering → Kunde-/leverandørfakturaer.
 

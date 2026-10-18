@@ -1,6 +1,6 @@
-# Norway 0.85.0
+# Norway 0.86.0
 
-**Versjon 0.85.0 · Under utvikling**
+**Versjon 0.86.0 · Under utvikling**
 
 Ekstern modul for Dolibarr 24.0.1 og PHP 8.2 eller nyere. Ett foretak og NOK.
 Kjernen endres ikke. Modulen gir norsk kontoplan, foretaksoppsett, norske og
@@ -56,3 +56,5 @@ revisjonsplikt; faktisk innlevering krever egen portalutfylling. Årsgrunnlaget 
 og et automatisk norsk årsoppgjørssystem er ikke levert.
 
 Fra **0.85.0** finnes papirløs bilagsflyt på vanlige kjøps-/bilagskort: originalvedlegg, forhåndsvisning, dokument-/hovedbokstatus, bevaring og samlet ZIP fra kjernens eksportside. Betaling og bankavstemming bruker kjernen. [Arbeidsflyt og omfang](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/paperless-accounting.md).
+
+Fra **0.86.0** finnes **Regnskap → Balanseoversikt**, med eiendeler, egenkapital og gjeld per valgt dato, udisponert resultat og lenker til kontobevegelser. Rapporten bruker kjernens kontosummer og viser uoverførte kilder og eventuell ubalanse. [Bruk og omfang](https://github.com/mfuryto/dolibarr-norway/blob/main/docs/balance-overview.md).
